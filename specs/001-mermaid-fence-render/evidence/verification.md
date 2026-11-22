@@ -1,25 +1,25 @@
 # 验证证据
 
-本文件只记录**已经真实跑过**的命令输出。E-BLD、E-CHK、E-HARN 三段各自来自一次运行，其中 E-CHK 与 E-HARN 的报告行自带 `包名@版本 | client.js 字节数 | sources sha256:<指纹>`，所以这两段可被追溯到具体的一棵树；E-BLD 是构建日志本身（它写出 `client.js`，随后由这两段报告行限定）。E-PUB 记录 CI 运行，E-INS 与 E-LIVE 记录真机操作，各自注明版本与 run，不能当成"同一次运行"的输出。当前版本：`0.1.13`。
+本文件只记录**已经真实跑过**的命令输出。E-BLD、E-CHK、E-HARN 三段各自来自一次运行，其中 E-CHK 与 E-HARN 的报告行自带 `包名@版本 | client.js 字节数 | sources sha256:<指纹>`，所以这两段可被追溯到具体的一棵树；E-BLD 是构建日志本身（它写出 `client.js`，随后由这两段报告行限定）。E-PUB 记录 CI 运行，E-INS 与 E-LIVE 记录真机操作，各自注明版本与 run，不能当成"同一次运行"的输出。当前版本：`0.1.14`。
 
 复跑方式（任何人 clone 后都一样）：
 
 ```bash
 node scripts/build-client.mjs       # 由 src/client/*.js + vendor/pele 生成 client.js
 node verify/check-bundle.mjs        # 37 项静态与行为断言，纯 Node 内置模块
-node verify/run-harness.mjs --list  # 197 项浏览器断言，需要本机 Chrome
+node verify/run-harness.mjs --list  # 205 项浏览器断言，需要本机 Chrome
 ```
 
 ## E-BLD 构建
 
 ```text
-build-client: @jiezhengj/dsh-dyslexia -> client.js (767639 bytes, 766609 characters, engine 1.13.0, sources 5, syntax ok)
+build-client: @jiezhengj/dsh-dyslexia -> client.js (769771 bytes, 768741 characters, engine 1.13.0, sources 5, syntax ok)
 ```
 
 ## E-CHK 静态与行为校验
 
 ```text
-ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.13
+ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.14
 ok   package.json points at the repository npm trusts — git+https://github.com/jiezhengj/DSH-Dyslexia.git
 ok   package.json declares the bundle patch and the client half — platform web, no package inject
 ok   no dsh version gate can refuse a start — no engines.dsh, no dsh peers
@@ -28,14 +28,14 @@ ok   every published file exists — 24 files
 ok   every interface language has its own plugin page — 8 languages
 ok   cordis.patch.yml inserts the plugin by package name — 3 lines
 ok   both locales carry metadata — en, zh
-ok   client.js is one loader chunk keyed by the package name — 767639 bytes
+ok   client.js is one loader chunk keyed by the package name — 769771 bytes
 ok   client.js requires react and nothing else — react
 ok   client.js never reaches the network — no fetch, no XHR, no dynamic import, no remote URL
 ok   client.js carries the vendored engine — Pele 1.13.0 inlined
 ok   client.js compiles on its own — no syntax error for a host batch to inherit
 ok   a broken host loader cannot make the chunk throw — throwing loader, missing loader, missing window
 ok   a failing factory still yields a silent module — no react, no ctx, no slots, empty services
-ok   an engine that fails to load leaves the picture to the host — boundary + guarded props + engine sentence
+ok   an engine that fails to load leaves the picture to the host — boundary + guarded props + engine guard + engine sentence
 ok   the layer is keyed to mermaid on the fence slot — conversation.chat.markdown.fence + mermaid
 ok   host half declares its package identity and one service — systemPrompt only
 ok   the host half can be loaded and apply once — one section on a healthy host
@@ -46,7 +46,7 @@ ok   every supported sample type draws an svg — flowchart:218x64 sequence:184x
 ok   a broken diagram reports a one-line reason — Parse error on line 2:
 ok   host key echo falls back to bundled strings — key echo, blanks, placeholders rejected
 ok   every language carries the same complete sentences — 12 keys x 8 languages, no engine text in labels
-ok   client.js matches the sources it claims — 0a1deabdc8b0c983289478e451d16283
+ok   client.js matches the sources it claims — c0e38c5373e00f1f9432895504946ba3
 ok   the picture is the image, and the copy answer is announced — label is a noun, role="img" on the svg, copy result announced
 ok   host children react would refuse fall back to the source — objects, functions and mixed arrays fall back to the source text
 ok   every drawing the engine swaps in is named again — the engine owns re-layout; every swapped drawing node and its zoom buttons are renamed, strings follow the language
@@ -55,9 +55,9 @@ ok   a factory that cannot build never throws at the host — module-level throw
 ok   nothing in the package asks you to edit an instruction file — 17 shipped text files, no instruction-file ask
 ok   the host half registers exactly one capability section — ui:dsh-dyslexia, order 9000, 85 words
 ok   the host half stays silent when the host changed shape — five silent hosts, one throwing section
-ok   the fixtures assert what the fixes promise, and can fail — 14 assertions present and carrying a condition
+ok   the fixtures assert what the fixes promise, and can fail — 19 assertions present and carrying a condition
 
-check-bundle: @jiezhengj/dsh-dyslexia@0.1.13 | client.js 767639 bytes | sources sha256:0a1deabdc8b0c983289478e451d16283 | all 37 checks passed
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.14 | client.js 769771 bytes | sources sha256:c0e38c5373e00f1f9432895504946ba3 | all 37 checks passed
 ```
 
 ## E-HARN 浏览器行为校验
@@ -182,6 +182,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.13 | client.js 767639 bytes | sources 
 [ok] a throwing code getter leaves the host block — "flowchart LR\n  A[Text] --> B[Picture]"
 [ok] a throwing children getter does not reach the host
 [ok] a throwing children getter leaves the source — "flowchart LR\n  A[Text] --> B[Picture]"
+[ok] a fence whose props read throws is left to the host, not the message — "flowchart LR\n  A[Text] --> B[Picture]"
 [ok] a non-string fence is left to the host
 [ok] a broken diagram says why
 [ok] the reason is a complete sentence — 图里的语法有误，已改为显示源码。
@@ -190,6 +191,11 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.13 | client.js 767639 bytes | sources 
 [ok] a broken diagram without host children still shows its source
 [ok] a throwing engine leaves a sentence
 [ok] a throwing engine keeps the host block
+[ok] the opened panel is on screen before the source changes — 1
+[ok] a source swapped for a broken one is shown once, not twice — copies=1 panels=0
+[ok] the swapped-in failure still says why
+[ok] the copy answer is on screen before the source changes — 已复制
+[ok] a copy answer does not outlive the source it described
 [ok] a missing clipboard is reported, not faked — 复制失败 / 查看源码 | 复制源码
 [ok] the copy button writes once — 1
 [ok] a real copy is reported as copied — 已复制 / 查看源码 | 复制源码
@@ -224,6 +230,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.13 | client.js 767639 bytes | sources 
 [ok] disabling the plugin takes its stylesheet away — false
 [ok] the locale registration is dropped — 1
 [ok] the fence layer is gone once the host disposes — 0
+[ok] a host without effects keeps one stylesheet, not one per apply — 1
 [ok] no internal key reaches the eye — leaked: 
 [ok] a source past the size limit says why — 这张图无法绘制，已改为显示源码。huge
 [ok] a source past the size limit keeps the host block
@@ -264,7 +271,8 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.13 | client.js 767639 bytes | sources 
 [ok] the zoom buttons sit outside the image — 0
 [ok] the zoom buttons speak the interface language — 放大 | 缩小 | 重置缩放
 [ok] every zoom button in reach can take the keyboard — 1/1 reachable of 3
-run-harness: @jiezhengj/dsh-dyslexia@0.1.13 | client.js 767639 bytes | sources sha256:0a1deabdc8b0c983289478e451d16283 | all 197 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+[ok] every zoom button is reachable once the picture is zoomed — 3/3 after zoom
+run-harness: @jiezhengj/dsh-dyslexia@0.1.14 | client.js 769771 bytes | sources sha256:c0e38c5373e00f1f9432895504946ba3 | all 205 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
 ## E-A11Y 图像的读屏取舍（`role="img"` 的代价与补偿）
@@ -279,7 +287,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.13 | client.js 767639 bytes | sources s
 
 ## E-PROBE 夹具能失败吗：用破坏性探针验证
 
-如果一个断言恒真，"套件全绿"就不构成证据。0.1.8 至 0.1.13 期间共做了十次探针：故意破坏被断言保护的代码、重建 `client.js`、跑两套检查、确认目标断言**变红**，再还原（0.1.10 起的几次在 `%TEMP%` 的仓库副本里做，不动工作树）。报告行里的项数属于**当时的套件**：0.1.10 = 119 项、0.1.11 = 152 项、0.1.12 = 156 项、0.1.13 = 197 项。
+如果一个断言恒真，"套件全绿"就不构成证据。0.1.8 至 0.1.14 期间共做了十三次探针：故意破坏被断言保护的代码、重建 `client.js`、跑两套检查、确认目标断言**变红**，再还原（0.1.10 起的几次在 `%TEMP%` 的仓库副本里做，不动工作树）。报告行里的项数属于**当时的套件**：0.1.10 = 119 项、0.1.11 = 152 项、0.1.12 = 156 项、0.1.13 = 197 项。
 
 | 探针 | 破坏方式 | 变红的断言（含报告行） | 说明 |
 |---|---|---|---|
@@ -293,6 +301,10 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.13 | client.js 767639 bytes | sources s
 | PC | 0.1.12 时：让夹具里 `slots.register` 的 disposer 不删 `defs` | 夹具 `the fence layer is gone once the host disposes` → `1`（应 0） | 报告行 `run-harness: 1 failed, 155 passed`（exit 1）。该断言旧名 `the fence layer is dropped` 只是重复计量同一份簿记，0.1.12 起改成真的把层从宿主表里删掉并改名 |
 | P6 | 0.1.13 时：把夹具里 `expect(missingLanguage.length === 0, 'every interface language has expectations'` 改成不调用 `expect` | 驱动报 `run-harness: suite reported 196 checks, expected 197: a check was added or removed`（exit 1） | 夹具套件现在钉死条目数：删一条断言不再可能全绿 |
 | P7 | 0.1.13 时：删掉 `check-bundle.mjs` 里一整条 `check('no dsh version gate can refuse a start', …)` 块 | 报告行 `[FAIL] the suite has 36 checks, expected 37: a check was added or removed without updating this number`、`check-bundle: 1 failed, 36 passed`（exit 1） | 静态套件同样钉死条目数 |
+
+| PR1 | 0.1.14 时：把 `src/client/view.js` 的 `setShowSource(false); setCopyState('idle')` 两行换成 `void 0` | 夹具 `a copy answer does not outlive the source it described` 报 `已复制` | `run-harness: 1 failed, 204 passed`，exit 1 |
+| PR2 | 0.1.14 时：把 `showSource && !failed` 换成 `showSource` | **没有断言变红（205 全过）** | 如实记录：这条守卫是防御性的——源码一换，PR1 的重置 effect 已经收起面板，所以失败态下不会出现第二份源码；因此不能把 PR2 当成「该守卫可证伪」的证据 |
+| PR3 | 0.1.14 时：把 `FigureBoundary.render` 里 `try { input = readLayerInput(this.props) }` 拆开，直接读 | 夹具 `a fence whose props read throws is left to the host, not the message` 报 `""`（整条消息被清空） | `run-harness: 1 failed, 204 passed`，exit 1 |
 
 静态检查里另有一条守护 `the fixtures assert what the fixes promise, and can fail`：它要求 P1/P2/P4/P5/PA/PB/PC 里那几个"能变红的断言名"继续存在于夹具中，并且每条名字必须落在带条件的 `expect(` 调用里（掏空断言体会红），否则说明有人把夹具删了而代码检查仍绿。P6/P7 是另一道：两套检查各自的条目数被钉死，删一条也会红。
 
@@ -351,9 +363,71 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.13 | client.js 767639 bytes | sources s
 | 0.1.12 | `45067949499` | success | `2cae4ca880ddb5401dec6faed1492e1f1622d9f8` | `4048231715` | 33 |
 | 0.1.13 | `45071920218` | success | `37da6a6b834f178aca04f91884c7f7f779e91417` | `4048415674` | 33 |
 
-### E-PUB-LOG 每次发布 CI 日志里的检查报告行（原文照抄）
+### E-PUB-LOG 0.1.5 起每次发布 CI 日志里的检查报告行（按版本排序）
 
-这些行由工作流在**发布前**跑出来，所以它们证明"发出去的那个 tarball 对应的是通过检查的那棵树"，而不是本地某次运行。
+这些汇总行由工作流在**发布前**跑出来，所以它们证明「发出去的那个 tarball 对应的是通过检查的那棵树」，而不是本地某次运行。工作流不传 `--list`，CI 日志里因此没有任何 `[ok]` 明细行；需要明细时用本地 `--list` 复跑，并如下面 0.1.12 一段那样标明来源。
+
+0.1.5（run `45046178925`，当时 31 项静态 / 82 项浏览器）——CI 日志里只有汇总行：工作流不传 `--list`，`[ok]` 行只写进页面的 DOM，stdout 只有下面两行：
+
+```text
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.5 | client.js 761974 bytes | sources sha256:5f89ee58c00607c98d5356575e6be451 | all 31 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.1.5 | client.js 761974 bytes | all 82 checks passed (/usr/bin/google-chrome)
+```
+
+0.1.6（run `45050133828`，31 / 92）：
+
+```text
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.6 | client.js 762625 bytes | sources sha256:737f61ee187d1956e13917922a931cf0 | all 31 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.1.6 | client.js 762625 bytes | all 92 checks passed (/usr/bin/google-chrome)
+```
+
+0.1.7（run `45052680467`，32 / 101）：
+
+```text
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.7 | client.js 765002 bytes | sources sha256:e10fbd04aa7812fdbc9adbc0b1d2e95b | all 32 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.1.7 | client.js 765002 bytes | all 101 checks passed (/usr/bin/google-chrome)
+npm notice shasum: 935b05b457e8756ab8b45593252ab44594def0e1
+npm notice total files: 33
+```
+
+0.1.8（run `45055683813`，34 / 108）：
+
+```text
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.8 | client.js 768340 bytes | sources sha256:19c9e9146858e7820cb0aa5d8ae7c92a | all 34 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.1.8 | client.js 768340 bytes | all 108 checks passed (/usr/bin/google-chrome)
+npm notice shasum: 30408a56f8e3d3054e7ace7feafa0fbde8e676b6
+npm notice total files: 33
+```
+
+0.1.9（run `45059529254`，36 / 118）：
+
+```text
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.9 | client.js 769386 bytes | sources sha256:17eb5c7a6fb8339a904cfa56c6540d3b | all 36 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.1.9 | client.js 769386 bytes | all 118 checks passed (/usr/bin/google-chrome)
+npm notice shasum: 71feabc22885e097974a35668e4717837fefd226
+npm notice total files: 33
+```
+
+0.1.10（run `45062588313`，36 / 119）——这是**当时**那棵树的两条报告行；版本、字节数、指纹与项数都与当前不同（当前 0.1.14 是 769,771 字节、`c0e38c53…`、37 / 205），共同点只有命令与工作流：
+
+```text
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.10 | client.js 767298 bytes | sources sha256:336ea7199fb90a0c8202c03e0c14bbe7 | all 36 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.1.10 | client.js 767298 bytes | all 119 checks passed (/usr/bin/google-chrome)
+npm notice 📦  @jiezhengj/dsh-dyslexia@0.1.10
+npm notice shasum: cff93a6b81b34057d733797834b4549afbd92816
+npm notice total files: 33
+npm notice publish Provenance statement published to transparency log: https://search.sigstore.dev/?logIndex=4047938866
+```
+
+0.1.11（run `45065089410`，36 / 152）——同样是**当时**那棵树的两条报告行，与当前版本在字节数、指纹与项数上都不同：
+
+```text
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.11 | client.js 767643 bytes | sources sha256:53c0bc25d05679cd92e7e115d07d7c7d | all 36 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.1.11 | client.js 767643 bytes | all 152 checks passed (/usr/bin/google-chrome)
+npm notice shasum: 7c6d33570ed12ec709effb09349b247db4754655
+npm notice total files: 33
+npm notice publish Provenance statement published to transparency log: https://search.sigstore.dev/?logIndex=4048037334
+```
 
 0.1.12（run `45067949499`，36 项静态 / 156 项浏览器）：
 
@@ -362,7 +436,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.12 | client.js 767639 bytes | sources 
 run-harness: @jiezhengj/dsh-dyslexia@0.1.12 | client.js 767639 bytes | all 156 checks passed (/usr/bin/google-chrome)
 ```
 
-0.1.5（run `45046178925`，当时 31 项静态 / 82 项浏览器）：
+0.1.12 本地复跑（`node verify/run-harness.mjs --list`，**不是** CI 日志）——工作流只打印汇总行，`[ok]` 明细只存在于页面 DOM；这是同一棵树在本机复跑的完整清单：
 
 ```text
 [ok] loading client.js registers one factory
@@ -523,61 +597,6 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.12 | client.js 767639 bytes | all 156 c
 [ok] every zoom button in reach can take the keyboard — 1/1 reachable of 3
 ```
 
-0.1.6（run `45050133828`，32 / 92）：
-
-```text
-check-bundle: @jiezhengj/dsh-dyslexia@0.1.6 | client.js 762625 bytes | sources sha256:737f61ee187d1956e13917922a931cf0 | all 32 checks passed
-run-harness: @jiezhengj/dsh-dyslexia@0.1.6 | client.js 762625 bytes | all 92 checks passed (/usr/bin/google-chrome)
-```
-
-0.1.7（run `45052680467`，32 / 101）：
-
-```text
-check-bundle: @jiezhengj/dsh-dyslexia@0.1.7 | client.js 765002 bytes | sources sha256:e10fbd04aa7812fdbc9adbc0b1d2e95b | all 32 checks passed
-run-harness: @jiezhengj/dsh-dyslexia@0.1.7 | client.js 765002 bytes | all 101 checks passed (/usr/bin/google-chrome)
-npm notice shasum: 935b05b457e8756ab8b45593252ab44594def0e1
-npm notice total files: 33
-```
-
-0.1.8（run `45055683813`，34 / 108）：
-
-```text
-check-bundle: @jiezhengj/dsh-dyslexia@0.1.8 | client.js 768340 bytes | sources sha256:19c9e9146858e7820cb0aa5d8ae7c92a | all 34 checks passed
-run-harness: @jiezhengj/dsh-dyslexia@0.1.8 | client.js 768340 bytes | all 108 checks passed (/usr/bin/google-chrome)
-npm notice shasum: 30408a56f8e3d3054e7ace7feafa0fbde8e676b6
-npm notice total files: 33
-```
-
-0.1.9（run `45059529254`，36 / 118）：
-
-```text
-check-bundle: @jiezhengj/dsh-dyslexia@0.1.9 | client.js 769386 bytes | sources sha256:17eb5c7a6fb8339a904cfa56c6540d3b | all 36 checks passed
-run-harness: @jiezhengj/dsh-dyslexia@0.1.9 | client.js 769386 bytes | all 118 checks passed (/usr/bin/google-chrome)
-npm notice shasum: 71feabc22885e097974a35668e4717837fefd226
-npm notice total files: 33
-```
-
-0.1.10（run `45062588313`，36 / 119）——这是**当时**那棵树的两条报告行；版本、字节数、指纹与项数都与当前不同（当前 0.1.13 是 767,639 字节、`0a1deabd…`、37 / 197），共同点只有命令与工作流：
-
-```text
-check-bundle: @jiezhengj/dsh-dyslexia@0.1.10 | client.js 767298 bytes | sources sha256:336ea7199fb90a0c8202c03e0c14bbe7 | all 36 checks passed
-run-harness: @jiezhengj/dsh-dyslexia@0.1.10 | client.js 767298 bytes | all 119 checks passed (/usr/bin/google-chrome)
-npm notice 📦  @jiezhengj/dsh-dyslexia@0.1.10
-npm notice shasum: cff93a6b81b34057d733797834b4549afbd92816
-npm notice total files: 33
-npm notice publish Provenance statement published to transparency log: https://search.sigstore.dev/?logIndex=4047938866
-```
-
-0.1.11（run `45065089410`，36 / 152）——同样是**当时**那棵树的两条报告行，与当前版本在字节数、指纹与项数上都不同：
-
-```text
-check-bundle: @jiezhengj/dsh-dyslexia@0.1.11 | client.js 767643 bytes | sources sha256:53c0bc25d05679cd92e7e115d07d7c7d | all 36 checks passed
-run-harness: @jiezhengj/dsh-dyslexia@0.1.11 | client.js 767643 bytes | all 152 checks passed (/usr/bin/google-chrome)
-npm notice shasum: 7c6d33570ed12ec709effb09349b247db4754655
-npm notice total files: 33
-npm notice publish Provenance statement published to transparency log: https://search.sigstore.dev/?logIndex=4048037334
-```
-
 0.1.13（run `45071920218`，37 项静态 / 197 项浏览器）：
 
 ```text
@@ -591,6 +610,8 @@ npm notice publish Provenance statement published to transparency log: https://s
 ## E-CI 发布前检查抓到一个真实缺陷（0.1.5 第一次运行）
 
 `45046044274` 在 "Refuse to publish if the committed chunk is stale" 这一步失败：
+
+两行只保留头尾，中间的品牌行省略（CI 原文是 `| MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) |`）：
 
 ```text
 -/*! @jiezhengj/dsh-dyslexia 0.1.5 | ... | sources sha256:9876db88174469acc5a4266c272e5b34 */
@@ -624,7 +645,7 @@ Done in 2.5s using pnpm v11.28.5
 
 ## E-LIVE 真机（DSH 桌面窗口内）
 
-**以下记录来自 0.1.2**，当前版本（0.1.13）的重启核对是 T079（**尚未取证**，见 G13）。之所以保留，是因为它们证明了链路本身可用；从 0.1.2 到 0.1.13 渲染层改过多次（`role` 结构、`aria-roledescription` 的移除与重排版后重标、可见的复制反馈、空/非法 `children` 的处理、源码块的 `language-mermaid` 标记、外层盒子去掉名字），所以这些观察**不能**自动转移到 `0.1.13`。
+**以下记录来自 0.1.2**，当前版本（0.1.14）的重启核对是 T079（**尚未取证**，见 G13）。之所以保留，是因为它们证明了链路本身可用；从 0.1.2 到 0.1.13 渲染层改过多次（`role` 结构、`aria-roledescription` 的移除与重排版后重标、可见的复制反馈、空/非法 `children` 的处理、源码块的 `language-mermaid` 标记、外层盒子去掉名字），所以这些观察**不能**自动转移到 `0.1.14`。
 
 | 观察 | 当时的证据 | 归属 |
 |---|---|---|
@@ -633,7 +654,7 @@ Done in 2.5s using pnpm v11.28.5
 | 卸载插件后，同一条消息变回纯文本代码块，无报错无占位 | `remove_bundle` 后 `flowchart LR … A[代码块] --> B[就地成图]` 原样显示，`role="img"`（`agent-desktop` 报告为 image）与按钮计数为 0 | US2/FR-009（不含 SC-002 的会话检索命中） |
 | 重新安装后图与按钮立刻回来，历史消息不用改 | `install_bundle` 后同一屏立刻渲染 | FR-010 |
 
-## E-GAPS 没有取证的部分（共 15 项）
+## E-GAPS 没有取证的部分（共 16 项）
 
 真机、设备与离线条件（都要求动手换条件，不能在 CI 里做）：
 
@@ -658,7 +679,8 @@ Done in 2.5s using pnpm v11.28.5
 - **G13 当前版本的重启后真机核对（T079）**：`E-LIVE` 的观察取自 **0.1.2**，且只有四件事——插件页的**中文**说明与插图、会话里就地成图（图名 `图：flowchart`、两个按钮）、卸载后同一条消息回退为代码块、重装后图与按钮立刻回来。**复制播报**（0.1.5 起才有）与**其余 7 种语言的插件页**从未在真机上看过，不能算已观察。0.1.3–0.1.13 改过 `view.js`、`i18n.js`、`entry.js`、`styles.js`，这些观察不能自动转移。0.1.11、0.1.12 已发布并装进 `desktop` profile，但**没有在重启后的宿主里逐项复核过**，所以算未取证。
 - **G14 真实窗口缩放时的引擎重绘（FR-018 的端到端面）**：0.1.10 把重排版交给引擎自己的 `ResizeObserver`（pele 内部），插件只负责"节点被换回来就重新命名"。夹具能证明"节点被换 → 立刻重新命名"，但**无法让引擎在无头浏览器里真的因窗口缩放而重绘**（无头环境第一帧之后不再派发帧与 ResizeObserver 通知）。真实窗口里"拖窄窗口 → 引擎重绘 → 名字回来"这条链只有机制级证据。
 - **G15 尚未覆盖的加固面（第十轮实现评审记录）**：`src/client/figure.js` 的 `outputLimit`（2 MiB）与 `maxEdges`（400）没有用例；`src/client/entry.js` 里 `slots.inject(...)` 返回的 disposer 被丢掉（层本身随 `apply` 的作用域一起消失，但没有"二次 apply 不重复注册"或"inject 的句柄被单独释放"的断言）；`package.json` 的 `prepack` 只跑构建与 `check-bundle`，不跑夹具（依赖 CI 的五步兜住）。这四项都不影响已发布行为，但都属于"没有证据的加固"。
+- **G16 规模上限与 vendor 文本（记录）**：`outputLimit`（2 MiB）与 `maxEdges`（400）仍无用例，只由引擎自己拦；「引擎换掉 `<svg>` 后重新命名」在无头环境里只能夹具重放（真实拖窄窗口的端到端见 G14）；`client.js` 里 vendor 许可注释含 `https://github.com/obsidianmd/pele`，属静态文本、无网络行为。
 
 ---
 
-**本文件与 tasks.md 的关系**：`tasks.md` 末尾的状态表逐行对应上面 15 项，两处若不一致，以本文件为准（本文件是证据的归属地，`tasks.md` 是工作项的记录）。
+**本文件与 tasks.md 的关系**：`tasks.md` 末尾的状态表逐行对应上面 16 项，两处若不一致，以本文件为准（本文件是证据的归属地，`tasks.md` 是工作项的记录）。

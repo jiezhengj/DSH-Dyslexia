@@ -20,6 +20,14 @@ const LAYER_ORDER = 100
 
 const inject = ['slots']
 
+/**
+ * The stylesheet this module put in the document when the host offered no
+ * `ctx.effect`. Kept so a second `apply` can take the first one away: a host
+ * without effects cannot promise us a teardown, and at most one leftover
+ * element is better than one per call.
+ */
+let unownedStyle = null
+
 function report(scope, error) {
   try {
     console.warn(`dsh-dyslexia: ${scope}`, error)
@@ -56,7 +64,16 @@ function apply(ctx) {
       // the remover goes in the return value — passing it as the setup would run
       // it immediately and unstyle the picture.
       if (typeof ctx.effect === 'function') ctx.effect(() => drop, 'dsh-dyslexia: figure styles')
-      else void 0
+      else if (unownedStyle !== null && unownedStyle !== styleElement) {
+        // No teardown hook: claim the stylesheet a previous run left behind, so
+        // an uninstall followed by a start cannot stack them up.
+        try {
+          removeFigureStyles(unownedStyle)
+        } catch (error) {
+          report('styles', error)
+        }
+      }
+      if (typeof ctx.effect !== 'function') unownedStyle = styleElement
     }
   } catch (error) {
     report('styles', error)

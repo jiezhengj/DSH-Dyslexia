@@ -273,6 +273,19 @@ function MermaidFenceLayer(props) {
     [],
   )
 
+  // A new source is a new picture: the panel folds away and the old "Copied"
+  // answer stops applying to text that is no longer on screen. Without this, an
+  // open panel plus a broken replacement would show the same source twice, and
+  // a stale answer would sit under a figure it never described.
+  React.useEffect(() => {
+    setShowSource(false)
+    setCopyState('idle')
+    if (copiedTimerRef.current !== null) {
+      clearTimeout(copiedTimerRef.current)
+      copiedTimerRef.current = null
+    }
+  }, [code])
+
   const finishCopy = React.useCallback((state) => {
     setCopyState(state)
     if (copiedTimerRef.current !== null) clearTimeout(copiedTimerRef.current)
@@ -370,17 +383,20 @@ function MermaidFenceLayer(props) {
       )
     : null
 
-  const source = showSource
-    ? React.createElement(
-        'pre',
-        { className: SOURCE_CLASS },
-        React.createElement(
-          'code',
-          { className: 'language-' + lang },
-          code,
-        ),
-      )
-    : null
+  // While the picture is failing, the source is already on screen in the host's
+  // own block below: a second copy would read as two different sources.
+  const source =
+    showSource && !failed
+      ? React.createElement(
+          'pre',
+          { className: SOURCE_CLASS },
+          React.createElement(
+            'code',
+            { className: 'language-' + lang },
+            code,
+          ),
+        )
+      : null
 
   const noteText =
     reasonKind === 'syntax'
@@ -436,7 +452,24 @@ class FigureBoundary extends React.Component {
   }
 
   render() {
-    const input = readLayerInput(this.props)
+    // The boundary cannot catch an exception thrown by its own render, so the
+    // props are read inside a guard: a host that hands over a value whose
+    // reading throws (a Proxy, a hostile getter) costs this one fence, never the
+    // message around it. The code itself may still be readable, so it is shown.
+    let input = null
+    try {
+      input = readLayerInput(this.props)
+    } catch (error) {
+      report('figure props', error)
+      let code
+      try {
+        code = this.props === null || this.props === undefined ? undefined : this.props.code
+      } catch (caught) {
+        report('figure props', caught)
+        code = undefined
+      }
+      return typeof code === 'string' && code.length > 0 ? sourceFallback(code) : null
+    }
     const fallback = () => hostBlock(input.children, input.code)
     if (this.state.failed) return fallback()
     try {

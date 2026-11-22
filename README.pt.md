@@ -45,7 +45,7 @@ Os dois comandos estão no repositório, portanto o que este arquivo afirma pode
 
 ## Limites conhecidos
 
-- **Verificado aqui:** desenho no chat verificado no DSH desktop `0.2.2-rc.5`; fallback de rótulos verificado; fallback ao desinstalar e reinstalação verificados; oito idiomas de interface verificados; coluna estreita de 360 px verificada.
+- **Verificado aqui:** desenho no chat verificado no DSH desktop `0.2.2-rc.5` (plugin `0.1.2`); fallback de rótulos verificado; fallback ao desinstalar e reinstalação verificados; oito idiomas de interface verificados; coluna estreita de 360 px verificada.
 - **Provável, mas não provado na sua máquina:** outras versões do DSH; outros navegadores baseados em Chromium; as mesmas verificações em dispositivos móveis (o layout foi verificado em uma viewport de 360 px em um navegador de desktop, não em um celular físico); diagramas muito grandes (há limites: 24 KiB de código-fonte, 2 MiB de saída desenhada, 400 arestas; acima disso ele volta ao bloco de código).
 - **Não feito:** a atualização do DSH entre versões principais não foi ensaiada; os diagramas não são desenhados enquanto a mensagem ainda está sendo transmitida; apenas blocos ` ```mermaid ` são tratados (não outras linguagens de bloco de código).
 

@@ -383,6 +383,40 @@
             childrenView.stage.remove()
           }
 
+          // A Proxy is the same hazard from the other side: reading the value does
+          // not throw, the trap does. Whatever the props bag does, this fence may
+          // lose its picture — the message around it may not be emptied.
+          const proxyStage = document.createElement('div')
+          proxyStage.className = 'stage'
+          document.getElementById('mount').appendChild(proxyStage)
+          const proxyRoot = ReactDOM.createRoot(proxyStage)
+          const proxyElement = React.createElement(Layer, { code: CODE, streaming: false })
+          Object.defineProperty(proxyElement.props, 'children', {
+            enumerable: true,
+            get() {
+              return new Proxy(
+                {},
+                {
+                  get() {
+                    throw new Error('hostile get')
+                  },
+                  has() {
+                    throw new Error('hostile has')
+                  },
+                },
+              )
+            },
+          })
+          proxyRoot.render(proxyElement)
+          await tick(90)
+          expect(
+            proxyStage.textContent.indexOf(CODE) !== -1,
+            'a fence whose props read throws is left to the host, not the message',
+            JSON.stringify(proxyStage.textContent.slice(0, 40)),
+          )
+          proxyRoot.unmount()
+          proxyStage.remove()
+
           const stringCode = mount(Layer, { code: 42, streaming: false, children: hostBlock('fallback') })
           await tick(50)
           expect(stringCode.stage.textContent.indexOf('fallback') !== -1 && !stringCode.stage.querySelector('[role="img"]'), 'a non-string fence is left to the host')
@@ -435,6 +469,66 @@
           } else {
             bad('a throwing engine leaves a sentence', 'the layer did not render at all')
           }
+
+          /* ------------------------------------- a new source, a new picture */
+          // The fence is re-rendered in place when its text changes. A panel the
+          // reader opened must fold away, and a "Copied" answer must not outlive
+          // the text it described — otherwise a broken replacement shows the same
+          // source twice, once as a panel and once as the host's own block.
+          const swappedView = mount(Layer, { code: CODE, streaming: false, children: hostBlock(CODE) })
+          await tick(80)
+          const swappedFirst = swappedView.stage.querySelectorAll('button')[0]
+          if (swappedFirst) swappedFirst.click()
+          await tick(60)
+          expect(
+            swappedView.stage.querySelectorAll('.dsh-dyslexia-source').length === 1,
+            'the opened panel is on screen before the source changes',
+            String(swappedView.stage.querySelectorAll('.dsh-dyslexia-source').length),
+          )
+          swappedView.root.render(React.createElement(Layer, { code: BAD, streaming: false, children: hostBlock(BAD) }))
+          await tick(140)
+          const swappedCopies = swappedView.stage.textContent.split(BAD).length - 1
+          expect(
+            swappedCopies === 1,
+            'a source swapped for a broken one is shown once, not twice',
+            'copies=' + swappedCopies + ' panels=' + swappedView.stage.querySelectorAll('.dsh-dyslexia-source').length,
+          )
+          expect(!!swappedView.stage.querySelector('.dsh-dyslexia-note'), 'the swapped-in failure still says why')
+          swappedView.root.unmount()
+          swappedView.stage.remove()
+
+          const answerView = mount(Layer, { code: CODE, streaming: false, children: hostBlock(CODE) })
+          await tick(80)
+          const answerClipboardBackup = navigator.clipboard
+          Object.defineProperty(navigator, 'clipboard', {
+            configurable: true,
+            value: { writeText: () => Promise.resolve() },
+          })
+          const answerButtons = buttonsIn(answerView.stage)
+          if (answerButtons.length > 1) answerView.stage.querySelectorAll('button')[1].click()
+          await tick(60)
+          const answered = answerView.stage.querySelector('[role="status"]')
+          expect(
+            answered !== null && answered.textContent === '已复制',
+            'the copy answer is on screen before the source changes',
+            answered ? answered.textContent : 'none',
+          )
+          answerView.root.render(
+            React.createElement(Layer, { code: 'flowchart LR\n  A[Second] --> B[Second picture]', streaming: false, children: hostBlock(CODE) }),
+          )
+          await tick(120)
+          const cleared = answerView.stage.querySelector('[role="status"]')
+          expect(
+            cleared !== null && cleared.textContent === '',
+            'a copy answer does not outlive the source it described',
+            cleared ? cleared.textContent : 'none',
+          )
+          answerView.root.unmount()
+          answerView.stage.remove()
+          Object.defineProperty(navigator, 'clipboard', {
+            configurable: true,
+            value: answerClipboardBackup,
+          })
 
           /* ------------------------------------------------------- copying */
           const clipboardBackup = navigator.clipboard
@@ -610,6 +704,21 @@
           expect(life.calls.stringsDropped === 1, 'the locale registration is dropped', String(life.calls.stringsDropped))
           expect(life.defs.length === 0, 'the fence layer is gone once the host disposes', String(life.defs.length))
           lifeStage.remove()
+
+          // A host that offers no `ctx.effect` cannot promise us a teardown. The
+          // stylesheet is still added (the picture needs it), but a second apply
+          // must reclaim the first one instead of stacking a new copy.
+          const noEffect = makeContext()
+          delete noEffect.ctx.effect
+          window.__module.apply(noEffect.ctx)
+          window.__module.apply(noEffect.ctx)
+          const strayStyles = document.querySelectorAll('style[id="dsh-dyslexia-figure-style"]')
+          expect(
+            strayStyles.length === 1,
+            'a host without effects keeps one stylesheet, not one per apply',
+            String(strayStyles.length),
+          )
+          Array.prototype.slice.call(strayStyles).forEach((node) => node.remove())
           /* ---------------------------------- no internal key is ever shown */
           const keys = ['copyFailed', 'copySource', 'engineUnavailable', 'figureLabel', 'renderFailed', 'syntaxError']
           const keyEcho = mount(Layer, { code: BAD, streaming: false, children: hostBlock(BAD), t: (key) => key })
@@ -976,6 +1085,24 @@
             'every zoom button in reach can take the keyboard',
             `${tabbable.length}/${reachable.length} reachable of ${zoomButtons.length}`,
           )
+          // At first only zoom-in is enabled: the other two appear once the
+          // picture is scaled, and they have to be just as reachable then.
+          if (reachable.length > 0) {
+            reachable[0].click()
+            await tick(150)
+            const zoomed = Array.prototype.slice
+              .call(wideStage.querySelectorAll('button'))
+              .filter((node) => !node.closest('.dsh-dyslexia-bar'))
+            const zoomedReachable = zoomed.filter(
+              (node) => node.disabled !== true && node.offsetParent !== null && node.getClientRects().length > 0,
+            )
+            const zoomedTabbable = zoomedReachable.filter((node) => node.getAttribute('tabindex') !== '-1')
+            expect(
+              zoomed.length > 1 && zoomedReachable.length === zoomed.length && zoomedTabbable.length === zoomed.length,
+              'every zoom button is reachable once the picture is zoomed',
+              `${zoomedTabbable.length}/${zoomed.length} after zoom`,
+            )
+          }
           wideRoot.unmount()
           wideStage.remove()
         } catch (error) {

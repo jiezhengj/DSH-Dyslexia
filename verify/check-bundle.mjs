@@ -259,7 +259,10 @@ check('an engine that fails to load leaves the picture to the host', () => {
   assert(chunk.includes('function readLayerInput'), 'the layer does not read the fence props defensively')
   assert(chunk.includes('safeRead'), 'the layer reads host props without a guard')
   assert(chunk.includes('engineUnavailable'), 'the layer has no sentence for a missing engine')
-  return 'boundary + guarded props + engine sentence'
+  // The half-drawn state a missing engine leaves behind is why the picture is
+  // thrown away: without this guard the engine call itself would be the failure.
+  assert(chunk.includes("typeof pele.mount !== 'function'"), 'the layer does not check the engine before drawing')
+  return 'boundary + guarded props + engine guard + engine sentence'
 })
 
 check('the layer is keyed to mermaid on the fence slot', () => {
@@ -614,6 +617,11 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
     'every zoom button in reach can take the keyboard',
     'every interface language has expectations',
     'the column measurement can see an overflow',
+    'every zoom button is reachable once the picture is zoomed',
+    'a source swapped for a broken one is shown once, not twice',
+    'a copy answer does not outlive the source it described',
+    'a fence whose props read throws is left to the host, not the message',
+    'a host without effects keeps one stylesheet, not one per apply',
   ]
   const missing = needed.filter((name) => harness.indexOf(name) === -1)
   if (missing.length > 0) throw new Error(`missing fixture assertions: ${missing.join(', ')}`)

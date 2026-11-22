@@ -1,4 +1,4 @@
-/*! @jiezhengj/dsh-dyslexia 0.1.13 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:0a1deabdc8b0c983289478e451d16283 */
+/*! @jiezhengj/dsh-dyslexia 0.1.14 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:c0e38c5373e00f1f9432895504946ba3 */
 ;(function () {
   function reportLoadFailure(scope, error) {
     try { console.error('dsh-dyslexia: ' + scope, error) } catch (_error) {}
@@ -871,6 +871,19 @@ function MermaidFenceLayer(props) {
     [],
   )
 
+  // A new source is a new picture: the panel folds away and the old "Copied"
+  // answer stops applying to text that is no longer on screen. Without this, an
+  // open panel plus a broken replacement would show the same source twice, and
+  // a stale answer would sit under a figure it never described.
+  React.useEffect(() => {
+    setShowSource(false)
+    setCopyState('idle')
+    if (copiedTimerRef.current !== null) {
+      clearTimeout(copiedTimerRef.current)
+      copiedTimerRef.current = null
+    }
+  }, [code])
+
   const finishCopy = React.useCallback((state) => {
     setCopyState(state)
     if (copiedTimerRef.current !== null) clearTimeout(copiedTimerRef.current)
@@ -968,17 +981,20 @@ function MermaidFenceLayer(props) {
       )
     : null
 
-  const source = showSource
-    ? React.createElement(
-        'pre',
-        { className: SOURCE_CLASS },
-        React.createElement(
-          'code',
-          { className: 'language-' + lang },
-          code,
-        ),
-      )
-    : null
+  // While the picture is failing, the source is already on screen in the host's
+  // own block below: a second copy would read as two different sources.
+  const source =
+    showSource && !failed
+      ? React.createElement(
+          'pre',
+          { className: SOURCE_CLASS },
+          React.createElement(
+            'code',
+            { className: 'language-' + lang },
+            code,
+          ),
+        )
+      : null
 
   const noteText =
     reasonKind === 'syntax'
@@ -1034,7 +1050,24 @@ class FigureBoundary extends React.Component {
   }
 
   render() {
-    const input = readLayerInput(this.props)
+    // The boundary cannot catch an exception thrown by its own render, so the
+    // props are read inside a guard: a host that hands over a value whose
+    // reading throws (a Proxy, a hostile getter) costs this one fence, never the
+    // message around it. The code itself may still be readable, so it is shown.
+    let input = null
+    try {
+      input = readLayerInput(this.props)
+    } catch (error) {
+      report('figure props', error)
+      let code
+      try {
+        code = this.props === null || this.props === undefined ? undefined : this.props.code
+      } catch (caught) {
+        report('figure props', caught)
+        code = undefined
+      }
+      return typeof code === 'string' && code.length > 0 ? sourceFallback(code) : null
+    }
     const fallback = () => hostBlock(input.children, input.code)
     if (this.state.failed) return fallback()
     try {
@@ -1069,6 +1102,14 @@ const FENCE_KEY = 'mermaid'
 const LAYER_ORDER = 100
 
 const inject = ['slots']
+
+/**
+ * The stylesheet this module put in the document when the host offered no
+ * `ctx.effect`. Kept so a second `apply` can take the first one away: a host
+ * without effects cannot promise us a teardown, and at most one leftover
+ * element is better than one per call.
+ */
+let unownedStyle = null
 
 function report(scope, error) {
   try {
@@ -1106,7 +1147,16 @@ function apply(ctx) {
       // the remover goes in the return value — passing it as the setup would run
       // it immediately and unstyle the picture.
       if (typeof ctx.effect === 'function') ctx.effect(() => drop, 'dsh-dyslexia: figure styles')
-      else void 0
+      else if (unownedStyle !== null && unownedStyle !== styleElement) {
+        // No teardown hook: claim the stylesheet a previous run left behind, so
+        // an uninstall followed by a start cannot stack them up.
+        try {
+          removeFigureStyles(unownedStyle)
+        } catch (error) {
+          report('styles', error)
+        }
+      }
+      if (typeof ctx.effect !== 'function') unownedStyle = styleElement
     }
   } catch (error) {
     report('styles', error)
