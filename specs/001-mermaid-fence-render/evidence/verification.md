@@ -1,6 +1,6 @@
 # 验证证据
 
-本文件只记录**已经真实跑过**的命令输出。E-BLD、E-CHK、E-HARN 三段各自来自一次运行，其中 E-CHK 与 E-HARN 的报告行自带 `包名@版本 | client.js 字节数 | sources sha256:<指纹>`，所以这两段可被追溯到具体的一棵树；E-BLD 是构建日志本身（它写出 `client.js`，随后由这两段报告行限定）。E-PUB 记录 CI 运行，E-INS 与 E-LIVE 记录真机操作，各自注明版本与 run，不能当成"同一次运行"的输出。当前版本：`0.1.15`。
+本文件只记录**已经真实跑过**的命令输出。E-BLD、E-CHK、E-HARN 三段各自来自一次运行，其中 E-CHK 与 E-HARN 的报告行自带 `包名@版本 | client.js 字节数 | sources sha256:<指纹>`，所以这两段可被追溯到具体的一棵树；E-BLD 是构建日志本身（它写出 `client.js`，随后由这两段报告行限定）。E-PUB 记录 CI 运行，E-INS 与 E-LIVE 记录真机操作，各自注明版本与 run，不能当成"同一次运行"的输出。当前版本：`0.1.16`。
 
 复跑方式（任何人 clone 后都一样）：
 
@@ -19,7 +19,7 @@ build-client: @jiezhengj/dsh-dyslexia -> client.js (769391 bytes, 768361 charact
 ## E-CHK 静态与行为校验
 
 ```text
-ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.15
+ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.16
 ok   package.json points at the repository npm trusts — git+https://github.com/jiezhengj/DSH-Dyslexia.git
 ok   package.json declares the bundle patch and the client half — platform web, no package inject
 ok   no dsh version gate can refuse a start — no engines.dsh, no dsh peers
@@ -46,7 +46,7 @@ ok   every supported sample type draws an svg — flowchart:218x64 sequence:184x
 ok   a broken diagram reports a one-line reason — Parse error on line 2:
 ok   host key echo falls back to bundled strings — key echo, blanks, placeholders rejected
 ok   every language carries the same complete sentences — 12 keys x 8 languages, no engine text in labels
-ok   client.js matches the sources it claims — 4df7b0b5ee7636f67b467672946f5b1b
+ok   client.js matches the sources it claims — f837913297259c0f99bc780f154d287a
 ok   the picture is the image, and the copy answer is announced — label is a noun, role="img" on the svg, copy result announced
 ok   host children react would refuse fall back to the source — objects, functions and mixed arrays fall back to the source text
 ok   every drawing the engine swaps in is named again — the engine owns re-layout; every swapped drawing node and its zoom buttons are renamed, strings follow the language
@@ -54,10 +54,10 @@ ok   a host block that throws cannot empty the message — host blocks render in
 ok   a factory that cannot build never throws at the host — module-level throw contained, empty module returned
 ok   nothing in the package asks you to edit an instruction file — 17 shipped text files, no instruction-file ask
 ok   the host half registers exactly one capability section — ui:dsh-dyslexia, order 9000, 85 words
-ok   the host half stays silent when the host changed shape — five silent hosts, one throwing section
+ok   the host half stays silent when the host changed shape — five silent hosts, two throwing sections
 ok   the fixtures assert what the fixes promise, and can fail — 19 assertions present and carrying a condition
 
-check-bundle: @jiezhengj/dsh-dyslexia@0.1.15 | client.js 769391 bytes | sources sha256:4df7b0b5ee7636f67b467672946f5b1b | all 37 checks passed
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.16 | client.js 769391 bytes | sources sha256:f837913297259c0f99bc780f154d287a | all 37 checks passed
 ```
 
 ## E-HARN 浏览器行为校验
@@ -280,7 +280,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.15 | client.js 769391 bytes | sources 
 [ok] the zoom buttons speak the interface language — 放大 | 缩小 | 重置缩放
 [ok] every zoom button in reach can take the keyboard — 1/1 reachable of 3
 [ok] every zoom button is reachable once the picture is zoomed — 3/3 after zoom
-run-harness: @jiezhengj/dsh-dyslexia@0.1.15 | client.js 769391 bytes | sources sha256:4df7b0b5ee7636f67b467672946f5b1b | all 213 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+run-harness: @jiezhengj/dsh-dyslexia@0.1.16 | client.js 769391 bytes | sources sha256:f837913297259c0f99bc780f154d287a | all 213 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
 同一次运行的 stderr 另有 7 段被**刻意捕获**的异常堆栈（loader ×3、prompt section ×3、module ×1，例如 `dsh-dyslexia: loader Error: host changed the loader`、`dsh-dyslexia: prompt section rejected Error: asynchronous failure`）：它们来自敌意宿主用例，属正常输出，不是失败。
@@ -360,8 +360,8 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.15 | client.js 769391 bytes | sources s
 | 0.1.0 | 2026-11-22 手动 `npm publish`（浏览器安全密钥） | success | `ad9374f351616c6ded13cc5e3a48115dd0140cad` | — | 10 |
 | 0.1.1 | `45031254012` | success | `6f730efa33a453c8f8b2ed08155e2dc85325d5be` | `4045962187` | 33 |
 | 0.1.2 | `45036311606` | success | `c27a63156485cb908ede76fce6f4759a8b4eb37b` | `4046319715` | 33 |
-| 0.1.3 | `45043233136` | success | `101688f9e27af38436bc12a8898a1a3f56bf361b` | — | 33 |
-| 0.1.4 | `45044972866` | success | `a14b910f0e76647f289211fdedef6f15f19c1b4f` | — | 33 |
+| 0.1.3 | `45043233136` | success | `101688f9e27af38436bc12a8898a1a3f56bf361b` | 未记录 | 33 |
+| 0.1.4 | `45044972866` | success | `a14b910f0e76647f289211fdedef6f15f19c1b4f` | 未记录 | 33 |
 | 0.1.5（第一次） | `45046044274` | **failure**（陈旧产物闸门开火，见 E-CI） | — | — | — |
 | 0.1.5 | `45046178925` | success | `e2a4b81bc0d6b45916cf5739a566e89469274cfd` | `4046928419` | 33 |
 | 0.1.6 | `45050133828` | success | `8a0a2425c87d7b864b6d6089500bae6a12fe9637` | `4047226918` | 33 |
@@ -374,6 +374,8 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.15 | client.js 769391 bytes | sources s
 | 0.1.13 | `45071920218` | success | `37da6a6b834f178aca04f91884c7f7f779e91417` | `4048415674` | 33 |
 | 0.1.14 | `45074961635` | success | `7a5c2fff3ee9e3408d59506d6a1e8e235db8a59f` | `4048513739` | 33 |
 | 0.1.15 | `45077593236` | success | `5fbef04ff91abd350983df0349386f13df8e2a27` | `4048568677` | 33 |
+
+> `—` 表示该次发布没有对应记录：0.1.0 是手动 `npm publish`，没有 provenance；0.1.5 的第一次是失败的运行，没有产物。0.1.3 与 0.1.4 当时没有记下 logIndex，这里写"未记录"而不是补造一个。
 
 ### E-PUB-LOG 0.1.5 起每次发布 CI 日志里的检查报告行（按版本排序）
 
@@ -420,7 +422,7 @@ npm notice shasum: 71feabc22885e097974a35668e4717837fefd226
 npm notice total files: 33
 ```
 
-0.1.10（run `45062588313`，36 / 119）——这是**当时**那棵树的两条报告行；版本、字节数、指纹与项数都与当前不同（当前 0.1.15 是 769,391 字节、`4df7b0b5…`、37 / 213），共同点只有命令与工作流：
+0.1.10（run `45062588313`，36 / 119）——这是**当时**那棵树的两条报告行；版本、字节数、指纹与项数都与当前不同（当前 0.1.16 是 769,391 字节、`f8379132…`、37 / 213），共同点只有命令与工作流：
 
 ```text
 check-bundle: @jiezhengj/dsh-dyslexia@0.1.10 | client.js 767298 bytes | sources sha256:336ea7199fb90a0c8202c03e0c14bbe7 | all 36 checks passed
@@ -448,7 +450,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.12 | client.js 767639 bytes | sources 
 run-harness: @jiezhengj/dsh-dyslexia@0.1.12 | client.js 767639 bytes | all 156 checks passed (/usr/bin/google-chrome)
 ```
 
-0.1.12 本地复跑（`node verify/run-harness.mjs --list`，**不是** CI 日志）——工作流只打印汇总行，`[ok]` 明细只存在于页面 DOM；这是同一棵树在本机复跑的完整清单：
+0.1.12 本地复跑（`node verify/run-harness.mjs --list`，**不是** CI 日志）——工作流只打印汇总行，`[ok]` 明细只存在于页面 DOM；这是同一棵树在本机复跑的**节选**（末尾的 `run-harness: @jiezhengj/dsh-dyslexia@0.1.12 … all 156 checks passed` 汇总行与当前版本的同名行格式相同，见下面 E-HARN 段）：
 
 ```text
 [ok] loading client.js registers one factory
@@ -677,7 +679,7 @@ Done in 2.6s using pnpm v11.28.5
 
 ## E-LIVE 真机（DSH 桌面窗口内）
 
-**以下记录来自 0.1.2**，当前版本（0.1.15）的重启核对是 T079（**尚未取证**，见 G13）。之所以保留，是因为它们证明了链路本身可用；从 0.1.2 到 0.1.13 渲染层改过多次（`role` 结构、`aria-roledescription` 的移除与重排版后重标、可见的复制反馈、空/非法 `children` 的处理、源码块的 `language-mermaid` 标记、外层盒子去掉名字），所以这些观察**不能**自动转移到 `0.1.14`。
+**以下记录来自 0.1.2**，当前版本（0.1.16）的重启核对是 T079（**尚未取证**，见 G13）。之所以保留，是因为它们证明了链路本身可用；从 0.1.2 到 0.1.13 渲染层改过多次（`role` 结构、`aria-roledescription` 的移除与重排版后重标、可见的复制反馈、空/非法 `children` 的处理、源码块的 `language-mermaid` 标记、外层盒子去掉名字），所以这些观察**不能**自动转移到 `0.1.15`。
 
 | 观察 | 当时的证据 | 归属 |
 |---|---|---|
@@ -711,7 +713,7 @@ Done in 2.6s using pnpm v11.28.5
 - **G13 当前版本的重启后真机核对（T079）**：`E-LIVE` 的观察取自 **0.1.2**，且只有四件事——插件页的**中文**说明与插图、会话里就地成图（图名 `图：flowchart`、两个按钮）、卸载后同一条消息回退为代码块、重装后图与按钮立刻回来。**复制播报**（0.1.5 起才有）与**其余 7 种语言的插件页**从未在真机上看过，不能算已观察。0.1.3–0.1.15 改过 `view.js`、`i18n.js`、`entry.js`、`styles.js`，这些观察不能自动转移。0.1.11 至 0.1.15 都已发布并装进 `desktop` profile，但**没有在重启后的宿主里逐项复核过**，所以算未取证。
 - **G14 真实窗口缩放时的引擎重绘（FR-018 的端到端面）**：0.1.10 把重排版交给引擎自己的 `ResizeObserver`（pele 内部），插件只负责"节点被换回来就重新命名"。夹具能证明"节点被换 → 立刻重新命名"，但**无法让引擎在无头浏览器里真的因窗口缩放而重绘**（无头环境第一帧之后不再派发帧与 ResizeObserver 通知）。真实窗口里"拖窄窗口 → 引擎重绘 → 名字回来"这条链只有机制级证据。
 - **G15 尚未覆盖的加固面（第十轮实现评审记录）**：`src/client/figure.js` 的 `outputLimit`（2 MiB）与 `maxEdges`（400）没有用例；`src/client/entry.js` 里 `slots.inject(...)` 返回的 disposer 被丢掉（层本身随 `apply` 的作用域一起消失，但没有"二次 apply 不重复注册"或"inject 的句柄被单独释放"的断言）；`package.json` 的 `prepack` 只跑构建与 `check-bundle`，不跑夹具（依赖 CI 的五步兜住）。这四项都不影响已发布行为，但都属于"没有证据的加固"。
-- **G16 规模上限与 vendor 文本（记录）**：`outputLimit`（2 MiB）与 `maxEdges`（400）仍无用例，只由引擎自己拦；「引擎换掉 `<svg>` 后重新命名」在无头环境里只能夹具重放（真实拖窄窗口的端到端见 G14）；`client.js` 里 vendor 许可注释含 `https://github.com/obsidianmd/pele`，属静态文本、无网络行为。
+- **G16 vendor 文本与换节点的无头局限（记录）**：`client.js` 里 vendor 许可注释含 `https://github.com/obsidianmd/pele`，属静态文本、无网络行为；「引擎换掉 `<svg>` 后重新命名」在无头环境里只能靠夹具重放（真实拖窄窗口的端到端见 G14）。规模上限按 G15 记，这里不重复。
 
 ---
 

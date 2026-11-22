@@ -48,7 +48,7 @@ window.__ModuleLoader__.load({id:`@deepseek-ai/dsh-client-ui-chat`,factory:requi
 
 **结论**：文本固定为"标记为 `mermaid` 的代码块会在会话里就地渲染成图；图的文字就是它的全部信息，所以代码块本身要写全图里的东西"，不写"尽量用图表达"、不点名任何图类型、不给篇幅限制。
 
-**依据**：宪法原则 I（能力与偏好分离）与 spec FR-011/FR-012；用户的个人偏好来自她自己的 AGENTS.md（`visual-first-agents-snippet.md` 已在仓库根目录）。段落随 `ctx.effect` 生命周期注册与销毁，所以卸载插件后这句话一并消失。
+**依据**：宪法原则 I（能力与偏好分离）与 spec FR-011/FR-012；阅读偏好（"尽量用图表达"这类）是使用者可选的视觉优先设置，不是本功能的使用前提——插件装好即生效，不需要改任何指令文件（FR-012）。参考片段见仓库根的 `visual-first-agents-snippet.md`。段落随 `ctx.effect` 生命周期注册与销毁，所以卸载插件后这句话一并消失。
 
 # 三、浏览器半边
 
@@ -155,7 +155,7 @@ renderSlot('conversation.chat.markdown.fence', fence, {
 
 ## D19 兼容性也要有证据，且必须逐条对应要求
 
-**结论**：`verify/check-bundle.mjs` 用 7 组兼容性断言（① 无版本门；② 产物可独立编译；③ 畸形加载器下不抛；④ 工厂抛错仍返回可用模块；⑤ 含错误边界与数据守卫；⑥ 畸形 `ctx` 下 `apply` 不抛；⑦ 停用后不留残留——样式表、locale 注册与围栏层都被释放，该条的实际证据是夹具 `disabling the plugin takes its stylesheet away` 与 `the fence layer is gone once the host disposes`，不是静态字符串检查），Chromium 夹具再用故障注入覆盖渲染期。断言名与 FR 编号在 `contracts/client-fence-layer.md` 与 `evidence/verification.md` 里对应。
+**结论**：`verify/check-bundle.mjs` 用 7 组兼容性断言（① 无版本门；② 产物可独立编译；③ 畸形加载器下不抛；④ 工厂抛错仍返回可用模块；⑤ 含错误边界与数据守卫；⑥ 畸形 `ctx` 下 `apply` 不抛；⑦ 宿主半边只注册一段、畸形宿主静默，且停用后不留残留——后者（样式表、locale 注册与围栏层都被释放）的实际证据是夹具 `disabling the plugin takes its stylesheet away` 与 `the fence layer is gone once the host disposes`，不是静态字符串检查），Chromium 夹具再用故障注入覆盖渲染期。断言名与 FR 编号在 `contracts/client-fence-layer.md` 与 `evidence/verification.md` 里对应。
 
 **依据**：spec FR-017（加固必须有可重复的自动化证据）与 SC-006/SC-007/SC-008；宪法"开发与验证流程"要求未验证项必须标注。
 

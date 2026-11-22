@@ -177,7 +177,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T049 `verify/check-bundle.mjs` 增加发布文件齐全、每种界面语言都有说明页、清单指向 npm 可信仓库等断言
 - [x] T050 `package.json` 补 `repository`/`homepage`/`bugs`（E422 的教训），`files` 收进 `docs` 与 `README*.md`
 - [x] T051 GitHub 建仓 `https://github.com/jiezhengj/DSH-Dyslexia` 并推送；`.github/workflows/publish.yml` 走 npm trusted publisher（OIDC + provenance）
-- [x] T052 重启后的真机取证：插件页 8 语言说明与新图标、会话里就地画图、卸载后旧会话回退（`evidence/verification.md` 的 E-LIVE 实际记录了 **4 条观察**——插件页/说明页、会话内成图、卸载回退、重装恢复；取证的版本是 0.1.2）
+- [x] T052 重启后的真机取证：插件页**中文**说明与新图标、会话里就地画图、卸载后旧会话回退（`evidence/verification.md` 的 E-LIVE 实际记录了 **4 条观察**——插件页/说明页、会话内成图、卸载回退、重装恢复；取证的版本是 0.1.2）；说明：其余 7 种语言的插件页只由无头夹具证据（E-HARN 的 8 语言循环）支撑，**不是**真机观察；真机的 8 语言说明页从未看过，记在 G13。待处理期间的形式见 `evidence/verification.md` 的 E-LIVE 引言
 
 ## Phase 11: 标签回显 key 的修复（2026-11-22 追加，同一 feature 内）
 
@@ -344,7 +344,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T159 `verify/check-bundle.mjs`：`an engine that fails to load leaves the picture to the host` 增加 `typeof pele.mount !== 'function'` 断言——删掉引擎守卫这条检查就会红（P2-3）
 - [x] T160 `verify/harness/index.html` 新增 8 项：`every zoom button is reachable once the picture is zoomed`、`a source swapped for a broken one is shown once, not twice`、`a copy answer does not outlive the source it described`、`a fence whose props read throws is left to the host, not the message`、`a host without effects keeps one stylesheet, not one per apply` 等 → 197 → 205 项（P2-1/P2-2/P2-5/P2-7/P2-8）
 - [x] T161 `verify/run-harness.mjs` 钉数改 `EXPECTED_CHECKS = 205`；`check-bundle` 的 `needed` 名单扩到 19 条（新断言被删会红）
-- [x] T162 0.1.14 文档逐条：`spec.md` Status、`plan.md`/`quickstart.md`/`contracts/plugin-manifest.md` 的 37/205 与行数、`evidence/verification.md` 的 E-BLD/E-CHK/E-HARN 重生成、E-PROBE 补第十一次探针、E-GAPS 增 G16（`outputLimit`/`maxEdges` 无用例；"引擎换掉节点后重命名"只有夹具重放；vendor 许可注释里的 `https://github.com/obsidianmd/pele` 属允许的静态文本）
+- [x] T162 0.1.14 文档逐条：`spec.md` Status、`plan.md`/`quickstart.md`/`contracts/plugin-manifest.md` 的 37/205 与行数、`evidence/verification.md` 的 E-BLD/E-CHK/E-HARN 重生成、E-PROBE 补一次探针（累计十四次）、E-GAPS 增 G16（`outputLimit`/`maxEdges` 无用例；"引擎换掉节点后重命名"只有夹具重放；vendor 许可注释里的 `https://github.com/obsidianmd/pele` 属允许的静态文本）
 - [x] T163 打 `v0.1.14`（提交 `1599245`）→ GitHub Actions run `45074961635` success（CI 37 项静态 / 205 项浏览器，shasum `7a5c2fff3ee9e3408d59506d6a1e8e235db8a59f`，provenance logIndex `4048513739`，33 文件）→ 从 registry 装回 profile `desktop`（依赖 `"0.1.14"`，安装副本 769,771 字节、SHA256 `F7C599EF…C6C9A` 与仓库根逐字节相同，`locale/` 8、`docs/` 9、包内 `0.1.14`）→ E-PUB/E-INS 补 0.1.14 行
 - [ ] T164 第十二轮双评审（文档 + 实现），两份都 PASS 才把 feature 001 标记完成
 
@@ -357,9 +357,22 @@ description: "Task list for 会话内图形渲染"
 - [x] T169 `verify/run-harness.mjs`：`EXPECTED_CHECKS = 213`
 - [x] T170 文档：`spec.md` Status（0.1.15、G1–G16、删掉自相矛盾的"本行不重复计数"）、`tasks.md` T052/T075/T162 措辞、状态表 G5 行（E2 已有夹具）与 G15/G16 去重并排序、`T079` 口径、`evidence` 的 G5 计数、G13 版本区间、E-LIVE 区间、E-PROBE 表头说明与 PT1 行、E-CHK 的 stderr 说明、`plan.md`/`quickstart.md`/`research.md`/`contracts/*` 的 213 与行数
 - [x] T171 `contracts/plugin-manifest.md`：样例 `package.json` 补 `prepack`，并注明 `repository`/`homepage`/`bugs`/`publishConfig`/`keywords` 与根清单同形（provenance 的 `E422` 依据）
-- [x] T172 改正 T162 里写错的 `spec.md` Status 与探针次数口径（当时写 0.1.13、"第十一次探针"，实际 0.1.15 与十三次）
+- [x] T172 改正 T162 里写错的 `spec.md` Status 与探针次数口径（当时写 0.1.13、"第十一次探针"，实际 0.1.15 与十四次）
 - [x] T173 打 `v0.1.15`（提交 `8633ead`）→ GitHub Actions run `45077593236` success（CI 37 项静态 / 213 项浏览器，shasum `5fbef04ff91abd350983df0349386f13df8e2a27`，provenance logIndex `4048568677`，33 文件）→ 从 registry 装回 profile `desktop`（依赖 `"0.1.15"`，安装副本 769,391 字节、SHA256 `481C6859…BDF0A` 与仓库根逐字节相同，`locale/` 8、`docs/` 9、包内 `0.1.15`）→ E-PUB/E-INS 补 0.1.15 行
 - [ ] T174 第十三轮双评审（文档 + 实现），两份都 PASS 才把 feature 001 标记完成
+
+## Phase 25: 第十三轮文档评审后的修复（2026-11-23 追加，版本 0.1.16）
+
+- [x] T175 `tasks.md` 的 P0/P1：T052 改成"插件页**中文**说明与新图标"，并写明其余 7 种语言的插件页只由无头夹具支撑、不是真机观察；G5 行改成"E2 自 0.1.13 起有夹具；E16 与其他非 mermaid 代码块既无夹具也无真机观察；E15 无观察"
+- [x] T176 探针次数统一：T162 的"第十一次"改成"累计十四次"，T172 的"十三次"改成"十四次"，与 `evidence/verification.md` 的 E-PROBE 十四行一致
+- [x] T177 `contracts/plugin-manifest.md`：`every published file exists` → `the required published files exist`（并注明报告串 `24 required of the 33 packed files`）；`keywords` 与 `publishConfig` 改成与仓库根 `package.json` 逐项相同（`publishConfig` 只有 `access` 与 `registry`，provenance 由 CI 的 `--provenance` 传入）
+- [x] T178 README：`README.zh.md` 的"验证了八种界面语言"补"（在无头测试环境里；插件 `0.1.2` 的真机验证只覆盖中文说明页）"；`README.md` 的"8 接口语言"改"8 种界面语言"
+- [x] T179 `evidence/verification.md` 的 P2：G16 去掉与 G15 重复的规模上限、只留 vendor 文本与"无头环境只能夹具重放"；E-LIVE 引言"不能自动转移到 `0.1.14`"改 `0.1.15`；0.1.12 本地 `--list` 块标明是**节选**；E-PUB 表 0.1.3/0.1.4 的 logIndex 由 `—` 改"未记录"并加脚注说明 `—` 的含义
+- [x] T180 措辞统一（"偏好"不是使用前提，FR-012）：`spec.md`、`plan.md`、`research.md`（D19 ⑦ 的七组枚举与 `quickstart.md` 的 E-COMP-1 对齐）、`contracts/host-prompt.md` 四处；`quickstart.md` 的 E-COMP 标题补 SC-009、E-COMP-5 的"真机装/重启"改"真机装卸"
+- [x] T181 `verify/check-bundle.mjs` 的报告串改 `five silent hosts, two throwing sections`（实际跑 5 次静默 + 2 次抛错），并同步证据里的 E-CHK 行
+- [x] T182 重建与复跑：`node verify/check-bundle.mjs` = `@0.1.16 | 769391 bytes | sources sha256:f837913297259c0f99bc780f154d287a | all 37 checks passed`；`node verify/run-harness.mjs --list` = 213 项全过；`evidence/verification.md` 的 E-BLD/E-CHK/E-HARN 用同一次运行重写
+- [ ] T183 发布 `v0.1.16`、从 registry 装回 profile `desktop`、补 E-PUB/E-INS 的 0.1.16 行
+- [ ] T184 第十四轮双评审（文档 + 实现）；两份都 PASS 才把 feature 001 标记完成
 
 ## Dependencies & Execution Order
 
@@ -450,7 +463,7 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 | G2 | T023 实体手机/平板触控 | 部分 | 360 px 无横向溢出由夹具覆盖（不是真机窗口），触屏缩放与复位未在真机试 |
 | G3 | T025 断网/裸机安装 | 未做 | 运行期零网络只有静态断言与 `file://` 夹具支撑 |
 | G4 | T041 真机注入畸形宿主 | 部分 | 应用能正常打开、会话正常已确认；七种畸形宿主只在夹具与 vm 里复现 |
-| G5 | T031 E1–E16 逐条复跑 | 部分 | E1/E3/E4/E5 有夹具或 E-LIVE（0.1.2）支撑；E2 多图并存、E16 其他代码块不受影响、E15（未装插件的新会话不产生只有插件才看得懂的内容）都无夹具也无真机观察；E10（卸载后旧会话回退）有 0.1.2 观察 |
+| G5 | T031 E1–E16 逐条复跑 | 部分 | E1/E3/E4/E5 有夹具或 E-LIVE（0.1.2）支撑；E2（同一条消息两块图并存）**自 0.1.13 起有夹具**；E16 与其他非 mermaid 代码块既无夹具也无真机观察；E15（未装插件的新会话不产生只有插件才看得懂的内容）无观察；E10（卸载后旧会话回退）有 0.1.2 观察 |
 | G6 | SC-001 计时 | 未做 | 没有"1 秒内出图"的计时 |
 | G7 | SC-002 检索命中（T019） | 未做 | 未在卸载态用 `session_search` 查过该块原文 |
 | G8 | SC-003 字号下限 | 未做 | 没有图内字号与正文最小字号的比较断言 |

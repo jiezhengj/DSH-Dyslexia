@@ -3,7 +3,7 @@
 Draws `mermaid` code blocks in a DeepSeek Harness conversation as diagrams, in place in the message — no side panel, no second window.
 把 DeepSeek Harness 会话里的 `mermaid` 代码块就地画成图——不开侧栏，也不弹第二个窗口。
 
-- 8 接口语言 / 8 languages: [English](README.en.md) · [简体中文](README.zh.md) · [日本語](README.ja.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Русский](README.ru.md) · [Português](README.pt.md)
+- 8 种界面语言 / 8 interface languages: [English](README.en.md) · [简体中文](README.zh.md) · [日本語](README.ja.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Русский](README.ru.md) · [Português](README.pt.md)
 
 ## About
 

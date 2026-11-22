@@ -30,13 +30,13 @@
 - 所有宿主服务调用、注册调用、渲染调用都就地降级，绝不把异常抛回宿主；
 - 宿主派发的数据不符合预期时，一律交回宿主原本的代码块。
 
-**Scale/Scope**: 单张图通常 5–20 个节点；上限由 pele 的 `limit`/`outputLimit`/`maxEdges` 约束，超限即回退为文本（FR-004）。代码量实况（2026-11-23，0.1.15）：宿主 `index.js` 57 行；`src/client` 共 1000 行（view 484 / i18n 209 / styles 122 / figure 91 / entry 94）；`scripts/build-client.mjs` 147 行；`verify/check-bundle.mjs` 661 行；`verify/harness/index.html` 1131 行 + 驱动 `verify/run-harness.mjs` 131 行。
+**Scale/Scope**: 单张图通常 5–20 个节点；上限由 pele 的 `limit`/`outputLimit`/`maxEdges` 约束，超限即回退为文本（FR-004）。代码量实况（2026-11-23，0.1.16）：宿主 `index.js` 57 行；`src/client` 共 1000 行（view 484 / i18n 209 / styles 122 / figure 91 / entry 94）；`scripts/build-client.mjs` 147 行；`verify/check-bundle.mjs` 661 行；`verify/harness/index.html` 1131 行 + 驱动 `verify/run-harness.mjs` 131 行。
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-- **I 能力与偏好分离** — PASS：插件只说"这里会渲染 mermaid"，不规定何时画、画什么类型、文字多长；偏好仍留在使用者自己的 AGENTS.md。
+- **I 能力与偏好分离** — PASS：插件只说"这里会渲染 mermaid"，不规定何时画、画什么类型、文字多长；阅读偏好是可选的视觉优先设置，不是使用前提（FR-012：装好即生效，不需要改指令文件）。
 - **II 零环境假设** — PASS：无 Node/Python/包管理器/字体/网络前提；渲染器随包内联；也不对宿主版本设前提（不写任何版本门字段）。
 - **III 依赖自包含** — PASS：`pele` 以 vendored 文件形式随包发布并打进 `client.js`；不引入 CDN、不引入 npm 安装步骤、不用打包器；`client.js` 是已构建单块 chunk，符合宿主"entry 不能同步 require 相邻 client*.js"的限制。
 - **IV 降级不丢数据** — PASS（本功能最重的一项）：hoc 层缺省即回退（"with no applicable layer the content renders unchanged"）；异常时渲染 `children`；浏览器半边整体不注册任何持久化实体，卸载即无痕；重装后由图源重画；**并追加启动侧降级**——插件不得把宿主拖到打不开（见"兼容性策略"与 FR-013～FR-016）。

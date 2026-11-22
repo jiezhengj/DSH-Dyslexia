@@ -595,7 +595,7 @@ check('the host half stays silent when the host changed shape', () => {
       },
     },
   })
-  return 'five silent hosts, one throwing section'
+  return 'five silent hosts, two throwing sections'
 })
 
 /* ------------------------------------------- the fixtures can fail at all */

@@ -43,13 +43,13 @@
   "repository": { "type": "git", "url": "git+https://github.com/jiezhengj/DSH-Dyslexia.git" },
   "homepage": "https://github.com/jiezhengj/DSH-Dyslexia#readme",
   "bugs": { "url": "https://github.com/jiezhengj/DSH-Dyslexia/issues" },
-  "keywords": ["deepseek-harness", "dsh-plugin", "mermaid", "accessibility", "dyslexia"],
-  "publishConfig": { "access": "public", "provenance": true },
+  "keywords": ["dsh", "dsh-plugin", "mermaid", "diagram", "dyslexia", "accessibility"],
+  "publishConfig": { "access": "public", "registry": "https://registry.npmjs.org/" },
   "license": "MIT"
 }
 ```
 
-> 上面这些字段与仓库根的 `package.json` 同形：`prepack` 是 SC-008 说的那道"打包前的门"（它同时重建 chunk 并跑静态检查），`repository`/`homepage`/`bugs` 是 npm provenance 校验的必需项（缺失或与仓库不符会让发布以 `E422` 失败），`publishConfig.provenance` 让 CI 的 `npm publish` 带上来源证明。示例里的 `files` 与真实清单一致，不要在这里加 `src/`、`verify/`、`scripts/`、`vendor/`。
+> 上面这些字段与仓库根的 `package.json` 逐项相同（`keywords` 与 `publishConfig` 都以仓库为准确值）：`prepack` 是 SC-008 说的那道"打包前的门"（它同时重建 chunk 并跑静态检查），`repository`/`homepage`/`bugs` 是 npm provenance 校验的必需项（缺失或与仓库不符会让发布以 `E422` 失败）。provenance **不写在清单里**——它由 CI 的 `npm publish --provenance` 传入，所以 `publishConfig` 里只有 `access` 与 `registry`。示例里的 `files` 与真实清单一致，不要在这里加 `src/`、`verify/`、`scripts/`、`vendor/`。
 
 > **本清单里不允许出现的东西**（兼容性硬约束，FR-013）：`engines`（含 `engines.dsh`）、任何指向 DSH 包的 `peerDependencies`、`dsh.client.inject`。三者都会让宿主在**启动前**对插件下判断，而插件在未知版本上的正确表现是"不渲染"，不是"被拒绝加载"或"拖垮启动"。
 
@@ -99,7 +99,7 @@
 
 与清单直接相关的断言：
 
-1. `package.json` 的 9 条 `files` 模式覆盖 32 个实际文件（`npm pack` 展开为 33 个，含 `package.json`），清单由 `npm pack --dry-run` 核对；`check-bundle` 里那条 `every published file exists` 断言只覆盖其中 **24 个必须存在的文件**（8 个基础文件 + 8 个 `locale/<lang>.json` + 8 份 `README.<lang>.md`）；8 篇 `DETAIL*.md` 由 `every interface language has its own plugin page` 证明，`package.json` 由 `npm pack` 清单证明，都不由那条断言证明。未匹配到 `src/`、`vendor/`、`scripts/`、`verify/`、`specs/` 下任何路径。
+1. `package.json` 的 9 条 `files` 模式覆盖 32 个实际文件（`npm pack` 展开为 33 个，含 `package.json`），清单由 `npm pack --dry-run` 核对；`check-bundle` 里那条 `the required published files exist` 断言只覆盖其中 **24 个必须存在的文件**（8 个基础文件 + 8 个 `locale/<lang>.json` + 8 份 `README.<lang>.md`；该检查的报告串是 `24 required of the 33 packed files`）；8 篇 `DETAIL*.md` 由 `every interface language has its own plugin page` 证明，`package.json` 由 `npm pack` 清单证明，都不由那条断言证明。未匹配到 `src/`、`vendor/`、`scripts/`、`verify/`、`specs/` 下任何路径。
 2. `exports["./client"]` 指向的文件存在，以授权 banner 开头，`window.__ModuleLoader__.load(` 的 `id` 与包名逐字相等，导出 `apply` 与 `inject`，且正文不含 `</script`。
 3. `client.js` 中 `require(` 的实参集合 ⊆ {`react`}。
 4. `client.js` 不含 `fetch(`、`XMLHttpRequest`、动态 `import(`、外部 `http(s)://` 资源引用（仅保留 SVG 命名空间字符串）；内联 `Pele 1.13.0`。
