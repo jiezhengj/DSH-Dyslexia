@@ -512,6 +512,42 @@
           expect(!!live && live.getAttribute('aria-live') === 'polite' && live.textContent === '已复制', 'the copy answer is announced, not only coloured', live ? live.textContent : 'no live region')
           announced.root.unmount()
           announced.stage.remove()
+
+          /* ---------------------------- the image, the group, the zoom buttons */
+          document.documentElement.lang = 'zh'
+          const shaped = mount(Layer, { code: CODE, streaming: false, children: hostBlock(CODE) })
+          await tick(90)
+          const group = shaped.stage.querySelector('[role="group"]')
+          const image = shaped.stage.querySelector('svg[role="img"]')
+          expect(!!group, 'the box around the picture is a group')
+          expect(!!group && group.getAttribute('aria-label') === '图', 'the group carries the localised name', group ? group.getAttribute('aria-label') : 'no group')
+          expect(!!image, 'the drawing itself is the image')
+          shaped.root.unmount()
+          shaped.stage.remove()
+
+          // A picture wider than its column is scaled to fit, and the engine then
+          // offers its own zoom buttons: they must stay outside the image element
+          // and keep the keyboard, or a screen reader user cannot reach them.
+          const wideStage = document.createElement('div')
+          wideStage.className = 'stage'
+          wideStage.style.width = '220px'
+          document.getElementById('mount').appendChild(wideStage)
+          const wideRoot = ReactDOM.createRoot(wideStage)
+          const WIDE = 'flowchart LR\n  A[aaaaaaaaaaaaaaaaaaaa] --> B[bbbbbbbbbbbbbbbbbbbb]\n  B --> C[cccccccccccccccccccc]'
+          wideRoot.render(React.createElement(Layer, { code: WIDE, streaming: false, children: hostBlock(WIDE) }))
+          await tick(160)
+          const wideImage = wideStage.querySelector('svg[role="img"]')
+          const zoomButtons = Array.prototype.slice
+            .call(wideStage.querySelectorAll('button'))
+            .filter((node) => !node.closest('.dsh-dyslexia-bar'))
+          expect(zoomButtons.length > 0, 'a scaled picture offers the engine zoom buttons', String(zoomButtons.length))
+          const zoomInsideImage = zoomButtons.filter((node) => wideImage && wideImage.contains(node))
+          expect(zoomInsideImage.length === 0, 'the zoom buttons sit outside the image', String(zoomInsideImage.length))
+          const enabled = zoomButtons.filter((node) => node.disabled !== true)
+          const tabbable = enabled.filter((node) => node.getAttribute('tabindex') !== '-1')
+          expect(enabled.length > 0 && tabbable.length === enabled.length, 'every enabled zoom button can take the keyboard', `${tabbable.length}/${enabled.length} enabled of ${zoomButtons.length}`)
+          wideRoot.unmount()
+          wideStage.remove()
         } catch (error) {
           bad('fixture aborted', String(error && error.stack ? error.stack.split('\n')[0] : error))
         }

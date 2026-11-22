@@ -32,7 +32,7 @@
 
 **生命周期**：消息挂载 → `mount()` 生成 → 容器尺寸变化 → `refresh()` → 修正字号与折行 → 卸载或重渲染 → `destroy()` 释放。
 
-**可访问性字段**（对应 FR-018）：`accessibleName`（本地化纯名词，不含引擎类型）、`imageRoleOn`（恒为 `svg`，容器为 `group` + `role="presentation"`）、`copyAnnouncement`（`idle` / `copied` / `failed`，写入 `role="status" aria-live="polite"`）。挂载点尺寸变化不改变这三项。
+**可访问性字段**（对应 FR-018）：`accessibleName`（本地化纯名词，不含引擎类型）、`imageRoleOn`（`svg` 恒为 `role="img"`；外层 `div.dsh-dyslexia-group` 是 `role="group"` 并带本地化组名；内层挂载点是 `role="presentation"`）、`copyAnnouncement`（`idle` / `copied` / `failed`，写入 `role="status" aria-live="polite"`）。挂载点尺寸变化不改变这三项。
 
 # 实体：插件安装态（Installation）
 

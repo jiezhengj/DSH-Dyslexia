@@ -26,7 +26,7 @@
 
 - [x] All functional requirements have clear acceptance criteria
 - [x] User scenarios cover primary flows
-- [ ] Feature meets measurable outcomes defined in Success Criteria —— **未满足，2026-11-23 复检降级为未勾**：SC-001（1 秒内出图）无计时证据、SC-002 的 `session_search` 命中未取证、SC-003 的"图内文字不小于正文最小字号"无断言、SC-005 只换了一个 CSS 变量而未真做明→暗→明切换、SC-006 的"宿主升级后仍可启动"只有静态证据。可测的有：SC-004（零网络，静态断言）、SC-007/SC-008、SC-009（8 语言 × 无内部 key）
+- [ ] Feature meets measurable outcomes defined in Success Criteria —— **未满足，2026-11-23 复检降级为未勾**：SC-001（1 秒内出图）无计时证据、SC-002 的 `session_search` 命中未取证、SC-003 的"图内文字不小于正文最小字号"无断言、SC-005 只换了一个 CSS 变量而未真做明→暗→明切换、SC-006 的"宿主升级后仍可启动"只有静态证据。可测的有：SC-004（零网络：只有静态断言，没有断网渲染实跑，见 E-GAPS）、SC-007/SC-008、SC-009（8 语言 × 无内部 key）
 - [x] No implementation details leak into specification
 
 ## Notes

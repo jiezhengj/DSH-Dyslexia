@@ -7,7 +7,7 @@
 ```json
 {
   "name": "@jiezhengj/dsh-dyslexia",
-  "version": "0.1.3",
+  "version": "0.1.5",
   "description": "Draws mermaid code blocks in DeepSeek Harness conversations as diagrams, in place in the message.",
   "type": "module",
   "main": "index.js",
@@ -83,7 +83,7 @@
 | `docs/DETAIL{,.zh,.ja,.es,.fr,.de,.ru,.pt}.md` | 每篇恰好一行图片，alt 文本用该语言 | 说明页正文 |
 | `docs/preview.svg` | 640×300 自包含 SVG，`node scripts/build-preview.mjs` 生成 | 说明页插图 |
 | `icon.svg` | 36×36，官方线描风格 | 插件页图标 |
-| `src/client/i18n.js` | 13 个键 × 8 种语言 | 层内可见文字（按钮、图名、失败整句） |
+| `src/client/i18n.js` | 12 个键 × 8 种语言 | 层内可见文字（按钮、图名、失败整句） |
 
 8 种界面语言 `zh`、`en`、`ja`、`es`、`fr`、`de`、`ru`、`pt` 各有一份，取自宿主 `dsh-client-locale` 实际注册的语言集合。
 
@@ -105,10 +105,10 @@
 12. **工厂抛错仍可用**：工厂里 `require('react')` 抛错时返回空模块（`apply` 与 `inject` 都在、`inject` 为空），`apply` 静默。
 13. **含边界与守卫**：`client.js` 内含 `getDerivedStateFromError`、`readLayerInput`、`safeRead`、`engineUnavailable` 文案。
 14. **引擎故障可控**：`PeleError` 只输出一行原因；7 种图各能真画出 SVG。
-15. **文案完整**：13 个键 × 8 语言齐全，失败整句里不含 `{{reason}}`、不含引擎英文。
+15. **文案完整**：12 个键 × 8 语言齐全，失败整句里不含 `{{reason}}`、不含引擎英文。
 16. **key 回显防线**：`i18n.js` 的 `isResolved` 拒绝回显 key、纯空白、未替换占位符。
 
-# 浏览器行为校验（`node verify/run-harness.mjs --list`，82 项）
+# 浏览器行为校验（`node verify/run-harness.mjs --list`，88 项）
 
 夹具 `verify/harness/index.html` 提交进仓库，用真实 Chromium 打开 `file://`，覆盖：槽注册形状、8 语言逐个驱动、5 类敌意 `t`、绘制/坏图/引擎抛错/getter 抛错、复制成功与失败、360 px 窄屏、主题换色、locale 重试、6 种畸形 `ctx`、内部 key 不外泄。
 

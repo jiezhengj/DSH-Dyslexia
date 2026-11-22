@@ -128,10 +128,10 @@ description: "Task list for 会话内图形渲染"
 
 **Independent Test**: 启用时新建会话，看模型是否会在合适时自行给出 mermaid；停用后 `--dump-config` 或日志里不再出现该提示词段。
 
-### Implementation for User Story 5
+### Implementation for FR-011 (capability briefing, US2)
 
-- [x] T026 [US5] 校准 `index.js` 的 `MERMAID_RENDER_PROMPT` 文案：复核四件必含、五条必不包含（尤其不得写"尽量用图"、不得点名图类型、不得规定篇幅），并记录 `order: 9000` 的落位理由
-- [ ] T027 [US5] 取证：启用态新会话里该段出现在系统提示词中且模型行为合理；禁用/卸载后该段消失（用 `dsh --profile desktop --dump-config` 或会话日志核对）
+- [x] T026 [FR-011] 校准 `index.js` 的 `MERMAID_RENDER_PROMPT` 文案：复核四件必含、五条必不包含（尤其不得写"尽量用图"、不得点名图类型、不得规定篇幅），并记录 `order: 9000` 的落位理由
+- [ ] T027 [FR-011] 取证：启用态新会话里该段出现在系统提示词中且模型行为合理；禁用/卸载后该段消失（用 `dsh --profile desktop --dump-config` 或会话日志核对）
 
 **Checkpoint**: 五个故事全部独立成立。
 
@@ -141,7 +141,7 @@ description: "Task list for 会话内图形渲染"
 
 - [x] T028 [P] 补全 `README.md`：安装、卸载、验证方法、已验证/未验证/已知不支持三档限制、数据与隐私说明
 - [x] T029 [P] 校准 `THIRD-PARTY-NOTICES.md` 与 `LICENSE`：pele 的 MIT 全文、来源与固定版本、我们的 MIT
-- [ ] T030 打包复检：`npm pack --dry-run` 核对 0.1.3 的 33 个文件不含 `src/`、`vendor/`、`scripts/`、`verify/`、`specs/`、`.specify/`、`.tmp/`（清单已核对，断网 tarball 复跑未做，故不勾）
+- [ ] T030 打包复检：`npm pack --dry-run` 核对 0.1.5 的 33 个文件不含 `src/`、`vendor/`、`scripts/`、`verify/`、`specs/`、`.specify/`、`.tmp/`（清单已核对，断网 tarball 复跑未做，故不勾）
 - [ ] T031 汇总证据表（E1–E16）到交付说明，逐条标注已验证 / 未验证 / 已知不支持；未验证项不得写成"应该可以"
 - [x] T032 清理 `client.js` 生成物之外的多余产物（不留在仓库根）、确认 `.gitignore` 覆盖 `.tmp/` 与临时 spill 文件
 
@@ -157,7 +157,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T036 [P] 服务与注册降级：`entry.js` 的 `inject = ['slots']`、locale 注册失败去 locale 重试、`apply` 三段各自 try/catch、`i18n.js` 对宿主 `t` 的安全包装 → 对应 FR-014
 - [x] T037 [P] 渲染期兜底：`view.js` 增加错误边界与围栏数据守卫、`figure.js` 增加引擎缺失守卫 → 对应 FR-016
 - [x] T038 主机半边降级：`index.js` 的 `apply` 对缺失/变形 `systemPrompt` 静默跳过（不注册半截段落、不抛错）→ 对应 FR-014
-- [x] T039 静态证据：`verify/check-bundle.mjs` 由 17 项增至 22 项（新增"无版本门""可独立编译""畸形加载器不抛""工厂抛错仍可用""含边界与守卫""畸形宿主 ctx 不抛"）→ 对应 FR-017 / SC-008
+- [x] T039 静态证据：`verify/check-bundle.mjs` 增加六项兼容性断言（"无版本门""可独立编译""畸形加载器不抛""工厂抛错仍可用""含边界与守卫""畸形宿主 ctx 不抛"）→ 对应 FR-017 / SC-008
 - [x] T040 渲染期证据：夹具迁入仓库 `verify/harness/index.html` + `node verify/run-harness.mjs`，由 25 项增至 82 项（宿主 `t` 抛错/回显 key、`code`/`children` 取值器抛错、引擎抛错、无 slots 服务、坏语法、裁剪板缺失、窄屏、主题）→ 对应 FR-017 / SC-006 / SC-009
 - [ ] T041 真机验证 US5：装机后应用正常打开、会话正常、图照常显示（已由 E-LIVE 覆盖一部分）；"畸形宿主"降级只在夹具里复现，真机未注入 → 部分取证
 - [ ] T042 宿主升级演练：记录当前版本号，下一次 DSH 升级后检查"能打开、能进会话、历史图回退为文本"，并把结果追加到 evidence
@@ -174,7 +174,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T046 8 份 `locale/<lang>.json`（title / description / detail 全部本地化）
 - [x] T047 8 份 `docs/DETAIL{,.zh,.ja,.es,.fr,.de,.ru,.pt}.md`（各自一行图片 + 该语言 alt）
 - [x] T048 `README.md` 索引 + 8 份 `README.<lang>.md`（2026-11-23 由 `readme-writer` 补齐「数据与隐私 / 验证方法 / 已知限制」三节）
-- [x] T049 `verify/check-bundle.mjs` 增加发布文件齐全、每种界面语言都有说明页、清单指向 npm 可信仓库等断言（现共 31 项）
+- [x] T049 `verify/check-bundle.mjs` 增加发布文件齐全、每种界面语言都有说明页、清单指向 npm 可信仓库等断言
 - [x] T050 `package.json` 补 `repository`/`homepage`/`bugs`（E422 的教训），`files` 收进 `docs` 与 `README*.md`
 - [x] T051 GitHub 建仓 `https://github.com/jiezhengj/DSH-Dyslexia` 并推送；`.github/workflows/publish.yml` 走 npm trusted publisher（OIDC + provenance）
 - [x] T052 重启后的真机取证：插件页 8 语言说明与新图标、会话里就地画图、卸载后旧会话回退（E-LIVE-1～6，取证的版本是 0.1.2）
@@ -200,7 +200,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T062 `FigureBoundary` 的读取全部走 `readLayerInput`/`safeRead`，取值器抛错不再逃出边界
 - [x] T063 宿主半边：`section()` 返回 thenable 时兜住 rejection；`warn()` 辅助
 - [x] T064 夹具迁入仓库 `verify/harness/`（含 React 18.3.1 UMD 副本）+ `verify/run-harness.mjs`（headless Chrome，失败非零退出）
-- [x] T065 `verify/check-bundle.mjs` 25 → 31 项（宿主半边恰好一段、畸形宿主静默、8 语言整句、产物指纹、真实工厂抛错、图像与播报角色）
+- [x] T065 `verify/check-bundle.mjs` 增加六项（宿主半边恰好一段、畸形宿主静默、8 语言整句、产物指纹、真实工厂抛错、图像与播报角色）
 - [x] T066 发布 workflow 增加：重建 → `git diff --exit-code -- client.js` → check-bundle → run-harness → publish
 - [x] T067 `package.json` 加 `scripts`（build/verify/harness/test/prepack），版本升 0.1.3
 - [x] T068 文档与证据全量同步（spec/plan/research/data-model/contracts/quickstart/tasks/checklist/evidence）
@@ -216,10 +216,10 @@ description: "Task list for 会话内图形渲染"
 - [x] T073 `isRenderableChild()`：`undefined/null/false/''/0` 一律当成"没有宿主内容"，此时自己渲染源码
 - [x] T074 `t` 经 `useRef` 读取，layout effect 依赖减为 `[code, streaming, doc, teardown]`；宿主每次新建 `t` 不再重挂绘制、不丢缩放
 - [x] T075 复制按钮文案固定"复制源码"，结果写入 `role="status" aria-live="polite"` 的视觉隐藏区域；去掉 `title` 里的英文原始诊断（只进 console）
-- [x] T076 `verify/check-bundle.mjs` 30 → 31 项（新增"图是图像、复制被播报"），并让报告行自带 `包名@版本 | 字节数 | 源码指纹`，让任何粘贴的输出自证来自哪棵树
+- [x] T076 `verify/check-bundle.mjs` 新增"图是图像、复制被播报"一项，并让报告行自带 `包名@版本 | 字节数 | 源码指纹`，让任何粘贴的输出自证来自哪棵树
 - [x] T077 夹具 76 → 82 项（新增：超限源码、流式→完成、falsy children、`t` 换身份不重绘、复制播报）；`verify/run-harness.mjs` 增加 `--list` 以便证据整段引用单次运行
 - [x] T078 `spec.md` 增 FR-018 与 SC-010；`contracts/client-fence-layer.md`、`data-model.md`、`research.md`（D22）同步
-- [x] T079 打 `v0.1.5` 发布、从 registry 装回、重启后真机核对（图名/按钮/播报/插件页说明/卸载回退），；E-PUB/E-INS/E-CHK/E-HARN 已按单次运行重写（E-LIVE 仍是 0.1.2，待重启后补 0.1.5）
+- [ ] T079 打 `v0.1.5` 发布并从 registry 装回（已完成）；**重启后的真机核对未做**（图名/按钮/播报/插件页说明/卸载回退）。E-PUB/E-INS/E-CHK/E-HARN 已按单次运行重写，E-LIVE 仍是 0.1.2 的观察。
 - [ ] T080 再次请两位评审复核（目标 PASS），通过后把 feature 001 标记完成
 
 ## Dependencies & Execution Order
@@ -232,7 +232,8 @@ description: "Task list for 会话内图形渲染"
 - **US2 (Phase 4)**: 依赖 Phase 2，与 US1 无实现依赖（审计 + 取证）
 - **US3 (Phase 5)**: 依赖 Phase 2；与 US1 共享 `figure.js`/`styles.js`，故排在 US1 之后
 - **US4 (Phase 6)**: 依赖 Phase 2 与 T008 的构建产物
-- **US5 (Phase 7)**: 依赖 Phase 2 的 T006
+- **FR-011 (Phase 7)**: 依赖 Phase 2 的 T006
+- **US5 (Phase 9)**: 依赖 Phase 2 的 T006
 - **Polish (Phase 8)**: 依赖全部故事完成
 
 ### Within Each User Story
@@ -302,22 +303,26 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 
 **真机证据**（`evidence/verification.md` 的 E-LIVE）：会话内就地成图、卸载回退、重装恢复、插件页说明；取证的版本是 0.1.2。
 
-**仍未取证的项**（不写成"已完成"）：
+**仍未取证的项**（与 `evidence/verification.md` 的 E-GAPS 一一对应；不写成"已完成"）：
+
+| 缺口 | 项 | 状态 | 说明 |
+|---|---|---|---|
+| G1 | T042 宿主升级演练 | 未做 | 未真的升级 DSH 一个版本；只有源码级论证与 CI/夹具证据 |
+| G2 | T023 实体手机/平板触控 | 部分 | 360 px 无横向溢出由夹具覆盖（不是真机窗口），触屏缩放与复位未在真机试 |
+| G3 | T025 断网/裸机安装 | 未做 | 运行期零网络只有静态断言与 `file://` 夹具支撑 |
+| G4 | T041 真机注入畸形宿主 | 部分 | 应用能正常打开、会话正常已确认；六种畸形宿主只在夹具与 vm 里复现 |
+| G5 | T031 E1–E16 逐条复跑 | 部分 | E1/E3/E4/E5 有夹具或 E-LIVE（0.1.2）支撑；E2 多图并存、E16 其他代码块不受影响、E10 的"卸载后新会话仍可读"未单独取证 |
+| G6 | SC-001 计时 | 未做 | 没有"1 秒内出图"的计时 |
+| G7 | SC-002 检索命中（T019） | 未做 | 未在卸载态用 `session_search` 查过该块原文 |
+| G8 | SC-003 字号下限 | 未做 | 没有图内字号与正文最小字号的比较断言 |
+| G9 | SC-004 断网渲染 | 未做 | 只有"产物无网络调用"的静态断言，没有断网实跑并数请求 |
+| G10 | SC-005 主题切换 | 部分 | 只验证了换 CSS 变量后变色，没做明→暗→明切换 |
+| G11 | FR-011 停用后提示词消失（T027） | 未做 | 宿主半边只有静态断言；本机 PATH 无 `dsh` CLI，改用 vm 断言，但不证明真实会话里停用后消失 |
+| G12 | FR-002 真机"无侧栏/无新文件" | 未做 | 结构上不写文件、不碰宿主布局，但没有一次真机核对磁盘与会话条目未变 |
+
+**已完成但需重启复核的项**：
 
 | 项 | 状态 | 说明 |
 |---|---|---|
-| T017 US1 取证 | 部分 | E1（图出现）、E3（查看源码）、E4（坏语法回退）、E5（流式不画）已由 E-LIVE 与夹具覆盖；**E2 多图并存、E16 其他代码块不受影响没有专门取证** |
-| T019 `session_search` 命中 | 未做 | 未在卸载态用会话检索工具查过该块原文 |
-| T020 重装 + 卸载态新会话 | 部分 | 重装恢复已做（E-LIVE）；"卸载后新会话里仍可读"未单独取证 |
-| T023 窄屏 + 缩放 | 部分 | 360 px 无横向溢出由图宽夹具覆盖（不是真机窗口缩放）；触屏缩放与复位未在真机试 |
-| T025 断网/裸机 | 未做 | 运行期零网络只有静态断言与 `file://` 夹具支撑 |
-| T027 `--dump-config` | 改口径 | 本机 PATH 无 `dsh` CLI；改用 check-bundle 的两项宿主机断言，**且这两项不证明提示词段出现在真实会话里** |
-| T030 断网 tarball 复跑 | 未做 | 清单已核对，断网复跑未做 |
-| T041 真机验证 US5 | 部分 | 应用正常打开与会话正常已确认；"注入畸形宿主"只在夹具里做 |
-| T042 宿主升级演练 | 未做 | 未真的升级 DSH 一个版本 |
-| T070 0.1.3 重启核对 | 未做 | 运行中的界面仍加载 0.1.2 的 chunk |
-| SC-001 计时 | 未做 | 没有"1 秒内出图"的计时 |
-| SC-002 检索命中 | 未做 | 同 T019 |
-| SC-003 字号下限 | 未做 | 没有图内字号与正文最小字号的比较断言 |
-| SC-005 主题切换 | 部分 | 只验证了换 CSS 变量后变色，没做明→暗→明切换 |
-| FR-011 提示词消失 | 未做 | 停用插件后提示词段是否消失未取证 |
+| T070 0.1.3 重启核对 | 已作废 | 由 T079 取代 |
+| T079 0.1.5 重启核对 | 未做 | 0.1.5 已发布并装进 profile `desktop`，运行中的界面仍加载旧 chunk；重启后才换新，届时核对图名/按钮/播报/插件页说明/卸载回退，并把 E-LIVE 改写成 0.1.5 的记录 |

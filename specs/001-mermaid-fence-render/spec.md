@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-22
 
-**Status**: Implemented（代码与自动化证据截至 `0.1.5`），但**不是全部取证**。真机证据见 `evidence/verification.md` 的 E-LIVE（**该节仍是 0.1.2 的观察**）；没有取证的项一律以 E-GAPS 为准，本行不重复计数，只指向它。E-GAPS 当前 8 项：宿主升级演练、实体手机/平板触控、断网裸机安装、SC-001 的 1 秒内出图计时、SC-002 的会话检索命中、SC-003 的字号下限比较、SC-005 的真实主题切换、FR-011 的"停用后提示词段消失"。
+**Status**: Implemented（代码与自动化证据截至 `0.1.5`），但**不是全部取证**。没有取证的项一律以 `evidence/verification.md` 的 **E-GAPS（12 项，G1–G12）** 为准，`tasks.md` 末尾的状态表逐行对应；本行不重复计数，以免与 E-GAPS 漂移。真机证据 E-LIVE 目前是 **0.1.2** 的观察，0.1.5 的复核是 T079。
 
 **Input**: User description: "做一个 DSH 插件（npm 包 `@jiezhengj/dsh-dyslexia`），让 Agent 画的 mermaid 图直接渲染在会话流里；不假设用户机器装了什么，依赖打包进插件；不规定图表类型与文本长短；卸载后历史会话仍要能读；手机平板要能用。"
 
