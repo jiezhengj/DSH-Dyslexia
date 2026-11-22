@@ -71,7 +71,7 @@ function figureErrorKind(error) {
 
 /**
  * The engine's own words, cut to one line. This is diagnostic material: it goes
- * to the console and to the note's tooltip, never into the visible sentence.
+ * to the console and to the caller's log, never into the visible sentence.
  */
 function describeFigureError(error) {
   if (!error) return ''

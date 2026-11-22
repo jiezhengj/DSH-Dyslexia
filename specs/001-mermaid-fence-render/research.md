@@ -97,7 +97,7 @@ renderSlot('conversation.chat.markdown.fence', fence, {
 
 ## D11 窄屏与缩放
 
-**结论**：`mount()`（按容器宽自适配）+ `ResizeObserver` → `refresh()`；`autoDirection: true`、`directionBreakpoint: 640`；`zoom: 'auto'`（仅在溢出时出现缩放控件）。
+**结论**（重排版部分已被 D22 取代：插件不另建尺寸监听，重排归引擎）：`mount()`（按容器宽自适配）；`autoDirection: true`、`directionBreakpoint: 640`；`zoom: { controls: true, maxScale: 4, labels }`（仅在溢出时出现缩放控件）。
 
 **依据**：pele README 关于 `mount()` 自适容器宽、`autoDirection`/`directionBreakpoint` 与 `ZoomOptions { always, maxScale, controls, labels }` 的说明；spec US3 与 SC-003（视口 360 px 时页面级横向溢出为 0，图内文字不小于正文最小字号）。宿主自身在 `AssistantMarkdown.module.css` 里对方形超出列宽的宽表格用"breakout + 图内横向滚动"处理，照此模式：容器 `max-width: 100%`，溢出在图内滚动，绝不撑破页面。
 
@@ -155,7 +155,7 @@ renderSlot('conversation.chat.markdown.fence', fence, {
 
 ## D19 兼容性也要有证据，且必须逐条对应要求
 
-**结论**：`verify/check-bundle.mjs` 用 7 组兼容性断言（① 无版本门；② 产物可独立编译；③ 畸形加载器下不抛；④ 工厂抛错仍返回可用模块；⑤ 含错误边界与数据守卫；⑥ 畸形 `ctx` 下 `apply` 不抛；⑦ 停用后不留残留——样式表、locale 注册与围栏层都被释放），Chromium 夹具再用故障注入覆盖渲染期。断言名与 FR 编号在 `contracts/client-fence-layer.md` 与 `evidence/verification.md` 里对应。
+**结论**：`verify/check-bundle.mjs` 用 7 组兼容性断言（① 无版本门；② 产物可独立编译；③ 畸形加载器下不抛；④ 工厂抛错仍返回可用模块；⑤ 含错误边界与数据守卫；⑥ 畸形 `ctx` 下 `apply` 不抛；⑦ 停用后不留残留——样式表、locale 注册与围栏层都被释放，该条的实际证据是夹具 `disabling the plugin takes its stylesheet away` 与 `the fence layer is gone once the host disposes`，不是静态字符串检查），Chromium 夹具再用故障注入覆盖渲染期。断言名与 FR 编号在 `contracts/client-fence-layer.md` 与 `evidence/verification.md` 里对应。
 
 **依据**：spec FR-017（加固必须有可重复的自动化证据）与 SC-006/SC-007/SC-008；宪法"开发与验证流程"要求未验证项必须标注。
 
@@ -183,7 +183,7 @@ renderSlot('conversation.chat.markdown.fence', fence, {
 - 发布 workflow 增加三步：重建 → `git diff --exit-code -- client.js` 拒绝陈旧产物 → 跑 `check-bundle` 与 `run-harness`，之后才 `npm publish`。
 - `.tmp/` 仍然忽略：它只是我本机的一次性实验区，不再承担任何证据职责。
 
-**代价**：仓库多了 React UMD 两个文件和 880 行夹具 + 122 行驱动（合计 1002 行）；换来的是任何人 clone 后能自己重算每一个"已验证"。
+**代价**：仓库多了 React UMD 两个文件和 914 行夹具 + 122 行驱动（合计 1036 行）；换来的是任何人 clone 后能自己重算每一个"已验证"。
 
 ## D22 无障碍：图像角色只给图本身，复制结果用实时区域播报（2026-11-23 修订）
 
@@ -193,7 +193,7 @@ renderSlot('conversation.chat.markdown.fence', fence, {
 
 - `role="img"` + `aria-label` 只给引擎画出的 `svg`；外层 `div.dsh-dyslexia-group` 只声明 `role="group"`、**自带名字一律不写**（名字已由图像提供，两处都写会让读屏念两遍），内层挂载点 `role="presentation"`。缩放按钮因此留在图像之外，可独立 Tab 聚焦。
 - `aria-label` 只用本地化纯名词（`图`/`Diagram`/`図`/…），不拼 `{{type}}`；引擎类型只进代码块与源码面板。
-- 复制按钮文案固定为"复制源码"；结果写入 `role="status" aria-live="polite"` 的视觉隐藏区域。一只按钮、一句话，避免读屏重复朗读同一个控件。
+- 复制按钮文案固定为"复制源码"；结果写入 `role="status" aria-live="polite"` 的**可见**小号次要文字（`12px`、`--dsw-alias-label-secondary`），读屏与明眼用户看到同一件事。一只按钮、一句话，避免读屏重复朗读同一个控件。
 - 宿主每次渲染新建 `t` 时不得重建图：`t` 经 `useRef` 读取，layout effect 依赖里只有 `code`、`streaming`、`document`。
 
 **证据**：`verify/check-bundle.mjs` 的 `the picture is the image, and the copy answer is announced`；夹具 `verify/harness/index.html` 的 `a fresh t does not redraw the picture`、`the copy answer is announced, not only coloured`、`[zh]/[en] the picture carries a plain name`、`no internal key reaches the eye`。

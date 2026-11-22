@@ -1,4 +1,4 @@
-/*! @jiezhengj/dsh-dyslexia 0.1.11 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:53c0bc25d05679cd92e7e115d07d7c7d */
+/*! @jiezhengj/dsh-dyslexia 0.1.12 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:486190784bdd378b14ef3af86af3fcff */
 ;(function () {
   function reportLoadFailure(scope, error) {
     try { console.error('dsh-dyslexia: ' + scope, error) } catch (_error) {}
@@ -303,7 +303,7 @@ function removeFigureStyles(element) {
  * Every visible sentence is complete in its own language: no English fragment is
  * pasted into a Chinese label, and the engine's own error text (which is English
  * and multi-line) never reaches the reader — it goes to the console and to the
- * note's tooltip instead.
+ * caller's log instead.
  */
 
 const LOCALE_NAMESPACE = 'dyslexia'
@@ -577,7 +577,7 @@ function figureErrorKind(error) {
 
 /**
  * The engine's own words, cut to one line. This is diagnostic material: it goes
- * to the console and to the note's tooltip, never into the visible sentence.
+ * to the console and to the caller's log, never into the visible sentence.
  */
 function describeFigureError(error) {
   if (!error) return ''

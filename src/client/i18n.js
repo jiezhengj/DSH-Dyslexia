@@ -7,7 +7,7 @@
  * Every visible sentence is complete in its own language: no English fragment is
  * pasted into a Chinese label, and the engine's own error text (which is English
  * and multi-line) never reaches the reader — it goes to the console and to the
- * note's tooltip instead.
+ * caller's log instead.
  */
 
 const LOCALE_NAMESPACE = 'dyslexia'

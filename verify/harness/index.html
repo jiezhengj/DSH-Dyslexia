@@ -109,6 +109,8 @@
               if (options && options.rejectLocale && def && def.locale) throw new Error('host rejects locale')
               defs.push({ def, component })
               return () => {
+                const index = defs.findIndex((entry) => entry.component === component)
+                if (index !== -1) defs.splice(index, 1)
                 calls.layersDropped += 1
               }
             },
@@ -225,6 +227,25 @@
           const en = seen.en
           const untranslated = LANGS.filter((lang) => lang !== 'en' && seen[lang] === en)
           expect(untranslated.length === 0, 'every interface language actually translates', untranslated.join(','))
+
+          /* ------------------------------- the fence language comes from the host */
+          const otherFence = mount(Layer, { code: CODE, lang: 'mmd', streaming: false, children: hostBlock(CODE) })
+          await tick(90)
+          const otherToggle = otherFence.stage.querySelector('.dsh-dyslexia-bar button')
+          if (otherToggle) {
+            otherToggle.click()
+            await tick(30)
+            const otherMarker = otherFence.stage.querySelector('.dsh-dyslexia-source code')
+            expect(
+              !!otherMarker && /(^| )language-mmd( |$)/.test(otherMarker.className),
+              'the source block keeps the language the host sent',
+              otherMarker ? otherMarker.className : 'no marker',
+            )
+          } else {
+            expect(false, 'the source block keeps the language the host sent', 'no source toggle')
+          }
+          otherFence.root.unmount()
+          otherFence.stage.remove()
 
           /* ------------------------------------------------- host translate */
           document.documentElement.lang = 'zh'
@@ -445,6 +466,13 @@
           expect(narrow.stage.scrollWidth <= stageWidth + 1, 'a wide picture does not widen the column', narrow.stage.scrollWidth + '/' + stageWidth)
           const pageOverflow = document.documentElement.scrollWidth - document.documentElement.clientWidth
           expect(pageOverflow <= 1, 'the page itself never overflows', String(pageOverflow))
+          // The engine adapts itself, but the column cap and the inner scroll are
+          // ours: with the stylesheet gone the box would grow and the page would
+          // scroll sideways instead.
+          const figureBox = narrowFigure ? getComputedStyle(narrowFigure) : null
+          expect(figureBox !== null && figureBox.maxWidth === '100%', 'the picture box is capped to the column', figureBox ? figureBox.maxWidth : 'no box')
+          expect(figureBox !== null && figureBox.boxSizing === 'border-box', 'the picture box counts its own padding', figureBox ? figureBox.boxSizing : 'no box')
+          expect(figureBox !== null && figureBox.overflowX === 'auto', 'a wide picture scrolls inside its own box', figureBox ? figureBox.overflowX : 'no box')
 
           /* --------------------------------------------------------- theme */
           const themed = mount(Layer, { code: CODE, streaming: false, children: hostBlock(CODE) })
@@ -502,7 +530,7 @@
           await tick(60)
           expect(!document.getElementById('dsh-dyslexia-figure-style'), 'disabling the plugin takes its stylesheet away', String(!!document.getElementById('dsh-dyslexia-figure-style')))
           expect(life.calls.stringsDropped === 1, 'the locale registration is dropped', String(life.calls.stringsDropped))
-          expect(life.calls.layersDropped === 1, 'the fence layer is dropped', String(life.calls.layersDropped))
+          expect(life.defs.length === 0, 'the fence layer is gone once the host disposes', String(life.defs.length))
           lifeStage.remove()
           /* ---------------------------------- no internal key is ever shown */
           const keys = ['copyFailed', 'copySource', 'engineUnavailable', 'figureLabel', 'renderFailed', 'syntaxError']
@@ -861,9 +889,15 @@
           const zoomNames = zoomButtons.map((node) => node.getAttribute('aria-label') || node.textContent || '')
           const untranslatedZoom = zoomNames.filter((name) => /Zoom|Reset/i.test(name))
           expect(zoomNames.length > 0 && untranslatedZoom.length === 0, 'the zoom buttons speak the interface language', zoomNames.join(' | '))
-          const enabled = zoomButtons.filter((node) => node.disabled !== true)
-          const tabbable = enabled.filter((node) => node.getAttribute('tabindex') !== '-1')
-          expect(enabled.length > 0 && tabbable.length === enabled.length, 'every enabled zoom button can take the keyboard', `${tabbable.length}/${enabled.length} enabled of ${zoomButtons.length}`)
+          const reachable = zoomButtons.filter(
+            (node) => node.disabled !== true && node.offsetParent !== null && node.getClientRects().length > 0,
+          )
+          const tabbable = reachable.filter((node) => node.getAttribute('tabindex') !== '-1')
+          expect(
+            reachable.length > 0 && tabbable.length === reachable.length,
+            'every zoom button in reach can take the keyboard',
+            `${tabbable.length}/${reachable.length} reachable of ${zoomButtons.length}`,
+          )
           wideRoot.unmount()
           wideStage.remove()
         } catch (error) {

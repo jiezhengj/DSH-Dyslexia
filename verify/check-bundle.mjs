@@ -582,11 +582,26 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
     'a picture that fits offers no zoom buttons',
     'disabling the plugin takes its stylesheet away',
     'the locale registration is dropped',
-    'the fence layer is dropped',
+    'the fence layer is gone once the host disposes',
+    'a throwing code getter leaves the host block',
+    'a throwing children getter leaves the source',
+    'the source block keeps the language the host sent',
+    'the picture box is capped to the column',
+    'every zoom button in reach can take the keyboard',
   ]
   const missing = needed.filter((name) => harness.indexOf(name) === -1)
   if (missing.length > 0) throw new Error(`missing fixture assertions: ${missing.join(', ')}`)
-  return `${needed.length} assertions present`
+  // A title alone proves nothing: the name has to sit inside an expect() call
+  // that carries a condition, or emptying the body would keep this check green.
+  const hollow = needed.filter((name) => {
+    const at = harness.indexOf(name)
+    const open = harness.lastIndexOf('expect(', at)
+    if (open === -1) return true
+    const head = harness.slice(open + 'expect('.length, at)
+    return head.trim().length === 0
+  })
+  if (hollow.length > 0) throw new Error(`fixture assertions without a condition: ${hollow.join(', ')}`)
+  return `${needed.length} assertions present and carrying a condition`
 })
 
 /* ---------------------------------------------------------------- report */

@@ -101,12 +101,11 @@ type Props = {
 
 | 调用 | 参数 | 说明 |
 |---|---|---|
-| `mount(el, code, options)` | `{ autoDirection: true, directionBreakpoint: 640, padding: 8, maxEdges, outputLimit, zoom: 'auto', onError }` | 同步生成 SVG 并自适容器宽 |
-| `refresh()` | — | 容器尺寸/字体变化后重排 |
-| `destroy()` | — | 释放 |
-| `Mounted.error` | `PeleError` | 判定失败路径 |
-| `Mounted.result.type` | string | 仅用于内部判断与错误提示；**不进入 `aria-label`**（FR-018 要求名称为本地化纯名词） |
+| `mount(host, code, options)` | `{ autoDirection: true, directionBreakpoint: 640, fontSize, padding: 8, responsive: true, zoom: { controls: true, maxScale: 4, labels }, limit, outputLimit, maxEdges }` | 同步生成 SVG、自适容器宽；**不传 `onError`**，失败由抛出的 `PeleError` 捕获 |
+| `Mounted.error` | `PeleError` | 判定失败路径（`figureErrorKind` 分类成语法 / 引擎不可用 / 其它） |
+| `Mounted.result.type` | string | 仅用于内部判断；**不进入 `aria-label`**（FR-018 要求名称为本地化纯名词） |
+| `destroy()` | — | 唯一的生命周期终点：卸载与重置都走它 |
 
-**禁止**：`parse()` + 自绘（放弃 pele 的字体与主题适配）、`render()` 后手工塞进 DOM（放弃 `refresh()`）、把 SVG 序列化成字符串存任何地方。
+**不使用**：`refresh()`（重排由引擎自己的尺寸观察负责，见 D22）、`enableZoom()`（缩放控件由 `zoom` 选项生成）。**禁止**：`parse()` + 自绘（放弃 pele 的字体与主题适配）、`render()` 后手工塞进 DOM（放弃引擎自己的重排）、把 SVG 序列化成字符串存任何地方。
 
 
