@@ -219,7 +219,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T076 `verify/check-bundle.mjs` 新增"图是图像、复制被播报"一项，并让报告行自带 `包名@版本 | 字节数 | 源码指纹`，让任何粘贴的输出自证来自哪棵树
 - [x] T077 夹具新增五类用例（超限源码、流式→完成、falsy children、`t` 换身份不重绘、复制播报），无障碍结构另加三项（组名、缩放按钮在图像外、可聚焦）；`verify/run-harness.mjs` 增加 `--list` 以便证据整段引用单次运行
 - [x] T078 `spec.md` 增 FR-018 与 SC-010；`contracts/client-fence-layer.md`、`data-model.md`、`research.md`（D22）同步
-- [ ] T079 重启 DSH 后做真机核对（图名/按钮/播报/插件页说明/卸载回退）。**0.1.11 至 0.1.17 的发布与安装完成后仍未重启核对**：运行中的界面仍加载旧 chunk；E-LIVE 里能查到的真机观察仍是 **0.1.2**，0.1.7 与 0.1.8 从未在真实宿主里跑过，0.1.9、0.1.10、0.1.11、0.1.12 与 0.1.13 同样如此。
+- [ ] T079 重启 DSH 后做真机核对（图名/按钮/播报/插件页说明/卸载回退）。**0.1.11 至 0.1.18 的发布与安装完成后仍未重启核对**：运行中的界面仍加载旧 chunk；E-LIVE 里能查到的真机观察仍是 **0.1.2**，0.1.7 与 0.1.8 从未在真实宿主里跑过，0.1.9、0.1.10、0.1.11、0.1.12 与 0.1.13 同样如此。
 - [ ] T080 再次请两位评审复核（目标 PASS），通过后把 feature 001 标记完成
 
 ## Phase 14: 第三轮独立评审后的修复（2026-11-23 追加，版本 0.1.6）
@@ -378,7 +378,7 @@ description: "Task list for 会话内图形渲染"
 
 - [x] T185 夹具补两条把"源码一换就收起面板"变成可证伪行为：`a new fence closes a panel the reader opened for the old one`（先打开面板，再用另一段**有效**源码替换，断言 `.dsh-dyslexia-source` 计数为 0）与 `the new fence offers the panel closed, not open`（`aria-expanded === 'false'`）；新增常量 `NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'`
 - [x] T186 探针 PS1（`%TEMP%\r16-probe` 副本）：只删 `setShowSource(false)` → 上述两条变红（`panels=1`、`true`），`run-harness: 2 failed, 214 passed`，exit 1；0.1.17 之前删这一行没有任何断言变红（第十三轮实现评审 P3-7 的覆盖缺口）
-- [x] T187 `verify/check-bundle.mjs` 的 `the required published files exist` 不再把打包总数写死：返回 `${required.length} required files`（原为 `24 required of the 33 packed files`，探针 P12b 证明加一个文件后仍报"33"）；`needed` 名单补两条新断言名
+- [x] T187 `verify/check-bundle.mjs` 的 `the required published files exist` 不再把打包总数写死：返回 `${required.length} required files`（原为 `24 required of the 33 packed files`——打包总数写死在报告串里；复跑确认：往 `files` 加一个条目后报告串仍为 `24 required files`，说明这个数字现在是派生的，不再是写死的 33）；`needed` 名单补两条新断言名
 - [x] T188 `verify/run-harness.mjs` 的 `EXPECTED_CHECKS` 由 213 改 216（新增三条：两条面板断言 + 既有 `the opened panel is on screen before the source changes` 已计入）
 - [x] T189 文档计数与行数：`plan.md`（216、`check-bundle.mjs` 663 行、`harness/index.html` 1163 行）、`quickstart.md`、`research.md`（1163 + 131 = 1294）、`contracts/plugin-manifest.md`、`evidence/verification.md`（E-BLD/E-CHK/E-HARN 用 0.1.17 单次运行重写、E-PROBE 增 PS1 并把项数口径补到 0.1.17 = 216）
 - [x] T190 发布 `v0.1.17`（run `45079768869`，shasum `e7db974d5fe519d9d454b9a5807ce7d49f943955`，logIndex `4048647791`，33 文件）、从 registry 装回 profile `desktop`（依赖 `0.1.17`、安装副本 769,391 字节 / `2FE079ED…B43B`）、补 E-PUB/E-INS 的 0.1.17 行
@@ -391,9 +391,21 @@ description: "Task list for 会话内图形渲染"
 - [x] T194 探针次数口径：T176 补"当时十四行；0.1.17 增 PS1 后为十五行"
 - [x] T195 `contracts/plugin-manifest.md` 的样例 `version` 由 0.1.15 改 0.1.17（该文件自称"与仓库根 `package.json` 逐项相同"）
 - [x] T196 `quickstart.md` 的 E-COMP-1 把"宿主半边只注册一段、畸形宿主静默"与"停用后不留残留"合并为第 ⑦ 组，恢复"七组"的自洽，并注明"七组 ≠ SC-006 的七类畸形宿主"
-- [x] T197 `spec.md` 的 SC-007 不再声称 `no dsh version gate can refuse a start` 逐项检查 `engines`：该断言只查 `engines.dsh` 与指向 DSH 包的 peer 依赖，`engines` 其余子键登记在 G15
+- [x] T197 `spec.md` 的 SC-007 不再声称 `no dsh version gate can refuse a start` 逐项检查 `engines`：该断言只查 `engines.dsh` 与指向 DSH 包的 peer 依赖，`engines` 其余子键登记在 G15 第五条
 - [x] T198 `tasks.md` 的 T011 措辞：真机只确认过中文界面下的标题/描述，其余 7 种语言的说明页从未在真机上看过（指向 T052 与 G13）
 - [x] T199 复跑确认：`check-bundle` 37 项、`run-harness` 216 项均不受文档改动影响；本轮没有改动任何随包文件（`client.js`、`locale/`、`docs/`、README 均未变），因此不发新版、不重装，直接进入下一轮评审
+
+## Phase 28: 第十五轮文档评审的收口（2026-11-23 追加，版本 0.1.18）
+
+- [x] T200 `evidence/verification.md` 的 G15 增第五条（`package.json` 若加入 `engines.node` 等非 `dsh` 子键，`no dsh version gate can refuse a start` 不会变红），"这四项"改"这五项"——修第十五轮文档评审的 P1（`spec.md:144` 的归属指针指向一个不存在的条目）
+- [x] T201 `spec.md` 的 SC-007 与 `tasks.md` 的 T197、状态表 G15 行同步写成"G15 第五条"
+- [x] T202 `contracts/plugin-manifest.md` 第 9 条拆成三句：`engines.dsh` 与 dsh peer 由 `no dsh version gate can refuse a start` 保证；`dsh.client.inject` 由 `package.json declares the bundle patch and the client half` 保证（第 79 行 `assert(client.inject === undefined, …)`）；其余 `engines` 子键见 G15 第五条
+- [x] T203 `data-model.md` 的"清单被版本门否决"行不再把整条 `engines` 归给静态断言，改为"`engines.dsh` 与 dsh peer 由断言、整个 `engines` 键与 `dsh.client.inject` 由人工核对 `package.json`"
+- [x] T204 `evidence/verification.md` 的 E-LIVE 引言"从 0.1.2 到 0.1.13"改为"从 0.1.2 到 0.1.18"，G13 区间改 0.1.3–0.1.18；`README.md` 的中文半句补回"（插件 `0.1.2`，真机只覆盖中文说明页）"，与英文半句和 `README.zh.md` 对齐
+- [x] T205 `tasks.md` 的 T187 去掉无法在 E-PROBE 表里复核的"探针 P12b"编号，改写成本轮复跑的事实（往 `files` 加一个条目后报告串仍为 `24 required files`，说明打包总数已是派生值）
+- [x] T206 因为本轮改了随包文本（`README.md`），升版本到 `0.1.18`、重建 `client.js`（fingerprint `f5b4e6eb…`）、复跑 37 / 216，避免仓库与已发布 tarball 的 README 不一致
+- [ ] T207 发布 `v0.1.18`、从 registry 装回 profile `desktop`、补 E-PUB/E-INS 行
+- [ ] T208 第十六轮双评审（目标 PASS；两份都 PASS 才把 feature 001 标记完成）
 
 ## Dependencies & Execution Order
 
@@ -492,9 +504,9 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 | G10 | SC-005 主题切换 | 部分 | 只验证了换 CSS 变量后变色，没做明→暗→明切换 |
 | G11 | FR-011 停用后提示词消失（T027） | 未做 | 宿主半边只有静态断言；本机 PATH 无 `dsh` CLI，改用 vm 断言，但不证明真实会话里停用后消失 |
 | G12 | FR-002 真机"无侧栏/无新文件" | 未做 | 结构上不写文件、不碰宿主布局，但没有一次真机核对磁盘与会话条目未变 |
-| G13 | T079 当前版本的重启后真机核对 | 未做 | 0.1.11 至 0.1.17 都已发布并装进 profile `desktop`，运行中的界面仍加载旧 chunk；`E-LIVE` 的观察取自 **0.1.2**（只有中文说明页、就地成图、卸载回退、重装恢复四件事），不能自动转移 |
+| G13 | T079 当前版本的重启后真机核对 | 未做 | 0.1.11 至 0.1.18 都已发布并装进 profile `desktop`，运行中的界面仍加载旧 chunk；`E-LIVE` 的观察取自 **0.1.2**（只有中文说明页、就地成图、卸载回退、重装恢复四件事），不能自动转移 |
 | G14 | 真实窗口缩放时引擎重绘（FR-018 端到端） | 未做 | 无头环境首帧后不再派发帧与 ResizeObserver 通知，只能证明"节点被换 → 立刻重新命名"；拖窄真实窗口这条链只有机制级证据 |
-| G15 | 尚未覆盖的加固面 | 未做 | `outputLimit`/`maxEdges` 无用例；`slots.inject` 的 disposer 未单独断言；`apply` 无幂等断言；`prepack` 不跑夹具 |
+| G15 | 尚未覆盖的加固面 | 未做 | `outputLimit`/`maxEdges` 无用例；`slots.inject` 的 disposer 未单独断言；`apply` 无幂等断言；`prepack` 不跑夹具；`package.json` 若加入 `engines.node` 等非 `dsh` 子键，`no dsh version gate can refuse a start` 不会变红 |
 | G16 | vendor 文本与无头环境的换节点 | 未做 | 规模上限（`outputLimit` 2 MiB、`maxEdges` 400）在 G15 里记，不再重复；这里只记两件小事：`client.js` 里 vendor 许可注释含 `https://github.com/obsidianmd/pele`（静态文本、无网络行为），以及「引擎换掉 `<svg>` 后重新命名」在无头环境只能夹具重放（真实拖窄窗口的端到端见 G14） |
 | G17 | 视图层无断言的行为 | 未做 | 第十四轮实现评审的 P3 汇总，逐条登记在 `evidence/verification.md` 的 G17：失败原因三分类、"已复制"1.5 秒后消失、缩放按钮与引擎顺序的配对、失败后同一实例的自愈、失败时隐藏空画框、`children: []` 退回原文、`MutationObserver` 只看直接子节点、`props` 与 `code` 都读不出时返回 `null`——这些分支都存在，但删掉不会让任何断言变红 |
 
@@ -503,4 +515,4 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 | 项 | 状态 | 说明 |
 |---|---|---|
 | T070 0.1.3 重启核对 | 已作废 | 由 T079 取代 |
-| T079 重启后真机核对（0.1.17） | 未做 | 0.1.11 至 0.1.17 已发布并装进 profile `desktop`，运行中的界面仍加载旧 chunk；重启后才换新，届时核对图名/按钮/播报/插件页说明/卸载回退，并把 E-LIVE 改写成 0.1.17 的记录。E-LIVE 里现有的观察是 0.1.2 的 |
+| T079 重启后真机核对（0.1.18） | 未做 | 0.1.11 至 0.1.18 已发布并装进 profile `desktop`，运行中的界面仍加载旧 chunk；重启后才换新，届时核对图名/按钮/播报/插件页说明/卸载回退，并把 E-LIVE 改写成 0.1.18 的记录。E-LIVE 里现有的观察是 0.1.2 的 |

@@ -1,6 +1,6 @@
 # 验证证据
 
-本文件只记录**已经真实跑过**的命令输出。E-BLD、E-CHK、E-HARN 三段各自来自一次运行，其中 E-CHK 与 E-HARN 的报告行自带 `包名@版本 | client.js 字节数 | sources sha256:<指纹>`，所以这两段可被追溯到具体的一棵树；E-BLD 是构建日志本身（它写出 `client.js`，随后由这两段报告行限定）。E-PUB 记录 CI 运行，E-INS 与 E-LIVE 记录真机操作，各自注明版本与 run，不能当成"同一次运行"的输出。当前版本：`0.1.17`。
+本文件只记录**已经真实跑过**的命令输出。E-BLD、E-CHK、E-HARN 三段各自来自一次运行，其中 E-CHK 与 E-HARN 的报告行自带 `包名@版本 | client.js 字节数 | sources sha256:<指纹>`，所以这两段可被追溯到具体的一棵树；E-BLD 是构建日志本身（它写出 `client.js`，随后由这两段报告行限定）。E-PUB 记录 CI 运行，E-INS 与 E-LIVE 记录真机操作，各自注明版本与 run，不能当成"同一次运行"的输出。当前版本：`0.1.18`。
 
 复跑方式（任何人 clone 后都一样）：
 
@@ -19,7 +19,7 @@ build-client: @jiezhengj/dsh-dyslexia -> client.js (769391 bytes, 768361 charact
 ## E-CHK 静态与行为校验
 
 ```text
-ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.17
+ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.18
 ok   package.json points at the repository npm trusts — git+https://github.com/jiezhengj/DSH-Dyslexia.git
 ok   package.json declares the bundle patch and the client half — platform web, no package inject
 ok   no dsh version gate can refuse a start — no engines.dsh, no dsh peers
@@ -46,7 +46,7 @@ ok   every supported sample type draws an svg — flowchart:218x64 sequence:184x
 ok   a broken diagram reports a one-line reason — Parse error on line 2:
 ok   host key echo falls back to bundled strings — key echo, blanks, placeholders rejected
 ok   every language carries the same complete sentences — 12 keys x 8 languages, no engine text in labels
-ok   client.js matches the sources it claims — 1c53080c47f54e1b683218022207dcd1
+ok   client.js matches the sources it claims — f5b4e6eb0b1402f42ba0fcc19e23df9e
 ok   the picture is the image, and the copy answer is announced — label is a noun, role="img" on the svg, copy result announced
 ok   host children react would refuse fall back to the source — objects, functions and mixed arrays fall back to the source text
 ok   every drawing the engine swaps in is named again — the engine owns re-layout; every swapped drawing node and its zoom buttons are renamed, strings follow the language
@@ -56,8 +56,7 @@ ok   nothing in the package asks you to edit an instruction file — 17 shipped 
 ok   the host half registers exactly one capability section — ui:dsh-dyslexia, order 9000, 85 words
 ok   the host half stays silent when the host changed shape — five silent hosts, two throwing sections
 ok   the fixtures assert what the fixes promise, and can fail — 21 assertions present and carrying a condition
-
-check-bundle: @jiezhengj/dsh-dyslexia@0.1.17 | client.js 769391 bytes | sources sha256:1c53080c47f54e1b683218022207dcd1 | all 37 checks passed
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.18 | client.js 769391 bytes | sources sha256:f5b4e6eb0b1402f42ba0fcc19e23df9e | all 37 checks passed
 ```
 
 ## E-HARN 浏览器行为校验
@@ -283,7 +282,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.17 | client.js 769391 bytes | sources 
 [ok] the zoom buttons speak the interface language — 放大 | 缩小 | 重置缩放
 [ok] every zoom button in reach can take the keyboard — 1/1 reachable of 3
 [ok] every zoom button is reachable once the picture is zoomed — 3/3 after zoom
-run-harness: @jiezhengj/dsh-dyslexia@0.1.17 | client.js 769391 bytes | sources sha256:1c53080c47f54e1b683218022207dcd1 | all 216 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+run-harness: @jiezhengj/dsh-dyslexia@0.1.18 | client.js 769391 bytes | sources sha256:f5b4e6eb0b1402f42ba0fcc19e23df9e | all 216 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
 同一次运行的 stderr 另有 7 段被**刻意捕获**的异常堆栈（loader ×3、prompt section ×3、module ×1，例如 `dsh-dyslexia: loader Error: host changed the loader`、`dsh-dyslexia: prompt section rejected Error: asynchronous failure`）：它们来自敌意宿主用例，属正常输出，不是失败。
@@ -428,7 +427,7 @@ npm notice shasum: 71feabc22885e097974a35668e4717837fefd226
 npm notice total files: 33
 ```
 
-0.1.10（run `45062588313`，36 / 119）——这是**当时**那棵树的两条报告行；版本、字节数、指纹与项数都与当前不同（当前 0.1.17 是 769,391 字节、`1c53080c…`、37 / 216），共同点只有命令与工作流：
+0.1.10（run `45062588313`，36 / 119）——这是**当时**那棵树的两条报告行；版本、字节数、指纹与项数都与当前不同（当前 0.1.18 是 769,391 字节、`f5b4e6eb…`、37 / 216），共同点只有命令与工作流：
 
 ```text
 check-bundle: @jiezhengj/dsh-dyslexia@0.1.10 | client.js 767298 bytes | sources sha256:336ea7199fb90a0c8202c03e0c14bbe7 | all 36 checks passed
@@ -705,7 +704,7 @@ Done in 2.4s using pnpm v11.28.5
 
 ## E-LIVE 真机（DSH 桌面窗口内）
 
-**以下记录来自 0.1.2**，当前版本（0.1.17）的重启核对是 T079（**尚未取证**，见 G13）。之所以保留，是因为它们证明了链路本身可用；从 0.1.2 到 0.1.13 渲染层改过多次（`role` 结构、`aria-roledescription` 的移除与重排版后重标、可见的复制反馈、空/非法 `children` 的处理、源码块的 `language-mermaid` 标记、外层盒子去掉名字），所以这些观察**不能**自动转移到 `0.1.17`。
+**以下记录来自 0.1.2**，当前版本（0.1.18）的重启核对是 T079（**尚未取证**，见 G13）。之所以保留，是因为它们证明了链路本身可用；从 0.1.2 到 0.1.17 渲染层改过多次（`role` 结构、`aria-roledescription` 的移除与重排版后重标、可见的复制反馈、空/非法 `children` 的处理、源码块的 `language-mermaid` 标记、外层盒子去掉名字），所以这些观察**不能**自动转移到 `0.1.18`。
 
 | 观察 | 当时的证据 | 归属 |
 |---|---|---|
@@ -736,9 +735,9 @@ Done in 2.4s using pnpm v11.28.5
 
 - **G11 FR-011 的后半（停用插件后提示词段消失）**：只有 `apply` 注册段的静态证据与宿主半边契约，没有"停用后模型侧看不到"的实测（T027）。
 - **G12 FR-002 的真机面（不打开侧栏、不生成文件、不新增会话条目）**：插件在结构上不写文件、不碰宿主布局（静态可读），但没有一次真机上"看完这张图，磁盘与会话条目都没变"的核对。
-- **G13 当前版本的重启后真机核对（T079）**：`E-LIVE` 的观察取自 **0.1.2**，且只有四件事——插件页的**中文**说明与插图、会话里就地成图（图名 `图：flowchart`、两个按钮）、卸载后同一条消息回退为代码块、重装后图与按钮立刻回来。**复制播报**（0.1.5 起才有）与**其余 7 种语言的插件页**从未在真机上看过，不能算已观察。0.1.3–0.1.17 改过 `view.js`、`i18n.js`、`entry.js`、`styles.js`，这些观察不能自动转移。0.1.11 至 0.1.17 都已发布并装进 `desktop` profile，但**没有在重启后的宿主里逐项复核过**，所以算未取证。
+- **G13 当前版本的重启后真机核对（T079）**：`E-LIVE` 的观察取自 **0.1.2**，且只有四件事——插件页的**中文**说明与插图、会话里就地成图（图名 `图：flowchart`、两个按钮）、卸载后同一条消息回退为代码块、重装后图与按钮立刻回来。**复制播报**（0.1.5 起才有）与**其余 7 种语言的插件页**从未在真机上看过，不能算已观察。0.1.3–0.1.18 改过 `view.js`、`i18n.js`、`entry.js`、`styles.js`，这些观察不能自动转移。0.1.11 至 0.1.18 都已发布并装进 `desktop` profile，但**没有在重启后的宿主里逐项复核过**，所以算未取证。
 - **G14 真实窗口缩放时的引擎重绘（FR-018 的端到端面）**：0.1.10 把重排版交给引擎自己的 `ResizeObserver`（pele 内部），插件只负责"节点被换回来就重新命名"。夹具能证明"节点被换 → 立刻重新命名"，但**无法让引擎在无头浏览器里真的因窗口缩放而重绘**（无头环境第一帧之后不再派发帧与 ResizeObserver 通知）。真实窗口里"拖窄窗口 → 引擎重绘 → 名字回来"这条链只有机制级证据。
-- **G15 尚未覆盖的加固面（第十轮实现评审记录）**：`src/client/figure.js` 的 `outputLimit`（2 MiB）与 `maxEdges`（400）没有用例；`src/client/entry.js` 里 `slots.inject(...)` 返回的 disposer 被丢掉（层本身随 `apply` 的作用域一起消失，但没有"二次 apply 不重复注册"或"inject 的句柄被单独释放"的断言）；`package.json` 的 `prepack` 只跑构建与 `check-bundle`，不跑夹具（依赖 CI 的五步兜住）。这四项都不影响已发布行为，但都属于"没有证据的加固"。
+- **G15 尚未覆盖的加固面（第十轮实现评审记录）**：`src/client/figure.js` 的 `outputLimit`（2 MiB）与 `maxEdges`（400）没有用例；`src/client/entry.js` 里 `slots.inject(...)` 返回的 disposer 被丢掉（层本身随 `apply` 的作用域一起消失，但没有"二次 apply 不重复注册"或"inject 的句柄被单独释放"的断言）；`package.json` 的 `prepack` 只跑构建与 `check-bundle`，不跑夹具（依赖 CI 的五步兜住）；`package.json` 若加入 `engines.node` 等非 `dsh` 子键，`no dsh version gate can refuse a start` 不会变红（当前清单没有 `engines` 键，属"没有断言的清单形状面"）。这五项都不影响已发布行为，但都属于"没有证据的加固"。
 - **G16 vendor 文本与换节点的无头局限（记录）**：`client.js` 里 vendor 许可注释含 `https://github.com/obsidianmd/pele`，属静态文本、无网络行为；「引擎换掉 `<svg>` 后重新命名」在无头环境里只能靠夹具重放（真实拖窄窗口的端到端见 G14）。规模上限按 G15 记，这里不重复。
 - **G17 视图层的几处行为没有任何断言（第十四轮实现评审 P3 汇总）**：以下保证在代码里存在，但删掉/改坏不会让任何断言变红——①「画不出来的原因分三种」只有"有一句话"被保护（把 `translate('syntaxError')` 换成 `translate('renderFailed')`、或把 `engineUnavailable` 换成 `renderFailed`，两套检查仍全绿）；②缩放按钮按引擎顺序贴标签（`ZOOM_BUTTONS = ['zoomIn','zoomOut','resetZoom']`），顺序写错不会变红，读屏会把"放大"念成"缩小"；③失败后同一实例的自愈（`FigureBoundary.componentDidUpdate` 里 `code` 变了才复位）无断言；④失败时隐藏那个空画框（`style: failed ? { display: 'none' } : undefined`）无断言；⑤"已复制"1.5 秒后自动消失（`COPIED_FEEDBACK_MS`）无断言；⑥`children: []`（React 合法、但画不出东西）会退回原文这条分支无断言；⑦`MutationObserver` 只观察直接子节点（无 `subtree`），引擎若在既有 `<svg>` 内部重排则名字不补；⑧`FigureBoundary` 在 `props` 与 `code` 都读不出来时返回 `null`，这条兜底无断言。
   这些都不影响"能力存在"，但它们是这一层最薄的地方；不再往下修的原因是每加一条断言都要连带重算证据与发版，而这一轮的目标是把**说法**收紧到与证据一致。
