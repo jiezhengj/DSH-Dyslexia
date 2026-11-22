@@ -265,6 +265,8 @@ npm notice shasum: 30408a56f8e3d3054e7ace7feafa0fbde8e676b6
 npm notice total files: 33
 ```
 
+| `0.1.9` | `45059529254` | success | `71feabc22885e097974a35668e4717837fefd226` | `4047793870` | 33 | 36 项静态 + 118 项浏览器，与本机逐字一致 |
+
 ## E-CI 发布前检查抓到一个真实缺陷（0.1.5 第一次运行）
 
 `45046044274` 在 "Refuse to publish if the committed chunk is stale" 这一步失败：
@@ -278,21 +280,24 @@ npm notice total files: 33
 
 ## E-INS 从 registry 安装
 
-`plugin_manager remove_bundle @jiezhengj/dsh-dyslexia`（卸 0.1.7，pnpm 输出 `- @jiezhengj/dsh-dyslexia 0.1.7`）→ `install_bundle` 目标 `@jiezhengj/dsh-dyslexia@0.1.8`，结果 `application: "applied"`、`version: "0.1.8"`，pnpm 输出：
+`plugin_manager remove_bundle @jiezhengj/dsh-dyslexia`（卸 0.1.8，pnpm 输出 `- @jiezhengj/dsh-dyslexia 0.1.8`）→ `install_bundle` 目标 `@jiezhengj/dsh-dyslexia@0.1.9`，结果 `application: "applied"`、`version: "0.1.9"`，pnpm 输出：
 
 ```text
 dependencies:
-+ @jiezhengj/dsh-dyslexia 0.1.8
++ @jiezhengj/dsh-dyslexia 0.1.9
 
-Done in 3.8s using pnpm v11.28.5
+Done in 2.6s using pnpm v11.28.5
 ```
 
-安装后实测：
+安装后实测（`C:\Users\jiezhengj\.dsh\profiles\desktop`）：
 
-- `C:\Users\jiezhengj\.dsh\profiles\desktop\package.json` 的依赖为 `"@jiezhengj/dsh-dyslexia": "0.1.8"`（不是 `link:`），`dsh.profile.bundles` 末尾含该包名。
-- `node_modules/@jiezhengj/dsh-dyslexia/client.js` = **768340 字节**，SHA256 `E632EA8E7E5ECC1DA705B69298859D6E35BBE6E863BA0E00D2F6824ACC481755`，与仓库根 `client.js` 逐字节相同。
-- `locale/` 8 个 json（de,en,es,fr,ja,pt,ru,zh）、`docs/` 9 个文件（8 篇 DETAIL + `preview.svg`）、`package.json` 的 `version` 为 `0.1.8`。
-- registry 读取滞后：0.1.8 的版本文档在发布后约 2 分钟可用（本次轮询 6 次、每次间隔 20 秒），tarball 随即 200；npm 镜像（`registry.npmmirror.com`）更慢，0.1.5 时约 12 分钟。
+| 检查 | 实测 |
+|---|---|
+| profile 依赖 | `"@jiezhengj/dsh-dyslexia": "0.1.9"`（版本号，不是 `link:`） |
+| `node_modules/@jiezhengj/dsh-dyslexia/client.js` | 769,386 字节，SHA256 `DAD0A3334BB557C77E8B0C9E1183C654980F86A5B3A783134F888C422A3067A8` |
+| 仓库里的 `client.js` | 769,386 字节，SHA256 同上（逐字节相同） |
+| `locale/` | 8 个 json |
+| `docs/` | 9 个文件（8 篇 `DETAIL*.md` + `preview.svg`） |
 
 ## E-LIVE 真机（DSH 桌面窗口内）
 
