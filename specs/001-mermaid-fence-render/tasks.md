@@ -381,7 +381,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T187 `verify/check-bundle.mjs` 的 `the required published files exist` 不再把打包总数写死：返回 `${required.length} required files`（原为 `24 required of the 33 packed files`，探针 P12b 证明加一个文件后仍报"33"）；`needed` 名单补两条新断言名
 - [x] T188 `verify/run-harness.mjs` 的 `EXPECTED_CHECKS` 由 213 改 216（新增三条：两条面板断言 + 既有 `the opened panel is on screen before the source changes` 已计入）
 - [x] T189 文档计数与行数：`plan.md`（216、`check-bundle.mjs` 663 行、`harness/index.html` 1163 行）、`quickstart.md`、`research.md`（1163 + 131 = 1294）、`contracts/plugin-manifest.md`、`evidence/verification.md`（E-BLD/E-CHK/E-HARN 用 0.1.17 单次运行重写、E-PROBE 增 PS1 并把项数口径补到 0.1.17 = 216）
-- [ ] T190 发布 `v0.1.17`、从 registry 装回 profile `desktop`、补 E-PUB/E-INS 的 0.1.17 行
+- [x] T190 发布 `v0.1.17`（run `45079768869`，shasum `e7db974d5fe519d9d454b9a5807ce7d49f943955`，logIndex `4048647791`，33 文件）、从 registry 装回 profile `desktop`（依赖 `0.1.17`、安装副本 769,391 字节 / `2FE079ED…B43B`）、补 E-PUB/E-INS 的 0.1.17 行
 - [ ] T191 第十四轮双评审（文档 + 实现）；两份都 PASS 才把 feature 001 标记完成
 
 ## Dependencies & Execution Order
