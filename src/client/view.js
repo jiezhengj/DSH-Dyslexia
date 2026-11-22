@@ -26,6 +26,16 @@ function safeRead(source, name) {
 }
 
 /** Everything the layer needs from the host, read once and safely. */
+/**
+ * Whether a host's `children` is something React would actually render. A host
+ * that hands over `null`, `false`, `0` or `''` for an empty slot must not be
+ * mistaken for "the host gave me nothing to show": in that case the layer still
+ * has the source text and must show it itself.
+ */
+function isRenderableChild(value) {
+  return value !== undefined && value !== null && value !== false && value !== '' && value !== 0
+}
+
 function readLayerInput(props) {
   const code = safeRead(props, 'code')
   const streaming = safeRead(props, 'streaming')
@@ -34,7 +44,7 @@ function readLayerInput(props) {
     code: code.ok && typeof code.value === 'string' ? code.value : '',
     hasCode: code.ok && typeof code.value === 'string',
     streaming: streaming.ok ? Boolean(streaming.value) : false,
-    children: children.ok && children.value !== undefined ? children.value : null,
+    children: children.ok && isRenderableChild(children.value) ? children.value : null,
   }
 }
 
@@ -47,10 +57,14 @@ function MermaidFenceLayer(props) {
 
   const hostTranslate = safeRead(props, 't').value
   const translate = React.useMemo(() => translateFor({ t: hostTranslate }, doc), [hostTranslate, doc])
+  // A host may bind a fresh `t` on every render (a locale-bound slot prop). The
+  // drawing must survive that: it is re-created when the source changes, never
+  // because a label function changed identity. So the effect reads the current
+  // translator through a ref instead of depending on it.
+  const translateRef = React.useRef(translate)
+  translateRef.current = translate
   const [status, setStatus] = React.useState('pending')
   const [reasonKind, setReasonKind] = React.useState('other')
-  const [detail, setDetail] = React.useState('')
-  const [figureKind, setFigureKind] = React.useState('')
   const [showSource, setShowSource] = React.useState(false)
   const [copyState, setCopyState] = React.useState('idle')
   const hostRef = React.useRef(null)
@@ -77,19 +91,20 @@ function MermaidFenceLayer(props) {
   React.useLayoutEffect(() => {
     const host = hostRef.current
     if (streaming || !host || !doc) return undefined
+    const t = translateRef.current
     teardown()
+    setStatus('pending')
     host.textContent = ''
     const labels = {
-      reset: translate('resetZoom'),
-      zoomIn: translate('zoomIn'),
-      zoomOut: translate('zoomOut'),
+      reset: t('resetZoom'),
+      zoomIn: t('zoomIn'),
+      zoomOut: t('zoomOut'),
     }
     const fail = (error) => {
       const raw = describeFigureError(error)
       host.textContent = ''
       setStatus('failed')
       setReasonKind(figureErrorKind(error))
-      setDetail(raw)
       if (raw) {
         try {
           console.warn('dsh-dyslexia: diagram not drawn', raw)
@@ -119,7 +134,20 @@ function MermaidFenceLayer(props) {
     }
     mountedRef.current = mounted
     setStatus('rendered')
-    setFigureKind(figureType(mounted))
+    // The picture is the image; the box around it also holds the engine's own
+    // zoom buttons, so the box is a group and only the drawing itself carries
+    // role="img". Otherwise a screen reader would treat the zoom controls as
+    // part of an image, which makes them unreachable.
+    try {
+      const svg = host.querySelector('svg')
+      if (svg) {
+        svg.setAttribute('role', 'img')
+        svg.setAttribute('aria-label', t('figureLabel'))
+        host.setAttribute('role', 'presentation')
+      }
+    } catch (error) {
+      void error
+    }
     if (typeof ResizeObserver === 'function') {
       const observer = new ResizeObserver(() => {
         const current = mountedRef.current
@@ -134,7 +162,7 @@ function MermaidFenceLayer(props) {
       observerRef.current = observer
     }
     return teardown
-  }, [code, streaming, doc, teardown, translate])
+  }, [code, streaming, doc, teardown])
 
   React.useEffect(
     () => () => {
@@ -196,17 +224,18 @@ function MermaidFenceLayer(props) {
   const failed = status === 'failed'
   const rendered = status === 'rendered'
 
-  const figureLabel = figureKind
-    ? translate('figureLabel', { type: figureKind })
-    : translate('figureUntyped')
+  const figureLabel = translate('figureLabel')
 
-  const figure = React.createElement('div', {
-    className: FIGURE_CLASS,
-    ref: hostRef,
-    role: 'img',
-    'aria-label': figureLabel,
-    style: failed ? { display: 'none' } : undefined,
-  })
+  const figure = React.createElement(
+    'div',
+    {
+      className: FIGURE_GROUP_CLASS,
+      role: 'group',
+      'aria-label': figureLabel,
+      style: failed ? { display: 'none' } : undefined,
+    },
+    React.createElement('div', { className: FIGURE_CLASS, ref: hostRef }),
+  )
 
   const copyLabel = copyState === 'copied' ? 'copied' : copyState === 'failed' ? 'copyFailed' : 'copySource'
 
@@ -227,7 +256,12 @@ function MermaidFenceLayer(props) {
         React.createElement(
           'button',
           { type: 'button', className: BUTTON_CLASS, onClick: copySource },
-          translate(copyLabel),
+          translate('copySource'),
+        ),
+        React.createElement(
+          'span',
+          { className: STATUS_CLASS, role: 'status', 'aria-live': 'polite' },
+          copyState === 'idle' ? '' : translate(copyLabel),
         ),
       )
     : null
@@ -248,7 +282,7 @@ function MermaidFenceLayer(props) {
         : translate('renderFailed')
 
   const note = failed
-    ? React.createElement('p', { className: NOTE_CLASS, title: detail || undefined }, noteText)
+    ? React.createElement('p', { className: NOTE_CLASS }, noteText)
     : null
 
   const fallback = failed
@@ -310,3 +344,4 @@ class FigureBoundary extends React.Component {
     }
   }
 }
+

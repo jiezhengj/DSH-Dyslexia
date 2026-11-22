@@ -380,7 +380,6 @@ check('every language carries the same complete sentences', () => {
     'copySource',
     'engineUnavailable',
     'figureLabel',
-    'figureUntyped',
     'hideSource',
     'renderFailed',
     'resetZoom',
@@ -397,7 +396,7 @@ check('every language carries the same complete sentences', () => {
   return `${keys.length} keys x 8 languages, no engine text in labels`
 })
 
-check('client.js matches the sources it claims', () => {
+function sourceFingerprint() {
   const fragments = ['styles.js', 'i18n.js', 'figure.js', 'view.js', 'entry.js'].map((name) => read(`src/client/${name}`))
   const hash = createHash('sha256')
   hash.update(manifest.name)
@@ -408,11 +407,29 @@ check('client.js matches the sources it claims', () => {
     hash.update(text)
     hash.update('\u0000')
   })
-  const expected = hash.digest('hex').slice(0, 32)
+  return hash.digest('hex').slice(0, 32)
+}
+
+check('client.js matches the sources it claims', () => {
+  const expected = sourceFingerprint()
   const found = /sources sha256:([0-9a-f]{32})/.exec(chunk)
   assert(found, 'client.js carries no source fingerprint')
   assert(found[1] === expected, `client.js is stale: rebuild it (chunk ${found[1]}, sources ${expected})`)
   return `${expected}`
+})
+
+check('the picture is the image, and the copy answer is announced', () => {
+  const labels = read('src/client/i18n.js')
+  assert(!labels.includes('{{type}}'), 'a label still interpolates the engine type')
+  const view = read('src/client/view.js')
+  assert(
+    view.includes("svg.setAttribute('role', 'img')"),
+    'the drawing itself must carry role="img" so the zoom buttons stay outside it',
+  )
+  assert(!/role: 'img'/.test(view), 'the container must not be role="img"')
+  assert(view.includes('aria-live'), 'the copy result is only visible, never announced')
+  assert(view.includes('isRenderableChild'), 'falsy host children are not treated as empty')
+  return 'label is a noun, role="img" on the svg, copy result announced'
 })
 
 check('a factory that cannot build never throws at the host', () => {
@@ -493,4 +510,7 @@ if (failures.length > 0) {
   process.exit(1)
 }
 
-process.stdout.write(`\ncheck-bundle: all ${notices.length} checks passed\n`)
+const chunkBytes = statSync(join(ROOT, 'client.js')).size
+process.stdout.write(
+  `\ncheck-bundle: ${manifest.name}@${manifest.version} | client.js ${chunkBytes} bytes | sources sha256:${sourceFingerprint()} | all ${notices.length} checks passed\n`,
+)

@@ -8,13 +8,19 @@
  */
 
 const FIGURE_STYLE_ID = 'dsh-dyslexia-figure-style'
+const FIGURE_GROUP_CLASS = 'dsh-dyslexia-group'
 const FIGURE_CLASS = 'dsh-dyslexia-figure'
+const STATUS_CLASS = 'dsh-dyslexia-status'
 const NOTE_CLASS = 'dsh-dyslexia-note'
 const BAR_CLASS = 'dsh-dyslexia-bar'
 const BUTTON_CLASS = 'dsh-dyslexia-button'
 const SOURCE_CLASS = 'dsh-dyslexia-source'
 
 const FIGURE_CSS = [
+  `.${FIGURE_GROUP_CLASS} {`,
+  '  max-width: 100%;',
+  '  min-width: 0;',
+  '}',
   `.${FIGURE_CLASS} {`,
   '  --pele-bg: var(--dsw-alias-bg-layer-1);',
   '  --pele-fg: var(--dsw-alias-label-primary);',
@@ -68,6 +74,17 @@ const FIGURE_CSS = [
   '  outline: 2px solid var(--dsw-alias-brand-primary);',
   '  outline-offset: 1px;',
   '}',
+  `.${STATUS_CLASS} {`,
+  '  position: absolute;',
+  '  width: 1px;',
+  '  height: 1px;',
+  '  margin: -1px;',
+  '  padding: 0;',
+  '  overflow: hidden;',
+  '  clip-path: inset(50%);',
+  '  white-space: nowrap;',
+  '  border: 0;',
+  '}',
   `.${SOURCE_CLASS} {`,
   '  margin: 6px 0 0;',
   '  padding: 8px;',
@@ -90,3 +107,4 @@ function ensureFigureStyles(doc) {
   element.textContent = FIGURE_CSS
   host.appendChild(element)
 }
+

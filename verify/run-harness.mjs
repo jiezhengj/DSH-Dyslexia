@@ -102,6 +102,12 @@ const lines = logMatch
 const failures = lines.filter((line) => line.startsWith('[bad]'))
 for (const line of failures) process.stderr.write(`${line}\n`)
 
+// `--list` prints every check so an evidence file can quote one run verbatim
+// instead of reassembling output from several runs.
+if (process.argv.includes('--list')) {
+  for (const line of lines) process.stdout.write(`${line}\n`)
+}
+
 if (failed > 0) {
   process.stderr.write(`\nrun-harness: ${failed} failed, ${passed} passed\n`)
   process.exit(1)

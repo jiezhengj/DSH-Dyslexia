@@ -16,7 +16,7 @@
 
 **Storage**: 无。不新增会话实体、不写文件、不建索引；图源就是既有会话消息里的代码块文本。
 
-**Testing**: 不引入测试框架（遵守"依赖自包含"）。实现提供三类证据：① `node verify/check-bundle.mjs` 纯 Node 内置模块的静态与行为断言 30 项（bundle 外形、允许的 `require` 白名单、无外部 URL、pele 版本与许可存在、manifest 字段完整、8 语言文案与说明页完整、**无版本否决字段、产物可独立编译、宿主加载器异常下不抛出、工厂抛错时仍返回可用模块、宿主半边恰好注册一段且畸形宿主静默**）；② 提交进仓库的 `verify/harness/index.html` + `node verify/run-harness.mjs`，在真实 Chromium 里跑 76 项（React + `client.js` + 独立引擎，含**故障注入**：宿主 `t` 抛错/回显 key、`code`/`children` 取值器抛错、引擎抛错、无 slots 服务、坏语法、裁剪板缺失、360 px 窄屏、主题换色）；③ 真实宿主里的装/卸/重装与窄屏人工证据（见 quickstart.md 的证据表与 evidence/verification.md 的 E-LIVE）。
+**Testing**: 不引入测试框架（遵守"依赖自包含"）。实现提供三类证据：① `node verify/check-bundle.mjs` 纯 Node 内置模块的静态与行为断言 31 项（bundle 外形、允许的 `require` 白名单、无外部 URL、pele 版本与许可存在、manifest 字段完整、8 语言文案与说明页完整、**无版本否决字段、产物可独立编译、宿主加载器异常下不抛出、工厂抛错时仍返回可用模块、宿主半边恰好注册一段且畸形宿主静默**）；② 提交进仓库的 `verify/harness/index.html` + `node verify/run-harness.mjs`，在真实 Chromium 里跑 82 项（React + `client.js` + 独立引擎，含**故障注入**：宿主 `t` 抛错/回显 key、`code`/`children` 取值器抛错、引擎抛错、无 slots 服务、坏语法、裁剪板缺失、360 px 窄屏、主题换色）；③ 真实宿主里的装/卸/重装与窄屏人工证据（见 quickstart.md 的证据表与 evidence/verification.md 的 E-LIVE）。
 
 **Target Platform**: DSH Desktop 0.2.2-rc.5（Web 前端，含内嵌桌面窗口）为唯一实测基线；**但不以任何版本字段声明基线**——清单里没有 `engines`、没有 dsh 的 peerDependencies，也没有对宿主客户端包的版本绑定（见"兼容性策略"）。
 
@@ -96,7 +96,7 @@ src/client/
 ├── entry.js             # 槽注册（key: 'mermaid'）+ 可选的 locale 注册（无 import/export 的脚本片段）
 ├── figure.js            # pele 生命周期：mount / update / destroy，缩放与尺寸监听（引擎缺失自兜）
 ├── styles.js            # 主题令牌 → pele 变量映射 + 容器样式
-├── i18n.js              # 包内 8 语言字典（13 键）+ 宿主翻译函数的安全包装（只采信真实译文）
+├── i18n.js              # 包内 8 语言字典（12 键）+ 宿主翻译函数的安全包装（只采信真实译文）
 └── view.js              # React 组件 + 错误边界：图 / 源码切换 / 失败回退 / 流式中占位
 scripts/
 ├── build-client.mjs     # header + IIFE 自兜 + require('react') + vendored pele + 片段 → client.js（末尾语法检查）
@@ -105,10 +105,10 @@ vendor/pele/
 ├── pele.global.js       # pele@1.13.0 的 global build（原样保存）
 └── LICENSE
 verify/
-├── check-bundle.mjs     # 纯 Node 内置模块的静态与行为断言（30 项）
+├── check-bundle.mjs     # 纯 Node 内置模块的静态与行为断言（31 项）
 ├── run-harness.mjs      # 用真实 Chromium 打开夹具并读判定
 └── harness/
-    ├── index.html       # 提交进仓库的浏览器夹具（76 项）
+    ├── index.html       # 提交进仓库的浏览器夹具（82 项）
     └── vendor/          # React 18.3.1 UMD 副本
 tests/                   # 不放测试框架；verify/ 即验收脚本
 ```

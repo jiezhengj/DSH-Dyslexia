@@ -70,8 +70,8 @@
         const results = window.__results
         const LANGS = ['zh', 'en', 'ja', 'es', 'fr', 'de', 'ru', 'pt']
         const EXACT = {
-          zh: { name: '图：flowchart', show: '查看源码', copy: '复制源码', hidden: '隐藏源码' },
-          en: { name: 'Diagram: flowchart', show: 'Show source', copy: 'Copy source', hidden: 'Hide source' },
+          zh: { name: '图', show: '查看源码', copy: '复制源码', hidden: '隐藏源码' },
+          en: { name: 'Diagram', show: 'Show source', copy: 'Copy source', hidden: 'Hide source' },
         }
         const CODE = 'flowchart LR\n  A[Text] --> B[Picture]'
         const BAD = 'flowchart TD\n  A-->'
@@ -171,7 +171,7 @@
             const token = (figure && figure.getAttribute('aria-label')) || ''
             const exact = EXACT[lang]
             if (exact) {
-              expect(token === exact.name, `[${lang}] the figure names its type`, token)
+              expect(token === exact.name, `[${lang}] the picture carries a plain name`, token)
               expect(labels[0] === exact.show && labels[1] === exact.copy, `[${lang}] first render shows the two buttons`, labels.join(' | '))
             }
             expect(!!figure, `[${lang}] a picture is drawn`)
@@ -208,7 +208,7 @@
             await tick(60)
             const labels = buttonsIn(view.stage)
             const token = (view.stage.querySelector('[role="img"]') || { getAttribute: () => '' }).getAttribute('aria-label')
-            expect(labels[0] === '查看源码' && labels[1] === '复制源码' && token === '图：flowchart', `a host t that ${label} still shows words`, labels.join(' | ') + ' / ' + token)
+            expect(labels[0] === '查看源码' && labels[1] === '复制源码' && token === '图', `a host t that ${label} still shows words`, labels.join(' | ') + ' / ' + token)
             view.root.unmount()
             view.stage.remove()
           }
@@ -357,7 +357,12 @@
           const noClipboardButtons = noClipboard.stage.querySelectorAll('button')
           if (noClipboardButtons[1]) noClipboardButtons[1].click()
           await tick(40)
-          expect(buttonsIn(noClipboard.stage)[1] === '复制失败', 'a missing clipboard is reported, not faked', buttonsIn(noClipboard.stage).join(' | '))
+          const noClipboardStatus = noClipboard.stage.querySelector('[role="status"]')
+          expect(
+            noClipboardStatus !== null && noClipboardStatus.textContent === '复制失败' && buttonsIn(noClipboard.stage)[1] === '复制源码',
+            'a missing clipboard is reported, not faked',
+            (noClipboardStatus ? noClipboardStatus.textContent : 'none') + ' / ' + buttonsIn(noClipboard.stage).join(' | '),
+          )
           noClipboard.root.unmount()
           noClipboard.stage.remove()
 
@@ -378,7 +383,12 @@
           if (withClipboardButtons[1]) withClipboardButtons[1].click()
           await tick(60)
           expect(clipboardCalls === 1, 'the copy button writes once', String(clipboardCalls))
-          expect(buttonsIn(withClipboard.stage)[1] === '已复制', 'a real copy is reported as copied', buttonsIn(withClipboard.stage).join(' | '))
+          const withClipboardStatus = withClipboard.stage.querySelector('[role="status"]')
+          expect(
+            withClipboardStatus !== null && withClipboardStatus.textContent === '已复制' && buttonsIn(withClipboard.stage)[1] === '复制源码',
+            'a real copy is reported as copied',
+            (withClipboardStatus ? withClipboardStatus.textContent : 'none') + ' / ' + buttonsIn(withClipboard.stage).join(' | '),
+          )
           withClipboard.root.unmount()
           withClipboard.stage.remove()
           Object.defineProperty(navigator, 'clipboard', { configurable: true, value: clipboardBackup })
@@ -386,7 +396,7 @@
           /* --------------------------------------------------- narrow screen */
           const narrow = mount(Layer, { code: 'flowchart LR\n' + Array.from({ length: 16 }, (_, index) => `  N${index} --> N${index + 1}`).join('\n'), streaming: false, children: hostBlock('wide') })
           await tick(120)
-          const narrowFigure = narrow.stage.querySelector('[role="img"]')
+          const narrowFigure = narrow.stage.querySelector('.dsh-dyslexia-figure')
           const stageWidth = narrow.stage.clientWidth
           expect(!!narrowFigure && Math.abs(narrowFigure.clientWidth - stageWidth) <= 8, 'the picture takes the column width', (narrowFigure ? narrowFigure.clientWidth : 0) + '/' + stageWidth)
           expect(narrow.stage.scrollWidth <= stageWidth + 1, 'a wide picture does not widen the column', narrow.stage.scrollWidth + '/' + stageWidth)
@@ -396,11 +406,11 @@
           /* --------------------------------------------------------- theme */
           const themed = mount(Layer, { code: CODE, streaming: false, children: hostBlock(CODE) })
           await tick(90)
-          const themedText = themed.stage.querySelector('[role="img"] svg text')
+          const themedText = themed.stage.querySelector('svg[role="img"] text')
           const firstFill = themedText ? getComputedStyle(themedText).fill : ''
           themed.stage.style.setProperty('--dsw-alias-label-primary', 'rgb(1, 2, 3)')
           await tick(60)
-          const secondText = themed.stage.querySelector('[role="img"] svg text')
+          const secondText = themed.stage.querySelector('svg[role="img"] text')
           const secondFill = secondText ? getComputedStyle(secondText).fill : ''
           expect(!!themedText && !!secondText, 'a drawn picture has text to colour')
           expect(firstFill !== '' && firstFill !== secondFill, 'the picture follows the host colour without reloading', firstFill + ' -> ' + secondFill)
@@ -439,6 +449,69 @@
           expect(leaked.length === 0, 'no internal key reaches the eye', 'leaked: ' + leaked.join(', '))
           keyEcho.root.unmount()
           keyEcho.stage.remove()
+
+          /* ------------------------------------- a picture nobody can draw */
+          const huge = 'flowchart LR\n' + Array.from({ length: 900 }, (_, index) => `  N${index}[node ${index}] --> N${index + 1}[node ${index + 1}]`).join('\n')
+          const hugeView = mount(Layer, { code: huge, streaming: false, children: hostBlock('huge') })
+          await tick(160)
+          expect(!!hugeView.stage.querySelector('.dsh-dyslexia-note'), 'a source past the size limit says why', hugeView.stage.textContent.slice(0, 40))
+          expect(hugeView.stage.textContent.indexOf('huge') !== -1, 'a source past the size limit keeps the host block')
+          hugeView.root.unmount()
+          hugeView.stage.remove()
+
+          /* ----------------------------------- streaming turns into a picture */
+          const turnStage = document.createElement('div')
+          turnStage.className = 'stage'
+          document.getElementById('mount').appendChild(turnStage)
+          const turnRoot = ReactDOM.createRoot(turnStage)
+          turnRoot.render(React.createElement(Layer, { code: CODE, streaming: true, children: hostBlock(CODE) }))
+          await tick(60)
+          const duringStream = !turnStage.querySelector('[role="img"]')
+          turnRoot.render(React.createElement(Layer, { code: CODE, streaming: false, children: hostBlock(CODE) }))
+          await tick(120)
+          expect(duringStream && !!turnStage.querySelector('[role="img"]'), 'the picture appears when the stream ends')
+          turnRoot.unmount()
+          turnStage.remove()
+
+          /* ------------------------------- a host that hands over empty children */
+          const emptyChildren = mount(Layer, { code: BAD, streaming: false, children: false })
+          await tick(90)
+          expect(emptyChildren.stage.textContent.indexOf(BAD) !== -1, 'a falsy children is not mistaken for content', emptyChildren.stage.textContent.slice(0, 40))
+          emptyChildren.root.unmount()
+          emptyChildren.stage.remove()
+
+          /* ------------------------------- a new t must not redraw the picture */
+          const stableStage = document.createElement('div')
+          stableStage.className = 'stage'
+          document.getElementById('mount').appendChild(stableStage)
+          const stableRoot = ReactDOM.createRoot(stableStage)
+          stableRoot.render(React.createElement(Layer, { code: CODE, streaming: false, children: hostBlock(CODE), t: (key) => (key === 'figureLabel' ? '图' : key) }))
+          await tick(120)
+          const firstSvg = stableStage.querySelector('svg[role="img"]')
+          if (firstSvg) firstSvg.setAttribute('data-stamp', 'first')
+          stableRoot.render(React.createElement(Layer, { code: CODE, streaming: false, children: hostBlock(CODE), t: (key) => (key === 'figureLabel' ? '图' : key) }))
+          await tick(120)
+          const secondSvg = stableStage.querySelector('svg[role="img"]')
+          expect(!!firstSvg && !!secondSvg && secondSvg.getAttribute('data-stamp') === 'first', 'a fresh t does not redraw the picture')
+          stableRoot.unmount()
+          stableStage.remove()
+
+          /* -------------------------------------- the copy answer is announced */
+          Object.defineProperty(navigator, 'clipboard', {
+            configurable: true,
+            get() {
+              return { writeText: () => Promise.resolve() }
+            },
+          })
+          const announced = mount(Layer, { code: CODE, streaming: false, children: hostBlock(CODE) })
+          await tick(90)
+          const announcedButtons = announced.stage.querySelectorAll('button')
+          if (announcedButtons[1]) announcedButtons[1].click()
+          await tick(80)
+          const live = announced.stage.querySelector('[role="status"]')
+          expect(!!live && live.getAttribute('aria-live') === 'polite' && live.textContent === '已复制', 'the copy answer is announced, not only coloured', live ? live.textContent : 'no live region')
+          announced.root.unmount()
+          announced.stage.remove()
         } catch (error) {
           bad('fixture aborted', String(error && error.stack ? error.stack.split('\n')[0] : error))
         }

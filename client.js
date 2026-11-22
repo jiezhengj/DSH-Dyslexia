@@ -1,4 +1,4 @@
-/*! @jiezhengj/dsh-dyslexia 0.1.4 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:c44444fb7746ca909d5f4c9e71df4cc4 */
+/*! @jiezhengj/dsh-dyslexia 0.1.5 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:9876db88174469acc5a4266c272e5b34 */
 ;(function () {
   function reportLoadFailure(scope, error) {
     try { console.error('dsh-dyslexia: ' + scope, error) } catch (_error) {}
@@ -181,13 +181,19 @@ but found: '${rn(Ke)}'`);(Ar[lt[Ke]]&kp)!==0;)Ke++;return kn.slice(bn[e],$n[Ke-1
  */
 
 const FIGURE_STYLE_ID = 'dsh-dyslexia-figure-style'
+const FIGURE_GROUP_CLASS = 'dsh-dyslexia-group'
 const FIGURE_CLASS = 'dsh-dyslexia-figure'
+const STATUS_CLASS = 'dsh-dyslexia-status'
 const NOTE_CLASS = 'dsh-dyslexia-note'
 const BAR_CLASS = 'dsh-dyslexia-bar'
 const BUTTON_CLASS = 'dsh-dyslexia-button'
 const SOURCE_CLASS = 'dsh-dyslexia-source'
 
 const FIGURE_CSS = [
+  `.${FIGURE_GROUP_CLASS} {`,
+  '  max-width: 100%;',
+  '  min-width: 0;',
+  '}',
   `.${FIGURE_CLASS} {`,
   '  --pele-bg: var(--dsw-alias-bg-layer-1);',
   '  --pele-fg: var(--dsw-alias-label-primary);',
@@ -241,6 +247,17 @@ const FIGURE_CSS = [
   '  outline: 2px solid var(--dsw-alias-brand-primary);',
   '  outline-offset: 1px;',
   '}',
+  `.${STATUS_CLASS} {`,
+  '  position: absolute;',
+  '  width: 1px;',
+  '  height: 1px;',
+  '  margin: -1px;',
+  '  padding: 0;',
+  '  overflow: hidden;',
+  '  clip-path: inset(50%);',
+  '  white-space: nowrap;',
+  '  border: 0;',
+  '}',
   `.${SOURCE_CLASS} {`,
   '  margin: 6px 0 0;',
   '  padding: 8px;',
@@ -264,6 +281,7 @@ function ensureFigureStyles(doc) {
   host.appendChild(element)
 }
 
+
 /**
  * Visible strings of the figure, in every language the DeepSeek Harness interface
  * ships (zh, en, ja, es, fr, de, ru, pt). The host serves the dictionary this
@@ -284,8 +302,7 @@ const DICTIONARY = {
     copyFailed: 'Copy failed',
     copySource: 'Copy source',
     engineUnavailable: 'The drawing engine is unavailable, so the source is shown.',
-    figureLabel: 'Diagram: {{type}}',
-    figureUntyped: 'Diagram',
+    figureLabel: 'Diagram',
     hideSource: 'Hide source',
     renderFailed: 'This diagram cannot be drawn, so its source is shown.',
     resetZoom: 'Reset zoom',
@@ -299,8 +316,7 @@ const DICTIONARY = {
     copyFailed: '复制失败',
     copySource: '复制源码',
     engineUnavailable: '绘图引擎不可用，已改为显示源码。',
-    figureLabel: '图：{{type}}',
-    figureUntyped: '图',
+    figureLabel: '图',
     hideSource: '隐藏源码',
     renderFailed: '这张图无法绘制，已改为显示源码。',
     resetZoom: '重置缩放',
@@ -314,8 +330,7 @@ const DICTIONARY = {
     copyFailed: 'コピーできませんでした',
     copySource: 'ソースをコピー',
     engineUnavailable: '描画エンジンを利用できないため、ソースを表示しています。',
-    figureLabel: '図：{{type}}',
-    figureUntyped: '図',
+    figureLabel: '図',
     hideSource: 'ソースを隠す',
     renderFailed: 'この図は描画できないため、ソースを表示しています。',
     resetZoom: '倍率をリセット',
@@ -329,8 +344,7 @@ const DICTIONARY = {
     copyFailed: 'No se pudo copiar',
     copySource: 'Copiar el código',
     engineUnavailable: 'El motor de dibujo no está disponible, así que se muestra el código.',
-    figureLabel: 'Diagrama: {{type}}',
-    figureUntyped: 'Diagrama',
+    figureLabel: 'Diagrama',
     hideSource: 'Ocultar el código',
     renderFailed: 'No se puede dibujar este diagrama, así que se muestra su código.',
     resetZoom: 'Restablecer el zoom',
@@ -344,8 +358,7 @@ const DICTIONARY = {
     copyFailed: 'Échec de la copie',
     copySource: 'Copier la source',
     engineUnavailable: "Le moteur de dessin n'est pas disponible ; la source est affichée.",
-    figureLabel: 'Schéma : {{type}}',
-    figureUntyped: 'Schéma',
+    figureLabel: 'Schéma',
     hideSource: 'Masquer la source',
     renderFailed: 'Impossible de dessiner ce schéma ; sa source est affichée.',
     resetZoom: 'Réinitialiser le zoom',
@@ -359,8 +372,7 @@ const DICTIONARY = {
     copyFailed: 'Kopieren fehlgeschlagen',
     copySource: 'Quelle kopieren',
     engineUnavailable: 'Die Zeichen-Engine ist nicht verfügbar, daher wird die Quelle angezeigt.',
-    figureLabel: 'Diagramm: {{type}}',
-    figureUntyped: 'Diagramm',
+    figureLabel: 'Diagramm',
     hideSource: 'Quelle ausblenden',
     renderFailed: 'Dieses Diagramm lässt sich nicht zeichnen, daher wird seine Quelle angezeigt.',
     resetZoom: 'Zoom zurücksetzen',
@@ -374,8 +386,7 @@ const DICTIONARY = {
     copyFailed: 'Не удалось скопировать',
     copySource: 'Копировать код',
     engineUnavailable: 'Движок отрисовки недоступен, поэтому показан код.',
-    figureLabel: 'Диаграмма: {{type}}',
-    figureUntyped: 'Диаграмма',
+    figureLabel: 'Диаграмма',
     hideSource: 'Скрыть код',
     renderFailed: 'Эту диаграмму не удалось нарисовать, поэтому показан её код.',
     resetZoom: 'Сбросить масштаб',
@@ -389,8 +400,7 @@ const DICTIONARY = {
     copyFailed: 'Não foi possível copiar',
     copySource: 'Copiar o código',
     engineUnavailable: 'O mecanismo de desenho não está disponível, então o código é exibido.',
-    figureLabel: 'Diagrama: {{type}}',
-    figureUntyped: 'Diagrama',
+    figureLabel: 'Diagrama',
     hideSource: 'Ocultar o código',
     renderFailed: 'Não foi possível desenhar este diagrama, então o código é exibido.',
     resetZoom: 'Redefinir o zoom',
@@ -477,6 +487,7 @@ function translateFor(props, doc) {
     return fallback(key, values)
   }
 }
+
 
 /**
  * The one place that calls the drawing engine.
@@ -569,11 +580,6 @@ function describeFigureError(error) {
   )
 }
 
-function figureType(mounted) {
-  const result = mounted && mounted.result
-  return result && typeof result.type === 'string' ? result.type : ''
-}
-
 /**
  * The fence layer itself.
  *
@@ -602,6 +608,16 @@ function safeRead(source, name) {
 }
 
 /** Everything the layer needs from the host, read once and safely. */
+/**
+ * Whether a host's `children` is something React would actually render. A host
+ * that hands over `null`, `false`, `0` or `''` for an empty slot must not be
+ * mistaken for "the host gave me nothing to show": in that case the layer still
+ * has the source text and must show it itself.
+ */
+function isRenderableChild(value) {
+  return value !== undefined && value !== null && value !== false && value !== '' && value !== 0
+}
+
 function readLayerInput(props) {
   const code = safeRead(props, 'code')
   const streaming = safeRead(props, 'streaming')
@@ -610,7 +626,7 @@ function readLayerInput(props) {
     code: code.ok && typeof code.value === 'string' ? code.value : '',
     hasCode: code.ok && typeof code.value === 'string',
     streaming: streaming.ok ? Boolean(streaming.value) : false,
-    children: children.ok && children.value !== undefined ? children.value : null,
+    children: children.ok && isRenderableChild(children.value) ? children.value : null,
   }
 }
 
@@ -623,10 +639,14 @@ function MermaidFenceLayer(props) {
 
   const hostTranslate = safeRead(props, 't').value
   const translate = React.useMemo(() => translateFor({ t: hostTranslate }, doc), [hostTranslate, doc])
+  // A host may bind a fresh `t` on every render (a locale-bound slot prop). The
+  // drawing must survive that: it is re-created when the source changes, never
+  // because a label function changed identity. So the effect reads the current
+  // translator through a ref instead of depending on it.
+  const translateRef = React.useRef(translate)
+  translateRef.current = translate
   const [status, setStatus] = React.useState('pending')
   const [reasonKind, setReasonKind] = React.useState('other')
-  const [detail, setDetail] = React.useState('')
-  const [figureKind, setFigureKind] = React.useState('')
   const [showSource, setShowSource] = React.useState(false)
   const [copyState, setCopyState] = React.useState('idle')
   const hostRef = React.useRef(null)
@@ -653,19 +673,20 @@ function MermaidFenceLayer(props) {
   React.useLayoutEffect(() => {
     const host = hostRef.current
     if (streaming || !host || !doc) return undefined
+    const t = translateRef.current
     teardown()
+    setStatus('pending')
     host.textContent = ''
     const labels = {
-      reset: translate('resetZoom'),
-      zoomIn: translate('zoomIn'),
-      zoomOut: translate('zoomOut'),
+      reset: t('resetZoom'),
+      zoomIn: t('zoomIn'),
+      zoomOut: t('zoomOut'),
     }
     const fail = (error) => {
       const raw = describeFigureError(error)
       host.textContent = ''
       setStatus('failed')
       setReasonKind(figureErrorKind(error))
-      setDetail(raw)
       if (raw) {
         try {
           console.warn('dsh-dyslexia: diagram not drawn', raw)
@@ -695,7 +716,20 @@ function MermaidFenceLayer(props) {
     }
     mountedRef.current = mounted
     setStatus('rendered')
-    setFigureKind(figureType(mounted))
+    // The picture is the image; the box around it also holds the engine's own
+    // zoom buttons, so the box is a group and only the drawing itself carries
+    // role="img". Otherwise a screen reader would treat the zoom controls as
+    // part of an image, which makes them unreachable.
+    try {
+      const svg = host.querySelector('svg')
+      if (svg) {
+        svg.setAttribute('role', 'img')
+        svg.setAttribute('aria-label', t('figureLabel'))
+        host.setAttribute('role', 'presentation')
+      }
+    } catch (error) {
+      void error
+    }
     if (typeof ResizeObserver === 'function') {
       const observer = new ResizeObserver(() => {
         const current = mountedRef.current
@@ -710,7 +744,7 @@ function MermaidFenceLayer(props) {
       observerRef.current = observer
     }
     return teardown
-  }, [code, streaming, doc, teardown, translate])
+  }, [code, streaming, doc, teardown])
 
   React.useEffect(
     () => () => {
@@ -772,17 +806,18 @@ function MermaidFenceLayer(props) {
   const failed = status === 'failed'
   const rendered = status === 'rendered'
 
-  const figureLabel = figureKind
-    ? translate('figureLabel', { type: figureKind })
-    : translate('figureUntyped')
+  const figureLabel = translate('figureLabel')
 
-  const figure = React.createElement('div', {
-    className: FIGURE_CLASS,
-    ref: hostRef,
-    role: 'img',
-    'aria-label': figureLabel,
-    style: failed ? { display: 'none' } : undefined,
-  })
+  const figure = React.createElement(
+    'div',
+    {
+      className: FIGURE_GROUP_CLASS,
+      role: 'group',
+      'aria-label': figureLabel,
+      style: failed ? { display: 'none' } : undefined,
+    },
+    React.createElement('div', { className: FIGURE_CLASS, ref: hostRef }),
+  )
 
   const copyLabel = copyState === 'copied' ? 'copied' : copyState === 'failed' ? 'copyFailed' : 'copySource'
 
@@ -803,7 +838,12 @@ function MermaidFenceLayer(props) {
         React.createElement(
           'button',
           { type: 'button', className: BUTTON_CLASS, onClick: copySource },
-          translate(copyLabel),
+          translate('copySource'),
+        ),
+        React.createElement(
+          'span',
+          { className: STATUS_CLASS, role: 'status', 'aria-live': 'polite' },
+          copyState === 'idle' ? '' : translate(copyLabel),
         ),
       )
     : null
@@ -824,7 +864,7 @@ function MermaidFenceLayer(props) {
         : translate('renderFailed')
 
   const note = failed
-    ? React.createElement('p', { className: NOTE_CLASS, title: detail || undefined }, noteText)
+    ? React.createElement('p', { className: NOTE_CLASS }, noteText)
     : null
 
   const fallback = failed
@@ -886,6 +926,7 @@ class FigureBoundary extends React.Component {
     }
   }
 }
+
 
 /**
  * Client half of `@jiezhengj/dsh-dyslexia`.

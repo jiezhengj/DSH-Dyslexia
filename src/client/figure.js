@@ -88,8 +88,3 @@ function describeFigureError(error) {
       .filter((line) => line.length > 0)[0] || ''
   )
 }
-
-function figureType(mounted) {
-  const result = mounted && mounted.result
-  return result && typeof result.type === 'string' ? result.type : ''
-}
