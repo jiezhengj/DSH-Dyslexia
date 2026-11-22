@@ -12,6 +12,14 @@
   ],
   "type": "module",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jiezhengj/DSH-Dyslexia.git"
+  },
+  "homepage": "https://github.com/jiezhengj/DSH-Dyslexia#readme",
+  "bugs": {
+    "url": "https://github.com/jiezhengj/DSH-Dyslexia/issues"
+  },
   "exports": {
     ".": "./index.js",
     "./client": "./client.js",

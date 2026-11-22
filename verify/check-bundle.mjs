@@ -57,6 +57,19 @@ check('package.json names and entry points', () => {
   return `${manifest.name}@${manifest.version}`
 })
 
+check('package.json points at the repository npm trusts', () => {
+  // A provenance publish is rejected unless the manifest names the same
+  // repository the workflow runs in, so this must fail before the tag is pushed.
+  const repository = manifest.repository && typeof manifest.repository === 'object' ? manifest.repository : {}
+  assert(
+    repository.url === 'git+https://github.com/jiezhengj/DSH-Dyslexia.git',
+    'repository.url must match the trusted publisher repository',
+  )
+  assert(typeof manifest.homepage === 'string' && manifest.homepage.startsWith('https://github.com/'), 'homepage must be the repository')
+  assert(typeof manifest.bugs === 'object' && typeof manifest.bugs.url === 'string', 'bugs.url must be set')
+  return repository.url
+})
+
 check('package.json declares the bundle patch and the client half', () => {
   assert(manifest.dsh && manifest.dsh.bundle, 'dsh.bundle is missing')
   assert(manifest.dsh.bundle.patch === './cordis.patch.yml', 'dsh.bundle.patch must be cordis.patch.yml')
