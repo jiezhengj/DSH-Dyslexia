@@ -176,7 +176,7 @@
             }
             expect(!!figure, `[${lang}] a picture is drawn`)
             expect(labels.length === 2, `[${lang}] exactly two buttons`, String(labels.length))
-            const bare = labels.concat([token]).filter((text) => /copySource|showSource|hideSource|figureLabel|figureUntyped|copied|copyFailed/.test(text))
+            const bare = labels.concat([token]).filter((text) => /copySource|showSource|hideSource|figureLabel|copied|copyFailed/.test(text))
             expect(bare.length === 0, `[${lang}] no internal key reaches the screen`, bare.join(','))
             if (view.stage.querySelector('.dsh-dyslexia-bar button')) {
               view.stage.querySelectorAll('button')[0].click()
@@ -537,12 +537,32 @@
           wideRoot.render(React.createElement(Layer, { code: WIDE, streaming: false, children: hostBlock(WIDE) }))
           await tick(160)
           const wideImage = wideStage.querySelector('svg[role="img"]')
+          expect(
+            !!wideImage && wideImage.getAttribute('aria-label') === '图',
+            'the image carries the localised name',
+            wideImage ? String(wideImage.getAttribute('aria-label')) : 'no image',
+          )
+          expect(
+            !!wideImage && !wideImage.hasAttribute('aria-roledescription'),
+            'the image carries no english role description',
+            wideImage && wideImage.hasAttribute('aria-roledescription')
+              ? String(wideImage.getAttribute('aria-roledescription'))
+              : 'absent',
+          )
+          expect(
+            wideStage.querySelectorAll('[role="img"]').length === 1,
+            'exactly one image in the picture',
+            String(wideStage.querySelectorAll('[role="img"]').length),
+          )
           const zoomButtons = Array.prototype.slice
             .call(wideStage.querySelectorAll('button'))
             .filter((node) => !node.closest('.dsh-dyslexia-bar'))
           expect(zoomButtons.length > 0, 'a scaled picture offers the engine zoom buttons', String(zoomButtons.length))
           const zoomInsideImage = zoomButtons.filter((node) => wideImage && wideImage.contains(node))
           expect(zoomInsideImage.length === 0, 'the zoom buttons sit outside the image', String(zoomInsideImage.length))
+          const zoomNames = zoomButtons.map((node) => node.getAttribute('aria-label') || node.textContent || '')
+          const untranslatedZoom = zoomNames.filter((name) => /Zoom|Reset/i.test(name))
+          expect(zoomNames.length > 0 && untranslatedZoom.length === 0, 'the zoom buttons speak the interface language', zoomNames.join(' | '))
           const enabled = zoomButtons.filter((node) => node.disabled !== true)
           const tabbable = enabled.filter((node) => node.getAttribute('tabindex') !== '-1')
           expect(enabled.length > 0 && tabbable.length === enabled.length, 'every enabled zoom button can take the keyboard', `${tabbable.length}/${enabled.length} enabled of ${zoomButtons.length}`)

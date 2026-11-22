@@ -143,6 +143,10 @@ function MermaidFenceLayer(props) {
       if (svg) {
         svg.setAttribute('role', 'img')
         svg.setAttribute('aria-label', t('figureLabel'))
+        // The engine stamps its own English role description ("flowchart").
+        // Read aloud next to a localized name it is just noise in the wrong
+        // language, so it goes.
+        svg.removeAttribute('aria-roledescription')
         host.setAttribute('role', 'presentation')
       }
     } catch (error) {
@@ -219,12 +223,25 @@ function MermaidFenceLayer(props) {
     setShowSource((value) => !value)
   }, [])
 
+  // The picture is drawn once per source, but its name belongs to the current
+  // interface language: a language switch must rename the image in place, not
+  // redraw it.
+  const figureLabel = translate('figureLabel')
+  React.useEffect(() => {
+    const host = hostRef.current
+    if (!host) return
+    try {
+      const svg = host.querySelector('svg')
+      if (svg && svg.getAttribute('role') === 'img') svg.setAttribute('aria-label', figureLabel)
+    } catch (error) {
+      void error
+    }
+  }, [figureLabel])
+
   if (streaming) return children
 
   const failed = status === 'failed'
   const rendered = status === 'rendered'
-
-  const figureLabel = translate('figureLabel')
 
   const figure = React.createElement(
     'div',

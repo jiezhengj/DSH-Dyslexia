@@ -7,23 +7,25 @@
 ```bash
 node scripts/build-client.mjs       # 由 src/client/*.js + vendor/pele 生成 client.js
 node verify/check-bundle.mjs        # 31 项静态与行为断言，纯 Node 内置模块
-node verify/run-harness.mjs --list  # 82 项浏览器断言，需要本机 Chrome
+node verify/run-harness.mjs --list  # 92 项浏览器断言，需要本机 Chrome
 ```
 
 ## E-BLD 构建
 
-```
-build-client: @jiezhengj/dsh-dyslexia -> client.js (761974 bytes, 760962 characters, engine 1.13.0, sources 5, syntax ok)
+命令：`node scripts/build-client.mjs`，输出：
+
+```text
+build-client: @jiezhengj/dsh-dyslexia -> client.js (762625 bytes, 761613 characters, engine 1.13.0, sources 5, syntax ok)
 ```
 
-产物 `client.js` 的 SHA256 = `2D14A5B757F85290C8B9D9EE6078EEB70B059425045580EDD8729FC7A7FB0F34`，仓库里的文件与 `desktop` profile 中安装的那份逐字节相同（见 E-INS）。
+产物 `client.js` 的 SHA256 = `2169883088345B44DAC55E7A0F41304BB8491A8D8622C4178C4BCDFF9D0D7B31`，仓库里的文件与 `desktop` profile 中安装的那份逐字节相同（见 E-INS）。
 
 ## E-CHK 静态与行为校验
 
 命令：`node verify/check-bundle.mjs`，完整输出（stdout，逐行照抄）：
 
 ```text
-ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.5
+ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.6
 ok   package.json points at the repository npm trusts — git+https://github.com/jiezhengj/DSH-Dyslexia.git
 ok   package.json declares the bundle patch and the client half — platform web, no package inject
 ok   no dsh version gate can refuse a start — no engines.dsh, no dsh peers
@@ -32,7 +34,7 @@ ok   every published file exists — 24 files
 ok   every interface language has its own plugin page — 8 languages
 ok   cordis.patch.yml inserts the plugin by package name — 3 lines
 ok   both locales carry metadata — en, zh
-ok   client.js is one loader chunk keyed by the package name — 761974 bytes
+ok   client.js is one loader chunk keyed by the package name — 762625 bytes
 ok   client.js requires react and nothing else — react
 ok   client.js never reaches the network — no fetch, no XHR, no dynamic import, no remote URL
 ok   client.js carries the vendored engine — Pele 1.13.0 inlined
@@ -49,13 +51,13 @@ ok   every supported sample type draws an svg — flowchart:218x64 sequence:184x
 ok   a broken diagram reports a one-line reason — Parse error on line 2:
 ok   host key echo falls back to bundled strings — key echo, blanks, placeholders rejected
 ok   every language carries the same complete sentences — 12 keys x 8 languages, no engine text in labels
-ok   client.js matches the sources it claims — 5f89ee58c00607c98d5356575e6be451
+ok   client.js matches the sources it claims — 737f61ee187d1956e13917922a931cf0
 ok   the picture is the image, and the copy answer is announced — label is a noun, role="img" on the svg, copy result announced
 ok   a factory that cannot build never throws at the host — module-level throw contained, empty module returned
 ok   the host half registers exactly one capability section — ui:dsh-dyslexia, order 9000, 85 words
 ok   the host half stays silent when the host changed shape — five silent hosts, one throwing section
 
-check-bundle: @jiezhengj/dsh-dyslexia@0.1.5 | client.js 761974 bytes | sources sha256:5f89ee58c00607c98d5356575e6be451 | all 31 checks passed
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.6 | client.js 762625 bytes | sources sha256:737f61ee187d1956e13917922a931cf0 | all 31 checks passed
 ```
 
 ## E-HARN 浏览器行为校验
@@ -149,13 +151,17 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.5 | client.js 761974 bytes | sources s
 [ok] the box around the picture is a group
 [ok] the group carries the localised name — 图
 [ok] the drawing itself is the image
+[ok] the image carries the localised name — 图
+[ok] the image carries no english role description — absent
+[ok] exactly one image in the picture — 1
 [ok] a scaled picture offers the engine zoom buttons — 3
 [ok] the zoom buttons sit outside the image — 0
+[ok] the zoom buttons speak the interface language — 放大 | 缩小 | 重置缩放
 [ok] every enabled zoom button can take the keyboard — 2/2 enabled of 3
-run-harness: all 88 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+run-harness: @jiezhengj/dsh-dyslexia@0.1.6 | client.js 762625 bytes | all 92 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
-夹具是提交进仓库的 `verify/harness/index.html`（+ `verify/harness/vendor/` 下的 React 18.3.1 UMD 副本），自建假 loader / 假 slots / 假 locale，加载仓库里的 `client.js` 本体与 `vendor/pele/pele.global.js`。故障注入覆盖：宿主 `t` 抛错/回显 key/回空白/回 `key:value`/留占位符、`code` 与 `children` 取值器抛错、引擎 `innerHTML` 抛错、无 slots 服务、6 种畸形 ctx、坏语法（有/无宿主 `children`）、falsy `children`、超限源码、流式→完成、`t` 换身份、裁剪板缺失/成功、360 px 栏宽、主题换色；无障碍结构另有三项：`role="group"` 的本地化组名、缩放按钮位于图像元素之外、可聚焦。
+夹具是提交进仓库的 `verify/harness/index.html`（+ `verify/harness/vendor/` 下的 React 18.3.1 UMD 副本），自建假 loader / 假 slots / 假 locale，加载仓库里的 `client.js` 本体与 `vendor/pele/pele.global.js`。故障注入覆盖：宿主 `t` 抛错/回显 key/回空白/回 `key:value`/留占位符、`code` 与 `children` 取值器抛错、引擎 `innerHTML` 抛错、无 slots 服务、6 种畸形 ctx、坏语法（有/无宿主 `children`）、falsy `children`、超限源码、流式→完成、`t` 换身份、裁剪板缺失/成功、360 px 栏宽、主题换色；无障碍结构另有六项: `role="group"` 的本地化组名、图像节点的本地化名称、图像节点没有英文 `aria-roledescription`、图中只有一个 `role="img"`、缩放按钮位于图像元素之外、缩放按钮用界面语言且可聚焦。
 
 ## E-COMP 兼容性断言与要求逐条对应
 
@@ -185,7 +191,7 @@ run-harness: all 88 checks passed (C:/Program Files/Google/Chrome/Application/ch
 | 0.1.5 第一次 | `45046044274` | **failure**（见 E-CI） | — |
 | 0.1.5 | `45046178925` | success，provenance logIndex `4046928419` | `e2a4b81bc0d6b45916cf5739a566e89469274cfd` |
 
-0.1.5 的 CI 日志里两套检查与本机完全一致：
+发布提交（`eeb4a05`，tag `v0.1.5`）的 CI 日志如下——**当时夹具是 82 项**；此后 `4c2e96c` 与 0.1.6 的提交又加了十项无障碍断言，只在本机跑过（上面的 E-HARN 是 0.1.6 的 92 项），下一次发版会带上它们：
 
 ```text
 check-bundle: @jiezhengj/dsh-dyslexia@0.1.5 | client.js 761974 bytes | sources sha256:5f89ee58c00607c98d5356575e6be451 | all 31 checks passed

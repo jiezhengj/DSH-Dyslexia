@@ -12,7 +12,7 @@
  */
 
 import { spawnSync } from 'node:child_process'
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync, statSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
@@ -113,4 +113,10 @@ if (failed > 0) {
   process.exit(1)
 }
 
-process.stdout.write(`run-harness: all ${passed} checks passed (${browser})\n`)
+// The summary line names the tree it came from, so a pasted run cannot belong to
+// a different commit than the one it claims.
+const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'))
+const chunk = statSync(join(ROOT, 'client.js'))
+process.stdout.write(
+  `run-harness: ${pkg.name}@${pkg.version} | client.js ${chunk.size} bytes | all ${passed} checks passed (${browser})\n`,
+)

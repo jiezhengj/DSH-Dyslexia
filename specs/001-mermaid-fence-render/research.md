@@ -30,7 +30,7 @@ window.__ModuleLoader__.load({id:`@deepseek-ai/dsh-client-ui-chat`,factory:requi
 
 **依据**：`pele` 支持 Mermaid 12.1 全部内置图类型（flowchart/sequence/class/state/ER/gantt/timeline/mindmap/kanban/xychart/C4/architecture…），零运行期依赖、同步渲染、CSS 变量配色、`mount()` 读 CSS 字体并按容器宽度自适配、自动转义图内文字并限制源码与输出规模，MIT 许可。宿主客户端模块表是冻结的（`PLATFORM_MODULES`），`dsh.client.external` 只能引用**已安装的客户端包**，而 pele 不是 DSH 客户端包，所以无法以外部依赖形式引入——必须内联。
 
-**代价**：`client.js` 体积约 743 KB（0.1.3 实测 760,611 字节；其中 pele global 构建 733,670 B，其余是自家代码）。宿主现有 `ui-chat` 单块即 509 KB，同一量级，可接受。
+**代价**：`client.js` 体积约 745 KB（0.1.6 实测 762,625 字节；其中 pele global 构建 733,670 B，其余是自家代码）。宿主现有 `ui-chat` 单块即 509 KB，同一量级，可接受。
 
 **被否方案**：① 运行期从 CDN 载入 mermaid/pele——违反原则 III 与 SC-004（外部请求数 0）；② 把 mermaid 源码存成文件、由宿主渲染——违反 FR-002（不生成文件）与用户"内容要留在会话里"的诉求。
 

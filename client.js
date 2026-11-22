@@ -1,4 +1,4 @@
-/*! @jiezhengj/dsh-dyslexia 0.1.5 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:5f89ee58c00607c98d5356575e6be451 */
+/*! @jiezhengj/dsh-dyslexia 0.1.6 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:737f61ee187d1956e13917922a931cf0 */
 ;(function () {
   function reportLoadFailure(scope, error) {
     try { console.error('dsh-dyslexia: ' + scope, error) } catch (_error) {}
@@ -248,15 +248,11 @@ const FIGURE_CSS = [
   '  outline-offset: 1px;',
   '}',
   `.${STATUS_CLASS} {`,
-  '  position: absolute;',
-  '  width: 1px;',
-  '  height: 1px;',
-  '  margin: -1px;',
-  '  padding: 0;',
-  '  overflow: hidden;',
-  '  clip-path: inset(50%);',
+  '  font: inherit;',
+  '  font-size: 12px;',
+  '  line-height: 20px;',
   '  white-space: nowrap;',
-  '  border: 0;',
+  '  color: var(--dsw-alias-label-secondary);',
   '}',
   `.${SOURCE_CLASS} {`,
   '  margin: 6px 0 0;',
@@ -725,6 +721,10 @@ function MermaidFenceLayer(props) {
       if (svg) {
         svg.setAttribute('role', 'img')
         svg.setAttribute('aria-label', t('figureLabel'))
+        // The engine stamps its own English role description ("flowchart").
+        // Read aloud next to a localized name it is just noise in the wrong
+        // language, so it goes.
+        svg.removeAttribute('aria-roledescription')
         host.setAttribute('role', 'presentation')
       }
     } catch (error) {
@@ -801,12 +801,25 @@ function MermaidFenceLayer(props) {
     setShowSource((value) => !value)
   }, [])
 
+  // The picture is drawn once per source, but its name belongs to the current
+  // interface language: a language switch must rename the image in place, not
+  // redraw it.
+  const figureLabel = translate('figureLabel')
+  React.useEffect(() => {
+    const host = hostRef.current
+    if (!host) return
+    try {
+      const svg = host.querySelector('svg')
+      if (svg && svg.getAttribute('role') === 'img') svg.setAttribute('aria-label', figureLabel)
+    } catch (error) {
+      void error
+    }
+  }, [figureLabel])
+
   if (streaming) return children
 
   const failed = status === 'failed'
   const rendered = status === 'rendered'
-
-  const figureLabel = translate('figureLabel')
 
   const figure = React.createElement(
     'div',

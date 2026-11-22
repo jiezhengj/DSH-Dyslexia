@@ -70,11 +70,12 @@ type Props = {
 # DOM 与可访问性契约
 
 - 结构：外层 `div.dsh-dyslexia-group`（`role="group"`、`aria-label` = 本地化的纯名词"图/Diagram/…"），内层 `div.dsh-dyslexia-figure` 是唯一的挂载点，`max-width: 100%`、`overflow: auto`。
-- 图像角色：`role="img"` + `aria-label` 只落在引擎画出的 `svg` 上，挂载点 `role="presentation"`。理由：pele 会把自己的缩放按钮追加在挂载点里，若 `role="img"` 落在容器上，读屏会把缩放按钮当成图像的一部分而无法单独聚焦（FR-018）。
+- 图像角色：`role="img"` + `aria-label` 只落在引擎画出的 `svg` 上（且全图恰好一个），挂载点 `role="presentation"`。理由：pele 会把自己的缩放按钮追加在挂载点里，若 `role="img"` 落在容器上，读屏会把缩放按钮当成图像的一部分而无法单独聚焦（FR-018）。
+- 引擎标记：挂载后移除引擎自带的 `aria-roledescription`（它会读出英文引擎类型，如 `flowchart`）；换界面语言时就地改写 `svg` 的 `aria-label`，不重挂载（不丢缩放状态）。
 - 命名：`aria-label` 只用本地化名词，**不拼引擎类型**（不出现 `flowchart`、`{{type}}` 之类技术标记）。
 - 源码切换条：一个按钮（`<button type="button">`），文案"查看源码 / 隐藏源码"；展开的源码块保留语言标记 `mermaid`，可全选复制（FR-003）。
-- 复制：按钮文案固定"复制源码"；结果写入 `<span class="dsh-dyslexia-status" role="status" aria-live="polite">`（"已复制"/"复制失败"），视觉隐藏但可被播报——按钮文案不因结果而变，避免读屏重复朗读同一控件（FR-018）。
-- 缩放控件：仅在图宽超出容器时渲染；按钮有 `aria-label`；缩放只改挂载点内部变换，不改变页面布局。
+- 复制：按钮文案固定"复制源码"；结果写入 `<span class="dsh-dyslexia-status" role="status" aria-live="polite">`（"已复制"/"复制失败"），**可见的小号次要文字**同时被读屏播报——明眼用户与读屏用户看到同一句话；按钮文案不因结果而变，避免重复朗读同一控件（FR-018）。
+- 缩放控件：仅在图宽超出容器时渲染；按钮的 `aria-label` 用界面语言（不得出现 `Zoom`/`Reset` 之类英文），位于 `role="img"` 之外、可用键盘聚焦；缩放只改挂载点内部变换，不改变页面布局。
 - 键盘可达：所有按钮可 Tab 聚焦，`Enter`/`Space` 生效；图本身不设为 Tab 焦点。
 - 稳定挂载：宿主每次渲染都新建 `t` 时，绘制 MUST NOT 因此重建（`t` 经 ref 读取，不在 layout effect 依赖里）；只有源码或流式状态变化才重挂。
 - 颜色：不使用硬编码色值；深浅主题切换后无需重新解析图源（pele 就地重绘）。
