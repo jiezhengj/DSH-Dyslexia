@@ -7,7 +7,7 @@
 ```json
 {
   "name": "@jiezhengj/dsh-dyslexia",
-  "version": "0.1.6",
+  "version": "0.1.8",
   "description": "Draws mermaid code blocks in DeepSeek Harness conversations as diagrams, in place in the message.",
   "type": "module",
   "main": "index.js",
@@ -87,18 +87,18 @@
 
 8 种界面语言 `zh`、`en`、`ja`、`es`、`fr`、`de`、`ru`、`pt` 各有一份，取自宿主 `dsh-client-locale` 实际注册的语言集合。
 
-# 可静态校验项（`node verify/check-bundle.mjs`，32 项）
+# 可静态校验项（`node verify/check-bundle.mjs`，34 项）
 
 与清单直接相关的断言：
 
-1. `package.json` 的 9 条 `files` 模式覆盖 32 个实际文件（`npm pack` 展开为 33 个，含 `package.json`），清单由 `npm pack --dry-run` 核对；`check-bundle` 里那条 `every published file exists` 断言只覆盖其中 **24 个必须存在的文件**（8 个基础文件 + 8 语言 × 2：`locale/<lang>.json` 与 `docs/DETAIL*.md`），8 篇 `DETAIL*.md` 与 `package.json` 由打包清单证明，不由这条断言证明。未匹配到 `src/`、`vendor/`、`scripts/`、`verify/`、`specs/` 下任何路径。
+1. `package.json` 的 9 条 `files` 模式覆盖 32 个实际文件（`npm pack` 展开为 33 个，含 `package.json`），清单由 `npm pack --dry-run` 核对；`check-bundle` 里那条 `every published file exists` 断言只覆盖其中 **24 个必须存在的文件**（8 个基础文件 + 8 个 `locale/<lang>.json` + 8 份 `README.<lang>.md`）；8 篇 `DETAIL*.md` 由 `every interface language has its own plugin page` 证明，`package.json` 由 `npm pack` 清单证明，都不由那条断言证明。未匹配到 `src/`、`vendor/`、`scripts/`、`verify/`、`specs/` 下任何路径。
 2. `exports["./client"]` 指向的文件存在，以授权 banner 开头，`window.__ModuleLoader__.load(` 的 `id` 与包名逐字相等，导出 `apply` 与 `inject`，且正文不含 `</script`。
 3. `client.js` 中 `require(` 的实参集合 ⊆ {`react`}。
 4. `client.js` 不含 `fetch(`、`XMLHttpRequest`、动态 `import(`、外部 `http(s)://` 资源引用（仅保留 SVG 命名空间字符串）；内联 `Pele 1.13.0`。
 5. banner 的 `sources sha256:` 与按源码重算的摘要一致（产物不陈旧）。
 6. `cordis.patch.yml` 含 `insert:`、`id: dsh-dyslexia`、`name: '@jiezhengj/dsh-dyslexia'`。
 7. 8 个 `locale/*.json` 各有 `meta.title`、`meta.description`（≥80 字符）、`meta.detail`；`detail` 指向的文档存在且恰好一行、形如 `![alt](preview.svg)`；8 种标题互不相同。
-8. `index.js` 含 `export const inject = ['systemPrompt']`；`apply` 在正常宿主上恰好注册一段（`ui:dsh-dyslexia`、order 9000、85 词），在 5 种畸形宿主上静默。
+8. `index.js` 含 `export const inject = ['systemPrompt']`；`apply` 在正常宿主上恰好注册一段（`ui:dsh-dyslexia`、order 9000、85 词），在 **5 种静默 ctx**（`undefined`、`null`、`{}`、`systemPrompt: null`、`systemPrompt: {}`）与 **2 次异常调用**（`section` 抛错、`section` 返回 rejected Promise）共 7 次 `apply` 上都静默——框架的 `apply stays silent on a changed shape` 断言六种畸形客户端 ctx，另有本次宿主机侧的七次调用，两者不是同一组。
 9. **无版本门**：不含 `engines`、不含指向 DSH 包的 `peerDependencies`、不含 `dsh.client.inject`（FR-013 / SC-007）。
 10. **产物可独立编译**：`new vm.Script(client.js)` 不抛错（FR-015 / SC-008）。
 11. **宿主加载器异常不连累**：会抛错的 `load`、缺失 `load`、缺失 `window` 三种宿主执行 `client.js` 均不抛。
@@ -108,7 +108,7 @@
 15. **文案完整**：12 个键 × 8 语言齐全，失败整句里不含 `{{reason}}`、不含引擎英文。
 16. **key 回显防线**：`i18n.js` 的 `isResolved` 拒绝回显 key、纯空白、未替换占位符。
 
-# 浏览器行为校验（`node verify/run-harness.mjs --list`，92 项）
+# 浏览器行为校验（`node verify/run-harness.mjs --list`，108 项）
 
 夹具 `verify/harness/index.html` 提交进仓库，用真实 Chromium 打开 `file://`，覆盖：槽注册形状、8 语言逐个驱动、5 类敌意 `t`、绘制/坏图/引擎抛错/getter 抛错、复制成功与失败、360 px 窄屏、主题换色、locale 重试、6 种畸形 `ctx`、内部 key 不外泄。
 

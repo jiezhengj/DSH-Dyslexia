@@ -61,7 +61,7 @@ type Props = {
 
 宿主仍在迭代，本层对"接口变了"的唯一正确反应是**安静地不画**。以下每条都是必须成立的行为，且都有一条可重复的断言（括号内为 `verify/check-bundle.mjs` 的断言名或夹具用例名）：
 
-7. **不注册也不抛**：`ctx.slots` 缺失、`inject` 抛错、`register` 签名变化 → 放弃注册，宿主照常渲染原代码块（夹具 `apply stays silent on a changed host`）。
+7. **不注册也不抛**：`ctx.slots` 缺失、`ctx.slots.inject()` 抛错、`register` 签名变化 → 放弃注册，宿主照常渲染原代码块（夹具 `apply stays silent on a changed host` 覆盖 `slots` 为 `null`、`{}`、`{inject(){},register(){}}` 与 `inject` 抛错四种；`register` 抛错由 `apply falls back to a plain layer when the host refuses the locale` 一带覆盖）。
 8. **locale 可选且不可信**：`ctx.locale` 缺失或 `register` 失败 → 改用不带 `locale` 的注册重试；仍失败则放弃注册。宿主 `t` 只有在返回"真实译文"时才采信——非空字符串、不等于请求的 key、不含未替换的 `{{占位符}}`；否则用包内 8 语言字典（夹具 `a host t that throws still shows words`、`a host t that echoes the key still shows words`、`no internal key reaches the eye`）。
 9. **数据守卫**：`code` 不是字符串、取值器抛错、缺 `document`、`children` 是 React 不收的形状（普通对象 / 函数 / 含对象的数组）→ 不进入绘制，并把源码交回（夹具 `a throwing code getter leaves the host block`、`a throwing children getter does not reach the host`、`a refused children cannot empty the message — object`、`a refused children cannot empty the message — function`）。语法错误是另一件事（E4），由 `a broken diagram says why` 覆盖。
 10. **绘制期零外泄**：pele 在渲染子树里抛错 → 错误边界渲染 `children`，并在 `code` 变化时复位（夹具 `a throwing engine leaves a sentence`、`a throwing engine keeps the host block`）。
@@ -104,7 +104,7 @@ type Props = {
 | `refresh()` | — | 容器尺寸/字体变化后重排 |
 | `destroy()` | — | 释放 |
 | `Mounted.error` | `PeleError` | 判定失败路径 |
-| `Mounted.result.type` | string | 用于 `aria-label` 与提示文案 |
+| `Mounted.result.type` | string | 仅用于内部判断与错误提示；**不进入 `aria-label`**（FR-018 要求名称为本地化纯名词） |
 
 **禁止**：`parse()` + 自绘（放弃 pele 的字体与主题适配）、`render()` 后手工塞进 DOM（放弃 `refresh()`）、把 SVG 序列化成字符串存任何地方。
 

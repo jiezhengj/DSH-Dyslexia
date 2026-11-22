@@ -60,7 +60,7 @@ export function apply(ctx) {
 |---|---|---|
 | 插件卸载 | 段落从下一轮装配起消失；后续对话不再出现"只有装插件才看得懂"的内容 | 卸载后新开一轮，检查提示词里不再有该段（`--dump-config` 或会话日志） |
 | 插件禁用（不卸载） | 同上 | 同上 |
-| 宿主升级 | 若 `ctx.systemPrompt` 或 `section()` 签名变化：`apply` 就地捕获、静默跳过（不注册段落、不抛错），宿主与其他插件照常启动 | 兼容性断言 `host apply survives a host that changed shape`（六种畸形宿主 ctx）；见 FR-014 |
+| 宿主升级 | 若 `ctx.systemPrompt` 或 `section()` 签名变化：`apply` 就地捕获、静默跳过（不注册段落、不抛错），宿主与其他插件照常启动 | 兼容性断言 `the host half stays silent when the host changed shape`（5 种静默 ctx + 2 次异常调用，共 7 次 `apply`）；客户端槽位的六种畸形 ctx 由 `apply stays silent on a changed host` 覆盖；见 FR-014 |
 
 # 与客户端半边的耦合约束
 

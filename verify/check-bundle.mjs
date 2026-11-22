@@ -447,6 +447,33 @@ check('host children react would refuse fall back to the source', () => {
   return 'objects, functions and mixed arrays fall back to the source text'
 })
 
+check('a re-laid-out drawing is named again, not just at mount', () => {
+  const view = read('src/client/view.js')
+  // The engine replaces the whole <svg> node when it re-lays out, so a name set
+  // once at mount disappears on the first resize — the reader then hears the
+  // engine's English role description about an unnamed picture.
+  assert(view.includes('function labelFigure(host, translate)'), 'no shared labelling routine exists')
+  assert(view.includes("svg.removeAttribute('aria-roledescription')"), 'the engine role description is not removed')
+  assert(/labelFigure\(host, translateRef\.current\)/.test(view), 'a re-layout does not re-name the drawing')
+  assert(view.includes('MutationObserver'), 'a swapped drawing node is not watched for')
+  assert(view.includes('const ZOOM_BUTTONS'), 'the engine zoom controls are never renamed')
+  const labels = read('src/client/i18n.js')
+  assert(
+    labels.includes('const table = DICTIONARY[fallbackLanguage(doc)] || DICTIONARY.en'),
+    'the bundled strings are captured once, so a language switch keeps the old words',
+  )
+  return 'labelling runs at mount, after re-layout and on a swapped node; strings follow the language'
+})
+
+check('a host block that throws cannot empty the message', () => {
+  const view = read('src/client/view.js')
+  assert(view.includes('class SafeChildren extends React.Component'), 'the host block is rendered unguarded')
+  assert(view.includes('function hostBlock(children, code)'), 'no single entry point for the host block')
+  assert(!/Symbol\.iterator/.test(view), 'an iterable is still passed through to React unchecked')
+  assert(view.includes('sourceFallback(this.props.code)'), 'the guarded block has no plain-text floor')
+  return 'host blocks render inside their own boundary, with the source text as the floor'
+})
+
 check('a factory that cannot build never throws at the host', () => {
   let factory = null
   loadChunk({ window: { __ModuleLoader__: { load(spec) { factory = spec.factory } } } })

@@ -149,8 +149,11 @@ function fallbackLanguage(doc) {
  * a bare key.
  */
 function makeFallbackTranslate(doc) {
-  const table = DICTIONARY[fallbackLanguage(doc)]
+  // The language is read per call, not captured: the reader can switch the
+  // interface language while a picture is on screen, and every label — the
+  // image's name, the buttons, the engine's zoom controls — must follow.
   return function translate(key, values) {
+    const table = DICTIONARY[fallbackLanguage(doc)] || DICTIONARY.en
     const template = Object.prototype.hasOwnProperty.call(table, key)
       ? table[key]
       : DICTIONARY.en[key] || key

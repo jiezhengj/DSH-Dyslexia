@@ -78,8 +78,9 @@
 | 缺 `slots` 服务 / 注册签名变化 | 宿主接口变化 | 不注册层，代码块原样显示 | 夹具 `apply stays silent on a changed host`（FR-014） |
 | 缺 `locale` 或 `t` 抛错 | 宿主本地化接口变化 | 图照画，标签回落包内 8 语言字典 | 夹具 `a host t that throws still shows words`（FR-014） |
 | `t` 把 key 原样回显 / 占位符未替换 | 宿主命名空间未注册（实测行为） | 图照画，标签用包内 8 语言字典，界面上不出现 `copySource` 这类内部 key | `host key echo falls back to bundled strings` + 夹具 `a host t that echoes the key still shows words`、`no internal key reaches the eye`（FR-008 / SC-009） |
-| 缺 `systemPrompt` | 宿主提示词接口变化 | 不注入那段话，其余照常 | 同上（FR-014） |
-| 围栏数据畸形（`code` 非字符串、取值器抛错） | 宿主数据形态变化 | 交回宿主原本的代码块 | 夹具 `a throwing code getter leaves the host block` / `a broken diagram says why`（FR-016） |
+| 缺 `systemPrompt`（缺失 / `null` / `{}` / `section` 抛错 / `section` 返回 rejected Promise） | 宿主提示词接口变化 | 不注入那段话，其余照常 | `check-bundle` 的 `the host half stays silent when the host changed shape`（5 种静默 ctx + 2 次异常调用，共 7 次 `apply`）（FR-014） |
+| 围栏数据畸形（`code` 非字符串、取值器抛错） | 宿主数据形态变化 | 交回宿主原本的代码块 | 夹具 `a throwing code getter leaves the host block`、`a throwing children getter does not reach the host`（FR-016） |
+| 宿主交来的 `children` React 不收（普通对象 / 函数 / 含这些的数组 / 产出这些的 iterable） | 宿主数据形态变化 | 交回源码文本，消息不空白 | 夹具 `a refused children cannot empty the message — *`、`a hostile host block still leaves the message — *`（FR-016） |
 | 绘制期异常 | pele 在渲染子树里抛错 | 错误边界接管，交回代码块 | 夹具 `a throwing engine leaves a sentence` / `a throwing engine keeps the host block`（FR-016） |
 
 **不变量**

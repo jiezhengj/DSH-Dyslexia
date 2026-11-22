@@ -75,6 +75,7 @@
         }
         const CODE = 'flowchart LR\n  A[Text] --> B[Picture]'
         const BAD = 'flowchart TD\n  A-->'
+        const WIDE = 'flowchart LR\n  A[aaaaaaaaaaaaaaaaaaaa] --> B[bbbbbbbbbbbbbbbbbbbb]\n  B --> C[cccccccccccccccccccc]'
 
         const tick = (ms) => new Promise((resolve) => setTimeout(resolve, typeof ms === 'number' ? ms : 40))
 
@@ -431,7 +432,7 @@
           expect(retry.defs.length === 1, 'the layer is registered once after the retry', String(retry.defs.length))
           expect(!!retry.defs[0] && retry.defs[0].def.locale === undefined, 'the retried registration drops the locale option', JSON.stringify(retry.defs[0] && retry.defs[0].def))
 
-          for (const hostile of [undefined, null, {}, { slots: null }, { slots: {} }, { slots: { inject() {}, register() {} } }]) {
+          for (const hostile of [undefined, null, {}, { slots: null }, { slots: {} }, { slots: { inject() {}, register() {} } }, { slots: { inject() { throw new Error('inject refused') }, register() {} } }]) {
             let hostileThrew = null
             try {
               window.__module.apply(hostile)
@@ -441,7 +442,7 @@
             expect(!hostileThrew, 'apply stays silent on a changed host', String(hostileThrew && hostileThrew.message))
           }
           /* ---------------------------------- no internal key is ever shown */
-          const keys = ['copyFailed', 'copySource', 'engineUnavailable', 'figureLabel', 'figureUntyped', 'renderFailed', 'syntaxError']
+          const keys = ['copyFailed', 'copySource', 'engineUnavailable', 'figureLabel', 'renderFailed', 'syntaxError']
           const keyEcho = mount(Layer, { code: BAD, streaming: false, children: hostBlock(BAD), t: (key) => key })
           await tick(90)
           const keyEchoText = keyEcho.stage.textContent + ' ' + Array.from(keyEcho.stage.querySelectorAll('[aria-label]')).map((node) => node.getAttribute('aria-label')).join(' ')
@@ -557,6 +558,102 @@
           stableRoot.unmount()
           stableStage.remove()
 
+          /* ------------------- a re-layout must name the drawing again */
+          const resizeStage = document.createElement('div')
+          resizeStage.className = 'stage'
+          resizeStage.style.width = '800px'
+          document.getElementById('mount').appendChild(resizeStage)
+          const resizeRoot = ReactDOM.createRoot(resizeStage)
+          document.documentElement.lang = 'zh'
+          resizeRoot.render(React.createElement(Layer, { code: WIDE, streaming: false, children: hostBlock(WIDE) }))
+          await tick(200)
+          const wideBefore = resizeStage.querySelector('svg')
+          const beforeAttrs = wideBefore
+            ? wideBefore.getAttribute('role') + '|' + wideBefore.getAttribute('aria-label')
+            : 'none'
+          resizeStage.style.width = '220px'
+          await tick(400)
+          const wideAfter = resizeStage.querySelector('svg')
+          const afterAttrs = wideAfter
+            ? wideAfter.getAttribute('role') + '|' + wideAfter.getAttribute('aria-label') + '|roledesc=' + String(wideAfter.getAttribute('aria-roledescription'))
+            : 'none'
+          expect(
+            !!wideBefore && beforeAttrs === 'img|图',
+            'the drawing is named when it is first laid out',
+            beforeAttrs,
+          )
+          expect(
+            !!wideAfter &&
+              wideAfter.getAttribute('role') === 'img' &&
+              wideAfter.getAttribute('aria-label') === '图' &&
+              wideAfter.getAttribute('aria-roledescription') === null,
+            'a re-laid-out drawing is named again',
+            afterAttrs,
+          )
+          resizeRoot.unmount()
+          resizeStage.remove()
+
+          /* ---------------- iterables and self-throwing host blocks */
+          const hostileChildren = [
+            { label: 'an iterable of plain objects', value: { [Symbol.iterator]: function* () { yield { plain: true } } } },
+            {
+              label: 'a host block that throws while rendering',
+              value: React.createElement(function ExplodingBlock() {
+                throw new Error('host block exploded')
+              }),
+            },
+          ]
+          for (const scenario of hostileChildren) {
+            const view = mount(Layer, { code: BAD, streaming: false, children: scenario.value })
+            await tick(160)
+            const text = view.stage.textContent.trim()
+            expect(
+              !view.threw && text.length > 0,
+              `a hostile host block still leaves the message — ${scenario.label}`,
+              view.threw ? String(view.threw).slice(0, 60) : `text=${text.slice(0, 24)}`,
+            )
+            view.root.unmount()
+            view.stage.remove()
+          }
+
+          /* ------- the zoom buttons follow a language switch, not the mount */
+          const langStage = document.createElement('div')
+          langStage.className = 'stage'
+          langStage.style.width = '220px'
+          document.getElementById('mount').appendChild(langStage)
+          const langRoot = ReactDOM.createRoot(langStage)
+          document.documentElement.lang = 'zh'
+          langRoot.render(React.createElement(Layer, { code: WIDE, streaming: false, children: hostBlock(WIDE) }))
+          await tick(200)
+          const zoomBeforeSwitch = Array.prototype.slice
+            .call(langStage.querySelectorAll('.pele-zoom button, button'))
+            .filter((button) => !button.closest('.dsh-dyslexia-bar'))
+            .map((button) => button.getAttribute('aria-label') || '')
+          expect(
+            zoomBeforeSwitch.length > 0 && zoomBeforeSwitch.indexOf('放大') !== -1,
+            'the zoom buttons speak the language they were mounted in',
+            zoomBeforeSwitch.join(' | '),
+          )
+          document.documentElement.lang = 'en'
+          langRoot.render(React.createElement(Layer, { code: WIDE, streaming: false, children: hostBlock(WIDE) }))
+          await tick(300)
+          const zoomAfterSwitch = Array.prototype.slice
+            .call(langStage.querySelectorAll('.pele-zoom button'))
+            .map((button) => button.getAttribute('aria-label') || '')
+          const zoomDebug = Array.prototype.slice
+            .call(langStage.querySelectorAll('.pele-zoom *, [class*="pele-zoom"]'))
+            .map((node) => node.tagName + '.' + node.className + ':' + (node.getAttribute('aria-label') || node.getAttribute('title') || ''))
+            .join(' ~ ')
+          expect(
+            zoomAfterSwitch.length > 0 &&
+              zoomAfterSwitch.every((name) => ['Zoom in', 'Zoom out', 'Reset zoom'].indexOf(name) !== -1),
+            'the zoom buttons follow the interface language',
+            'labels=[' + zoomAfterSwitch.join(' | ') + '] nodes=' + zoomDebug.slice(0, 300),
+          )
+          langRoot.unmount()
+          langStage.remove()
+          document.documentElement.lang = 'zh'
+
           /* -------------------------------------- the copy answer is announced */
           Object.defineProperty(navigator, 'clipboard', {
             configurable: true,
@@ -594,7 +691,6 @@
           wideStage.style.width = '220px'
           document.getElementById('mount').appendChild(wideStage)
           const wideRoot = ReactDOM.createRoot(wideStage)
-          const WIDE = 'flowchart LR\n  A[aaaaaaaaaaaaaaaaaaaa] --> B[bbbbbbbbbbbbbbbbbbbb]\n  B --> C[cccccccccccccccccccc]'
           wideRoot.render(React.createElement(Layer, { code: WIDE, streaming: false, children: hostBlock(WIDE) }))
           await tick(160)
           const wideImage = wideStage.querySelector('svg[role="img"]')

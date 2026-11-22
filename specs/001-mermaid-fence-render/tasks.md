@@ -8,7 +8,7 @@ description: "Task list for 会话内图形渲染"
 
 **Prerequisites**: [plan.md](./plan.md), [spec.md](./spec.md), [research.md](./research.md), [data-model.md](./data-model.md), [contracts/](./contracts/), [quickstart.md](./quickstart.md)
 
-**Tests**: 本功能不引入测试框架（宪法原则 III）。验收 = `verify/check-bundle.mjs` 的 32 项静态断言 + `verify/run-harness.mjs --list` 的 101 项浏览器断言 + quickstart.md 的 E1–E16 真机证据表（该表定义"要取什么证据"，本身不是证据）。
+**Tests**: 本功能不引入测试框架（宪法原则 III）。验收 = `verify/check-bundle.mjs` 的 34 项静态断言 + `verify/run-harness.mjs --list` 的 108 项浏览器断言 + quickstart.md 的 E1–E16 真机证据表（该表定义"要取什么证据"，本身不是证据）。
 
 **Organization**: 按 spec 的用户故事分阶段；每个故事独立可验收。
 
@@ -177,7 +177,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T049 `verify/check-bundle.mjs` 增加发布文件齐全、每种界面语言都有说明页、清单指向 npm 可信仓库等断言
 - [x] T050 `package.json` 补 `repository`/`homepage`/`bugs`（E422 的教训），`files` 收进 `docs` 与 `README*.md`
 - [x] T051 GitHub 建仓 `https://github.com/jiezhengj/DSH-Dyslexia` 并推送；`.github/workflows/publish.yml` 走 npm trusted publisher（OIDC + provenance）
-- [x] T052 重启后的真机取证：插件页 8 语言说明与新图标、会话里就地画图、卸载后旧会话回退（E-LIVE-1～6，取证的版本是 0.1.2）
+- [x] T052 重启后的真机取证：插件页 8 语言说明与新图标、会话里就地画图、卸载后旧会话回退（`evidence/verification.md` 的 E-LIVE 实际记录了 **4 条观察**——插件页/说明页、会话内成图、卸载回退、重装恢复；取证的版本是 0.1.2）
 
 ## Phase 11: 标签回显 key 的修复（2026-11-22 追加，同一 feature 内）
 
@@ -229,8 +229,8 @@ description: "Task list for 会话内图形渲染"
 - [x] T083 夹具补六项无障碍断言（组名、图像名、无 `aria-roledescription`、全图一个 `role="img"`、缩放按钮在图像之外、缩放文案用界面语言且可聚焦）→ 82 → 92 项（+10）；删掉已废弃的 `figureUntyped` 泄漏项
 - [x] T084 `verify/run-harness.mjs` 汇总行带上 `@jiezhengj/dsh-dyslexia@0.1.6 | client.js 762625 bytes`，E-HARN 块可自证来源
 - [x] T085 清理仓库：删掉误提交的 `.tmp-ls.json` 与无引用的 `dsh-visual-ceiling.svg`，`.gitattributes` 加 `*.md text eol=lf`，把 `README.md`/`README.en.md` 的 CRLF 规范化为 LF
-- [x] T086 文档同步到 0.1.6：`plan.md` 行数改实测（842 行客户端代码 / 147 构建 / 519 静态校验 / 582 夹具 / 122 驱动）、`role="img"`、E-GAPS 重写为 G1–G12、`tasks.md` 状态表重写、i18n 键数 12、README 计数 9、`contracts/plugin-manifest.md` 与 `quickstart.md` 示例改 0.1.6、32 个随包文件（33 个打包文件含 `package.json`）
-- [x] T087 `package.json` 升 0.1.6，重建并跑 `check-bundle`（32 项）与 `run-harness`（92 项）
+- [x] T086 文档同步到 0.1.6：`plan.md` 行数改实测（842 行客户端代码 / 147 构建 / 519 静态校验 / 582 夹具 / 122 驱动——这是 **0.1.6 时**的实测值，0.1.8 已增至 978 / 147 / 558 / 739 / 122）、`role="img"`、E-GAPS 重写为 G1–G12、`tasks.md` 状态表重写、i18n 键数 12、README 计数 9、`contracts/plugin-manifest.md` 与 `quickstart.md` 示例改 0.1.6、32 个随包文件（33 个打包文件含 `package.json`）
+- [x] T087 `package.json` 升 0.1.6，重建并跑 `check-bundle`（32 项）与 `run-harness`（108 项）
 - [x] T088 打 `v0.1.6` 经 GitHub Actions 发布（run `45050133828`，shasum `8a0a2425c87d7b864b6d6089500bae6a12fe9637`），从 registry 装回 `desktop` profile（依赖 `"0.1.6"`，安装件与仓库逐字节相同）
 - [ ] T089 第四轮双评审（文档 + 实现）复核；通过后把 feature 001 标记完成。**第四轮结论：两份都 FAIL**（见 `evidence/verification.md` 末尾与 Phase 15）
 
@@ -244,6 +244,19 @@ description: "Task list for 会话内图形渲染"
 - [x] T095 文档更正：证据版本口径（0.1.5 → 0.1.7）、E-LIVE 的缺口绑定到 0.1.7、G5 改成"E2/E16 无夹具无观察"、E15 编号纠正、FR-016/FR-018 补齐断言名、plan 与 research 的实测行数（客户端 842 / 夹具 582 / 驱动 122）、T040 与 T083 的项数历史（76 → 82 → 92 → 101）、T088 勾选、T070 标作废、删掉多余围栏
 - [x] T096 打 `v0.1.7` 发布并从 registry 装回 `desktop` profile —— 已完成：run `45052680467`，provenance logIndex `4047274153`，shasum `935b05b457e8756ab8b45593252ab44594def0e1`；`install_bundle` 装成 `0.1.7`，profile 依赖 `"0.1.7"`，安装副本 765002 字节、SHA256 `4DD2F68573DD7943CC1130488477A9B88F5045EE32BB8739C1AA8A6CFA3972B6` 与仓库一致
 - [ ] T097 第五轮双评审复核；通过后把 feature 001 标记完成
+
+## Phase 16: 第五轮独立评审后的修复（2026-11-23 追加，版本 0.1.8）
+
+**目的**：第五轮评审找到三条真缺陷——重排版后图形失去 `role="img"` 与本地化名称（并回流英文 `aria-roledescription`）、`children` 为 iterable 或自身抛错时能把整条消息变空白、切换界面语言后缩放按钮不跟随。全部修掉并补测试与文档。
+
+- [x] T098 标注抽成 `labelFigure(host, translate)`：`role="img"`、本地化 `aria-label`、删 `aria-roledescription`、缩放按钮 `aria-label`/`title`，挂载后、每次重排版后、以及 `MutationObserver` 看到绘图节点被换掉时各调一次 → FR-018 / SC-010
+- [x] T099 `isRenderableChild` 真正白名单化：只放行 React 收的形状（元素、非空字符串、非零数字、逐项检查过的数组），iterable 不再放行 → FR-016
+- [x] T100 宿主块渲染包进 `SafeChildren` 边界：宿主块自己抛错时降级为源码文本，绝不二次抛出（二次抛出会逃出图片边界、让消息空白） → FR-016
+- [x] T101 `i18n.js` 的内置字典改为**每次调用按当前界面语言取表**（原先在创建时捕获），语言切换后图名、按钮、缩放控件同时跟随 → FR-008 / FR-018
+- [x] T102 夹具 +7 项：重排版后仍命名（800px→220px）、iterable `children`、自身抛错的宿主块、注入抛错的 `inject` 宿主、缩放按钮随语言切换等 → 108 项全过
+- [x] T103 `check-bundle` +2 项：`a re-laid-out drawing is named again, not just at mount`、`a host block that throws cannot empty the message` → 34 项全过
+- [x] T104 文档更正（第五轮评审逐条）：`inject` 抛错确有夹具、92/101 → 108 项、行数、畸形宿主"5 种静默 + 2 次异常"不再混用、G5 的 E15 定义、T052 的观察条数、`data-model` 的断言指向、`Mounted.result.type` 不进入 `aria-label` → 见 Phase 16 本条
+- [ ] T105 打 `v0.1.8`、GitHub Actions 发布、从 registry 装回 `desktop` profile，并请第六轮双评审复核
 
 ## Dependencies & Execution Order
 
@@ -305,7 +318,7 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 3. + US2 → 卸了不丢东西
 4. + US3 → 手机上能读
 5. + US4 → 断网/裸机可用
-6. + US5 → 模型知情
+6. + FR-011（Phase 7）→ 模型知情；+ US5（Phase 9）→ 升级不拖垮宿主
 7. Polish → 打包、文档、证据表
 
 ---
@@ -321,8 +334,8 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 
 **当前自动化证据**（命令即证据，任何人 clone 后可复跑）：
 
-- `node verify/check-bundle.mjs` → **32 项全过**
-- `node verify/run-harness.mjs --list` → 真实 Chromium 里 **101 项全过**（夹具 `verify/harness/index.html`，已提交）
+- `node verify/check-bundle.mjs` → **34 项全过**
+- `node verify/run-harness.mjs --list` → 真实 Chromium 里 **108 项全过**（夹具 `verify/harness/index.html`，已提交）
 
 **真机证据**（`evidence/verification.md` 的 E-LIVE）：会话内就地成图、卸载回退、重装恢复、插件页说明；取证的版本是 0.1.2。
 
@@ -334,7 +347,7 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 | G2 | T023 实体手机/平板触控 | 部分 | 360 px 无横向溢出由夹具覆盖（不是真机窗口），触屏缩放与复位未在真机试 |
 | G3 | T025 断网/裸机安装 | 未做 | 运行期零网络只有静态断言与 `file://` 夹具支撑 |
 | G4 | T041 真机注入畸形宿主 | 部分 | 应用能正常打开、会话正常已确认；六种畸形宿主只在夹具与 vm 里复现 |
-| G5 | T031 E1–E16 逐条复跑 | 部分 | E1/E3/E4/E5 有夹具或 E-LIVE（0.1.2）支撑；E2 多图并存、E16 其他代码块不受影响、E10 的"卸载后新会话仍可读"未单独取证 |
+| G5 | T031 E1–E16 逐条复跑 | 部分 | E1/E3/E4/E5 有夹具或 E-LIVE（0.1.2）支撑；E2 多图并存、E16 其他代码块不受影响、E15（未装插件的新会话不产生只有插件才看得懂的内容）都无夹具也无真机观察；E10（卸载后旧会话回退）有 0.1.2 观察 |
 | G6 | SC-001 计时 | 未做 | 没有"1 秒内出图"的计时 |
 | G7 | SC-002 检索命中（T019） | 未做 | 未在卸载态用 `session_search` 查过该块原文 |
 | G8 | SC-003 字号下限 | 未做 | 没有图内字号与正文最小字号的比较断言 |

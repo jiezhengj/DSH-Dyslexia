@@ -43,11 +43,12 @@ function isRenderableChild(value) {
   if (typeof value === 'string') return value !== ''
   if (typeof value === 'number') return value !== 0
   if (React.isValidElement(value)) return true
+  // Arrays are the only container React renders; each entry is checked, so an
+  // array holding a plain object cannot carry that object through to React.
+  // Other iterables are refused: React does not render them either, and an
+  // iterator that yields rubbish (or throws while iterating) would escape this
+  // check and take the message with it.
   if (Array.isArray(value)) return value.length > 0 && value.every(isRenderableChild)
-  if (typeof value === 'object') {
-    // Iterables (React accepts some) are checked lazily; a plain object is not.
-    return typeof value[Symbol.iterator] === 'function'
-  }
   return false
 }
 
@@ -58,6 +59,79 @@ function sourceFallback(code) {
     React.createElement('code', null, code),
   )
 }
+
+/** Zoom controls, in the order the engine lays them out. */
+const ZOOM_BUTTONS = ['zoomIn', 'zoomOut', 'resetZoom']
+
+/**
+ * Names the drawing for the reader, in the reader's language.
+ *
+ * The engine replaces its whole `<svg>` node whenever it re-lays out (a resize,
+ * a new column width), and the new node arrives with the engine's own English
+ * role description and without our name. So this runs after every mount and
+ * after every re-layout, and a mutation watcher calls it again whenever the
+ * drawing is swapped underneath us. Without that, dragging a window would
+ * quietly make a screen reader say "flowchart" in English about a picture with
+ * no name at all.
+ */
+function labelFigure(host, translate) {
+  if (!host) return
+  try {
+    const svg = host.querySelector('svg')
+    if (svg) {
+      svg.setAttribute('role', 'img')
+      svg.setAttribute('aria-label', translate('figureLabel'))
+      svg.removeAttribute('aria-roledescription')
+    }
+    host.setAttribute('role', 'presentation')
+    const zoom = host.querySelector('.pele-zoom')
+    if (zoom) {
+      const buttons = zoom.querySelectorAll('button')
+      for (let index = 0; index < buttons.length && index < ZOOM_BUTTONS.length; index += 1) {
+        const text = translate(ZOOM_BUTTONS[index])
+        buttons[index].setAttribute('aria-label', text)
+        buttons[index].setAttribute('title', text)
+      }
+    }
+  } catch (error) {
+    void error
+  }
+}
+
+/**
+ * The host's own block, rendered where the drawing would have been.
+ *
+ * It sits inside its own boundary because the host block is not ours: if it
+ * throws while rendering (a host upgrade, a getter on its own props), that throw
+ * must not travel out of the picture's boundary a second time — a second throw
+ * escapes the boundary and takes the whole message with it. The outermost answer
+ * is always plain text.
+ */
+class SafeChildren extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = { failed: false }
+  }
+
+  static getDerivedStateFromError() {
+    return { failed: true }
+  }
+
+  componentDidCatch(error) {
+    report('figure host block', error)
+  }
+
+  render() {
+    if (this.state.failed) return sourceFallback(this.props.code)
+    return this.props.children
+  }
+}
+
+function hostBlock(children, code) {
+  if (children === null) return sourceFallback(code)
+  return React.createElement(SafeChildren, { code }, children)
+}
+
 
 function readLayerInput(props) {
   const code = safeRead(props, 'code')
@@ -93,12 +167,21 @@ function MermaidFenceLayer(props) {
   const hostRef = React.useRef(null)
   const mountedRef = React.useRef(null)
   const observerRef = React.useRef(null)
+  const watcherRef = React.useRef(null)
   const copiedTimerRef = React.useRef(null)
 
   const teardown = React.useCallback(() => {
     if (observerRef.current !== null) {
       observerRef.current.disconnect()
       observerRef.current = null
+    }
+    if (watcherRef.current !== null) {
+      try {
+        watcherRef.current.disconnect()
+      } catch (error) {
+        void error
+      }
+      watcherRef.current = null
     }
     const mounted = mountedRef.current
     mountedRef.current = null
@@ -161,20 +244,7 @@ function MermaidFenceLayer(props) {
     // zoom buttons, so the box is a group and only the drawing itself carries
     // role="img". Otherwise a screen reader would treat the zoom controls as
     // part of an image, which makes them unreachable.
-    try {
-      const svg = host.querySelector('svg')
-      if (svg) {
-        svg.setAttribute('role', 'img')
-        svg.setAttribute('aria-label', t('figureLabel'))
-        // The engine stamps its own English role description ("flowchart").
-        // Read aloud next to a localized name it is just noise in the wrong
-        // language, so it goes.
-        svg.removeAttribute('aria-roledescription')
-        host.setAttribute('role', 'presentation')
-      }
-    } catch (error) {
-      void error
-    }
+    labelFigure(host, t)
     if (typeof ResizeObserver === 'function') {
       try {
         const observer = new ResizeObserver(() => {
@@ -185,12 +255,30 @@ function MermaidFenceLayer(props) {
           } catch (error) {
             void error
           }
+          // A re-layout swaps the drawing node for a fresh one, which comes back
+          // unnamed and with the engine's English role description. Name it again
+          // right here, while the new node is in place.
+          labelFigure(host, translateRef.current)
         })
         observer.observe(host)
         observerRef.current = observer
       } catch (error) {
         // No observer: the picture still draws, it just will not re-layout on
         // resize. Losing that is better than losing the render.
+        void error
+      }
+    }
+    // Belt and braces: whichever path swaps the drawing — a re-layout we did not
+    // cause, a future engine version drawing asynchronously — the name goes back
+    // on as soon as the new node is in the document.
+    if (typeof MutationObserver === 'function') {
+      try {
+        const watcher = new MutationObserver(() => {
+          labelFigure(host, translateRef.current)
+        })
+        watcher.observe(host, { childList: true })
+        watcherRef.current = watcher
+      } catch (error) {
         void error
       }
     }
@@ -253,21 +341,14 @@ function MermaidFenceLayer(props) {
   }, [])
 
   // The picture is drawn once per source, but its name belongs to the current
-  // interface language: a language switch must rename the image in place, not
-  // redraw it.
+  // interface language: a language switch must rename the image — and the
+  // engine's zoom buttons, which carry no visible text — in place, not redraw.
   const figureLabel = translate('figureLabel')
   React.useEffect(() => {
-    const host = hostRef.current
-    if (!host) return
-    try {
-      const svg = host.querySelector('svg')
-      if (svg && svg.getAttribute('role') === 'img') svg.setAttribute('aria-label', figureLabel)
-    } catch (error) {
-      void error
-    }
-  }, [figureLabel])
+    labelFigure(hostRef.current, translate)
+  }, [figureLabel, translate])
 
-  if (streaming) return children !== null ? children : sourceFallback(code)
+  if (streaming) return hostBlock(children, code)
 
   const failed = status === 'failed'
   const rendered = status === 'rendered'
@@ -331,7 +412,10 @@ function MermaidFenceLayer(props) {
     ? React.createElement('p', { className: NOTE_CLASS }, noteText)
     : null
 
-  const fallback = failed ? (children !== null ? children : sourceFallback(code)) : null
+  // A failed picture still owes the reader the host's own block, wrapped so a
+  // second failure inside that block can only cost the source panel, never the
+  // message.
+  const fallback = failed ? hostBlock(children, code) : null
 
   return React.createElement(React.Fragment, null, note, figure, actions, source, fallback)
 }
@@ -372,7 +456,7 @@ class FigureBoundary extends React.Component {
 
   render() {
     const input = readLayerInput(this.props)
-    const fallback = () => (input.children !== null ? input.children : sourceFallback(input.code))
+    const fallback = () => hostBlock(input.children, input.code)
     if (this.state.failed) return fallback()
     try {
       if (!input.hasCode || typeof document === 'undefined') return fallback()
