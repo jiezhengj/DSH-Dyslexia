@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-22
 
-**Status**: Implemented（代码与自动化证据截至 `0.1.10`），但**不是全部取证**。没有取证的项一律以 `evidence/verification.md` 的 **E-GAPS（14 项，G1–G14）** 为准，`tasks.md` 末尾的状态表逐行对应；本行不重复计数，以免与 E-GAPS 漂移。真机证据 E-LIVE 目前是 **0.1.2** 的观察，0.1.9 的复核是 T079。
+**Status**: Implemented（代码与自动化证据截至 `0.1.11`），但**不是全部取证**。没有取证的项一律以 `evidence/verification.md` 的 **E-GAPS（14 项，G1–G14）** 为准，`tasks.md` 末尾的状态表逐行对应；本行不重复计数，以免与 E-GAPS 漂移。真机证据 E-LIVE 目前是 **0.1.2** 的观察；当前版本（0.1.11）重启后的复核是 T079（G13）。
 
 **Input**: User description: "做一个 DSH 插件（npm 包 `@jiezhengj/dsh-dyslexia`），让 Agent 画的 mermaid 图直接渲染在会话流里；不假设用户机器装了什么，依赖打包进插件；不规定图表类型与文本长短；卸载后历史会话仍要能读；手机平板要能用。"
 

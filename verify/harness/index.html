@@ -207,10 +207,16 @@
             const bare = labels.concat([token]).filter((text) => /copySource|showSource|hideSource|figureLabel|copied|copyFailed/.test(text))
             expect(bare.length === 0, `[${lang}] no internal key reaches the screen`, bare.join(','))
             if (view.stage.querySelector('.dsh-dyslexia-bar button')) {
-              view.stage.querySelectorAll('button')[0].click()
+              const toggle = view.stage.querySelectorAll('button')[0]
+              expect(toggle.getAttribute('aria-expanded') === 'false', `[${lang}] the source toggle starts collapsed`)
+              toggle.click()
               await tick(30)
               const hiddenLabels = buttonsIn(view.stage)
               if (exact) expect(hiddenLabels[0] === exact.hidden, `[${lang}] the source toggle flips its word`, hiddenLabels[0])
+              expect(toggle.getAttribute('aria-expanded') === 'true', `[${lang}] the source toggle announces itself as expanded`)
+              const marker = view.stage.querySelector('.dsh-dyslexia-source code')
+              expect(!!marker && /(^| )language-mermaid( |$)/.test(marker.className), `[${lang}] the expanded source keeps its fence language`, marker ? marker.className : 'no marker')
+              expect(view.stage.querySelector('[role="presentation"]') !== null, `[${lang}] the mount point is presentational`)
             }
             seen[lang] = token + '|' + labels.join('|')
             view.root.unmount()
@@ -311,8 +317,17 @@
           } catch (error) {
             childrenThrew = error
           }
-          await tick(60)
+          await tick(80)
+          // React 18 renders asynchronously, so a throw inside work never reaches
+          // this try block: what must be asserted is the visible outcome, not the
+          // absence of an exception here. A host block we cannot even read must
+          // still leave the reader its source text.
           expect(!childrenThrew, 'a throwing children getter does not reach the host')
+          expect(
+            !!childrenView && childrenView.stage.textContent.indexOf(CODE) !== -1,
+            'a throwing children getter leaves the source',
+            childrenView ? JSON.stringify(childrenView.stage.textContent.slice(0, 40)) : 'no view',
+          )
           if (childrenView) {
             childrenView.root.unmount()
             childrenView.stage.remove()

@@ -30,9 +30,9 @@
 | `error` | PeleError \| null | 解析/规模超限失败时携带可读原因 |
 | `zoom` | 控制器 \| null | 溢出时才启用 |
 
-**生命周期**：消息挂载 → `mount()` 生成 → 容器尺寸变化 → `refresh()` → 修正字号与折行 → 卸载或重渲染 → `destroy()` 释放。
+**生命周期**：消息挂载 → `mount()` 生成 → 容器尺寸变化时**由引擎自己重排**（pele 内部有尺寸观察与逐帧调度，插件不另建 `ResizeObserver`，见 D22）→ 节点被换掉后插件只负责重新命名 → 卸载或重渲染 → `destroy()` 释放。
 
-**可访问性字段**（对应 FR-018）：`accessibleName`（本地化纯名词，不含引擎类型，只落在 `svg` 上）、`imageRoleOn`（`svg` 恒为 `role="img"`；外层 `div.dsh-dyslexia-group` 是 `role="group"` 并带本地化组名；内层挂载点是 `role="presentation"`）、`copyAnnouncement`（`idle` / `copied` / `failed`，写入 `role="status" aria-live="polite"`）。挂载点尺寸变化不改变这三项。
+**可访问性字段**（对应 FR-018）：`accessibleName`（本地化纯名词，不含引擎类型，只落在 `svg` 上）、`imageRoleOn`（`svg` 恒为 `role="img"`；外层 `div.dsh-dyslexia-group` 是 `role="group"` 但**不带名字**（否则读屏会把同一个名字念两遍）；内层挂载点是 `role="presentation"`）、`copyAnnouncement`（`idle` / `copied` / `failed`，写入 `role="status" aria-live="polite"`）。挂载点尺寸变化不改变这三项。
 
 # 实体：插件安装态（Installation）
 

@@ -1,25 +1,25 @@
 # 验证证据
 
-本文件只记录**已经真实跑过**的命令输出。每一段输出来自**同一次运行**，并且这次运行的报告行自带 `包名@版本 | client.js 字节数 | sources sha256:<指纹>`，所以任何一段都可以被追溯到具体的一棵树。当前版本：`0.1.9`。
+本文件只记录**已经真实跑过**的命令输出。每一段输出来自**同一次运行**，并且这次运行的报告行自带 `包名@版本 | client.js 字节数 | sources sha256:<指纹>`，所以任何一段都可以被追溯到具体的一棵树。当前版本：`0.1.11`。
 
 复跑方式（任何人 clone 后都一样）：
 
 ```bash
 node scripts/build-client.mjs       # 由 src/client/*.js + vendor/pele 生成 client.js
 node verify/check-bundle.mjs        # 36 项静态与行为断言，纯 Node 内置模块
-node verify/run-harness.mjs --list  # 119 项浏览器断言，需要本机 Chrome
+node verify/run-harness.mjs --list  # 152 项浏览器断言，需要本机 Chrome
 ```
 
 ## E-BLD 构建
 
 ```text
-build-client: @jiezhengj/dsh-dyslexia -> client.js (767298 bytes, 766268 characters, engine 1.13.0, sources 5, syntax ok)
+build-client: @jiezhengj/dsh-dyslexia -> client.js (767643 bytes, 766613 characters, engine 1.13.0, sources 5, syntax ok)
 ```
 
 ## E-CHK 静态与行为校验
 
 ```text
-ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.10
+ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.11
 ok   package.json points at the repository npm trusts — git+https://github.com/jiezhengj/DSH-Dyslexia.git
 ok   package.json declares the bundle patch and the client half — platform web, no package inject
 ok   no dsh version gate can refuse a start — no engines.dsh, no dsh peers
@@ -28,7 +28,7 @@ ok   every published file exists — 24 files
 ok   every interface language has its own plugin page — 8 languages
 ok   cordis.patch.yml inserts the plugin by package name — 3 lines
 ok   both locales carry metadata — en, zh
-ok   client.js is one loader chunk keyed by the package name — 767298 bytes
+ok   client.js is one loader chunk keyed by the package name — 767643 bytes
 ok   client.js requires react and nothing else — react
 ok   client.js never reaches the network — no fetch, no XHR, no dynamic import, no remote URL
 ok   client.js carries the vendored engine — Pele 1.13.0 inlined
@@ -45,7 +45,7 @@ ok   every supported sample type draws an svg — flowchart:218x64 sequence:184x
 ok   a broken diagram reports a one-line reason — Parse error on line 2:
 ok   host key echo falls back to bundled strings — key echo, blanks, placeholders rejected
 ok   every language carries the same complete sentences — 12 keys x 8 languages, no engine text in labels
-ok   client.js matches the sources it claims — 336ea7199fb90a0c8202c03e0c14bbe7
+ok   client.js matches the sources it claims — 53c0bc25d05679cd92e7e115d07d7c7d
 ok   the picture is the image, and the copy answer is announced — label is a noun, role="img" on the svg, copy result announced
 ok   host children react would refuse fall back to the source — objects, functions and mixed arrays fall back to the source text
 ok   every drawing the engine swaps in is named again — the engine owns re-layout; every swapped drawing node and its zoom buttons are renamed, strings follow the language
@@ -55,7 +55,8 @@ ok   nothing in the package asks you to edit an instruction file — 17 shipped 
 ok   the host half registers exactly one capability section — ui:dsh-dyslexia, order 9000, 85 words
 ok   the host half stays silent when the host changed shape — five silent hosts, one throwing section
 ok   the fixtures assert what the fixes promise, and can fail — 7 assertions present
-check-bundle: @jiezhengj/dsh-dyslexia@0.1.10 | client.js 767298 bytes | sources sha256:336ea7199fb90a0c8202c03e0c14bbe7 | all 36 checks passed
+
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.11 | client.js 767643 bytes | sources sha256:53c0bc25d05679cd92e7e115d07d7c7d | all 36 checks passed
 ```
 
 ## E-HARN 浏览器行为校验
@@ -75,31 +76,63 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.10 | client.js 767298 bytes | sources 
 [ok] [zh] a picture is drawn
 [ok] [zh] exactly two buttons — 2
 [ok] [zh] no internal key reaches the screen
+[ok] [zh] the source toggle starts collapsed
 [ok] [zh] the source toggle flips its word — 隐藏源码
+[ok] [zh] the source toggle announces itself as expanded
+[ok] [zh] the expanded source keeps its fence language — language-mermaid
+[ok] [zh] the mount point is presentational
 [ok] [en] the picture carries a plain name — Diagram
 [ok] [en] first render shows the two buttons — Show source | Copy source
 [ok] [en] a picture is drawn
 [ok] [en] exactly two buttons — 2
 [ok] [en] no internal key reaches the screen
+[ok] [en] the source toggle starts collapsed
 [ok] [en] the source toggle flips its word — Hide source
+[ok] [en] the source toggle announces itself as expanded
+[ok] [en] the expanded source keeps its fence language — language-mermaid
+[ok] [en] the mount point is presentational
 [ok] [ja] a picture is drawn
 [ok] [ja] exactly two buttons — 2
 [ok] [ja] no internal key reaches the screen
+[ok] [ja] the source toggle starts collapsed
+[ok] [ja] the source toggle announces itself as expanded
+[ok] [ja] the expanded source keeps its fence language — language-mermaid
+[ok] [ja] the mount point is presentational
 [ok] [es] a picture is drawn
 [ok] [es] exactly two buttons — 2
 [ok] [es] no internal key reaches the screen
+[ok] [es] the source toggle starts collapsed
+[ok] [es] the source toggle announces itself as expanded
+[ok] [es] the expanded source keeps its fence language — language-mermaid
+[ok] [es] the mount point is presentational
 [ok] [fr] a picture is drawn
 [ok] [fr] exactly two buttons — 2
 [ok] [fr] no internal key reaches the screen
+[ok] [fr] the source toggle starts collapsed
+[ok] [fr] the source toggle announces itself as expanded
+[ok] [fr] the expanded source keeps its fence language — language-mermaid
+[ok] [fr] the mount point is presentational
 [ok] [de] a picture is drawn
 [ok] [de] exactly two buttons — 2
 [ok] [de] no internal key reaches the screen
+[ok] [de] the source toggle starts collapsed
+[ok] [de] the source toggle announces itself as expanded
+[ok] [de] the expanded source keeps its fence language — language-mermaid
+[ok] [de] the mount point is presentational
 [ok] [ru] a picture is drawn
 [ok] [ru] exactly two buttons — 2
 [ok] [ru] no internal key reaches the screen
+[ok] [ru] the source toggle starts collapsed
+[ok] [ru] the source toggle announces itself as expanded
+[ok] [ru] the expanded source keeps its fence language — language-mermaid
+[ok] [ru] the mount point is presentational
 [ok] [pt] a picture is drawn
 [ok] [pt] exactly two buttons — 2
 [ok] [pt] no internal key reaches the screen
+[ok] [pt] the source toggle starts collapsed
+[ok] [pt] the source toggle announces itself as expanded
+[ok] [pt] the expanded source keeps its fence language — language-mermaid
+[ok] [pt] the mount point is presentational
 [ok] every interface language actually translates
 [ok] a host t that echoes the key still shows words — 查看源码 | 复制源码 / 图
 [ok] a host t that throws still shows words — 查看源码 | 复制源码 / 图
@@ -109,8 +142,11 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.10 | client.js 767298 bytes | sources 
 [ok] a streaming fence shows only the host block
 [ok] a truthy streaming flag is honoured
 [ok] a throwing code getter does not reach the host
-[ok] a throwing code getter leaves the host block — "flowchart LR\n  A[Text] --> B[Picture]"
+[ok] a throwing code getter leaves the host block — "flowchart LR
+  A[Text] --> B[Picture]"
 [ok] a throwing children getter does not reach the host
+[ok] a throwing children getter leaves the source — "flowchart LR
+  A[Text] --> B[Picture]"
 [ok] a non-string fence is left to the host
 [ok] a broken diagram says why
 [ok] the reason is a complete sentence — 图里的语法有误，已改为显示源码。
@@ -149,15 +185,19 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.10 | client.js 767298 bytes | sources 
 [ok] a source past the size limit keeps the host block
 [ok] the picture appears when the stream ends
 [ok] a falsy children is not mistaken for content — 图里的语法有误，已改为显示源码。flowchart TD
+  A-->
 [ok] a refused children cannot empty the message — object — children=1 text=flowchart LR
+  A[Tex
 [ok] no React error 31 escapes — object
 [ok] a refused children cannot empty the message — function — children=1 text=flowchart LR
+  A[Tex
 [ok] no React error 31 escapes — function
 [ok] a refused children cannot empty the message — object in a failed picture — children=3 text=图里的语法有误，已改为显示源码。flow
 [ok] no React error 31 escapes — object in a failed picture
 [ok] a refused children cannot empty the message — array with an object — children=3 text=图里的语法有误，已改为显示源码。flow
 [ok] no React error 31 escapes — array with an object
 [ok] a streaming block with no host children still shows its source — flowchart LR
+  A[Text] --> B[P
 [ok] a fresh t does not redraw the picture
 [ok] the drawing is named when it is first laid out — img|图
 [ok] the fixture really replaced the drawing node — new node
@@ -180,7 +220,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.10 | client.js 767298 bytes | sources 
 [ok] the zoom buttons sit outside the image — 0
 [ok] the zoom buttons speak the interface language — 放大 | 缩小 | 重置缩放
 [ok] every enabled zoom button can take the keyboard — 2/2 enabled of 3
-run-harness: @jiezhengj/dsh-dyslexia@0.1.10 | client.js 767298 bytes | all 119 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+run-harness: @jiezhengj/dsh-dyslexia@0.1.11 | client.js 767643 bytes | all 152 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
 ## E-A11Y 图像的读屏取舍（`role="img"` 的代价与补偿）
@@ -195,7 +235,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.10 | client.js 767298 bytes | all 119 c
 
 ## E-PROBE 夹具能失败吗：用破坏性探针验证
 
-如果一个断言恒真，"套件全绿"就不构成证据。0.1.10 发布前在同一工作树上做了四次探针：故意破坏被断言保护的代码、重建 `client.js`、跑两套检查、确认目标断言**变红**，再还原。
+如果一个断言恒真，"套件全绿"就不构成证据。0.1.10 与 0.1.11 发布前在同一工作树上做了五次探针：故意破坏被断言保护的代码、重建 `client.js`、跑两套检查、确认目标断言**变红**，再还原。
 
 | 探针 | 破坏方式 | 变红的断言（含报告行） | 说明 |
 |---|---|---|---|
@@ -203,21 +243,22 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.10 | client.js 767298 bytes | all 119 c
 | P2 | `entry.js` 的 `ctx.effect(() => drop, 'dsh-dyslexia: figure styles')` → `void drop` | 夹具 `styles and strings are claimed as effects` → `1`（应 2）、`disabling the plugin takes its stylesheet away` → `true`（应 `false`） | 停用后 `<style>` 留在宿主文档里 |
 | P3 | 0.1.8 时：两处 `labelFigure(host, translateRef.current)` → `void 0` | 同上两条命名断言 | 那一版还自带 ResizeObserver 驱动的重排版路径，已被 0.1.10 删除（见 D22） |
 | P4 | `src/client/figure.js` 把字号改成 200 | 夹具 `a picture that fits offers no zoom buttons` → `3`（应 0） | 条件渲染缩放按钮的断言确实在执行 |
+| P5 | 0.1.11 时：删掉 `src/client/view.js` 里 `safeRead` 的 `try/catch`，让宿主属性取值器的异常直接抛出 | 夹具 `a throwing code getter leaves the host block` → `""`、`a throwing children getter leaves the source` → `""` | 报告行 `run-harness: 2 failed, 150 passed`（exit 1）。这正是 FR-016 要防的"整条消息空白"；第八轮实现评审证明旧版同名断言在同义反复下仍绿，P5 是它修好之后可失败的证明 |
 
-静态检查里另有一条守护 `the fixtures assert what the fixes promise, and can fail`：它要求 P1/P2/P4 里那几个"能变红的断言名"继续存在于夹具中，否则说明有人把夹具删了而代码检查仍绿。
+静态检查里另有一条守护 `the fixtures assert what the fixes promise, and can fail`：它要求 P1/P2/P4/P5 里那几个"能变红的断言名"继续存在于夹具中，否则说明有人把夹具删了而代码检查仍绿。
 
 ## E-COMP 兼容性断言与要求逐条对应
 
 | 要求 | 可复跑的断言 |
 |---|---|
 | FR-001 就地成图、不改消息 | 浏览器：`[zh] a picture is drawn`、`[zh] exactly two buttons`；真机：E-LIVE-2（0.1.2，见 G13） |
-| FR-002 不打开侧栏、不生成文件、不新增会话条目 | 静态：`client.js never reaches the network`（不写文件、不发请求）、`published files leave the build sources out`；结构层面在 E-LIVE-2 描述过，但真机面未核对（G12） |
+| FR-002 不打开侧栏、不生成文件、不新增会话条目 | 静态：`client.js never reaches the network`（不发请求）、`published files leave the build sources out`（源码不进包）；"不写文件、不打开侧栏"由结构决定；结构层面在 E-LIVE-2 描述过，但真机面未核对（G12） |
 | FR-003 图旁可看源码与复制 | 浏览器：`[zh] the source toggle flips its word`、`the copy button writes once`、`a real copy is reported as copied` |
 | FR-004 渲染失败回退原文 + 可读原因 | 静态：`a broken diagram reports a one-line reason`；浏览器：`a source past the size limit says why`、`a source past the size limit keeps the host block`、`a broken diagram without host children still shows its source` |
 | FR-005 浏览器端渲染、零网络请求 | 静态：`client.js never reaches the network`、`client.js carries the vendored engine`；断网实跑仍未做（G9） |
 | FR-006 按容器宽度重排、页面不横向溢出 | 浏览器：`the picture takes the column width`、`a wide picture does not widen the column`；真机触控未试（G2） |
 | FR-007 跟随宿主主题并在切换后更新 | 浏览器：`the picture follows the host colour without reloading`；真实明暗切换未做（G10） |
-| FR-008 8 种界面语言可读、畸形翻译服务回退 | 静态：`every language carries the same complete sentences`、`host key echo falls back to bundled strings`；浏览器：`[ja] the picture is drawn`（8 语言各一轮）、`a host t that echoes the key still shows words`、`a host t that throws still shows words`、`no internal key reaches the eye` |
+| FR-008 8 种界面语言可读、畸形翻译服务回退 | 静态：`every language carries the same complete sentences`、`host key echo falls back to bundled strings`；浏览器：`[ja] a picture is drawn`（8 语言各一轮）、`a host t that echoes the key still shows words`、`a host t that throws still shows words`、`no internal key reaches the eye` |
 | FR-009 卸载/禁用/出错时回退文本 | 浏览器：`disabling the plugin takes its stylesheet away`、`a throwing children getter does not reach the host`、`styles and strings are claimed as effects`；真机卸载回退见 E-LIVE-5（0.1.2，见 G13） |
 | FR-010 重装后图恢复、无需迁移 | 真机：E-LIVE-6（0.1.2，见 G13）；数据层面由 `data-model.md` 的"图源只在消息文本里"保证 |
 | FR-011 启用时让模型知情、停用后消失 | 静态：`the host half registers exactly one capability section`、`the host half stays silent when the host changed shape`；"停用后模型侧看不到"未实测（G11） |
@@ -368,7 +409,7 @@ Done in 2.9s using pnpm v11.28.5
 - **G2 实体手机/平板触控（T023 的硬件部分）**：窄屏证据来自 headless Chrome 的 360 px 夹具（`the picture takes the column width`、`a wide picture does not widen the column`、`the page itself never overflows`），不是真实设备触控。
 - **G3 断网裸机安装（T025）**：`client.js never reaches the network` 只证明产物没有网络调用；"一台没有任何缓存/CDN 的机器上离线装得上"没有验证。
 - **G4 畸形宿主的真机注入（T041）**：宿主机侧 7 次 `apply`（5 种静默 ctx + 2 次异常调用）与客户端 7 种畸形 `ctx`（`undefined`、`null`、`{}`、`{slots:null}`、`{slots:{}}`、`inject`/`register` 为空函数、`inject` 抛错）只在夹具与 `check-bundle` 的 vm 里复现，没有在一次真实宿主里注入过。
-- **G5 quickstart 的 E1–E16 逐条复跑（T031）**：证据表本身不是证据。其中 E2（同一条消息两块 `mermaid` 并存）、E16（非 `mermaid` 的代码块不受影响）**既没有夹具、也没有真机观察**——108 项夹具里没有这两类用例。E10（**卸载后旧会话回退为代码块**）有 0.1.2 的真机观察；E15 按 `quickstart.md` 的定义是"**未装插件的新会话不产生只有插件才看得懂的内容**"，它既没有夹具也没有真机观察（0.1.2 的观察里没有这一条）。
+- **G5 quickstart 的 E1–E16 逐条复跑（T031）**：证据表本身不是证据。其中 E2（同一条消息两块 `mermaid` 并存）、E16（非 `mermaid` 的代码块不受影响）**既没有夹具、也没有真机观察**——152 项夹具里没有这两类用例。E10（**卸载后旧会话回退为代码块**）有 0.1.2 的真机观察；E15 按 `quickstart.md` 的定义是"**未装插件的新会话不产生只有插件才看得懂的内容**"，它既没有夹具也没有真机观察（0.1.2 的观察里没有这一条）。
 
 指标类（定义写得出来，但没有一条被真正测量）：
 
@@ -383,7 +424,7 @@ Done in 2.9s using pnpm v11.28.5
 - **G11 FR-011 的后半（停用插件后提示词段消失）**：只有 `apply` 注册段的静态证据与宿主半边契约，没有"停用后模型侧看不到"的实测（T027）。
 - **G12 FR-002 的真机面（不打开侧栏、不生成文件、不新增会话条目）**：插件在结构上不写文件、不碰宿主布局（静态可读），但没有一次真机上"看完这张图，磁盘与会话条目都没变"的核对。
 - **G14 真实窗口缩放时的引擎重绘（FR-018 的端到端面）**：0.1.10 把重排版交给引擎自己的 `ResizeObserver`（pele 内部），插件只负责"节点被换回来就重新命名"。夹具能证明"节点被换 → 立刻重新命名"，但**无法让引擎在无头浏览器里真的因窗口缩放而重绘**（无头环境第一帧之后不再派发帧与 ResizeObserver 通知）。真实窗口里"拖窄窗口 → 引擎重绘 → 名字回来"这条链只有机制级证据。
-- **G13 当前版本的重启后真机核对（T079）**：`E-LIVE` 的观察取自 **0.1.2**——插件页的 8 语言说明、图名的语言、两个按钮的文案、复制播报、卸载回退与重装恢复都是那时看的；0.1.3–0.1.9 改过 `view.js`、`i18n.js`、`entry.js`、`styles.js`，这些观察不能自动转移（见 `E-LIVE` 自己的版本注记）。0.1.9 已发布并装进 `desktop` profile，但**没有在重启后的宿主里逐项复核过**，所以算未取证。
+- **G13 当前版本的重启后真机核对（T079）**：`E-LIVE` 的观察取自 **0.1.2**——插件页的 8 语言说明、图名的语言、两个按钮的文案、复制播报、卸载回退与重装恢复都是那时看的；0.1.3–0.1.11 改过 `view.js`、`i18n.js`、`entry.js`、`styles.js`，这些观察不能自动转移（见 `E-LIVE` 自己的版本注记）。0.1.9 已发布并装进 `desktop` profile，但**没有在重启后的宿主里逐项复核过**，所以算未取证。
 
 ---
 

@@ -133,15 +133,20 @@ function hostBlock(children, code) {
 }
 
 
+const DEFAULT_FENCE_LANGUAGE = 'mermaid'
+
 function readLayerInput(props) {
   const code = safeRead(props, 'code')
   const streaming = safeRead(props, 'streaming')
   const children = safeRead(props, 'children')
+  const lang = safeRead(props, 'lang')
   return {
     code: code.ok && typeof code.value === 'string' ? code.value : '',
     hasCode: code.ok && typeof code.value === 'string',
     streaming: streaming.ok ? Boolean(streaming.value) : false,
     children: children.ok && isRenderableChild(children.value) ? children.value : null,
+    lang:
+      lang.ok && typeof lang.value === 'string' && lang.value ? lang.value : DEFAULT_FENCE_LANGUAGE,
   }
 }
 
@@ -151,6 +156,7 @@ function MermaidFenceLayer(props) {
   const code = input.code
   const streaming = input.streaming
   const children = input.children
+  const lang = input.lang
 
   const hostTranslate = safeRead(props, 't').value
   const translate = React.useMemo(() => translateFor({ t: hostTranslate }, doc), [hostTranslate, doc])
@@ -368,7 +374,11 @@ function MermaidFenceLayer(props) {
     ? React.createElement(
         'pre',
         { className: SOURCE_CLASS },
-        React.createElement('code', null, code),
+        React.createElement(
+          'code',
+          { className: 'language-' + lang },
+          code,
+        ),
       )
     : null
 

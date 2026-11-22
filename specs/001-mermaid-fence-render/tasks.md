@@ -8,7 +8,7 @@ description: "Task list for 会话内图形渲染"
 
 **Prerequisites**: [plan.md](./plan.md), [spec.md](./spec.md), [research.md](./research.md), [data-model.md](./data-model.md), [contracts/](./contracts/), [quickstart.md](./quickstart.md)
 
-**Tests**: 本功能不引入测试框架（宪法原则 III）。验收 = `verify/check-bundle.mjs` 的 36 项静态断言 + `verify/run-harness.mjs --list` 的 118 项浏览器断言 + quickstart.md 的 E1–E16 真机证据表（该表定义"要取什么证据"，本身不是证据）。
+**Tests**: 本功能不引入测试框架（宪法原则 III）。验收 = `verify/check-bundle.mjs` 的 36 项静态断言 + `verify/run-harness.mjs --list` 的 152 项浏览器断言（0.1.9 起 118 项、0.1.10 起 119 项、0.1.11 起 152 项），外加 `quickstart.md` 证据表里的真机项（见 E-GAPS）。
 
 **Organization**: 按 spec 的用户故事分阶段；每个故事独立可验收。
 
@@ -158,7 +158,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T037 [P] 渲染期兜底：`view.js` 增加错误边界与围栏数据守卫、`figure.js` 增加引擎缺失守卫 → 对应 FR-016
 - [x] T038 主机半边降级：`index.js` 的 `apply` 对缺失/变形 `systemPrompt` 静默跳过（不注册半截段落、不抛错）→ 对应 FR-014
 - [x] T039 静态证据：`verify/check-bundle.mjs` 增加六项兼容性断言（"无版本门""可独立编译""畸形加载器不抛""工厂抛错仍可用""含边界与守卫""畸形宿主 ctx 不抛"）→ 对应 FR-017 / SC-008
-- [x] T040 渲染期证据：夹具迁入仓库 `verify/harness/index.html` + `node verify/run-harness.mjs`，增加到 76 项（0.1.5 起 82 项，0.1.6 起 92 项，0.1.7 起 101 项，0.1.9 起 118 项；宿主 `t` 抛错/回显 key、`code`/`children` 取值器抛错、引擎抛错、无 slots 服务、坏语法、裁剪板缺失、窄屏、主题）→ 对应 FR-017 / SC-006 / SC-009
+- [x] T040 渲染期证据：夹具迁入仓库 `verify/harness/index.html` + `node verify/run-harness.mjs`，增加到 76 项（0.1.5 起 82 项，0.1.6 起 92 项，0.1.7 起 101 项，0.1.8 起 108 项，0.1.9 起 118 项，0.1.10 起 119 项，0.1.11 起 152 项（历史值按发布时的实跑记录，不追改）；宿主 `t` 抛错/回显 key、`code`/`children` 取值器抛错、引擎抛错、无 slots 服务、坏语法、裁剪板缺失、窄屏、主题）→ 对应 FR-017 / SC-006 / SC-009
 - [ ] T041 真机验证 US5：装机后应用正常打开、会话正常、图照常显示（已由 E-LIVE 覆盖一部分）；"畸形宿主"降级只在夹具里复现，真机未注入 → 部分取证
 - [ ] T042 宿主升级演练：记录当前版本号，下一次 DSH 升级后检查"能打开、能进会话、历史图回退为文本"，并把结果追加到 evidence
 
@@ -219,7 +219,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T076 `verify/check-bundle.mjs` 新增"图是图像、复制被播报"一项，并让报告行自带 `包名@版本 | 字节数 | 源码指纹`，让任何粘贴的输出自证来自哪棵树
 - [x] T077 夹具新增五类用例（超限源码、流式→完成、falsy children、`t` 换身份不重绘、复制播报），无障碍结构另加三项（组名、缩放按钮在图像外、可聚焦）；`verify/run-harness.mjs` 增加 `--list` 以便证据整段引用单次运行
 - [x] T078 `spec.md` 增 FR-018 与 SC-010；`contracts/client-fence-layer.md`、`data-model.md`、`research.md`（D22）同步
-- [ ] T079 重启 DSH 后做真机核对（图名/按钮/播报/插件页说明/卸载回退）。**0.1.10 的发布与安装完成后仍未重启核对**：运行中的界面仍加载旧 chunk；E-LIVE 里能查到的真机观察仍是 **0.1.2**，0.1.7 与 0.1.8 从未在真实宿主里跑过，0.1.9 同样如此。
+- [ ] T079 重启 DSH 后做真机核对（图名/按钮/播报/插件页说明/卸载回退）。**0.1.11 的发布与安装完成后仍未重启核对**：运行中的界面仍加载旧 chunk；E-LIVE 里能查到的真机观察仍是 **0.1.2**，0.1.7 与 0.1.8 从未在真实宿主里跑过，0.1.9 同样如此。
 - [ ] T080 再次请两位评审复核（目标 PASS），通过后把 feature 001 标记完成
 
 ## Phase 14: 第三轮独立评审后的修复（2026-11-23 追加，版本 0.1.6）
@@ -292,7 +292,20 @@ description: "Task list for 会话内图形渲染"
 - [x] T126 `contracts/client-fence-layer.md` 第 5 条改为"断开自己的 `MutationObserver`，不另建 `ResizeObserver`、不 `requestAnimationFrame`"；`data-model.md` 的可访问性字段改为"名字只落在 `svg` 上"
 - [x] T127 `plan.md`/`research.md`/`quickstart.md`/`contracts/plugin-manifest.md` 的计数与行数改 36/119、0.1.10、D22 修订
 - [x] T128 打 `v0.1.10`（提交 `926d072`）、GitHub Actions run `45062588313` success（CI 36 项静态 + 119 项浏览器、shasum `cff93a6b81b34057d733797834b4549afbd92816`、logIndex `4047938866`、33 文件）→ 从 registry 装回 profile `desktop`（依赖 `"0.1.10"`，安装副本 767,298 字节、SHA256 `3D860D24…D0E9` 与仓库一致）→ E-PUB/E-INS 已补 0.1.10 行
-- [ ] T129 第八轮双评审（文档 + 实现），目标 PASS
+- [x] T129 第八轮双评审（文档 + 实现）——两份都判 **FAIL**（无 P0；P1 是夹具里一条同义反复与三条无断言行为），结论与修复见 Phase 20
+
+## Phase 20: 第八轮独立评审后的修复（2026-11-23 追加，版本 0.1.11）
+
+**目的**：第八轮实现评审给出一个 P1——`a throwing children getter does not reach the host` 是同义反复（React 18 在 `createRoot().render()` 之后才渲染，`childrenThrew` 恒为 `null`），而"源码块保留 `mermaid` 语言标记""`aria-expanded` 翻转""挂载点 `role="presentation"`"三条行为完全没有断言；文档评审另给 13 条数字与口径缺陷。本阶段让每个断言都能被自己的失效探针打红。
+
+- [x] T130 `src/client/view.js`：`readLayerInput` 读取 `lang`（`DEFAULT_FENCE_LANGUAGE = 'mermaid'`），展开的源码块渲染为 `<code className="language-mermaid">`，让 T016 与 `contracts/client-fence-layer.md` 的说法成立
+- [x] T131 `verify/harness/index.html`：children-getter 用例改为看结果——`a throwing children getter leaves the source`（断言舞台上出现源码文本），并注明"没有抛到宿主"这一条在 React 异步渲染下本身不构成证据
+- [x] T132 夹具每种语言各加四条：`the source toggle starts collapsed`、`the source toggle announces itself as expanded`（`aria-expanded` 由 `false` 变 `true`）、`the expanded source keeps its fence language`（`code.className` 含 `language-mermaid`）、`the mount point is presentational`（`[role="presentation"]` 存在）→ 119 → 152 项
+- [x] T133 探针复验：删掉 `safeRead` 的 `try/catch` → 整条消息变成空串（FR-016 要防的现象），新断言与 `a throwing code getter leaves the host block` 一起变红；还原后 36/152 全绿
+- [x] T134 `src/client/figure.js` 注释改为"引擎英文只进 console 与调用方日志；读者只看到那一句完整句子"（删掉从未实现的 tooltip 说法）
+- [x] T135 文档按第八轮文档评审逐条改：`data-model.md` 生命周期改为"重排归引擎"、外层 group 不带名字；`plan.md:19/43/111` 的 152 项与"不另建 ResizeObserver"；`research.md` 夹具行数 865 + 122 = 987；`quickstart.md` 的 152 项与本版复核版本；`checklists/requirements.md` 的 SC-006 证据描述（4 类浏览器夹具 + 2 类 vm）；`evidence/verification.md` 的头版本 0.1.11、`[ja] a picture is drawn` 真名、G5 的夹具项数、G13 的版本范围 0.1.3–0.1.11、FR-002 行删掉"不写文件"
+- [ ] T136 打 `v0.1.11` → GitHub Actions 发布 → 从 registry 装回 profile `desktop` → E-PUB/E-INS 补 0.1.11 行
+- [ ] T137 第九轮双评审（文档 + 实现），目标 PASS
 
 ## Dependencies & Execution Order
 
@@ -371,7 +384,7 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 **当前自动化证据**（命令即证据，任何人 clone 后可复跑）：
 
 - `node verify/check-bundle.mjs` → **36 项全过**
-- `node verify/run-harness.mjs --list` → 真实 Chromium 里 **119 项全过**（夹具 `verify/harness/index.html`，已提交）
+- `node verify/run-harness.mjs --list` → 真实 Chromium 里 **152 项全过**（夹具 `verify/harness/index.html`，已提交）
 
 **真机证据**（`evidence/verification.md` 的 E-LIVE）：会话内就地成图、卸载回退、重装恢复、插件页说明；取证的版本是 0.1.2。
 
@@ -399,4 +412,4 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 | 项 | 状态 | 说明 |
 |---|---|---|
 | T070 0.1.3 重启核对 | 已作废 | 由 T079 取代 |
-| T079 重启后真机核对（0.1.10） | 未做 | 0.1.9 已发布并装进 profile `desktop`，运行中的界面仍加载旧 chunk；重启后才换新，届时核对图名/按钮/播报/插件页说明/卸载回退，并把 E-LIVE 改写成 0.1.9 的记录。E-LIVE 里现有的观察是 0.1.2 的 |
+| T079 重启后真机核对（0.1.11） | 未做 | 0.1.11 已发布并装进 profile `desktop`，运行中的界面仍加载旧 chunk；重启后才换新，届时核对图名/按钮/播报/插件页说明/卸载回退，并把 E-LIVE 改写成 0.1.9 的记录。E-LIVE 里现有的观察是 0.1.2 的 |

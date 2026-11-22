@@ -1,4 +1,4 @@
-/*! @jiezhengj/dsh-dyslexia 0.1.10 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:336ea7199fb90a0c8202c03e0c14bbe7 */
+/*! @jiezhengj/dsh-dyslexia 0.1.11 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:53c0bc25d05679cd92e7e115d07d7c7d */
 ;(function () {
   function reportLoadFailure(scope, error) {
     try { console.error('dsh-dyslexia: ' + scope, error) } catch (_error) {}
@@ -514,7 +514,8 @@ function translateFor(props, doc) {
  *
  * Failures are classified here, not printed here: the reader gets one complete
  * sentence in their own language, while the engine's English, multi-line parse
- * text is kept for the console and the tooltip.
+ * text is kept for the console and for the caller to log; the reader only ever
+ * sees the one sentence.
  */
 
 const FIGURE_LIMITS = {
@@ -730,15 +731,20 @@ function hostBlock(children, code) {
 }
 
 
+const DEFAULT_FENCE_LANGUAGE = 'mermaid'
+
 function readLayerInput(props) {
   const code = safeRead(props, 'code')
   const streaming = safeRead(props, 'streaming')
   const children = safeRead(props, 'children')
+  const lang = safeRead(props, 'lang')
   return {
     code: code.ok && typeof code.value === 'string' ? code.value : '',
     hasCode: code.ok && typeof code.value === 'string',
     streaming: streaming.ok ? Boolean(streaming.value) : false,
     children: children.ok && isRenderableChild(children.value) ? children.value : null,
+    lang:
+      lang.ok && typeof lang.value === 'string' && lang.value ? lang.value : DEFAULT_FENCE_LANGUAGE,
   }
 }
 
@@ -748,6 +754,7 @@ function MermaidFenceLayer(props) {
   const code = input.code
   const streaming = input.streaming
   const children = input.children
+  const lang = input.lang
 
   const hostTranslate = safeRead(props, 't').value
   const translate = React.useMemo(() => translateFor({ t: hostTranslate }, doc), [hostTranslate, doc])
@@ -965,7 +972,11 @@ function MermaidFenceLayer(props) {
     ? React.createElement(
         'pre',
         { className: SOURCE_CLASS },
-        React.createElement('code', null, code),
+        React.createElement(
+          'code',
+          { className: 'language-' + lang },
+          code,
+        ),
       )
     : null
 

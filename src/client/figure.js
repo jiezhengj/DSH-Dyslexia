@@ -8,7 +8,8 @@
  *
  * Failures are classified here, not printed here: the reader gets one complete
  * sentence in their own language, while the engine's English, multi-line parse
- * text is kept for the console and the tooltip.
+ * text is kept for the console and for the caller to log; the reader only ever
+ * sees the one sentence.
  */
 
 const FIGURE_LIMITS = {
