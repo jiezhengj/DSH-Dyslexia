@@ -304,10 +304,18 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.12 | client.js 767639 bytes | all 156 c
 | 0.1.9 | `45059529254` | success | `71feabc22885e097974a35668e4717837fefd226` | `4047793870` | 33 |
 | 0.1.10 | `45062588313` | success | `cff93a6b81b34057d733797834b4549afbd92816` | `4047938866` | 33 |
 | 0.1.11 | `45065089410` | success | `7c6d33570ed12ec709effb09349b247db4754655` | `4048037334` | 33 |
+| 0.1.12 | `45067949499` | success | `2cae4ca880ddb5401dec6faed1492e1f1622d9f8` | `4048231715` | 33 |
 
 ### E-PUB-LOG 每次发布 CI 日志里的检查报告行（原文照抄）
 
 这些行由工作流在**发布前**跑出来，所以它们证明"发出去的那个 tarball 对应的是通过检查的那棵树"，而不是本地某次运行。
+
+0.1.12（run `45067949499`，36 项静态 / 156 项浏览器）：
+
+```text
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.12 | client.js 767639 bytes | sources sha256:486190784bdd378b14ef3af86af3fcff | all 36 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.1.12 | client.js 767639 bytes | all 156 checks passed (/usr/bin/google-chrome)
+```
 
 0.1.5（run `45046178925`，当时 31 项静态 / 82 项浏览器）：
 
@@ -538,13 +546,13 @@ npm notice publish Provenance statement published to transparency log: https://s
 
 ## E-INS 从 registry 安装
 
-`plugin_manager remove_bundle @jiezhengj/dsh-dyslexia`（卸 0.1.10，pnpm 输出 `- @jiezhengj/dsh-dyslexia 0.1.10`）→ `install_bundle` 目标 `@jiezhengj/dsh-dyslexia@0.1.11`，结果 `application: "applied"`、`version: "0.1.11"`，pnpm 输出：
+`plugin_manager remove_bundle @jiezhengj/dsh-dyslexia`（卸 0.1.11，pnpm 输出 `- @jiezhengj/dsh-dyslexia 0.1.11`）→ `install_bundle` 目标 `@jiezhengj/dsh-dyslexia@0.1.12`，结果 `application: "applied"`、`version: "0.1.12"`，pnpm 输出：
 
 ```text
 dependencies:
-+ @jiezhengj/dsh-dyslexia 0.1.11
++ @jiezhengj/dsh-dyslexia 0.1.12
 
-Done in 2.3s using pnpm v11.28.5
+Done in 2.5s using pnpm v11.28.5
 ```
 
 第一次尝试失败过一次，原因是镜像落后（`ERR_PNPM_NO_MATCHING_VERSION … while fetching it from https://registry.npmmirror.com/`，当时 npmjs 的版本文件已 200 但 tarball 仍 404）；等 npmjs 的 tarball 复制完成后再按包名安装即成功。这个滞后每次发版都会出现（约 2–10 分钟），不是包的问题。
@@ -553,11 +561,11 @@ Done in 2.3s using pnpm v11.28.5
 
 | 检查 | 实测 |
 |---|---|
-| profile 依赖 | `"@jiezhengj/dsh-dyslexia": "0.1.11"`（版本号，不是 `link:`） |
-| `node_modules/@jiezhengj/dsh-dyslexia/client.js` | 767,643 字节，SHA256 `FED8A871825BFEE06A036B00732A2858BDA0FBBB9B7B4213B71B6221C3739199`（与仓库根逐字节相同） |
+| profile 依赖 | `"@jiezhengj/dsh-dyslexia": "0.1.12"`（版本号，不是 `link:`） |
+| `node_modules/@jiezhengj/dsh-dyslexia/client.js` | 767,639 字节，SHA256 `65BA5EDAF591429E55871D500D7D035CBD718EBD388EA173A42AC346376EEC87`（与仓库根逐字节相同） |
 | `locale/` | 8 个 json |
 | `docs/` | 9 个文件（8 篇 `DETAIL*.md` + `preview.svg`） |
-| 包内 `version` | `0.1.11` |
+| 包内 `version` | `0.1.12` |
 
 ## E-LIVE 真机（DSH 桌面窗口内）
 

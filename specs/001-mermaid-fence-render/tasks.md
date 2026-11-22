@@ -316,7 +316,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T141 `check-bundle` 的 `needed` 名单扩到 12 条（含 P5/PA/PB/PC 的断言名），并新增"每个守护名必须落在带条件的 `expect(` 里"的检查，掏空断言体会红（FR-017）
 - [x] T142 三条破坏性探针在 `%TEMP%` 的仓库副本上做（PA 硬编码 `lang`、PB 清空 `FIGURE_CSS`、PC 让 disposer 不删 `defs`），全部被抓红，记录进 `evidence/verification.md` 的 E-PROBE（FR-017）
 - [x] T143 0.1.12 文档逐条：E-LIVE/E-GAPS 的版本口径、G13 与 G14 的顺序、`contracts/client-fence-layer.md` 的引擎调用面表按实现重写（不再声称调用 `refresh()`）、`research.md` 的 D11 标注被 D22 取代 / D19 ⑦ 归属 / D22 的"可见小字"、`checklists` 的 SC-006 四类夹具名、`plan.md`/`quickstart.md`/`contracts/plugin-manifest.md` 的 156 项与 0.1.12
-- [ ] T144 打 `v0.1.12`（提交与 run 见 E-PUB）→ 从 registry 装回 profile `desktop` → 更新 E-PUB/E-INS 的 0.1.12 行
+- [x] T144 打 `v0.1.12`（提交 `8a223d7`）→ GitHub Actions run `45067949499` success（CI 36 项静态 + 156 项浏览器、shasum `2cae4ca880ddb5401dec6faed1492e1f1622d9f8`、logIndex `4048231715`、33 文件）→ 从 registry 装回 profile `desktop`（依赖 `"0.1.12"`，安装副本 767,639 字节、SHA256 `65BA5EDA…EC87` 与仓库一致）→ E-PUB/E-INS 已补 0.1.12 行
 - [ ] T145 第十轮独立评审（文档 + 实现），两份都 PASS 才把 feature 001 标记完成
 
 ## Dependencies & Execution Order
