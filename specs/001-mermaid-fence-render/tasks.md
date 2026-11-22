@@ -304,7 +304,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T133 探针复验：删掉 `safeRead` 的 `try/catch` → 整条消息变成空串（FR-016 要防的现象），新断言与 `a throwing code getter leaves the host block` 一起变红；还原后 36/152 全绿
 - [x] T134 `src/client/figure.js` 注释改为"引擎英文只进 console 与调用方日志；读者只看到那一句完整句子"（删掉从未实现的 tooltip 说法）
 - [x] T135 文档按第八轮文档评审逐条改：`data-model.md` 生命周期改为"重排归引擎"、外层 group 不带名字；`plan.md:19/43/111` 的 152 项与"不另建 ResizeObserver"；`research.md` 夹具行数 865 + 122 = 987；`quickstart.md` 的 152 项与本版复核版本；`checklists/requirements.md` 的 SC-006 证据描述（4 类浏览器夹具 + 2 类 vm）；`evidence/verification.md` 的头版本 0.1.11、`[ja] a picture is drawn` 真名、G5 的夹具项数、G13 的版本范围 0.1.3–0.1.11、FR-002 行删掉"不写文件"
-- [ ] T136 打 `v0.1.11` → GitHub Actions 发布 → 从 registry 装回 profile `desktop` → E-PUB/E-INS 补 0.1.11 行
+- [x] T136 打 `v0.1.11`（提交 `6eebdb5`）→ GitHub Actions run `45065089410` success（CI 36 项静态 + 152 项浏览器、shasum `7c6d33570ed12ec709effb09349b247db4754655`、logIndex `4048037334`、33 文件）→ 从 registry 装回 profile `desktop`（依赖 `"0.1.11"`、安装副本 767,643 字节、SHA256 `FED8A871…9199` 与仓库一致、`locale/` 8、`docs/` 9）→ E-PUB/E-INS 已补 0.1.11 行
 - [ ] T137 第九轮双评审（文档 + 实现），目标 PASS
 
 ## Dependencies & Execution Order
