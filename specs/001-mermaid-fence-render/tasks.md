@@ -358,7 +358,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T170 文档：`spec.md` Status（0.1.15、G1–G16、删掉自相矛盾的"本行不重复计数"）、`tasks.md` T052/T075/T162 措辞、状态表 G5 行（E2 已有夹具）与 G15/G16 去重并排序、`T079` 口径、`evidence` 的 G5 计数、G13 版本区间、E-LIVE 区间、E-PROBE 表头说明与 PT1 行、E-CHK 的 stderr 说明、`plan.md`/`quickstart.md`/`research.md`/`contracts/*` 的 213 与行数
 - [x] T171 `contracts/plugin-manifest.md`：样例 `package.json` 补 `prepack`，并注明 `repository`/`homepage`/`bugs`/`publishConfig`/`keywords` 与根清单同形（provenance 的 `E422` 依据）
 - [x] T172 改正 T162 里写错的 `spec.md` Status 与探针次数口径（当时写 0.1.13、"第十一次探针"，实际 0.1.15 与十三次）
-- [ ] T173 打 `v0.1.15` → GitHub Actions 发布 → 从 registry 装回 profile `desktop` → 补 E-PUB/E-INS
+- [x] T173 打 `v0.1.15`（提交 `8633ead`）→ GitHub Actions run `45077593236` success（CI 37 项静态 / 213 项浏览器，shasum `5fbef04ff91abd350983df0349386f13df8e2a27`，provenance logIndex `4048568677`，33 文件）→ 从 registry 装回 profile `desktop`（依赖 `"0.1.15"`，安装副本 769,391 字节、SHA256 `481C6859…BDF0A` 与仓库根逐字节相同，`locale/` 8、`docs/` 9、包内 `0.1.15`）→ E-PUB/E-INS 补 0.1.15 行
 - [ ] T174 第十三轮双评审（文档 + 实现），两份都 PASS 才把 feature 001 标记完成
 
 ## Dependencies & Execution Order
