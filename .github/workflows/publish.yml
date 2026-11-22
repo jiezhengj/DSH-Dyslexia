@@ -1,0 +1,31 @@
+name: publish
+
+# Publishing runs here, not on a laptop: npm trusts this repository and this
+# workflow file through OIDC, so no npm token and no browser confirmation is
+# involved. Push a tag like v0.1.1 and npm receives that version.
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Use the npm that speaks OIDC
+        run: npm install --global npm@latest
+
+      - name: Check the bundle before publishing
+        run: node verify/check-bundle.mjs
+
+      - name: Publish
+        run: npm publish --access public --provenance
