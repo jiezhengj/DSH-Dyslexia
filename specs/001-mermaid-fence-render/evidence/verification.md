@@ -714,7 +714,7 @@ Done in 2.4s using pnpm v11.28.5
 | 卸载插件后，同一条消息变回纯文本代码块，无报错无占位 | `remove_bundle` 后 `flowchart LR … A[代码块] --> B[就地成图]` 原样显示，`role="img"`（`agent-desktop` 报告为 image）与按钮计数为 0 | US2/FR-009（不含 SC-002 的会话检索命中） |
 | 重新安装后图与按钮立刻回来，历史消息不用改 | `install_bundle` 后同一屏立刻渲染 | FR-010 |
 
-## E-GAPS 没有取证的部分（共 16 项）
+## E-GAPS 没有取证的部分（共 17 项）
 
 真机、设备与离线条件（都要求动手换条件，不能在 CI 里做）：
 
@@ -739,8 +739,10 @@ Done in 2.4s using pnpm v11.28.5
 - **G13 当前版本的重启后真机核对（T079）**：`E-LIVE` 的观察取自 **0.1.2**，且只有四件事——插件页的**中文**说明与插图、会话里就地成图（图名 `图：flowchart`、两个按钮）、卸载后同一条消息回退为代码块、重装后图与按钮立刻回来。**复制播报**（0.1.5 起才有）与**其余 7 种语言的插件页**从未在真机上看过，不能算已观察。0.1.3–0.1.17 改过 `view.js`、`i18n.js`、`entry.js`、`styles.js`，这些观察不能自动转移。0.1.11 至 0.1.17 都已发布并装进 `desktop` profile，但**没有在重启后的宿主里逐项复核过**，所以算未取证。
 - **G14 真实窗口缩放时的引擎重绘（FR-018 的端到端面）**：0.1.10 把重排版交给引擎自己的 `ResizeObserver`（pele 内部），插件只负责"节点被换回来就重新命名"。夹具能证明"节点被换 → 立刻重新命名"，但**无法让引擎在无头浏览器里真的因窗口缩放而重绘**（无头环境第一帧之后不再派发帧与 ResizeObserver 通知）。真实窗口里"拖窄窗口 → 引擎重绘 → 名字回来"这条链只有机制级证据。
 - **G15 尚未覆盖的加固面（第十轮实现评审记录）**：`src/client/figure.js` 的 `outputLimit`（2 MiB）与 `maxEdges`（400）没有用例；`src/client/entry.js` 里 `slots.inject(...)` 返回的 disposer 被丢掉（层本身随 `apply` 的作用域一起消失，但没有"二次 apply 不重复注册"或"inject 的句柄被单独释放"的断言）；`package.json` 的 `prepack` 只跑构建与 `check-bundle`，不跑夹具（依赖 CI 的五步兜住）。这四项都不影响已发布行为，但都属于"没有证据的加固"。
+- **G17 视图层的几处行为没有任何断言（第十四轮实现评审 P3 汇总）**：以下保证在代码里存在，但删掉/改坏不会让任何断言变红——①「画不出来的原因分三种」只有"有一句话"被保护（把 `translate('syntaxError')` 换成 `translate('renderFailed')`、或把 `engineUnavailable` 换成 `renderFailed`，两套检查仍全绿）；②缩放按钮按引擎顺序贴标签（`ZOOM_BUTTONS = ['zoomIn','zoomOut','resetZoom']`），顺序写错不会变红，读屏会把"放大"念成"缩小"；③失败后同一实例的自愈（`FigureBoundary.componentDidUpdate` 里 `code` 变了才复位）无断言；④失败时隐藏那个空画框（`style: failed ? { display: 'none' } : undefined`）无断言；⑤"已复制"1.5 秒后自动消失（`COPIED_FEEDBACK_MS`）无断言；⑥`children: []`（React 合法、但画不出东西）会退回原文这条分支无断言；⑦`MutationObserver` 只观察直接子节点（无 `subtree`），引擎若在既有 `<svg>` 内部重排则名字不补；⑧`FigureBoundary` 在 `props` 与 `code` 都读不出来时返回 `null`，这条兜底无断言。
+  这些都不影响"能力存在"，但它们是这一层最薄的地方；不再往下修的原因是每加一条断言都要连带重算证据与发版，而这一轮的目标是把**说法**收紧到与证据一致。
 - **G16 vendor 文本与换节点的无头局限（记录）**：`client.js` 里 vendor 许可注释含 `https://github.com/obsidianmd/pele`，属静态文本、无网络行为；「引擎换掉 `<svg>` 后重新命名」在无头环境里只能靠夹具重放（真实拖窄窗口的端到端见 G14）。规模上限按 G15 记，这里不重复。
 
 ---
 
-**本文件与 tasks.md 的关系**：`tasks.md` 末尾的状态表逐行对应上面 16 项，两处若不一致，以本文件为准（本文件是证据的归属地，`tasks.md` 是工作项的记录）。
+**本文件与 tasks.md 的关系**：`tasks.md` 末尾的状态表逐行对应上面 17 项，两处若不一致，以本文件为准（本文件是证据的归属地，`tasks.md` 是工作项的记录）。
