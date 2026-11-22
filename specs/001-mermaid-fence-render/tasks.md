@@ -345,7 +345,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T160 `verify/harness/index.html` 新增 8 项：`every zoom button is reachable once the picture is zoomed`、`a source swapped for a broken one is shown once, not twice`、`a copy answer does not outlive the source it described`、`a fence whose props read throws is left to the host, not the message`、`a host without effects keeps one stylesheet, not one per apply` 等 → 197 → 205 项（P2-1/P2-2/P2-5/P2-7/P2-8）
 - [x] T161 `verify/run-harness.mjs` 钉数改 `EXPECTED_CHECKS = 205`；`check-bundle` 的 `needed` 名单扩到 19 条（新断言被删会红）
 - [x] T162 0.1.14 文档逐条：`spec.md` Status、`plan.md`/`quickstart.md`/`contracts/plugin-manifest.md` 的 37/205 与行数、`evidence/verification.md` 的 E-BLD/E-CHK/E-HARN 重生成、E-PROBE 补第十一次探针、E-GAPS 增 G16（`outputLimit`/`maxEdges` 无用例；"引擎换掉节点后重命名"只有夹具重放；vendor 许可注释里的 `https://github.com/obsidianmd/pele` 属允许的静态文本）
-- [ ] T163 打 `v0.1.14` → GitHub Actions 发布 → 从 registry 装回 profile `desktop` → E-PUB/E-INS 补 0.1.14 行
+- [x] T163 打 `v0.1.14`（提交 `1599245`）→ GitHub Actions run `45074961635` success（CI 37 项静态 / 205 项浏览器，shasum `7a5c2fff3ee9e3408d59506d6a1e8e235db8a59f`，provenance logIndex `4048513739`，33 文件）→ 从 registry 装回 profile `desktop`（依赖 `"0.1.14"`，安装副本 769,771 字节、SHA256 `F7C599EF…C6C9A` 与仓库根逐字节相同，`locale/` 8、`docs/` 9、包内 `0.1.14`）→ E-PUB/E-INS 补 0.1.14 行
 - [ ] T164 第十二轮双评审（文档 + 实现），两份都 PASS 才把 feature 001 标记完成
 
 ## Dependencies & Execution Order
