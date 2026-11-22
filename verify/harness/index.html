@@ -74,7 +74,7 @@
           en: { name: 'Diagram', show: 'Show source', copy: 'Copy source', hidden: 'Hide source', copied: 'Copied', failed: 'Copy failed' },
           ja: { name: '図', show: 'ソースを表示', copy: 'ソースをコピー', hidden: 'ソースを隠す', copied: 'コピーしました', failed: 'コピーできませんでした' },
           es: { name: 'Diagrama', show: 'Mostrar el código', copy: 'Copiar el código', hidden: 'Ocultar el código', copied: 'Copiado', failed: 'No se pudo copiar' },
-          fr: { name: 'Schéma', show: 'Afficher la source', copy: 'Copier la source', hidden: 'Masquer la source', copied: 'Copié', failed: 'Impossible de copier' },
+          fr: { name: 'Schéma', show: 'Afficher la source', copy: 'Copier la source', hidden: 'Masquer la source', copied: 'Copié', failed: 'Échec de la copie' },
           de: { name: 'Diagramm', show: 'Quelle anzeigen', copy: 'Quelle kopieren', hidden: 'Quelle ausblenden', copied: 'Kopiert', failed: 'Kopieren fehlgeschlagen' },
           ru: { name: 'Диаграмма', show: 'Показать код', copy: 'Копировать код', hidden: 'Скрыть код', copied: 'Скопировано', failed: 'Не удалось скопировать' },
           pt: { name: 'Diagrama', show: 'Mostrar o código', copy: 'Copiar o código', hidden: 'Ocultar o código', copied: 'Copiado', failed: 'Não foi possível copiar' },
@@ -246,6 +246,18 @@
               spokenVisible && spokenBox !== null && parseFloat(spokenBox.fontSize) >= 10,
               `[${lang}] the copy answer can be read, not only heard`,
               (spokenBox ? spokenBox.fontSize + ' / ' + spokenBox.color : 'no status'),
+            )
+            Object.defineProperty(navigator, 'clipboard', {
+              configurable: true,
+              value: { writeText: () => Promise.reject(new Error('denied by the harness')) },
+            })
+            if (copyNode) copyNode.click()
+            await tick(40)
+            const refused = view.stage.querySelector('[role="status"]')
+            expect(
+              refused !== null && refused.textContent === exact.failed,
+              `[${lang}] a refused clipboard says so`,
+              (refused ? refused.textContent : 'no status') + ' / expected ' + exact.failed,
             )
             if (languageClipboard) Object.defineProperty(navigator, 'clipboard', languageClipboard)
             else delete navigator.clipboard

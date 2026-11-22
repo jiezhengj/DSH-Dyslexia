@@ -110,14 +110,14 @@ check('published files leave the build sources out', () => {
  * one of them must declare its own document, and that document must exist. */
 const LANGUAGES = ['zh', 'en', 'ja', 'es', 'fr', 'de', 'ru', 'pt']
 
-check('every published file exists', () => {
+check('the required published files exist', () => {
   const required = ['index.js', 'client.js', 'cordis.patch.yml', 'icon.svg', 'LICENSE', 'THIRD-PARTY-NOTICES.md', 'README.md', 'docs/preview.svg']
   for (const language of LANGUAGES) required.push(`locale/${language}.json`, `README.${language}.md`)
   required.forEach((relative) => {
     const size = statSync(join(ROOT, relative)).size
     assert(size > 0, `${relative} is empty`)
   })
-  return `${required.length} files`
+  return `${required.length} required of the 33 packed files`
 })
 
 check('every interface language has its own plugin page', () => {

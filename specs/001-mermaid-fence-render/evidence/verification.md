@@ -1,34 +1,34 @@
 # 验证证据
 
-本文件只记录**已经真实跑过**的命令输出。E-BLD、E-CHK、E-HARN 三段各自来自一次运行，其中 E-CHK 与 E-HARN 的报告行自带 `包名@版本 | client.js 字节数 | sources sha256:<指纹>`，所以这两段可被追溯到具体的一棵树；E-BLD 是构建日志本身（它写出 `client.js`，随后由这两段报告行限定）。E-PUB 记录 CI 运行，E-INS 与 E-LIVE 记录真机操作，各自注明版本与 run，不能当成"同一次运行"的输出。当前版本：`0.1.14`。
+本文件只记录**已经真实跑过**的命令输出。E-BLD、E-CHK、E-HARN 三段各自来自一次运行，其中 E-CHK 与 E-HARN 的报告行自带 `包名@版本 | client.js 字节数 | sources sha256:<指纹>`，所以这两段可被追溯到具体的一棵树；E-BLD 是构建日志本身（它写出 `client.js`，随后由这两段报告行限定）。E-PUB 记录 CI 运行，E-INS 与 E-LIVE 记录真机操作，各自注明版本与 run，不能当成"同一次运行"的输出。当前版本：`0.1.15`。
 
 复跑方式（任何人 clone 后都一样）：
 
 ```bash
 node scripts/build-client.mjs       # 由 src/client/*.js + vendor/pele 生成 client.js
 node verify/check-bundle.mjs        # 37 项静态与行为断言，纯 Node 内置模块
-node verify/run-harness.mjs --list  # 205 项浏览器断言，需要本机 Chrome
+node verify/run-harness.mjs --list  # 213 项浏览器断言，需要本机 Chrome
 ```
 
 ## E-BLD 构建
 
 ```text
-build-client: @jiezhengj/dsh-dyslexia -> client.js (769771 bytes, 768741 characters, engine 1.13.0, sources 5, syntax ok)
+build-client: @jiezhengj/dsh-dyslexia -> client.js (769391 bytes, 768361 characters, engine 1.13.0, sources 5, syntax ok)
 ```
 
 ## E-CHK 静态与行为校验
 
 ```text
-ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.14
+ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.15
 ok   package.json points at the repository npm trusts — git+https://github.com/jiezhengj/DSH-Dyslexia.git
 ok   package.json declares the bundle patch and the client half — platform web, no package inject
 ok   no dsh version gate can refuse a start — no engines.dsh, no dsh peers
 ok   published files leave the build sources out — 9 patterns
-ok   every published file exists — 24 files
+ok   the required published files exist — 24 required of the 33 packed files
 ok   every interface language has its own plugin page — 8 languages
 ok   cordis.patch.yml inserts the plugin by package name — 3 lines
 ok   both locales carry metadata — en, zh
-ok   client.js is one loader chunk keyed by the package name — 769771 bytes
+ok   client.js is one loader chunk keyed by the package name — 769391 bytes
 ok   client.js requires react and nothing else — react
 ok   client.js never reaches the network — no fetch, no XHR, no dynamic import, no remote URL
 ok   client.js carries the vendored engine — Pele 1.13.0 inlined
@@ -46,7 +46,7 @@ ok   every supported sample type draws an svg — flowchart:218x64 sequence:184x
 ok   a broken diagram reports a one-line reason — Parse error on line 2:
 ok   host key echo falls back to bundled strings — key echo, blanks, placeholders rejected
 ok   every language carries the same complete sentences — 12 keys x 8 languages, no engine text in labels
-ok   client.js matches the sources it claims — c0e38c5373e00f1f9432895504946ba3
+ok   client.js matches the sources it claims — 4df7b0b5ee7636f67b467672946f5b1b
 ok   the picture is the image, and the copy answer is announced — label is a noun, role="img" on the svg, copy result announced
 ok   host children react would refuse fall back to the source — objects, functions and mixed arrays fall back to the source text
 ok   every drawing the engine swaps in is named again — the engine owns re-layout; every swapped drawing node and its zoom buttons are renamed, strings follow the language
@@ -57,7 +57,7 @@ ok   the host half registers exactly one capability section — ui:dsh-dyslexia,
 ok   the host half stays silent when the host changed shape — five silent hosts, one throwing section
 ok   the fixtures assert what the fixes promise, and can fail — 19 assertions present and carrying a condition
 
-check-bundle: @jiezhengj/dsh-dyslexia@0.1.14 | client.js 769771 bytes | sources sha256:c0e38c5373e00f1f9432895504946ba3 | all 37 checks passed
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.15 | client.js 769391 bytes | sources sha256:4df7b0b5ee7636f67b467672946f5b1b | all 37 checks passed
 ```
 
 ## E-HARN 浏览器行为校验
@@ -85,6 +85,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.14 | client.js 769771 bytes | sources 
 [ok] [zh] the mount point is presentational
 [ok] [zh] the copy answer is announced in words — 已复制 / expected 已复制
 [ok] [zh] the copy answer can be read, not only heard — 12px / rgb(91, 95, 114)
+[ok] [zh] a refused clipboard says so — 复制失败 / expected 复制失败
 [ok] [en] the picture carries a plain name — Diagram
 [ok] [en] first render shows the two buttons — Show source | Copy source
 [ok] [en] a picture is drawn
@@ -97,6 +98,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.14 | client.js 769771 bytes | sources 
 [ok] [en] the mount point is presentational
 [ok] [en] the copy answer is announced in words — Copied / expected Copied
 [ok] [en] the copy answer can be read, not only heard — 12px / rgb(91, 95, 114)
+[ok] [en] a refused clipboard says so — Copy failed / expected Copy failed
 [ok] [ja] the picture carries a plain name — 図
 [ok] [ja] first render shows the two buttons — ソースを表示 | ソースをコピー
 [ok] [ja] a picture is drawn
@@ -109,6 +111,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.14 | client.js 769771 bytes | sources 
 [ok] [ja] the mount point is presentational
 [ok] [ja] the copy answer is announced in words — コピーしました / expected コピーしました
 [ok] [ja] the copy answer can be read, not only heard — 12px / rgb(91, 95, 114)
+[ok] [ja] a refused clipboard says so — コピーできませんでした / expected コピーできませんでした
 [ok] [es] the picture carries a plain name — Diagrama
 [ok] [es] first render shows the two buttons — Mostrar el código | Copiar el código
 [ok] [es] a picture is drawn
@@ -121,6 +124,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.14 | client.js 769771 bytes | sources 
 [ok] [es] the mount point is presentational
 [ok] [es] the copy answer is announced in words — Copiado / expected Copiado
 [ok] [es] the copy answer can be read, not only heard — 12px / rgb(91, 95, 114)
+[ok] [es] a refused clipboard says so — No se pudo copiar / expected No se pudo copiar
 [ok] [fr] the picture carries a plain name — Schéma
 [ok] [fr] first render shows the two buttons — Afficher la source | Copier la source
 [ok] [fr] a picture is drawn
@@ -133,6 +137,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.14 | client.js 769771 bytes | sources 
 [ok] [fr] the mount point is presentational
 [ok] [fr] the copy answer is announced in words — Copié / expected Copié
 [ok] [fr] the copy answer can be read, not only heard — 12px / rgb(91, 95, 114)
+[ok] [fr] a refused clipboard says so — Échec de la copie / expected Échec de la copie
 [ok] [de] the picture carries a plain name — Diagramm
 [ok] [de] first render shows the two buttons — Quelle anzeigen | Quelle kopieren
 [ok] [de] a picture is drawn
@@ -145,6 +150,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.14 | client.js 769771 bytes | sources 
 [ok] [de] the mount point is presentational
 [ok] [de] the copy answer is announced in words — Kopiert / expected Kopiert
 [ok] [de] the copy answer can be read, not only heard — 12px / rgb(91, 95, 114)
+[ok] [de] a refused clipboard says so — Kopieren fehlgeschlagen / expected Kopieren fehlgeschlagen
 [ok] [ru] the picture carries a plain name — Диаграмма
 [ok] [ru] first render shows the two buttons — Показать код | Копировать код
 [ok] [ru] a picture is drawn
@@ -157,6 +163,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.14 | client.js 769771 bytes | sources 
 [ok] [ru] the mount point is presentational
 [ok] [ru] the copy answer is announced in words — Скопировано / expected Скопировано
 [ok] [ru] the copy answer can be read, not only heard — 12px / rgb(91, 95, 114)
+[ok] [ru] a refused clipboard says so — Не удалось скопировать / expected Не удалось скопировать
 [ok] [pt] the picture carries a plain name — Diagrama
 [ok] [pt] first render shows the two buttons — Mostrar o código | Copiar o código
 [ok] [pt] a picture is drawn
@@ -169,6 +176,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.14 | client.js 769771 bytes | sources 
 [ok] [pt] the mount point is presentational
 [ok] [pt] the copy answer is announced in words — Copiado / expected Copiado
 [ok] [pt] the copy answer can be read, not only heard — 12px / rgb(91, 95, 114)
+[ok] [pt] a refused clipboard says so — Não foi possível copiar / expected Não foi possível copiar
 [ok] every interface language actually translates
 [ok] the source block keeps the language the host sent — language-mmd
 [ok] a host t that echoes the key still shows words — 查看源码 | 复制源码 / 图
@@ -272,8 +280,10 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.14 | client.js 769771 bytes | sources 
 [ok] the zoom buttons speak the interface language — 放大 | 缩小 | 重置缩放
 [ok] every zoom button in reach can take the keyboard — 1/1 reachable of 3
 [ok] every zoom button is reachable once the picture is zoomed — 3/3 after zoom
-run-harness: @jiezhengj/dsh-dyslexia@0.1.14 | client.js 769771 bytes | sources sha256:c0e38c5373e00f1f9432895504946ba3 | all 205 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+run-harness: @jiezhengj/dsh-dyslexia@0.1.15 | client.js 769391 bytes | sources sha256:4df7b0b5ee7636f67b467672946f5b1b | all 213 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
+
+同一次运行的 stderr 另有 7 段被**刻意捕获**的异常堆栈（loader ×3、prompt section ×3、module ×1，例如 `dsh-dyslexia: loader Error: host changed the loader`、`dsh-dyslexia: prompt section rejected Error: asynchronous failure`）：它们来自敌意宿主用例，属正常输出，不是失败。
 
 ## E-A11Y 图像的读屏取舍（`role="img"` 的代价与补偿）
 
@@ -287,7 +297,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.14 | client.js 769771 bytes | sources s
 
 ## E-PROBE 夹具能失败吗：用破坏性探针验证
 
-如果一个断言恒真，"套件全绿"就不构成证据。0.1.8 至 0.1.14 期间共做了十三次探针：故意破坏被断言保护的代码、重建 `client.js`、跑两套检查、确认目标断言**变红**，再还原（0.1.10 起的几次在 `%TEMP%` 的仓库副本里做，不动工作树）。报告行里的项数属于**当时的套件**：0.1.10 = 119 项、0.1.11 = 152 项、0.1.12 = 156 项、0.1.13 = 197 项。
+如果一个断言恒真，"套件全绿"就不构成证据。0.1.8 至 0.1.15 期间共做了十四次探针：故意破坏被断言保护的代码、重建 `client.js`、跑两套检查、确认目标断言**变红**，再还原（0.1.10 起的几次在 `%TEMP%` 的仓库副本里做，不动工作树）。报告行里的项数属于**当时的套件**：0.1.10 = 119 项、0.1.11 = 152 项、0.1.12 = 156 项、0.1.13 = 197 项。
 
 | 探针 | 破坏方式 | 变红的断言（含报告行） | 说明 |
 |---|---|---|---|
@@ -301,10 +311,10 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.14 | client.js 769771 bytes | sources s
 | PC | 0.1.12 时：让夹具里 `slots.register` 的 disposer 不删 `defs` | 夹具 `the fence layer is gone once the host disposes` → `1`（应 0） | 报告行 `run-harness: 1 failed, 155 passed`（exit 1）。该断言旧名 `the fence layer is dropped` 只是重复计量同一份簿记，0.1.12 起改成真的把层从宿主表里删掉并改名 |
 | P6 | 0.1.13 时：把夹具里 `expect(missingLanguage.length === 0, 'every interface language has expectations'` 改成不调用 `expect` | 驱动报 `run-harness: suite reported 196 checks, expected 197: a check was added or removed`（exit 1） | 夹具套件现在钉死条目数：删一条断言不再可能全绿 |
 | P7 | 0.1.13 时：删掉 `check-bundle.mjs` 里一整条 `check('no dsh version gate can refuse a start', …)` 块 | 报告行 `[FAIL] the suite has 36 checks, expected 37: a check was added or removed without updating this number`、`check-bundle: 1 failed, 36 passed`（exit 1） | 静态套件同样钉死条目数 |
-
 | PR1 | 0.1.14 时：把 `src/client/view.js` 的 `setShowSource(false); setCopyState('idle')` 两行换成 `void 0` | 夹具 `a copy answer does not outlive the source it described` 报 `已复制` | `run-harness: 1 failed, 204 passed`，exit 1 |
 | PR2 | 0.1.14 时：把 `showSource && !failed` 换成 `showSource` | **没有断言变红（205 全过）** | 如实记录：这条守卫是防御性的——源码一换，PR1 的重置 effect 已经收起面板，所以失败态下不会出现第二份源码；因此不能把 PR2 当成「该守卫可证伪」的证据 |
 | PR3 | 0.1.14 时：把 `FigureBoundary.render` 里 `try { input = readLayerInput(this.props) }` 拆开，直接读 | 夹具 `a fence whose props read throws is left to the host, not the message` 报 `""`（整条消息被清空） | `run-harness: 1 failed, 204 passed`，exit 1 |
+| PT1 | 0.1.15 时：把 `src/client/view.js` 的 `finishCopy('failed')` 全换成 `finishCopy('copied')` | 8 条 `[lang] a refused clipboard says so` 全部变红（`已复制 / expected 复制失败` 等） | `run-harness: 8 failed, 205 passed`，exit 1 |
 
 静态检查里另有一条守护 `the fixtures assert what the fixes promise, and can fail`：它要求 P1/P2/P4/P5/PA/PB/PC 里那几个"能变红的断言名"继续存在于夹具中，并且每条名字必须落在带条件的 `expect(` 调用里（掏空断言体会红），否则说明有人把夹具删了而代码检查仍绿。P6/P7 是另一道：两套检查各自的条目数被钉死，删一条也会红。
 
@@ -409,7 +419,7 @@ npm notice shasum: 71feabc22885e097974a35668e4717837fefd226
 npm notice total files: 33
 ```
 
-0.1.10（run `45062588313`，36 / 119）——这是**当时**那棵树的两条报告行；版本、字节数、指纹与项数都与当前不同（当前 0.1.14 是 769,771 字节、`c0e38c53…`、37 / 205），共同点只有命令与工作流：
+0.1.10（run `45062588313`，36 / 119）——这是**当时**那棵树的两条报告行；版本、字节数、指纹与项数都与当前不同（当前 0.1.15 是 769,391 字节、`4df7b0b5…`、37 / 213），共同点只有命令与工作流：
 
 ```text
 check-bundle: @jiezhengj/dsh-dyslexia@0.1.10 | client.js 767298 bytes | sources sha256:336ea7199fb90a0c8202c03e0c14bbe7 | all 36 checks passed
@@ -656,7 +666,7 @@ Done in 2.6s using pnpm v11.28.5
 
 ## E-LIVE 真机（DSH 桌面窗口内）
 
-**以下记录来自 0.1.2**，当前版本（0.1.14）的重启核对是 T079（**尚未取证**，见 G13）。之所以保留，是因为它们证明了链路本身可用；从 0.1.2 到 0.1.13 渲染层改过多次（`role` 结构、`aria-roledescription` 的移除与重排版后重标、可见的复制反馈、空/非法 `children` 的处理、源码块的 `language-mermaid` 标记、外层盒子去掉名字），所以这些观察**不能**自动转移到 `0.1.14`。
+**以下记录来自 0.1.2**，当前版本（0.1.15）的重启核对是 T079（**尚未取证**，见 G13）。之所以保留，是因为它们证明了链路本身可用；从 0.1.2 到 0.1.13 渲染层改过多次（`role` 结构、`aria-roledescription` 的移除与重排版后重标、可见的复制反馈、空/非法 `children` 的处理、源码块的 `language-mermaid` 标记、外层盒子去掉名字），所以这些观察**不能**自动转移到 `0.1.14`。
 
 | 观察 | 当时的证据 | 归属 |
 |---|---|---|
@@ -673,7 +683,7 @@ Done in 2.6s using pnpm v11.28.5
 - **G2 实体手机/平板触控（T023 的硬件部分）**：窄屏证据来自 headless Chrome 的 360 px 夹具（`the picture takes the column width`、`a wide picture does not widen the column`、`the page itself never overflows`），不是真实设备触控。
 - **G3 断网裸机安装（T025）**：`client.js never reaches the network` 只证明产物没有网络调用；"一台没有任何缓存/CDN 的机器上离线装得上"没有验证。
 - **G4 畸形宿主的真机注入（T041）**：宿主机侧 7 次 `apply`（5 种静默 ctx + 2 次异常调用）与客户端 7 种畸形 `ctx`（`undefined`、`null`、`{}`、`{slots:null}`、`{slots:{}}`、`inject`/`register` 为空函数、`inject` 抛错）只在夹具与 `check-bundle` 的 vm 里复现，没有在一次真实宿主里注入过。
-- **G5 quickstart 的 E1–E16 逐条复跑（T031）**：证据表本身不是证据。其中 E2（同一条消息两块 `mermaid` 并存）自 0.1.13 起有夹具（`two fences draw two pictures`、`the second fence draws its own picture`、`the prose around a picture is left alone`、`the picture and the prose keep their order`），E16（非 `mermaid` 的代码块不受影响）**既没有夹具、也没有真机观察**——197 项夹具里没有这一用例。E10（**卸载后旧会话回退为代码块**）有 0.1.2 的真机观察；E15 按 `quickstart.md` 的定义是"**未装插件的新会话不产生只有插件才看得懂的内容**"，它既没有夹具也没有真机观察（0.1.2 的观察里没有这一条）。
+- **G5 quickstart 的 E1–E16 逐条复跑（T031）**：证据表本身不是证据。其中 E2（同一条消息两块 `mermaid` 并存）自 0.1.13 起有夹具（`two fences draw two pictures`、`the second fence draws its own picture`、`the prose around a picture is left alone`、`the picture and the prose keep their order`），E16（非 `mermaid` 的代码块不受影响）**既没有夹具、也没有真机观察**——213 项夹具里没有这一用例（0.1.13 时是 197 项）。E10（**卸载后旧会话回退为代码块**）有 0.1.2 的真机观察；E15 按 `quickstart.md` 的定义是"**未装插件的新会话不产生只有插件才看得懂的内容**"，它既没有夹具也没有真机观察（0.1.2 的观察里没有这一条）。
 
 指标类（定义写得出来，但没有一条被真正测量）：
 
@@ -687,7 +697,7 @@ Done in 2.6s using pnpm v11.28.5
 
 - **G11 FR-011 的后半（停用插件后提示词段消失）**：只有 `apply` 注册段的静态证据与宿主半边契约，没有"停用后模型侧看不到"的实测（T027）。
 - **G12 FR-002 的真机面（不打开侧栏、不生成文件、不新增会话条目）**：插件在结构上不写文件、不碰宿主布局（静态可读），但没有一次真机上"看完这张图，磁盘与会话条目都没变"的核对。
-- **G13 当前版本的重启后真机核对（T079）**：`E-LIVE` 的观察取自 **0.1.2**，且只有四件事——插件页的**中文**说明与插图、会话里就地成图（图名 `图：flowchart`、两个按钮）、卸载后同一条消息回退为代码块、重装后图与按钮立刻回来。**复制播报**（0.1.5 起才有）与**其余 7 种语言的插件页**从未在真机上看过，不能算已观察。0.1.3–0.1.13 改过 `view.js`、`i18n.js`、`entry.js`、`styles.js`，这些观察不能自动转移。0.1.11、0.1.12 已发布并装进 `desktop` profile，但**没有在重启后的宿主里逐项复核过**，所以算未取证。
+- **G13 当前版本的重启后真机核对（T079）**：`E-LIVE` 的观察取自 **0.1.2**，且只有四件事——插件页的**中文**说明与插图、会话里就地成图（图名 `图：flowchart`、两个按钮）、卸载后同一条消息回退为代码块、重装后图与按钮立刻回来。**复制播报**（0.1.5 起才有）与**其余 7 种语言的插件页**从未在真机上看过，不能算已观察。0.1.3–0.1.15 改过 `view.js`、`i18n.js`、`entry.js`、`styles.js`，这些观察不能自动转移。0.1.11 至 0.1.15 都已发布并装进 `desktop` profile，但**没有在重启后的宿主里逐项复核过**，所以算未取证。
 - **G14 真实窗口缩放时的引擎重绘（FR-018 的端到端面）**：0.1.10 把重排版交给引擎自己的 `ResizeObserver`（pele 内部），插件只负责"节点被换回来就重新命名"。夹具能证明"节点被换 → 立刻重新命名"，但**无法让引擎在无头浏览器里真的因窗口缩放而重绘**（无头环境第一帧之后不再派发帧与 ResizeObserver 通知）。真实窗口里"拖窄窗口 → 引擎重绘 → 名字回来"这条链只有机制级证据。
 - **G15 尚未覆盖的加固面（第十轮实现评审记录）**：`src/client/figure.js` 的 `outputLimit`（2 MiB）与 `maxEdges`（400）没有用例；`src/client/entry.js` 里 `slots.inject(...)` 返回的 disposer 被丢掉（层本身随 `apply` 的作用域一起消失，但没有"二次 apply 不重复注册"或"inject 的句柄被单独释放"的断言）；`package.json` 的 `prepack` 只跑构建与 `check-bundle`，不跑夹具（依赖 CI 的五步兜住）。这四项都不影响已发布行为，但都属于"没有证据的加固"。
 - **G16 规模上限与 vendor 文本（记录）**：`outputLimit`（2 MiB）与 `maxEdges`（400）仍无用例，只由引擎自己拦；「引擎换掉 `<svg>` 后重新命名」在无头环境里只能夹具重放（真实拖窄窗口的端到端见 G14）；`client.js` 里 vendor 许可注释含 `https://github.com/obsidianmd/pele`，属静态文本、无网络行为。

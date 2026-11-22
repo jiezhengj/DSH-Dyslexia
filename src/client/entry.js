@@ -22,11 +22,11 @@ const inject = ['slots']
 
 /**
  * The stylesheet this module put in the document when the host offered no
- * `ctx.effect`. Kept so a second `apply` can take the first one away: a host
- * without effects cannot promise us a teardown, and at most one leftover
- * element is better than one per call.
+ * `ctx.effect`. `ensureFigureStyles` reuses the element by id, so repeated
+ * applies cannot stack copies; without an effect hook there is nothing that
+ * could take the one copy away on disable, and a host that old is not worth a
+ * branch nothing can observe.
  */
-let unownedStyle = null
 
 function report(scope, error) {
   try {
@@ -64,16 +64,6 @@ function apply(ctx) {
       // the remover goes in the return value — passing it as the setup would run
       // it immediately and unstyle the picture.
       if (typeof ctx.effect === 'function') ctx.effect(() => drop, 'dsh-dyslexia: figure styles')
-      else if (unownedStyle !== null && unownedStyle !== styleElement) {
-        // No teardown hook: claim the stylesheet a previous run left behind, so
-        // an uninstall followed by a start cannot stack them up.
-        try {
-          removeFigureStyles(unownedStyle)
-        } catch (error) {
-          report('styles', error)
-        }
-      }
-      if (typeof ctx.effect !== 'function') unownedStyle = styleElement
     }
   } catch (error) {
     report('styles', error)

@@ -45,7 +45,7 @@ Both commands are in the repository, so the claims in this file can be re-checke
 
 ## Known limits
 
-- **Verified here:** in-chat drawing in DSH desktop `0.2.2-rc.5` (plugin `0.1.2`); label fallback; uninstall fallback and reinstall; eight interface languages; a 360 px wide column in a headless Chrome fixture (a layout check, not a phone).
+- **Verified here:** in-chat drawing in DSH desktop `0.2.2-rc.5` (plugin `0.1.2`); label fallback; uninstall fallback and reinstall; eight interface languages (in the headless harness); a 360 px wide column in a headless Chrome fixture (a layout check, not a phone).
 - **Likely, not proven on your machine:** other DSH versions; other Chromium-based browsers; the same checks on mobile devices (the layout is verified in a 360 px viewport in a desktop browser, not on a physical phone); very large diagrams (limits: source 24 KiB, drawing output 2 MiB, 400 edges; beyond that it falls back to the code block).
 - **Not done:** upgrading DSH across a major version has not been rehearsed; diagrams are not drawn while a message is still streaming; only ` ```mermaid ` fences are handled (not other fence languages).
 

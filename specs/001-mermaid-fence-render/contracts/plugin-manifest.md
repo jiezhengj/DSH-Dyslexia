@@ -7,7 +7,7 @@
 ```json
 {
   "name": "@jiezhengj/dsh-dyslexia",
-  "version": "0.1.14",
+  "version": "0.1.15",
   "description": "Draws mermaid code blocks in DeepSeek Harness conversations as diagrams, in place in the message.",
   "type": "module",
   "main": "index.js",
@@ -37,11 +37,19 @@
     "build": "node scripts/build-client.mjs",
     "verify": "node verify/check-bundle.mjs",
     "harness": "node verify/run-harness.mjs",
-    "test": "node verify/check-bundle.mjs && node verify/run-harness.mjs"
+    "test": "node verify/check-bundle.mjs && node verify/run-harness.mjs",
+    "prepack": "node scripts/build-client.mjs && node verify/check-bundle.mjs"
   },
+  "repository": { "type": "git", "url": "git+https://github.com/jiezhengj/DSH-Dyslexia.git" },
+  "homepage": "https://github.com/jiezhengj/DSH-Dyslexia#readme",
+  "bugs": { "url": "https://github.com/jiezhengj/DSH-Dyslexia/issues" },
+  "keywords": ["deepseek-harness", "dsh-plugin", "mermaid", "accessibility", "dyslexia"],
+  "publishConfig": { "access": "public", "provenance": true },
   "license": "MIT"
 }
 ```
+
+> 上面这些字段与仓库根的 `package.json` 同形：`prepack` 是 SC-008 说的那道"打包前的门"（它同时重建 chunk 并跑静态检查），`repository`/`homepage`/`bugs` 是 npm provenance 校验的必需项（缺失或与仓库不符会让发布以 `E422` 失败），`publishConfig.provenance` 让 CI 的 `npm publish` 带上来源证明。示例里的 `files` 与真实清单一致，不要在这里加 `src/`、`verify/`、`scripts/`、`vendor/`。
 
 > **本清单里不允许出现的东西**（兼容性硬约束，FR-013）：`engines`（含 `engines.dsh`）、任何指向 DSH 包的 `peerDependencies`、`dsh.client.inject`。三者都会让宿主在**启动前**对插件下判断，而插件在未知版本上的正确表现是"不渲染"，不是"被拒绝加载"或"拖垮启动"。
 
@@ -108,7 +116,7 @@
 15. **文案完整**：12 个键 × 8 语言齐全，失败整句里不含 `{{reason}}`、不含引擎英文。
 16. **key 回显防线**：`i18n.js` 的 `isResolved` 拒绝回显 key、纯空白、未替换占位符。
 
-# 浏览器行为校验（`node verify/run-harness.mjs --list`，205 项）
+# 浏览器行为校验（`node verify/run-harness.mjs --list`，213 项）
 
 夹具 `verify/harness/index.html` 提交进仓库，用真实 Chromium 打开 `file://`，覆盖：槽注册形状、8 语言逐个驱动、5 类敌意 `t`、绘制/坏图/引擎抛错/getter 抛错、复制成功与失败、360 px 窄屏、主题换色、locale 重试、7 种畸形 `ctx`、内部 key 不外泄。
 
