@@ -680,6 +680,12 @@
           expect(!!group, 'the box around the picture is a group')
           expect(!!group && group.getAttribute('aria-label') === '图', 'the group carries the localised name', group ? group.getAttribute('aria-label') : 'no group')
           expect(!!image, 'the drawing itself is the image')
+          // A picture that already fits its column gets no zoom controls: the
+          // engine only offers them when the drawing has to be scaled down.
+          const quietZoom = Array.prototype.slice
+            .call(shaped.stage.querySelectorAll('button'))
+            .filter((node) => !node.closest('.dsh-dyslexia-bar'))
+          expect(quietZoom.length === 0, 'a picture that fits offers no zoom buttons', String(quietZoom.length))
           shaped.root.unmount()
           shaped.stage.remove()
 

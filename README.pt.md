@@ -12,7 +12,7 @@ O bloco de código nunca é consumido. Continua sendo o texto da mensagem: pode 
 
 - **O texto é o registro.** Cada desenho é refeito a partir do bloco de código na hora de mostrar, então nada vive só como pixels. Desligue o plugin e a conversa continua completa.
 - **Dentro da mensagem, não ao lado.** Uma janela de prévia quebra o fio da leitura: perde-se a linha em que se estava.
-- **A capacidade é do plugin, a preferência é sua.** O plugin apenas diz que aqui aparecem desenhos. Se o assistente deve desenhar é instrução sua, no seu `AGENTS.md`.
+- **A capacidade é do plugin, a preferência é sua.** O plugin apenas diz que aqui aparecem desenhos. Se o assistente deve desenhar é decisão sua, e funciona sem editar nenhum arquivo de instruções.
 - **Nada é presumido sobre a sua máquina.** O motor de desenho vem incluído, o plugin funciona sem rede e não exige nada do anfitrião.
 
 ## O que você recebe

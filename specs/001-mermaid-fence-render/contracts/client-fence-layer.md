@@ -61,7 +61,7 @@ type Props = {
 
 宿主仍在迭代，本层对"接口变了"的唯一正确反应是**安静地不画**。以下每条都是必须成立的行为，且都有一条可重复的断言（括号内为 `verify/check-bundle.mjs` 的断言名或夹具用例名）：
 
-7. **不注册也不抛**：`ctx.slots` 缺失、`ctx.slots.inject()` 抛错、`register` 签名变化 → 放弃注册，宿主照常渲染原代码块（夹具 `apply stays silent on a changed host` 覆盖 `slots` 为 `null`、`{}`、`{inject(){},register(){}}` 与 `inject` 抛错四种；`register` 抛错由 `apply falls back to a plain layer when the host refuses the locale` 一带覆盖）。
+7. **不注册也不抛**：`ctx.slots` 缺失、`ctx.slots.inject()` 抛错、`register` 签名变化 → 放弃注册，宿主照常渲染原代码块（夹具 `apply stays silent on a changed host` 覆盖 `slots` 为 `null`、`{}`、`{inject(){},register(){}}` 与 `inject` 抛错四种；`register` 抛错由 `a host that rejects the locale option does not break apply` 与 `the retried registration drops the locale option` 覆盖）。
 8. **locale 可选且不可信**：`ctx.locale` 缺失或 `register` 失败 → 改用不带 `locale` 的注册重试；仍失败则放弃注册。宿主 `t` 只有在返回"真实译文"时才采信——非空字符串、不等于请求的 key、不含未替换的 `{{占位符}}`；否则用包内 8 语言字典（夹具 `a host t that throws still shows words`、`a host t that echoes the key still shows words`、`no internal key reaches the eye`）。
 9. **数据守卫**：`code` 不是字符串、取值器抛错、缺 `document`、`children` 是 React 不收的形状（普通对象 / 函数 / 含对象的数组）→ 不进入绘制，并把源码交回（夹具 `a throwing code getter leaves the host block`、`a throwing children getter does not reach the host`、`a refused children cannot empty the message — object`、`a refused children cannot empty the message — function`）。语法错误是另一件事（E4），由 `a broken diagram says why` 覆盖。
 10. **绘制期零外泄**：pele 在渲染子树里抛错 → 错误边界渲染 `children`，并在 `code` 变化时复位（夹具 `a throwing engine leaves a sentence`、`a throwing engine keeps the host block`）。
@@ -75,7 +75,7 @@ type Props = {
 - 命名：`aria-label` 只用本地化名词，**不拼引擎类型**（不出现 `flowchart`、`{{type}}` 之类技术标记）。
 - 源码切换条：一个按钮（`<button type="button">`），文案"查看源码 / 隐藏源码"；展开的源码块保留语言标记 `mermaid`，可全选复制（FR-003）。
 - 复制：按钮文案固定"复制源码"；结果写入 `<span class="dsh-dyslexia-status" role="status" aria-live="polite">`（"已复制"/"复制失败"），**可见的小号次要文字**同时被读屏播报——明眼用户与读屏用户看到同一句话；按钮文案不因结果而变，避免重复朗读同一控件（FR-018）。
-- 缩放控件：仅在图宽超出容器时渲染；按钮的 `aria-label` 用界面语言（不得出现 `Zoom`/`Reset` 之类英文），位于 `role="img"` 之外、可用键盘聚焦；缩放只改挂载点内部变换，不改变页面布局。
+- 缩放控件：仅在图宽超出容器时渲染（`a picture that fits offers no zoom buttons` 与 `a scaled picture offers the engine zoom buttons` 各断言一次）；按钮的 `aria-label` 用界面语言（不得出现 `Zoom`/`Reset` 之类英文），位于 `role="img"` 之外、可用键盘聚焦；缩放只改挂载点内部变换，不改变页面布局。
 - 键盘可达：所有按钮可 Tab 聚焦，`Enter`/`Space` 生效；图本身不设为 Tab 焦点。
 - 稳定挂载：宿主每次渲染都新建 `t` 时，绘制 MUST NOT 因此重建（`t` 经 ref 读取，不在 layout effect 依赖里）；只有源码或流式状态变化才重挂。
 - 颜色：不使用硬编码色值；深浅主题切换后无需重新解析图源（pele 就地重绘）。

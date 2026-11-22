@@ -499,6 +499,29 @@ check('a factory that cannot build never throws at the host', () => {
   return 'module-level throw contained, empty module returned'
 })
 
+function shippedTextFiles() {
+  // The text a reader actually receives: the README index, one README per
+  // language, and the plugin page each language declares in its locale file.
+  const paths = ['README.md']
+  for (const language of LANGUAGES) {
+    paths.push(`README.${language}.md`)
+    paths.push(readJson(`locale/${language}.json`).meta.detail)
+  }
+  return [...new Set(paths)].map((relative) => ({ path: relative, body: read(relative) }))
+}
+
+check('nothing in the package asks you to edit an instruction file', () => {
+  // FR-012: the plugin takes effect from the plugin itself. If any shipped text
+  // told the reader to put a preference into an instruction file, a user would
+  // have to edit one to get the behaviour - and uninstalling would leave it behind.
+  const shipped = shippedTextFiles()
+  const offenders = shipped.filter((file) => /AGENTS\.md|CLAUDE\.md|\.cursorrules/i.test(file.body))
+  assert(offenders.length === 0, `shipped text asks for an instruction file: ${offenders.map((f) => f.path).join(', ')}`)
+  const code = readFileSync(join(ROOT, 'client.js'), 'utf8') + readFileSync(join(ROOT, 'index.js'), 'utf8')
+  assert(!/AGENTS\.md|CLAUDE\.md/i.test(code), 'the code reads or writes an instruction file')
+  return `${shipped.length} shipped text files, no instruction-file ask`
+})
+
 /* ------------------------------------------------- host half, for real */
 
 const hostHalf = await import(pathToFileURL(join(ROOT, 'index.js')).href)

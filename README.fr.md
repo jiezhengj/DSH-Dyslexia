@@ -12,7 +12,7 @@ Le bloc de code n’est jamais consommé. Il reste le texte du message : on peut
 
 - **Le texte est la trace.** Chaque schéma est refait à partir du bloc de code au moment de l’afficher : rien n’existe uniquement en pixels. Désactivez le greffon, la conversation reste complète.
 - **Dans le message, pas à côté.** Une fenêtre d’aperçu coupe le fil de lecture : on perd la ligne où l’on était.
-- **La capacité au greffon, la préférence à vous.** Le greffon dit seulement que des schémas apparaissent ici. Que l’assistant doive dessiner relève de votre propre consigne, dans votre `AGENTS.md`.
+- **La capacité au greffon, la préférence à vous.** Le greffon dit seulement que des schémas apparaissent ici. Que l’assistant doive dessiner relève de votre choix, et il fonctionne sans modifier aucun fichier de consignes.
 - **Rien n’est supposé de votre machine.** Le moteur de dessin est embarqué, le greffon fonctionne hors ligne et n’exige rien de l’hôte.
 
 ## Ce que vous obtenez

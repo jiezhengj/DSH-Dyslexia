@@ -1,6 +1,6 @@
 # 验证证据
 
-本文件只记录**已经真实跑过**的命令输出。每一段输出来自**同一次运行**，并且这次运行的报告行自带 `包名@版本 | client.js 字节数 | sources sha256:<指纹>`，所以任何一段都可以被追溯到具体的一棵树。当前版本：`0.1.7`。
+本文件只记录**已经真实跑过**的命令输出。每一段输出来自**同一次运行**，并且这次运行的报告行自带 `包名@版本 | client.js 字节数 | sources sha256:<指纹>`，所以任何一段都可以被追溯到具体的一棵树。当前版本：`0.1.9`。
 
 复跑方式（任何人 clone 后都一样）：
 
@@ -19,7 +19,7 @@ build-client: @jiezhengj/dsh-dyslexia -> client.js (768340 bytes, 767310 charact
 ## E-CHK 静态与行为校验
 
 ```text
-ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.8
+ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.9
 ok   package.json points at the repository npm trusts — git+https://github.com/jiezhengj/DSH-Dyslexia.git
 ok   package.json declares the bundle patch and the client half — platform web, no package inject
 ok   no dsh version gate can refuse a start — no engines.dsh, no dsh peers
@@ -45,16 +45,17 @@ ok   every supported sample type draws an svg — flowchart:218x64 sequence:184x
 ok   a broken diagram reports a one-line reason — Parse error on line 2:
 ok   host key echo falls back to bundled strings — key echo, blanks, placeholders rejected
 ok   every language carries the same complete sentences — 12 keys x 8 languages, no engine text in labels
-ok   client.js matches the sources it claims — 19c9e9146858e7820cb0aa5d8ae7c92a
+ok   client.js matches the sources it claims — a26b2dca4681de87a7e5d2463b43b8af
 ok   the picture is the image, and the copy answer is announced — label is a noun, role="img" on the svg, copy result announced
 ok   host children react would refuse fall back to the source — objects, functions and mixed arrays fall back to the source text
 ok   a re-laid-out drawing is named again, not just at mount — labelling runs at mount, after re-layout and on a swapped node; strings follow the language
 ok   a host block that throws cannot empty the message — host blocks render inside their own boundary, with the source text as the floor
 ok   a factory that cannot build never throws at the host — module-level throw contained, empty module returned
+ok   nothing in the package asks you to edit an instruction file — 17 shipped text files, no instruction-file ask
 ok   the host half registers exactly one capability section — ui:dsh-dyslexia, order 9000, 85 words
 ok   the host half stays silent when the host changed shape — five silent hosts, one throwing section
 
-check-bundle: @jiezhengj/dsh-dyslexia@0.1.8 | client.js 768340 bytes | sources sha256:19c9e9146858e7820cb0aa5d8ae7c92a | all 34 checks passed
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.9 | client.js 768340 bytes | sources sha256:a26b2dca4681de87a7e5d2463b43b8af | all 35 checks passed
 ```
 
 ## E-HARN 浏览器行为校验
@@ -164,6 +165,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.8 | client.js 768340 bytes | sources s
 [ok] the box around the picture is a group
 [ok] the group carries the localised name — 图
 [ok] the drawing itself is the image
+[ok] a picture that fits offers no zoom buttons — 0
 [ok] the image carries the localised name — 图
 [ok] the image carries no english role description — absent
 [ok] exactly one image in the picture — 1
@@ -171,18 +173,19 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.8 | client.js 768340 bytes | sources s
 [ok] the zoom buttons sit outside the image — 0
 [ok] the zoom buttons speak the interface language — 放大 | 缩小 | 重置缩放
 [ok] every enabled zoom button can take the keyboard — 2/2 enabled of 3
-run-harness: @jiezhengj/dsh-dyslexia@0.1.8 | client.js 768340 bytes | all 108 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+run-harness: @jiezhengj/dsh-dyslexia@0.1.9 | client.js 768340 bytes | all 109 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 
 ## E-COMP 兼容性断言与要求逐条对应
 
 | 要求 | 可复跑的断言 |
 |---|---|
+| FR-012 不需要改任何指令文件就生效 | 静态：`nothing in the package asks you to edit an instruction file`（17 个随包文本文件里不出现 `AGENTS.md`/`CLAUDE.md`/`.cursorrules`，`client.js` 与 `index.js` 也不读写它们） |
 | FR-013 不声明版本否决字段 | `no dsh version gate can refuse a start` |
 | FR-014 启动/运行失败就地降级 | `apply stays silent on a changed host`、`a host that rejects the locale option does not break apply`、`a throwing engine leaves a sentence`、`an engine that fails to load leaves the picture to the host` |
 | FR-015 产物自身可编译、加载失败不连累同批 | `client.js compiles on its own`、`a broken host loader cannot make the chunk throw`、`a failing factory still yields a silent module`、`a factory that cannot build never throws at the host` |
 | FR-016 宿主数据畸形时交回原代码块 | `a hostile host block still leaves the message — an iterable of plain objects`、`a throwing code getter leaves the host block`、`a throwing children getter does not reach the host`、`a falsy children is not mistaken for content`、`a refused children cannot empty the message — object`、`a refused children cannot empty the message — function`、`a refused children cannot empty the message — object in a failed picture`、`a refused children cannot empty the message — array with an object`、`no React error 31 escapes — object`、`a streaming block with no host children still shows its source` |
 | FR-017 每条加固都有可重复证据 | 本节所有断言都在仓库里，`node verify/*.mjs` 可复跑；`npm test` 一次跑完两套 |
-| FR-018 无障碍结构与播报 | 静态：`the picture is the image, and the copy answer is announced`、`a re-laid-out drawing is named again, not just at mount`、`a host block that throws cannot empty the message`。浏览器：`the box around the picture is a group`、`the group carries the localised name`、`the drawing itself is the image`、`the image carries the localised name`、`the image carries no english role description`、`exactly one image in the picture`、`a scaled picture offers the engine zoom buttons`、`the zoom buttons sit outside the image`、`the zoom buttons speak the interface language`、`the zoom buttons follow the interface language`、`a re-laid-out drawing is named again — img|图|roledesc=null`、`every enabled zoom button can take the keyboard`、`the copy answer is announced, not only coloured`、`a fresh t does not redraw the picture`、`no internal key reaches the eye`、`a refused children cannot empty the message — object` |
+| FR-018 无障碍结构与播报 | 静态：`the picture is the image, and the copy answer is announced`、`a re-laid-out drawing is named again, not just at mount`、`a host block that throws cannot empty the message`。浏览器：`the box around the picture is a group`、`the group carries the localised name`、`the drawing itself is the image`、`the image carries the localised name`、`the image carries no english role description`、`exactly one image in the picture`、`a picture that fits offers no zoom buttons`、`a scaled picture offers the engine zoom buttons`、`the zoom buttons sit outside the image`、`the zoom buttons speak the interface language`、`the zoom buttons follow the interface language`、`a re-laid-out drawing is named again — img|图|roledesc=null`、`every enabled zoom button can take the keyboard`、`the copy answer is announced, not only coloured`、`a fresh t does not redraw the picture` |
 
 宿主半边另有两项（复用 `index.js` 本体，而非源码字符串匹配）：`the host half registers exactly one capability section`（`ui:dsh-dyslexia`、order 9000、85 词）与 `the host half stays silent when the host changed shape`（5 种畸形宿主 + `section` 抛错 + `section` 返回 rejected Promise）。
 
@@ -269,7 +272,7 @@ Done in 3.8s using pnpm v11.28.5
 
 | 观察 | 当时的证据 | 归属 |
 |---|---|---|
-| 插件列表里出现 `DSH 图示阅读`，说明页是中文描述 + `preview.svg` 渲染出的插图 | 侧栏「插件」→「已安装插件」→「查看 DSH 图示阅读」，`agent-desktop find --role image` 命中 alt = "一条会话消息里的 mermaid 代码块被就地画成图，图下方是查看源码与复制源码两个按钮" | US1 的可见性（FR-008/FR-012），不含 SC-001 计时 |
+| 插件列表里出现 `DSH 图示阅读`，说明页是中文描述 + `preview.svg` 渲染出的插图 | 侧栏「插件」→「已安装插件」→「查看 DSH 图示阅读」，`agent-desktop find --role image` 命中 alt = "一条会话消息里的 mermaid 代码块被就地画成图，图下方是查看源码与复制源码两个按钮" | US1 的可见性（FR-008），不含 SC-001 计时 |
 | 会话里的 ```mermaid 代码块就地变成图，图下有"查看源码/复制源码" | 回复里贴真代码块后 `agent-desktop find --role image` 命中 `name="图：flowchart"`、`find --role button` 命中 `复制源码` | FR-003、FR-007 |
 | 卸载插件后，同一条消息变回纯文本代码块，无报错无占位 | `remove_bundle` 后 `flowchart LR … A[代码块] --> B[就地成图]` 原样显示，`role="img"`（`agent-desktop` 报告为 image）与按钮计数为 0 | US2/FR-009（不含 SC-002 的会话检索命中） |
 | 重新安装后图与按钮立刻回来，历史消息不用改 | `install_bundle` 后同一屏立刻渲染 | FR-010 |

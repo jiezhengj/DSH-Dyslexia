@@ -12,7 +12,7 @@ El bloque de código no se consume: sigue en el mensaje como texto, de modo que 
 
 - **El texto es el registro.** Cada dibujo se hace desde el bloque de código al mostrarlo, así que nada vive solo como píxeles. Desactiva el complemento y la conversación sigue completa.
 - **Dentro del mensaje, no al lado.** Una ventana de vista previa corta el hilo de lectura: pierdes la línea en la que estabas.
-- **La capacidad es del complemento, la preferencia es tuya.** El complemento solo dice que aquí aparecen dibujos. Si el asistente debe dibujar es instrucción tuya, en tu propio `AGENTS.md`.
+- **La capacidad es del complemento, la preferencia es tuya.** El complemento solo dice que aquí aparecen dibujos. Que el asistente dibuje o no es tu decisión, y funciona sin editar ningún archivo de instrucciones.
 - **No se da nada por supuesto de tu equipo.** El motor de dibujo viene incluido, el complemento funciona sin conexión y no exige nada al anfitrión.
 
 ## Qué obtienes

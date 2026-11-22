@@ -12,7 +12,7 @@ The code block is never consumed. It stays in the message as text: it can be cop
 
 - **The text is the record.** Every drawing is made from the code block when it is shown, so nothing lives only as pixels. Turn the plugin off and the conversation is still complete.
 - **Inside the message, not beside it.** A preview window breaks the thread of reading: you lose the line you were on.
-- **Capability belongs to the plugin, preference to you.** The plugin only says that drawings appear here. Whether the assistant should draw is your own instruction, in your own `AGENTS.md`.
+- **Capability belongs to the plugin, preference to you.** The plugin only says that drawings appear here. Whether the assistant should draw is your own call, and it takes no instruction file to make it work.
 - **Nothing about your machine is assumed.** The drawing engine is bundled, the plugin works offline, and it asks nothing of the host.
 
 ## What you get

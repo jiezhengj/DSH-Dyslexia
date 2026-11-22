@@ -8,7 +8,7 @@ description: "Task list for 会话内图形渲染"
 
 **Prerequisites**: [plan.md](./plan.md), [spec.md](./spec.md), [research.md](./research.md), [data-model.md](./data-model.md), [contracts/](./contracts/), [quickstart.md](./quickstart.md)
 
-**Tests**: 本功能不引入测试框架（宪法原则 III）。验收 = `verify/check-bundle.mjs` 的 34 项静态断言 + `verify/run-harness.mjs --list` 的 108 项浏览器断言 + quickstart.md 的 E1–E16 真机证据表（该表定义"要取什么证据"，本身不是证据）。
+**Tests**: 本功能不引入测试框架（宪法原则 III）。验收 = `verify/check-bundle.mjs` 的 35 项静态断言 + `verify/run-harness.mjs --list` 的 109 项浏览器断言 + quickstart.md 的 E1–E16 真机证据表（该表定义"要取什么证据"，本身不是证据）。
 
 **Organization**: 按 spec 的用户故事分阶段；每个故事独立可验收。
 
@@ -230,7 +230,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T084 `verify/run-harness.mjs` 汇总行带上 `@jiezhengj/dsh-dyslexia@0.1.6 | client.js 762625 bytes`，E-HARN 块可自证来源
 - [x] T085 清理仓库：删掉误提交的 `.tmp-ls.json` 与无引用的 `dsh-visual-ceiling.svg`，`.gitattributes` 加 `*.md text eol=lf`，把 `README.md`/`README.en.md` 的 CRLF 规范化为 LF
 - [x] T086 文档同步到 0.1.6：`plan.md` 行数改实测（842 行客户端代码 / 147 构建 / 519 静态校验 / 582 夹具 / 122 驱动——这是 **0.1.6 时**的实测值，0.1.8 已增至 978 / 147 / 558 / 739 / 122）、`role="img"`、E-GAPS 重写为 G1–G12、`tasks.md` 状态表重写、i18n 键数 12、README 计数 9、`contracts/plugin-manifest.md` 与 `quickstart.md` 示例改 0.1.6、32 个随包文件（33 个打包文件含 `package.json`）
-- [x] T087 `package.json` 升 0.1.6，重建并跑 `check-bundle`（32 项）与 `run-harness`（108 项）
+- [x] T087 `package.json` 升 0.1.6，重建并跑 `check-bundle`（32 项）与 `run-harness`（92 项）
 - [x] T088 打 `v0.1.6` 经 GitHub Actions 发布（run `45050133828`，shasum `8a0a2425c87d7b864b6d6089500bae6a12fe9637`），从 registry 装回 `desktop` profile（依赖 `"0.1.6"`，安装件与仓库逐字节相同）
 - [ ] T089 第四轮双评审（文档 + 实现）复核；通过后把 feature 001 标记完成。**第四轮结论：两份都 FAIL**（见 `evidence/verification.md` 末尾与 Phase 15）
 
@@ -253,14 +253,24 @@ description: "Task list for 会话内图形渲染"
 - [x] T099 `isRenderableChild` 真正白名单化：只放行 React 收的形状（元素、非空字符串、非零数字、逐项检查过的数组），iterable 不再放行 → FR-016
 - [x] T100 宿主块渲染包进 `SafeChildren` 边界：宿主块自己抛错时降级为源码文本，绝不二次抛出（二次抛出会逃出图片边界、让消息空白） → FR-016
 - [x] T101 `i18n.js` 的内置字典改为**每次调用按当前界面语言取表**（原先在创建时捕获），语言切换后图名、按钮、缩放控件同时跟随 → FR-008 / FR-018
-- [x] T102 夹具 +7 项：重排版后仍命名（800px→220px）、iterable `children`、自身抛错的宿主块、注入抛错的 `inject` 宿主、缩放按钮随语言切换等 → 108 项全过
-- [x] T103 `check-bundle` +2 项：`a re-laid-out drawing is named again, not just at mount`、`a host block that throws cannot empty the message` → 34 项全过
-- [x] T104 文档更正（第五轮评审逐条）：`inject` 抛错确有夹具、92/101 → 108 项、行数、畸形宿主"5 种静默 + 2 次异常"不再混用、G5 的 E15 定义、T052 的观察条数、`data-model` 的断言指向、`Mounted.result.type` 不进入 `aria-label` → 见 Phase 16 本条
-- [x] T105 打 `v0.1.8`（提交 `603a75d`）、GitHub Actions run `45055683813` success（provenance logIndex `4047584418`、tarball shasum `30408a56f8e3d3054e7ace7feafa0fbde8e676b6`、`total files: 33`）、CI 与本机同为 34 项静态 + 108 项浏览器；`remove_bundle` 卸 0.1.7 → `install_bundle @jiezhengj/dsh-dyslexia@0.1.8` applied，profile 依赖 `"0.1.8"`，安装副本 `client.js` 768340 字节 / SHA256 `E632EA8E7E5ECC1DA705B69298859D6E35BBE6E863BA0E00D2F6824ACC481755` 与仓库根一致
+- [x] T102 夹具 +7 项：重排版后仍命名（800px→220px）、iterable `children`、自身抛错的宿主块、注入抛错的 `inject` 宿主、缩放按钮随语言切换等 → 109 项全过
+- [x] T103 `check-bundle` +2 项：`a re-laid-out drawing is named again, not just at mount`、`a host block that throws cannot empty the message` → 35 项全过
+- [x] T104 文档更正（第五轮评审逐条）：`inject` 抛错确有夹具、92/101 → 109 项、行数、畸形宿主"5 种静默 + 2 次异常"不再混用、G5 的 E15 定义、T052 的观察条数、`data-model` 的断言指向、`Mounted.result.type` 不进入 `aria-label` → 见 Phase 16 本条
+- [x] T105 打 `v0.1.8`（提交 `603a75d`）、GitHub Actions run `45055683813` success（provenance logIndex `4047584418`、tarball shasum `30408a56f8e3d3054e7ace7feafa0fbde8e676b6`、`total files: 33`）、CI 与本机同为 35 项静态 + 109 项浏览器；`remove_bundle` 卸 0.1.7 → `install_bundle @jiezhengj/dsh-dyslexia@0.1.8` applied，profile 依赖 `"0.1.8"`，安装副本 `client.js` 768340 字节 / SHA256 `E632EA8E7E5ECC1DA705B69298859D6E35BBE6E863BA0E00D2F6824ACC481755` 与仓库根一致
 
 ## Phase 17: 第六轮独立评审（2026-11-23）
 
 - [ ] T106 第六轮双评审（文档 + 实现）复核 0.1.8；通过后把 feature 001 标记完成并回写 `spec.md` 的 Status
+
+## Phase 18: 第六轮独立评审后的修复（2026-11-23 追加，版本 0.1.9）
+
+**目的**：第六轮文档评审给出两个 P0——"未取证项全在 E-GAPS"的声明不成立（FR-012 无任何承接）、把 0.1.6 时 92 项的运行记成 108 项；另有若干断言名不存在、计数口径三套。本阶段把两条缺口补成真断言（而不是继续挂在 E-GAPS 上），并把 README 里"偏好写进 `AGENTS.md`"的措辞删掉——那与"装好即生效、不需要改任何指令文件"矛盾。
+
+- [x] T107 `check-bundle` +1 项 `nothing in the package asks you to edit an instruction file`：17 个随包文本文件不得出现 `AGENTS.md`/`CLAUDE.md`/`.cursorrules`，`client.js` 与 `index.js` 也不读写它们 → FR-012（35 项）
+- [x] T108 夹具 +1 项 `a picture that fits offers no zoom buttons`：小图不渲染引擎缩放控件，与"超宽图有 3 个"配对 → FR-018 的条件渲染（109 项）
+- [x] T109 9 份 README 的设计说明把"偏好写在自己的 `AGENTS.md`"改为"装好即生效，不需要改任何指令文件"（与 T107 的断言一致）
+- [x] T110 第六轮文档评审逐条：T087 的 `run-harness` 92 项（不是 108）、`evidence` 头版本 0.1.9、`plan.md` 的 108/34 口径、`quickstart` 的 34 项与发布示例占位符、`contracts/client-fence-layer.md` 的 `a host that rejects the locale option does not break apply` / `the retried registration drops the locale option`、`contracts/plugin-manifest.md` 的 `apply stays silent on a changed host` 与"七种"、T079/quickstart 的 0.1.8、`research.md` 的 7 组与"739 行夹具 + 122 行驱动"、`checklists` 的 SC-009～SC-010、G4 行口径
+- [ ] T111 打 `v0.1.9`、发布、从 registry 装回，并请第七轮双评审复核
 
 ## Dependencies & Execution Order
 
@@ -338,8 +348,8 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 
 **当前自动化证据**（命令即证据，任何人 clone 后可复跑）：
 
-- `node verify/check-bundle.mjs` → **34 项全过**
-- `node verify/run-harness.mjs --list` → 真实 Chromium 里 **108 项全过**（夹具 `verify/harness/index.html`，已提交）
+- `node verify/check-bundle.mjs` → **35 项全过**
+- `node verify/run-harness.mjs --list` → 真实 Chromium 里 **109 项全过**（夹具 `verify/harness/index.html`，已提交）
 
 **真机证据**（`evidence/verification.md` 的 E-LIVE）：会话内就地成图、卸载回退、重装恢复、插件页说明；取证的版本是 0.1.2。
 
