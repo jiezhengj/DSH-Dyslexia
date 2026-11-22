@@ -30,7 +30,7 @@ window.__ModuleLoader__.load({id:`@deepseek-ai/dsh-client-ui-chat`,factory:requi
 
 **依据**：`pele` 支持 Mermaid 12.1 全部内置图类型（flowchart/sequence/class/state/ER/gantt/timeline/mindmap/kanban/xychart/C4/architecture…），零运行期依赖、同步渲染、CSS 变量配色、`mount()` 读 CSS 字体并按容器宽度自适配、自动转义图内文字并限制源码与输出规模，MIT 许可。宿主客户端模块表是冻结的（`PLATFORM_MODULES`），`dsh.client.external` 只能引用**已安装的客户端包**，而 pele 不是 DSH 客户端包，所以无法以外部依赖形式引入——必须内联。
 
-**代价**：`client.js` 体积约 750 KiB（0.1.8 实测 768,340 字节；其中 pele global 构建 733,670 B，其余是自家代码）。宿主现有 `ui-chat` 单块即 509 KB，同一量级，可接受。
+**代价**：`client.js` 体积约 751 KiB（0.1.9 实测 769,386 字节；其中 pele global 构建 733,670 B，其余是自家代码）。宿主现有 `ui-chat` 单块即 509 KB，同一量级，可接受。
 
 **被否方案**：① 运行期从 CDN 载入 mermaid/pele——违反原则 III 与 SC-004（外部请求数 0）；② 把 mermaid 源码存成文件、由宿主渲染——违反 FR-002（不生成文件）与用户"内容要留在会话里"的诉求。
 
@@ -183,7 +183,7 @@ renderSlot('conversation.chat.markdown.fence', fence, {
 - 发布 workflow 增加三步：重建 → `git diff --exit-code -- client.js` 拒绝陈旧产物 → 跑 `check-bundle` 与 `run-harness`，之后才 `npm publish`。
 - `.tmp/` 仍然忽略：它只是我本机的一次性实验区，不再承担任何证据职责。
 
-**代价**：仓库多了 React UMD 两个文件和 739 行夹具 + 122 行驱动（合计 861 行）；换来的是任何人 clone 后能自己重算每一个"已验证"。
+**代价**：仓库多了 React UMD 两个文件和 839 行夹具 + 122 行驱动（合计 861 行）；换来的是任何人 clone 后能自己重算每一个"已验证"。
 
 ## D22 无障碍：图像角色只给图本身，复制结果用实时区域播报（2026-11-23 修订）
 

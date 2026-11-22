@@ -565,6 +565,24 @@ check('the host half stays silent when the host changed shape', () => {
   return 'five silent hosts, one throwing section'
 })
 
+/* ------------------------------------------- the fixtures can fail at all */
+
+check('the fixtures assert what the fixes promise, and can fail', () => {
+  const harness = readFileSync(join(ROOT, 'verify', 'harness', 'index.html'), 'utf8')
+  const needed = [
+    'the fixture really replaced the drawing node',
+    'a swapped drawing is named again',
+    'a resized drawing stays named',
+    'a picture that fits offers no zoom buttons',
+    'disabling the plugin takes its stylesheet away',
+    'the locale registration is dropped',
+    'the fence layer is dropped',
+  ]
+  const missing = needed.filter((name) => harness.indexOf(name) === -1)
+  if (missing.length > 0) throw new Error(`missing fixture assertions: ${missing.join(', ')}`)
+  return `${needed.length} assertions present`
+})
+
 /* ---------------------------------------------------------------- report */
 
 for (const line of notices) process.stdout.write(`${line}\n`)

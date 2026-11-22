@@ -13,7 +13,7 @@ node verify/run-harness.mjs --list  # 108 项浏览器断言，需要本机 Chro
 ## E-BLD 构建
 
 ```text
-build-client: @jiezhengj/dsh-dyslexia -> client.js (768340 bytes, 767310 characters, engine 1.13.0, sources 5, syntax ok)
+build-client: @jiezhengj/dsh-dyslexia -> client.js (769386 bytes, 768356 characters, engine 1.13.0, sources 5, syntax ok)
 ```
 
 ## E-CHK 静态与行为校验
@@ -28,7 +28,7 @@ ok   every published file exists — 24 files
 ok   every interface language has its own plugin page — 8 languages
 ok   cordis.patch.yml inserts the plugin by package name — 3 lines
 ok   both locales carry metadata — en, zh
-ok   client.js is one loader chunk keyed by the package name — 768340 bytes
+ok   client.js is one loader chunk keyed by the package name — 769386 bytes
 ok   client.js requires react and nothing else — react
 ok   client.js never reaches the network — no fetch, no XHR, no dynamic import, no remote URL
 ok   client.js carries the vendored engine — Pele 1.13.0 inlined
@@ -45,7 +45,7 @@ ok   every supported sample type draws an svg — flowchart:218x64 sequence:184x
 ok   a broken diagram reports a one-line reason — Parse error on line 2:
 ok   host key echo falls back to bundled strings — key echo, blanks, placeholders rejected
 ok   every language carries the same complete sentences — 12 keys x 8 languages, no engine text in labels
-ok   client.js matches the sources it claims — a26b2dca4681de87a7e5d2463b43b8af
+ok   client.js matches the sources it claims — 17eb5c7a6fb8339a904cfa56c6540d3b
 ok   the picture is the image, and the copy answer is announced — label is a noun, role="img" on the svg, copy result announced
 ok   host children react would refuse fall back to the source — objects, functions and mixed arrays fall back to the source text
 ok   a re-laid-out drawing is named again, not just at mount — labelling runs at mount, after re-layout and on a swapped node; strings follow the language
@@ -54,12 +54,16 @@ ok   a factory that cannot build never throws at the host — module-level throw
 ok   nothing in the package asks you to edit an instruction file — 17 shipped text files, no instruction-file ask
 ok   the host half registers exactly one capability section — ui:dsh-dyslexia, order 9000, 85 words
 ok   the host half stays silent when the host changed shape — five silent hosts, one throwing section
+ok   the fixtures assert what the fixes promise, and can fail — 7 assertions present
 
-check-bundle: @jiezhengj/dsh-dyslexia@0.1.9 | client.js 768340 bytes | sources sha256:a26b2dca4681de87a7e5d2463b43b8af | all 35 checks passed
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.9 | client.js 769386 bytes | sources sha256:17eb5c7a6fb8339a904cfa56c6540d3b | all 36 checks passed
+
+# stderr（刻意）：若干条 "dsh-dyslexia: …" 是敌意宿主探针的告警，判定只看上面 stdout 的报告行
 ```
 
 ## E-HARN 浏览器行为校验
 
+```text
 [ok] loading client.js registers one factory
 [ok] the module exposes apply
 [ok] the module asks for slots only — slots
@@ -136,6 +140,13 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.9 | client.js 768340 bytes | sources s
 [ok] apply stays silent on a changed host — null
 [ok] apply stays silent on a changed host — null
 [ok] apply stays silent on a changed host — null
+[ok] styles arrive with apply — true
+[ok] one fence layer while installed — 1
+[ok] styles and strings are claimed as effects — 2
+[ok] the layer draws while the fiber lives — true
+[ok] disabling the plugin takes its stylesheet away — false
+[ok] the locale registration is dropped — 1
+[ok] the fence layer is dropped — 1
 [ok] no internal key reaches the eye — leaked: 
 [ok] a source past the size limit says why — 这张图无法绘制，已改为显示源码。huge
 [ok] a source past the size limit keeps the host block
@@ -156,7 +167,9 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.9 | client.js 768340 bytes | sources s
   A[Text] --> B[P
 [ok] a fresh t does not redraw the picture
 [ok] the drawing is named when it is first laid out — img|图
-[ok] a re-laid-out drawing is named again — img|图|roledesc=null
+[ok] the fixture really replaced the drawing node — new node
+[ok] a swapped drawing is named again — img|图|roledesc=null
+[ok] a resized drawing stays named — img|图|roledesc=null
 [ok] a hostile host block still leaves the message — an iterable of plain objects — text=图里的语法有误，已改为显示源码。flowchar
 [ok] a hostile host block still leaves the message — a host block that throws while rendering — text=图里的语法有误，已改为显示源码。flowchar
 [ok] the zoom buttons speak the language they were mounted in — 放大 | 缩小 | 重置缩放
@@ -173,7 +186,18 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.9 | client.js 768340 bytes | sources s
 [ok] the zoom buttons sit outside the image — 0
 [ok] the zoom buttons speak the interface language — 放大 | 缩小 | 重置缩放
 [ok] every enabled zoom button can take the keyboard — 2/2 enabled of 3
-run-harness: @jiezhengj/dsh-dyslexia@0.1.9 | client.js 768340 bytes | all 109 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+run-harness: @jiezhengj/dsh-dyslexia@0.1.9 | client.js 769386 bytes | all 118 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+```
+
+## E-A11Y 图像的读屏取舍（`role="img"` 的代价与补偿）
+
+`role="img"` 让一张图对读屏是一个**有名字的图形**，而不是一堆散落的 `<text>`，代价是：**一旦容器声明为 `img`，辅助技术不再念其中的文字**，图里的节点文字对读屏用户不可达。这是有意的取舍，补偿有三条：
+
+1. 名字可本地化：`svg` 上的 `aria-label` 来自 8 种界面语言的 `figureLabel`（纯名词，不拼引擎类型），并删掉引擎塞进来的英文 `aria-roledescription="flowchart"`；夹具逐语言断言 `the image carries the localised name` 与 `the image carries no english role description`。
+2. 可读文本始终可得：图下"查看源码"按钮展开同一段 Mermaid 源码（`dsh-dyslexia-source`），源码本身就是信息本体；夹具 `the source panel shows the code` 与"内部 key 不外泄"覆盖。
+3. 引擎自己的缩放控件留在图像**之外**并可聚焦：夹具 `the zoom buttons speak the interface language`、`every reachable zoom button can be focused`，且"小图不渲染缩放控件"（`a picture that fits offers no zoom buttons`）。
+
+因此"读屏用户听不到图内文字"是登记在案的已知取舍，而不是缺陷；可读文本走源码面板，这也是"文本即信息本体"在无障碍上的同一条原则。
 
 ## E-COMP 兼容性断言与要求逐条对应
 
@@ -185,7 +209,11 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.9 | client.js 768340 bytes | all 109 ch
 | FR-015 产物自身可编译、加载失败不连累同批 | `client.js compiles on its own`、`a broken host loader cannot make the chunk throw`、`a failing factory still yields a silent module`、`a factory that cannot build never throws at the host` |
 | FR-016 宿主数据畸形时交回原代码块 | `a hostile host block still leaves the message — an iterable of plain objects`、`a throwing code getter leaves the host block`、`a throwing children getter does not reach the host`、`a falsy children is not mistaken for content`、`a refused children cannot empty the message — object`、`a refused children cannot empty the message — function`、`a refused children cannot empty the message — object in a failed picture`、`a refused children cannot empty the message — array with an object`、`no React error 31 escapes — object`、`a streaming block with no host children still shows its source` |
 | FR-017 每条加固都有可重复证据 | 本节所有断言都在仓库里，`node verify/*.mjs` 可复跑；`npm test` 一次跑完两套 |
-| FR-018 无障碍结构与播报 | 静态：`the picture is the image, and the copy answer is announced`、`a re-laid-out drawing is named again, not just at mount`、`a host block that throws cannot empty the message`。浏览器：`the box around the picture is a group`、`the group carries the localised name`、`the drawing itself is the image`、`the image carries the localised name`、`the image carries no english role description`、`exactly one image in the picture`、`a picture that fits offers no zoom buttons`、`a scaled picture offers the engine zoom buttons`、`the zoom buttons sit outside the image`、`the zoom buttons speak the interface language`、`the zoom buttons follow the interface language`、`a re-laid-out drawing is named again — img|图|roledesc=null`、`every enabled zoom button can take the keyboard`、`the copy answer is announced, not only coloured`、`a fresh t does not redraw the picture` |
+| FR-018 无障碍结构与播报 | 静态：`the picture is the image, and the copy answer is announced`、`a re-laid-out drawing is named again, not just at mount`、`a host block that throws cannot empty the message`。浏览器：`the box around the picture is a group`、`the group carries the localised name`、`the drawing itself is the image`、`the image carries the localised name`、`the image carries no english role description`、`exactly one image in the picture`、`a picture that fits offers no zoom buttons`、`a scaled picture offers the engine zoom buttons`、`the zoom buttons sit outside the image`、`the zoom buttons speak the interface language`、`the zoom buttons follow the interface language`、`a swapped drawing is named again — img|图|roledesc=null`、`a resized drawing stays named`、`the fixture really replaced the drawing node`、`every enabled zoom button can take the keyboard`、`the copy answer is announced, not only coloured`、`a fresh t does not redraw the picture` |
+
+夹具里这几条"证明修复真的在起作用"的断言名，由静态检查 `the fixtures assert what the fixes promise, and can fail` 逐一要求存在——有人删掉夹具时 `check-bundle` 会先变红（评审曾指出：把修复代码换成 `void 0` 而套件仍全绿，等于没有证据）。
+
+卸载清理（FR-014 的"就地降级"在停用路径上的一半）：夹具的假 `ctx` 按 cordis 语义执行 effect/register 返回的 disposer，`disabling the plugin takes its stylesheet away`、`the locale registration is dropped`、`the fence layer is dropped` 三条断言"停用后什么都没留下"。
 
 宿主半边另有两项（复用 `index.js` 本体，而非源码字符串匹配）：`the host half registers exactly one capability section`（`ui:dsh-dyslexia`、order 9000、85 词）与 `the host half stays silent when the host changed shape`（5 种畸形宿主 + `section` 抛错 + `section` 返回 rejected Promise）。
 

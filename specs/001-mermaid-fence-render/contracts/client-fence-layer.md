@@ -65,6 +65,7 @@ type Props = {
 8. **locale 可选且不可信**：`ctx.locale` 缺失或 `register` 失败 → 改用不带 `locale` 的注册重试；仍失败则放弃注册。宿主 `t` 只有在返回"真实译文"时才采信——非空字符串、不等于请求的 key、不含未替换的 `{{占位符}}`；否则用包内 8 语言字典（夹具 `a host t that throws still shows words`、`a host t that echoes the key still shows words`、`no internal key reaches the eye`）。
 9. **数据守卫**：`code` 不是字符串、取值器抛错、缺 `document`、`children` 是 React 不收的形状（普通对象 / 函数 / 含对象的数组）→ 不进入绘制，并把源码交回（夹具 `a throwing code getter leaves the host block`、`a throwing children getter does not reach the host`、`a refused children cannot empty the message — object`、`a refused children cannot empty the message — function`）。语法错误是另一件事（E4），由 `a broken diagram says why` 覆盖。
 10. **绘制期零外泄**：pele 在渲染子树里抛错 → 错误边界渲染 `children`，并在 `code` 变化时复位（夹具 `a throwing engine leaves a sentence`、`a throwing engine keeps the host block`）。
+11. **停用后什么都不留下**：样式表、locale 文案与围栏层都由 `apply()` 里的注册句柄持有，插件停用时按注册顺序逆序释放（夹具 `disabling the plugin takes its stylesheet away`、`the locale registration is dropped`、`the fence layer is dropped`；探针验证——把 `entry.js` 的 `ctx.effect(() => drop, …)` 换成 `void drop` 后这两条变红）。
 11. **引擎不可用**：pele 未挂载或 `mount` 不存在 → 视为"该处不画"，保留原文并给一行本地化原因，不抛错（`an engine that fails to load leaves the picture to the host`）。
 
 # DOM 与可访问性契约

@@ -96,33 +96,60 @@
           return React.createElement('pre', { className: 'host-block' }, code)
         }
 
+        // A stand-in host that behaves like cordis 4.1: whatever an effect setup
+        // (or a locale/slot registration) returns is a disposer, and stopping the
+        // fiber runs them in reverse. Without that, a fixture can never show
+        // whether the plugin cleans up after itself.
         function makeContext(options) {
           const defs = []
+          const disposers = []
+          const calls = { effects: 0, layersDropped: 0, stringsDropped: 0 }
           const slots = {
             register(def, component) {
               if (options && options.rejectLocale && def && def.locale) throw new Error('host rejects locale')
               defs.push({ def, component })
-              return () => undefined
+              return () => {
+                calls.layersDropped += 1
+              }
             },
             inject(name, fn) {
-              return fn()
+              const disposer = fn()
+              const drop = () => {
+                if (typeof disposer === 'function') disposer()
+              }
+              disposers.push(drop)
+              return drop
             },
           }
           const ctx = {
             slots,
             effect(fn) {
-              fn()
-              return () => undefined
+              calls.effects += 1
+              const disposer = fn()
+              const drop = () => {
+                if (typeof disposer === 'function') disposer()
+              }
+              disposers.push(drop)
+              return drop
             },
           }
           if (!(options && options.noLocale)) {
             ctx.locale = {
               register() {
-                return () => undefined
+                return () => {
+                  calls.stringsDropped += 1
+                }
               },
             }
           }
-          return { ctx, defs }
+          return {
+            ctx,
+            defs,
+            calls,
+            dispose() {
+              while (disposers.length > 0) disposers.pop()()
+            },
+          }
         }
 
         function mount(Layer, props) {
@@ -441,6 +468,27 @@
             }
             expect(!hostileThrew, 'apply stays silent on a changed host', String(hostileThrew && hostileThrew.message))
           }
+
+          /* ------------------- stop the fiber: what is left behind */
+          const life = makeContext()
+          window.__module.apply(life.ctx)
+          expect(!!document.getElementById('dsh-dyslexia-figure-style'), 'styles arrive with apply', String(!!document.getElementById('dsh-dyslexia-figure-style')))
+          expect(life.defs.length === 1, 'one fence layer while installed', String(life.defs.length))
+          expect(life.calls.effects >= 2, 'styles and strings are claimed as effects', String(life.calls.effects))
+          const lifeStage = document.createElement('div')
+          lifeStage.className = 'stage'
+          document.getElementById('mount').appendChild(lifeStage)
+          const lifeRoot = ReactDOM.createRoot(lifeStage)
+          lifeRoot.render(React.createElement(life.defs[0].component, { code: CODE, streaming: false, children: hostBlock(CODE) }))
+          await tick(120)
+          expect(!!lifeStage.querySelector('.dsh-dyslexia-figure'), 'the layer draws while the fiber lives', String(!!lifeStage.querySelector('.dsh-dyslexia-figure')))
+          lifeRoot.unmount()
+          life.dispose()
+          await tick(60)
+          expect(!document.getElementById('dsh-dyslexia-figure-style'), 'disabling the plugin takes its stylesheet away', String(!!document.getElementById('dsh-dyslexia-figure-style')))
+          expect(life.calls.stringsDropped === 1, 'the locale registration is dropped', String(life.calls.stringsDropped))
+          expect(life.calls.layersDropped === 1, 'the fence layer is dropped', String(life.calls.layersDropped))
+          lifeStage.remove()
           /* ---------------------------------- no internal key is ever shown */
           const keys = ['copyFailed', 'copySource', 'engineUnavailable', 'figureLabel', 'renderFailed', 'syntaxError']
           const keyEcho = mount(Layer, { code: BAD, streaming: false, children: hostBlock(BAD), t: (key) => key })
@@ -571,24 +619,70 @@
           const beforeAttrs = wideBefore
             ? wideBefore.getAttribute('role') + '|' + wideBefore.getAttribute('aria-label')
             : 'none'
-          resizeStage.style.width = '220px'
-          await tick(400)
-          const wideAfter = resizeStage.querySelector('svg')
-          const afterAttrs = wideAfter
-            ? wideAfter.getAttribute('role') + '|' + wideAfter.getAttribute('aria-label') + '|roledesc=' + String(wideAfter.getAttribute('aria-roledescription'))
-            : 'none'
           expect(
             !!wideBefore && beforeAttrs === 'img|图',
             'the drawing is named when it is first laid out',
             beforeAttrs,
           )
+
+          // The engine swaps the whole <svg> when it re-lays-out (innerHTML), and
+          // the fresh node carries role="graphics-document document" with an
+          // English aria-roledescription and no name. A resize in a headless
+          // fixture does not always wrap the text, so the swap is reproduced the
+          // way the engine does it: replace the node with engine-shaped markup and
+          // assert the view puts the name back. Deleting the mutation watcher makes
+          // this fail, which is the point.
+          const figureHost = resizeStage.querySelector('.dsh-dyslexia-figure')
+          const engineShaped = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+          engineShaped.setAttribute('role', 'graphics-document document')
+          engineShaped.setAttribute('aria-roledescription', 'flowchart')
+          engineShaped.setAttribute('viewBox', '0 0 120 40')
+          engineShaped.setAttribute('width', '120')
+          engineShaped.setAttribute('height', '40')
+          const swapped = { before: wideBefore }
+          if (figureHost) {
+            figureHost.textContent = ''
+            figureHost.appendChild(engineShaped)
+          }
+          await tick(120)
+          const renamed = figureHost ? figureHost.querySelector('svg') : null
+          expect(
+            !!renamed && renamed !== swapped.before,
+            'the fixture really replaced the drawing node',
+            renamed ? (renamed === swapped.before ? 'same node' : 'new node') : 'no drawing',
+          )
+          expect(
+            !!renamed &&
+              renamed.getAttribute('role') === 'img' &&
+              renamed.getAttribute('aria-label') === '图' &&
+              renamed.getAttribute('aria-roledescription') === null,
+            'a swapped drawing is named again',
+            renamed
+              ? renamed.getAttribute('role') +
+                '|' +
+                renamed.getAttribute('aria-label') +
+                '|roledesc=' +
+                String(renamed.getAttribute('aria-roledescription'))
+              : 'no drawing',
+          )
+
+          // A real resize keeps whatever the engine left in place named as well.
+          resizeStage.style.width = '220px'
+          await tick(400)
+          const wideAfter = resizeStage.querySelector('svg')
           expect(
             !!wideAfter &&
               wideAfter.getAttribute('role') === 'img' &&
               wideAfter.getAttribute('aria-label') === '图' &&
               wideAfter.getAttribute('aria-roledescription') === null,
-            'a re-laid-out drawing is named again',
-            afterAttrs,
+            'a resized drawing stays named',
+            wideAfter
+              ? wideAfter.getAttribute('role') +
+                '|' +
+                wideAfter.getAttribute('aria-label') +
+                '|roledesc=' +
+                String(wideAfter.getAttribute('aria-roledescription'))
+              : 'none',
           )
           resizeRoot.unmount()
           resizeStage.remove()
