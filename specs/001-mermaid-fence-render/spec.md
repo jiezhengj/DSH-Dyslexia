@@ -141,7 +141,7 @@
 - **SC-004**: 断网环境下完成一次完整渲染，外部请求数为 0。
 - **SC-005**: 深浅主题各切换一次后，图配色与宿主一致，且无需刷新页面。
 - **SC-006**: 用 7 类畸形宿主（缺全局加载器、加载器抛错、工厂抛错、缺 slots 服务、接口签名改变、翻译函数抛错、翻译函数把 key 原样回显）驱动插件，宿主侧不抛出任何异常，插件均降级为不渲染或使用自带文案。
-- **SC-007**: 发布包的清单中版本否决类字段数量为 0（`engines`、`engines.dsh`、指向 DSH 包的 peer 依赖由 `no dsh version gate can refuse a start` 逐项检查；`dsh.client.inject` 由 `package.json declares the bundle patch and the client half` 检查）；因此清单本身不给宿主任何"拒绝加载"的依据。"宿主版本未知的真实环境里装一次"没有验证（G1）。
+- **SC-007**: 发布包的清单中版本否决类字段数量为 0（`engines.dsh` 与指向 DSH 包的 peer 依赖由 `no dsh version gate can refuse a start` 检查；`engines` 的其余子键如 `engines.node` 不在该断言覆盖范围内，登记在 G15；`dsh.client.inject` 由 `package.json declares the bundle patch and the client half` 检查）；因此清单本身不给宿主任何"拒绝加载"的依据。"宿主版本未知的真实环境里装一次"没有验证（G1）。
 - **SC-008**: 打包/发布前的静态检查覆盖 FR-013～FR-016，任一条不满足则 `prepack` 与 CI 的发布步骤失败、不产出可安装包（`npm run build` 只构建，门在 `prepack` 与工作流里）。
 - **SC-009**: 8 种界面语言各驱动一次，图的无障碍名与两个按钮文案均为该语言的可读短语，出现 camelCase key 的次数为 0。
 - **SC-010**: 逐项断言——`role="img"` 只落在 `svg` 上且全图只有一个、容器是 `role="group"`、图像没有 `aria-roledescription`（首挂之后、以及节点被换掉之后各断言一次；容器自身不带名字，避免读屏念两遍）、缩放按钮不在图像节点内且文案为界面语言并在切换语言后更新、复制结果既出现在可见文字里也出现在 `role="status" aria-live="polite"` 的区域里。

@@ -84,7 +84,7 @@ npm pack --dry-run   # 或 pnpm pack --dry-run
 
 | 编号 | 做什么 | 通过标准 | 对应 |
 |---|---|---|---|
-| E-COMP-1 | `node verify/check-bundle.mjs` | 37 项全过，其中"无版本门""可独立编译""畸形加载器不抛""工厂抛错仍可用""含边界与守卫""畸形宿主 ctx 不抛""宿主半边只注册一段、畸形宿主静默"、"停用后不留残留（该条实际证据是夹具，见 `contracts/client-fence-layer.md` 第 11 条）"七组必须全绿 | FR-013～FR-017 |
+| E-COMP-1 | `node verify/check-bundle.mjs` | 37 项全过，其中"无版本门""可独立编译""畸形加载器不抛""工厂抛错仍可用""含边界与守卫""畸形宿主 ctx 不抛""宿主半边只注册一段、畸形宿主静默"与"停用后不留残留（该条实际证据是夹具，见 `contracts/client-fence-layer.md` 第 11 条）"合为第 ⑦ 组，共七组必须全绿（这七组与 SC-006 的七类畸形宿主不是同一件事） | FR-013～FR-017 |
 | E-COMP-2 | `node scripts/build-client.mjs` | 末尾 `new Script(chunk)` 语法检查通过（故意插入语法错误时必须失败） | FR-015 / SC-008 |
 | E-COMP-3 | `node verify/run-harness.mjs --list`（夹具 `verify/harness/index.html` 已提交） | 216 项全绿，含故障注入（宿主 `t` 抛错/回显 key、围栏 `code`/`children` 取值器抛错、宿主交出 React 不收的 `children`、引擎抛错、无 slots 服务、坏语法、裁剪板缺失），宿主侧无未捕获异常 | FR-014～FR-016 / SC-006 / SC-009 |
 | E-COMP-4 | 发布包清单核对 | `npm pack` 后的 `package.json` 无 `engines`、无 dsh peer、无 `dsh.client.inject` | FR-013 / SC-007 |
