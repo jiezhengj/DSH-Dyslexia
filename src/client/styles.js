@@ -93,14 +93,30 @@ const FIGURE_CSS = [
   '}',
 ].join('\n')
 
+/**
+ * Injects the figure stylesheet once, and answers with the element it owns so the
+ * caller can take it back out when this plugin is disabled. A style tag left
+ * behind by an uninstalled plugin is dead weight in the document, and it would
+ * outlive the package that explains what it is for.
+ */
 function ensureFigureStyles(doc) {
-  if (!doc || typeof doc.getElementById !== 'function') return
-  if (doc.getElementById(FIGURE_STYLE_ID)) return
+  if (!doc || typeof doc.getElementById !== 'function') return null
+  const existing = doc.getElementById(FIGURE_STYLE_ID)
+  if (existing) return existing
   const host = doc.head || doc.documentElement
-  if (!host || typeof doc.createElement !== 'function') return
+  if (!host || typeof doc.createElement !== 'function') return null
   const element = doc.createElement('style')
   element.id = FIGURE_STYLE_ID
   element.textContent = FIGURE_CSS
   host.appendChild(element)
+  return element
+}
+
+function removeFigureStyles(element) {
+  try {
+    if (element && typeof element.remove === 'function') element.remove()
+  } catch (ignored) {
+    void ignored
+  }
 }
 

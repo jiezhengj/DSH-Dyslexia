@@ -480,6 +480,67 @@
           emptyChildren.root.unmount()
           emptyChildren.stage.remove()
 
+          /* ------------------- a host that hands over something React refuses */
+          // A plain object, a function, or an array holding one: React throws
+          // #31 while rendering, and if that happened inside this layer's own
+          // boundary the boundary could not catch it — the message would vanish.
+          const refused = [
+            { label: 'object', value: { nope: true }, streaming: true },
+            { label: 'function', value: () => null, streaming: true },
+            { label: 'object in a failed picture', value: { nope: true }, streaming: false },
+            { label: 'array with an object', value: [hostBlock(BAD), { nope: true }], streaming: false },
+          ]
+          for (const scenario of refused) {
+            const stage = document.createElement('div')
+            stage.className = 'stage'
+            document.getElementById('mount').appendChild(stage)
+            const root = ReactDOM.createRoot(stage)
+            let threw = null
+            const consoleErrors = []
+            const originalError = console.error
+            console.error = (...args) => {
+              consoleErrors.push(String(args[0]))
+            }
+            try {
+              root.render(
+                React.createElement(Layer, {
+                  code: scenario.streaming ? CODE : BAD,
+                  streaming: scenario.streaming,
+                  children: scenario.value,
+                }),
+              )
+              await tick(120)
+            } catch (error) {
+              threw = error
+            } finally {
+              console.error = originalError
+            }
+            const text = stage.textContent.trim()
+            expect(
+              !threw && stage.childNodes.length > 0 && text.length > 0,
+              `a refused children cannot empty the message — ${scenario.label}`,
+              threw ? String(threw).slice(0, 60) : `children=${stage.childNodes.length} text=${text.slice(0, 20)}`,
+            )
+            expect(
+              consoleErrors.every((line) => line.indexOf('#31') === -1),
+              `no React error 31 escapes — ${scenario.label}`,
+              consoleErrors.join(' / ').slice(0, 80),
+            )
+            root.unmount()
+            stage.remove()
+          }
+
+          /* --------------------------- streaming with no host block at all */
+          const streamingEmpty = mount(Layer, { code: CODE, streaming: true, children: null })
+          await tick(90)
+          expect(
+            streamingEmpty.stage.textContent.indexOf(CODE.trim()) !== -1 || streamingEmpty.stage.querySelector('pre'),
+            'a streaming block with no host children still shows its source',
+            streamingEmpty.stage.textContent.slice(0, 30),
+          )
+          streamingEmpty.root.unmount()
+          streamingEmpty.stage.remove()
+
           /* ------------------------------- a new t must not redraw the picture */
           const stableStage = document.createElement('div')
           stableStage.className = 'stage'

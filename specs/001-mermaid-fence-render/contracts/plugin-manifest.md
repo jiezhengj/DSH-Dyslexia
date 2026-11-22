@@ -87,11 +87,11 @@
 
 8 种界面语言 `zh`、`en`、`ja`、`es`、`fr`、`de`、`ru`、`pt` 各有一份，取自宿主 `dsh-client-locale` 实际注册的语言集合。
 
-# 可静态校验项（`node verify/check-bundle.mjs`，31 项）
+# 可静态校验项（`node verify/check-bundle.mjs`，32 项）
 
 与清单直接相关的断言：
 
-1. `package.json` 的 9 条 `files` 模式覆盖 32 个实际文件（`npm pack` 展开为 33 个），全部存在；未匹配到 `src/`、`vendor/`、`scripts/`、`verify/`、`specs/` 下任何路径。
+1. `package.json` 的 9 条 `files` 模式覆盖 32 个实际文件（`npm pack` 展开为 33 个，含 `package.json`），清单由 `npm pack --dry-run` 核对；`check-bundle` 里那条 `every published file exists` 断言只覆盖其中 **24 个必须存在的文件**（8 个基础文件 + 8 语言 × 2：`locale/<lang>.json` 与 `docs/DETAIL*.md`），8 篇 `DETAIL*.md` 与 `package.json` 由打包清单证明，不由这条断言证明。未匹配到 `src/`、`vendor/`、`scripts/`、`verify/`、`specs/` 下任何路径。
 2. `exports["./client"]` 指向的文件存在，以授权 banner 开头，`window.__ModuleLoader__.load(` 的 `id` 与包名逐字相等，导出 `apply` 与 `inject`，且正文不含 `</script`。
 3. `client.js` 中 `require(` 的实参集合 ⊆ {`react`}。
 4. `client.js` 不含 `fetch(`、`XMLHttpRequest`、动态 `import(`、外部 `http(s)://` 资源引用（仅保留 SVG 命名空间字符串）；内联 `Pele 1.13.0`。

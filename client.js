@@ -1,4 +1,4 @@
-/*! @jiezhengj/dsh-dyslexia 0.1.6 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:737f61ee187d1956e13917922a931cf0 */
+/*! @jiezhengj/dsh-dyslexia 0.1.7 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:e10fbd04aa7812fdbc9adbc0b1d2e95b */
 ;(function () {
   function reportLoadFailure(scope, error) {
     try { console.error('dsh-dyslexia: ' + scope, error) } catch (_error) {}
@@ -266,15 +266,31 @@ const FIGURE_CSS = [
   '}',
 ].join('\n')
 
+/**
+ * Injects the figure stylesheet once, and answers with the element it owns so the
+ * caller can take it back out when this plugin is disabled. A style tag left
+ * behind by an uninstalled plugin is dead weight in the document, and it would
+ * outlive the package that explains what it is for.
+ */
 function ensureFigureStyles(doc) {
-  if (!doc || typeof doc.getElementById !== 'function') return
-  if (doc.getElementById(FIGURE_STYLE_ID)) return
+  if (!doc || typeof doc.getElementById !== 'function') return null
+  const existing = doc.getElementById(FIGURE_STYLE_ID)
+  if (existing) return existing
   const host = doc.head || doc.documentElement
-  if (!host || typeof doc.createElement !== 'function') return
+  if (!host || typeof doc.createElement !== 'function') return null
   const element = doc.createElement('style')
   element.id = FIGURE_STYLE_ID
   element.textContent = FIGURE_CSS
   host.appendChild(element)
+  return element
+}
+
+function removeFigureStyles(element) {
+  try {
+    if (element && typeof element.remove === 'function') element.remove()
+  } catch (ignored) {
+    void ignored
+  }
 }
 
 
@@ -605,13 +621,36 @@ function safeRead(source, name) {
 
 /** Everything the layer needs from the host, read once and safely. */
 /**
- * Whether a host's `children` is something React would actually render. A host
- * that hands over `null`, `false`, `0` or `''` for an empty slot must not be
- * mistaken for "the host gave me nothing to show": in that case the layer still
- * has the source text and must show it itself.
+ * Whether a host's `children` is something React would actually render.
+ *
+ * Two failures have to be avoided here, and they point in opposite directions.
+ * A host that hands over `null`, `false`, `0` or `''` for an empty slot has
+ * given nothing, so the layer must show the source itself instead of an empty
+ * box. A host that hands over a plain object, a function or an array containing
+ * either has given something React refuses (error #31) — and that refusal would
+ * happen while this layer's own boundary is rendering, so the boundary could not
+ * catch it and the whole message would disappear. Only shapes React accepts are
+ * passed through; everything else falls back to the source text.
  */
 function isRenderableChild(value) {
-  return value !== undefined && value !== null && value !== false && value !== '' && value !== 0
+  if (value === undefined || value === null || value === false || value === true) return false
+  if (typeof value === 'string') return value !== ''
+  if (typeof value === 'number') return value !== 0
+  if (React.isValidElement(value)) return true
+  if (Array.isArray(value)) return value.length > 0 && value.every(isRenderableChild)
+  if (typeof value === 'object') {
+    // Iterables (React accepts some) are checked lazily; a plain object is not.
+    return typeof value[Symbol.iterator] === 'function'
+  }
+  return false
+}
+
+function sourceFallback(code) {
+  return React.createElement(
+    'pre',
+    { className: SOURCE_CLASS },
+    React.createElement('code', null, code),
+  )
 }
 
 function readLayerInput(props) {
@@ -731,17 +770,23 @@ function MermaidFenceLayer(props) {
       void error
     }
     if (typeof ResizeObserver === 'function') {
-      const observer = new ResizeObserver(() => {
-        const current = mountedRef.current
-        if (!current) return
-        try {
-          current.refresh()
-        } catch (error) {
-          void error
-        }
-      })
-      observer.observe(host)
-      observerRef.current = observer
+      try {
+        const observer = new ResizeObserver(() => {
+          const current = mountedRef.current
+          if (!current) return
+          try {
+            current.refresh()
+          } catch (error) {
+            void error
+          }
+        })
+        observer.observe(host)
+        observerRef.current = observer
+      } catch (error) {
+        // No observer: the picture still draws, it just will not re-layout on
+        // resize. Losing that is better than losing the render.
+        void error
+      }
     }
     return teardown
   }, [code, streaming, doc, teardown])
@@ -816,7 +861,7 @@ function MermaidFenceLayer(props) {
     }
   }, [figureLabel])
 
-  if (streaming) return children
+  if (streaming) return children !== null ? children : sourceFallback(code)
 
   const failed = status === 'failed'
   const rendered = status === 'rendered'
@@ -880,15 +925,7 @@ function MermaidFenceLayer(props) {
     ? React.createElement('p', { className: NOTE_CLASS }, noteText)
     : null
 
-  const fallback = failed
-    ? children !== null
-      ? children
-      : React.createElement(
-          'pre',
-          { className: SOURCE_CLASS },
-          React.createElement('code', null, code),
-        )
-    : null
+  const fallback = failed ? (children !== null ? children : sourceFallback(code)) : null
 
   return React.createElement(React.Fragment, null, note, figure, actions, source, fallback)
 }
@@ -929,13 +966,14 @@ class FigureBoundary extends React.Component {
 
   render() {
     const input = readLayerInput(this.props)
-    if (this.state.failed) return input.children
+    const fallback = () => (input.children !== null ? input.children : sourceFallback(input.code))
+    if (this.state.failed) return fallback()
     try {
-      if (!input.hasCode || typeof document === 'undefined') return input.children
+      if (!input.hasCode || typeof document === 'undefined') return fallback()
       return React.createElement(MermaidFenceLayer, this.props)
     } catch (error) {
       report('figure props', error)
-      return input.children
+      return fallback()
     }
   }
 }
@@ -989,7 +1027,18 @@ function registerLayer(slots) {
 
 function apply(ctx) {
   try {
-    ensureFigureStyles(typeof document === 'undefined' ? null : document)
+    const doc = typeof document === 'undefined' ? null : document
+    const styleElement = ensureFigureStyles(doc)
+    // Asked for the stylesheet, so it goes away with us: a disabled plugin must
+    // not leave a style tag in the host document that nothing can explain.
+    if (styleElement) {
+      const drop = () => removeFigureStyles(styleElement)
+      // `ctx.effect(setup)` keeps whatever the setup returns as its disposer, so
+      // the remover goes in the return value — passing it as the setup would run
+      // it immediately and unstyle the picture.
+      if (typeof ctx.effect === 'function') ctx.effect(() => drop, 'dsh-dyslexia: figure styles')
+      else void 0
+    }
   } catch (error) {
     report('styles', error)
   }

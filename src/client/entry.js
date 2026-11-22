@@ -46,7 +46,18 @@ function registerLayer(slots) {
 
 function apply(ctx) {
   try {
-    ensureFigureStyles(typeof document === 'undefined' ? null : document)
+    const doc = typeof document === 'undefined' ? null : document
+    const styleElement = ensureFigureStyles(doc)
+    // Asked for the stylesheet, so it goes away with us: a disabled plugin must
+    // not leave a style tag in the host document that nothing can explain.
+    if (styleElement) {
+      const drop = () => removeFigureStyles(styleElement)
+      // `ctx.effect(setup)` keeps whatever the setup returns as its disposer, so
+      // the remover goes in the return value — passing it as the setup would run
+      // it immediately and unstyle the picture.
+      if (typeof ctx.effect === 'function') ctx.effect(() => drop, 'dsh-dyslexia: figure styles')
+      else void 0
+    }
   } catch (error) {
     report('styles', error)
   }

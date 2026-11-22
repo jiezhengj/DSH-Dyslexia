@@ -16,7 +16,7 @@
 - [x] No [NEEDS CLARIFICATION] markers remain
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
-- [x] Success criteria are technology-agnostic (no implementation details)
+- [ ] Success criteria are technology-agnostic (no implementation details) —— **例外**：SC-010 直接写 `role="img"` / `role="group"` / `aria-live` 等 ARIA 角色与属性；它们是无障碍的验收面（读屏输出就是这些属性），不算实现细节，但确实不是"技术无关"，故不勾
 - [x] All acceptance scenarios are defined
 - [x] Edge cases are identified
 - [x] Scope is clearly bounded
@@ -26,7 +26,7 @@
 
 - [x] All functional requirements have clear acceptance criteria
 - [x] User scenarios cover primary flows
-- [ ] Feature meets measurable outcomes defined in Success Criteria —— **未满足，2026-11-23 复检降级为未勾**：SC-001（1 秒内出图）无计时证据、SC-002 的 `session_search` 命中未取证、SC-003 的"图内文字不小于正文最小字号"无断言、SC-005 只换了一个 CSS 变量而未真做明→暗→明切换、SC-006 的"宿主升级后仍可启动"只有静态证据。可测的有：SC-004（零网络：只有静态断言，没有断网渲染实跑，见 E-GAPS）、SC-007/SC-008、SC-009（8 语言 × 无内部 key）
+- [ ] Feature meets measurable outcomes defined in Success Criteria —— **未满足，2026-11-23 复检降级为未勾**：SC-001（1 秒内出图）无计时证据、SC-002 的 `session_search` 命中未取证、SC-003 的"图内文字不小于正文最小字号"无断言、SC-005 只换了一个 CSS 变量而未真做明→暗→明切换、SC-006 的 7 类畸形宿主只有静态与 vm 证据（真机注入是 G4）；"宿主升级后仍可启动"是 G1/T042，不是 SC-006。可测的有：SC-004（零网络：只有静态断言，没有断网渲染实跑，见 E-GAPS，因此这里也不勾）、SC-007/SC-008、SC-009（8 语言 × 无内部 key）
 - [x] No implementation details leak into specification
 
 ## Notes

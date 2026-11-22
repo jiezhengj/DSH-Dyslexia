@@ -27,13 +27,36 @@ function safeRead(source, name) {
 
 /** Everything the layer needs from the host, read once and safely. */
 /**
- * Whether a host's `children` is something React would actually render. A host
- * that hands over `null`, `false`, `0` or `''` for an empty slot must not be
- * mistaken for "the host gave me nothing to show": in that case the layer still
- * has the source text and must show it itself.
+ * Whether a host's `children` is something React would actually render.
+ *
+ * Two failures have to be avoided here, and they point in opposite directions.
+ * A host that hands over `null`, `false`, `0` or `''` for an empty slot has
+ * given nothing, so the layer must show the source itself instead of an empty
+ * box. A host that hands over a plain object, a function or an array containing
+ * either has given something React refuses (error #31) — and that refusal would
+ * happen while this layer's own boundary is rendering, so the boundary could not
+ * catch it and the whole message would disappear. Only shapes React accepts are
+ * passed through; everything else falls back to the source text.
  */
 function isRenderableChild(value) {
-  return value !== undefined && value !== null && value !== false && value !== '' && value !== 0
+  if (value === undefined || value === null || value === false || value === true) return false
+  if (typeof value === 'string') return value !== ''
+  if (typeof value === 'number') return value !== 0
+  if (React.isValidElement(value)) return true
+  if (Array.isArray(value)) return value.length > 0 && value.every(isRenderableChild)
+  if (typeof value === 'object') {
+    // Iterables (React accepts some) are checked lazily; a plain object is not.
+    return typeof value[Symbol.iterator] === 'function'
+  }
+  return false
+}
+
+function sourceFallback(code) {
+  return React.createElement(
+    'pre',
+    { className: SOURCE_CLASS },
+    React.createElement('code', null, code),
+  )
 }
 
 function readLayerInput(props) {
@@ -153,17 +176,23 @@ function MermaidFenceLayer(props) {
       void error
     }
     if (typeof ResizeObserver === 'function') {
-      const observer = new ResizeObserver(() => {
-        const current = mountedRef.current
-        if (!current) return
-        try {
-          current.refresh()
-        } catch (error) {
-          void error
-        }
-      })
-      observer.observe(host)
-      observerRef.current = observer
+      try {
+        const observer = new ResizeObserver(() => {
+          const current = mountedRef.current
+          if (!current) return
+          try {
+            current.refresh()
+          } catch (error) {
+            void error
+          }
+        })
+        observer.observe(host)
+        observerRef.current = observer
+      } catch (error) {
+        // No observer: the picture still draws, it just will not re-layout on
+        // resize. Losing that is better than losing the render.
+        void error
+      }
     }
     return teardown
   }, [code, streaming, doc, teardown])
@@ -238,7 +267,7 @@ function MermaidFenceLayer(props) {
     }
   }, [figureLabel])
 
-  if (streaming) return children
+  if (streaming) return children !== null ? children : sourceFallback(code)
 
   const failed = status === 'failed'
   const rendered = status === 'rendered'
@@ -302,15 +331,7 @@ function MermaidFenceLayer(props) {
     ? React.createElement('p', { className: NOTE_CLASS }, noteText)
     : null
 
-  const fallback = failed
-    ? children !== null
-      ? children
-      : React.createElement(
-          'pre',
-          { className: SOURCE_CLASS },
-          React.createElement('code', null, code),
-        )
-    : null
+  const fallback = failed ? (children !== null ? children : sourceFallback(code)) : null
 
   return React.createElement(React.Fragment, null, note, figure, actions, source, fallback)
 }
@@ -351,13 +372,14 @@ class FigureBoundary extends React.Component {
 
   render() {
     const input = readLayerInput(this.props)
-    if (this.state.failed) return input.children
+    const fallback = () => (input.children !== null ? input.children : sourceFallback(input.code))
+    if (this.state.failed) return fallback()
     try {
-      if (!input.hasCode || typeof document === 'undefined') return input.children
+      if (!input.hasCode || typeof document === 'undefined') return fallback()
       return React.createElement(MermaidFenceLayer, this.props)
     } catch (error) {
       report('figure props', error)
-      return input.children
+      return fallback()
     }
   }
 }

@@ -183,7 +183,7 @@ renderSlot('conversation.chat.markdown.fence', fence, {
 - 发布 workflow 增加三步：重建 → `git diff --exit-code -- client.js` 拒绝陈旧产物 → 跑 `check-bundle` 与 `run-harness`，之后才 `npm publish`。
 - `.tmp/` 仍然忽略：它只是我本机的一次性实验区，不再承担任何证据职责。
 
-**代价**：仓库多了 React UMD 两个文件和 526 行夹具（含驱动 642 行）；换来的是任何人 clone 后能自己重算每一个"已验证"。
+**代价**：仓库多了 React UMD 两个文件和 643 行夹具（含驱动 765 行）；换来的是任何人 clone 后能自己重算每一个"已验证"。
 
 ## D22 无障碍：图像角色只给图本身，复制结果用实时区域播报（2026-11-23 修订）
 

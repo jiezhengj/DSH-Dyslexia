@@ -1,13 +1,13 @@
 # 验证证据
 
-本文件只记录**已经真实跑过**的命令输出。每一段输出来自**同一次运行**，并且这次运行的报告行自带 `包名@版本 | client.js 字节数 | sources sha256:<指纹>`，所以任何一段都可以被追溯到具体的一棵树。当前版本：`0.1.5`。
+本文件只记录**已经真实跑过**的命令输出。每一段输出来自**同一次运行**，并且这次运行的报告行自带 `包名@版本 | client.js 字节数 | sources sha256:<指纹>`，所以任何一段都可以被追溯到具体的一棵树。当前版本：`0.1.7`。
 
 复跑方式（任何人 clone 后都一样）：
 
 ```bash
 node scripts/build-client.mjs       # 由 src/client/*.js + vendor/pele 生成 client.js
-node verify/check-bundle.mjs        # 31 项静态与行为断言，纯 Node 内置模块
-node verify/run-harness.mjs --list  # 92 项浏览器断言，需要本机 Chrome
+node verify/check-bundle.mjs        # 32 项静态与行为断言，纯 Node 内置模块
+node verify/run-harness.mjs --list  # 101 项浏览器断言，需要本机 Chrome
 ```
 
 ## E-BLD 构建
@@ -15,17 +15,17 @@ node verify/run-harness.mjs --list  # 92 项浏览器断言，需要本机 Chrom
 命令：`node scripts/build-client.mjs`，输出：
 
 ```text
-build-client: @jiezhengj/dsh-dyslexia -> client.js (762625 bytes, 761613 characters, engine 1.13.0, sources 5, syntax ok)
+build-client: @jiezhengj/dsh-dyslexia -> client.js (765002 bytes, 763986 characters, engine 1.13.0, sources 5, syntax ok)
 ```
 
-产物 `client.js` 的 SHA256 = `2169883088345B44DAC55E7A0F41304BB8491A8D8622C4178C4BCDFF9D0D7B31`，仓库里的文件与 `desktop` profile 中安装的那份逐字节相同（见 E-INS）。
+产物 `client.js` 的 SHA256 = `4DD2F68573DD7943CC1130488477A9B88F5045EE32BB8739C1AA8A6CFA3972B6`，仓库里的文件与 `desktop` profile 中安装的那份逐字节相同（见 E-INS）。
 
 ## E-CHK 静态与行为校验
 
 命令：`node verify/check-bundle.mjs`，完整输出（stdout，逐行照抄）：
 
 ```text
-ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.6
+ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.7
 ok   package.json points at the repository npm trusts — git+https://github.com/jiezhengj/DSH-Dyslexia.git
 ok   package.json declares the bundle patch and the client half — platform web, no package inject
 ok   no dsh version gate can refuse a start — no engines.dsh, no dsh peers
@@ -34,7 +34,7 @@ ok   every published file exists — 24 files
 ok   every interface language has its own plugin page — 8 languages
 ok   cordis.patch.yml inserts the plugin by package name — 3 lines
 ok   both locales carry metadata — en, zh
-ok   client.js is one loader chunk keyed by the package name — 762625 bytes
+ok   client.js is one loader chunk keyed by the package name — 765002 bytes
 ok   client.js requires react and nothing else — react
 ok   client.js never reaches the network — no fetch, no XHR, no dynamic import, no remote URL
 ok   client.js carries the vendored engine — Pele 1.13.0 inlined
@@ -51,18 +51,19 @@ ok   every supported sample type draws an svg — flowchart:218x64 sequence:184x
 ok   a broken diagram reports a one-line reason — Parse error on line 2:
 ok   host key echo falls back to bundled strings — key echo, blanks, placeholders rejected
 ok   every language carries the same complete sentences — 12 keys x 8 languages, no engine text in labels
-ok   client.js matches the sources it claims — 737f61ee187d1956e13917922a931cf0
+ok   client.js matches the sources it claims — e10fbd04aa7812fdbc9adbc0b1d2e95b
 ok   the picture is the image, and the copy answer is announced — label is a noun, role="img" on the svg, copy result announced
+ok   host children react would refuse fall back to the source — objects, functions and mixed arrays fall back to the source text
 ok   a factory that cannot build never throws at the host — module-level throw contained, empty module returned
 ok   the host half registers exactly one capability section — ui:dsh-dyslexia, order 9000, 85 words
 ok   the host half stays silent when the host changed shape — five silent hosts, one throwing section
 
-check-bundle: @jiezhengj/dsh-dyslexia@0.1.6 | client.js 762625 bytes | sources sha256:737f61ee187d1956e13917922a931cf0 | all 31 checks passed
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.7 | client.js 765002 bytes | sources sha256:e10fbd04aa7812fdbc9adbc0b1d2e95b | all 32 checks passed
 ```
 
 ## E-HARN 浏览器行为校验
 
-命令：`node verify/run-harness.mjs --list`（`--list` 逐行打印每一项），完整输出（stdout，逐行照抄）：
+命令：`node verify/run-harness.mjs --list`（`--list` 逐行打印每一项；发布工作流用的是同一脚本的默认输出，检查内容相同、只是不逐行打印），完整输出（stdout，逐行照抄）：
 
 ```text
 [ok] loading client.js registers one factory
@@ -146,6 +147,18 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.6 | client.js 762625 bytes | sources s
 [ok] the picture appears when the stream ends
 [ok] a falsy children is not mistaken for content — 图里的语法有误，已改为显示源码。flowchart TD
   A-->
+[ok] a refused children cannot empty the message — object — children=1 text=flowchart LR
+  A[Tex
+[ok] no React error 31 escapes — object
+[ok] a refused children cannot empty the message — function — children=1 text=flowchart LR
+  A[Tex
+[ok] no React error 31 escapes — function
+[ok] a refused children cannot empty the message — object in a failed picture — children=3 text=图里的语法有误，已改为显示源码。flow
+[ok] no React error 31 escapes — object in a failed picture
+[ok] a refused children cannot empty the message — array with an object — children=3 text=图里的语法有误，已改为显示源码。flow
+[ok] no React error 31 escapes — array with an object
+[ok] a streaming block with no host children still shows its source — flowchart LR
+  A[Text] --> B[P
 [ok] a fresh t does not redraw the picture
 [ok] the copy answer is announced, not only coloured — 已复制
 [ok] the box around the picture is a group
@@ -158,10 +171,10 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.6 | client.js 762625 bytes | sources s
 [ok] the zoom buttons sit outside the image — 0
 [ok] the zoom buttons speak the interface language — 放大 | 缩小 | 重置缩放
 [ok] every enabled zoom button can take the keyboard — 2/2 enabled of 3
-run-harness: @jiezhengj/dsh-dyslexia@0.1.6 | client.js 762625 bytes | all 92 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+run-harness: @jiezhengj/dsh-dyslexia@0.1.7 | client.js 765002 bytes | all 101 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
-夹具是提交进仓库的 `verify/harness/index.html`（+ `verify/harness/vendor/` 下的 React 18.3.1 UMD 副本），自建假 loader / 假 slots / 假 locale，加载仓库里的 `client.js` 本体与 `vendor/pele/pele.global.js`。故障注入覆盖：宿主 `t` 抛错/回显 key/回空白/回 `key:value`/留占位符、`code` 与 `children` 取值器抛错、引擎 `innerHTML` 抛错、无 slots 服务、6 种畸形 ctx、坏语法（有/无宿主 `children`）、falsy `children`、超限源码、流式→完成、`t` 换身份、裁剪板缺失/成功、360 px 栏宽、主题换色；无障碍结构另有六项: `role="group"` 的本地化组名、图像节点的本地化名称、图像节点没有英文 `aria-roledescription`、图中只有一个 `role="img"`、缩放按钮位于图像元素之外、缩放按钮用界面语言且可聚焦。
+夹具是提交进仓库的 `verify/harness/index.html`（+ `verify/harness/vendor/` 下的 React 18.3.1 UMD 副本），自建假 loader / 假 slots / 假 locale，加载仓库里的 `client.js` 本体与 `vendor/pele/pele.global.js`。故障注入覆盖：宿主 `t` 抛错/回显 key/回空白/回 `key:value`/留占位符、`code` 与 `children` 取值器抛错、**宿主交出 React 不收的 `children`（普通对象、函数、含对象的数组）**、引擎 `innerHTML` 抛错、无 slots 服务、6 种畸形 ctx、坏语法（有/无宿主 `children`）、falsy `children`、流式无宿主块、超限源码、流式→完成、`t` 换身份、裁剪板缺失/成功、360 px 栏宽、主题换色；无障碍结构另有六项：`role="group"` 的本地化组名、图像节点的本地化名称、图像节点没有英文 `aria-roledescription`、图中只有一个 `role="img"`、缩放按钮位于图像元素之外、缩放按钮用界面语言且可聚焦。
 
 ## E-COMP 兼容性断言与要求逐条对应
 
@@ -170,9 +183,9 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.6 | client.js 762625 bytes | all 92 che
 | FR-013 不声明版本否决字段 | `no dsh version gate can refuse a start` |
 | FR-014 启动/运行失败就地降级 | `apply stays silent on a changed host`、`a host that rejects the locale option does not break apply`、`a throwing engine leaves a sentence`、`an engine that fails to load leaves the picture to the host` |
 | FR-015 产物自身可编译、加载失败不连累同批 | `client.js compiles on its own`、`a broken host loader cannot make the chunk throw`、`a failing factory still yields a silent module`、`a factory that cannot build never throws at the host` |
-| FR-016 宿主数据畸形时交回原代码块 | `a throwing code getter leaves the host block`、`a throwing children getter does not reach the host`、`a falsy children is not mistaken for content` |
+| FR-016 宿主数据畸形时交回原代码块 | `a throwing code getter leaves the host block`、`a throwing children getter does not reach the host`、`a falsy children is not mistaken for content`、`a refused children cannot empty the message — object`、`a refused children cannot empty the message — function`、`a refused children cannot empty the message — object in a failed picture`、`a refused children cannot empty the message — array with an object`、`no React error 31 escapes — object`、`a streaming block with no host children still shows its source` |
 | FR-017 每条加固都有可重复证据 | 本节所有断言都在仓库里，`node verify/*.mjs` 可复跑；`npm test` 一次跑完两套 |
-| FR-018 无障碍结构与播报 | 静态：`the picture is the image, and the copy answer is announced`。浏览器：`the box around the picture is a group`、`the group carries the localised name`、`the drawing itself is the image`、`a scaled picture offers the engine zoom buttons`、`the zoom buttons sit outside the image`、`every enabled zoom button can take the keyboard`、`the copy answer is announced, not only coloured`、`a fresh t does not redraw the picture`、`no internal key reaches the eye` |
+| FR-018 无障碍结构与播报 | 静态：`the picture is the image, and the copy answer is announced`。浏览器：`the box around the picture is a group`、`the group carries the localised name`、`the drawing itself is the image`、`the image carries the localised name`、`the image carries no english role description`、`exactly one image in the picture`、`a scaled picture offers the engine zoom buttons`、`the zoom buttons sit outside the image`、`the zoom buttons speak the interface language`、`every enabled zoom button can take the keyboard`、`the copy answer is announced, not only coloured`、`a fresh t does not redraw the picture`、`no internal key reaches the eye`、`a refused children cannot empty the message — object` |
 
 宿主半边另有两项（复用 `index.js` 本体，而非源码字符串匹配）：`the host half registers exactly one capability section`（`ui:dsh-dyslexia`、order 9000、85 词）与 `the host half stays silent when the host changed shape`（5 种畸形宿主 + `section` 抛错 + `section` 返回 rejected Promise）。
 
@@ -195,16 +208,15 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.6 | client.js 762625 bytes | all 92 che
 0.1.5 发布提交（`eeb4a05`，tag `v0.1.5`）的 CI 日志如下——**当时夹具是 82 项**：
 
 ```text
-check-bundle: @jiezhengj/dsh-dyslexia@0.1.5 | client.js 761974 bytes | sources sha256:5f89ee58c00607c98d5356575e6be451 | all 31 checks passed
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.5 | client.js 761974 bytes | sources sha256:5f89ee58c00607c98d5356575e6be451 | all 32 checks passed
 run-harness: all 82 checks passed (/usr/bin/google-chrome)
 ```
 
-0.1.6 发布提交（tag `v0.1.6`，run `45050133828`）的 CI 日志——同一棵树上 31 项与 **92** 项，与本机逐字一致：
+0.1.6 发布提交（tag `v0.1.6`，run `45050133828`）的 CI 日志——同一棵树上 32 项与 **92** 项，与本机逐字一致：
 
 ```text
-check-bundle: @jiezhengj/dsh-dyslexia@0.1.6 | client.js 762625 bytes | sources sha256:737f61ee187d1956e13917922a931cf0 | all 31 checks passed
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.6 | client.js 762625 bytes | sources sha256:737f61ee187d1956e13917922a931cf0 | all 32 checks passed
 run-harness: @jiezhengj/dsh-dyslexia@0.1.6 | client.js 762625 bytes | all 92 checks passed (/usr/bin/google-chrome)
-```
 ```
 
 ## E-CI 发布前检查抓到一个真实缺陷（0.1.5 第一次运行）
@@ -238,7 +250,7 @@ Done in 2.3s using pnpm v11.28.5
 
 ## E-LIVE 真机（DSH 桌面窗口内）
 
-**以下记录来自 0.1.2**，0.1.5 的重启核对是 T079（**尚未取证**）。之所以保留，是因为它们证明了链路本身可用；0.1.5 改了渲染层（`role` 结构、播报区域、空 `children` 处理），所以这些观察**不能**自动转移到 0.1.5。
+**以下记录来自 0.1.2**，`0.1.7` 的重启核对是 T079（**尚未取证**）。之所以保留，是因为它们证明了链路本身可用；从 0.1.2 到 0.1.7 渲染层改过多次（`role` 结构、`aria-roledescription` 的移除、可见的复制反馈、空/非法 `children` 的处理），所以这些观察**不能**自动转移到 `0.1.7`。
 
 | 观察 | 当时的证据 | 归属 |
 |---|---|---|
@@ -251,11 +263,11 @@ Done in 2.3s using pnpm v11.28.5
 
 真机、设备与离线条件（都要求动手换条件，不能在 CI 里做）：
 
-- **G1 宿主升级演练（T042）**：需要在真实 DSH 升级时验证"升级后仍能打开、插件不连累启动"。目前只有源码级论证（`unpatch` 语义、无 `engines` 门、`ctx.effect` 清理、层与包同生命周期）与 0.1.5 的 CI/夹具证据，没有一次真实升级。
+- **G1 宿主升级演练（T042）**：需要在真实 DSH 升级时验证"升级后仍能打开、插件不连累启动"。目前只有源码级论证（`unpatch` 语义、无 `engines` 门、`ctx.effect` 清理、层与包同生命周期）与 0.1.7 的 CI/夹具证据，没有一次真实升级。
 - **G2 实体手机/平板触控（T023 的硬件部分）**：窄屏证据来自 headless Chrome 的 360 px 夹具（`the picture takes the column width`、`a wide picture does not widen the column`、`the page itself never overflows`），不是真实设备触控。
 - **G3 断网裸机安装（T025）**：`client.js never reaches the network` 只证明产物没有网络调用；"一台没有任何缓存/CDN 的机器上离线装得上"没有验证。
 - **G4 畸形宿主的真机注入（T041）**：六种剖面（缺 `systemPrompt`、`section` 抛错、返回 rejected Promise 等）只在夹具与 `check-bundle` 的 vm 里复现，没有在一次真实宿主里注入过。
-- **G5 quickstart 的 E1–E16 逐条复跑（T031）**：证据表本身不是证据；其中 E2（同一条消息两块 `mermaid` 并存）、E16（非 `mermaid` 的代码块不受影响）、E10 的后半（**卸载后新建会话里仍可读**）只有夹具或 0.1.2 的观察。
+- **G5 quickstart 的 E1–E16 逐条复跑（T031）**：证据表本身不是证据。其中 E2（同一条消息两块 `mermaid` 并存）、E16（非 `mermaid` 的代码块不受影响）**既没有夹具、也没有真机观察**——92 项夹具里没有这两类用例；E15 一带（**卸载后新建会话里打开旧消息仍可读**）只有 0.1.2 的观察。
 
 指标类（定义写得出来，但没有一条被真正测量）：
 

@@ -435,6 +435,18 @@ check('the picture is the image, and the copy answer is announced', () => {
   return 'label is a noun, role="img" on the svg, copy result announced'
 })
 
+check('host children react would refuse fall back to the source', () => {
+  const view = read('src/client/view.js')
+  // A host that hands over a plain object (or a function, or an array holding
+  // one) makes React throw #31 while this layer renders. That throw would happen
+  // inside the layer's own boundary, so the boundary could not catch it and the
+  // whole message would disappear. Only shapes React accepts may pass through.
+  assert(view.includes('React.isValidElement(value)'), 'children are not whitelisted to React-accepted shapes')
+  assert(view.includes('value.every(isRenderableChild)'), 'arrays of children are not checked element by element')
+  assert(view.includes('sourceFallback('), 'no source fallback exists for a host block that cannot be shown')
+  return 'objects, functions and mixed arrays fall back to the source text'
+})
+
 check('a factory that cannot build never throws at the host', () => {
   let factory = null
   loadChunk({ window: { __ModuleLoader__: { load(spec) { factory = spec.factory } } } })
