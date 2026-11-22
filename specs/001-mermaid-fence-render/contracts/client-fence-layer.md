@@ -1,0 +1,104 @@
+# 契约：浏览器半边的槽层
+
+**消费者**：DSH Web 前端的槽系统（`conversation.chat.markdown.fence`，kind `hoc`，scope `session`）。
+
+# 导出面
+
+`client.js` 是经典脚本，经 `window.__ModuleLoader__.load({ id, factory })` 注册工厂；工厂返回 `module.exports`，其中必须包含：
+
+| 导出 | 类型 | 说明 |
+|---|---|---|
+| `inject` | `string[]` | 客户端服务名，本插件为 `['locale']`（服务以包名形式注入时按宿主实际名调整） |
+| `apply` | `(ctx) => void` | 注册 locale 字典与槽层 |
+
+# 槽注册
+
+```js
+const SLOT = 'conversation.chat.markdown.fence'
+
+ctx.slots.inject(SLOT, () => ctx.slots.register({
+  name: SLOT,
+  id: '@jiezhengj/dsh-dyslexia/mermaid',
+  key: 'mermaid',
+  order: 100,
+  locale: 'dyslexia',
+}, MermaidFenceLayer))
+```
+
+**约束**
+
+| 约束 | 理由 |
+|---|---|
+| `id` 用包名 + 用途后缀，稳定不变 | 层的身份；改动等于换一个层 |
+| `key: 'mermaid'` | 只接管 ` ```mermaid ` 代码块，`entryKey` 即语言标记 |
+| 不省略 `key` | 省略会接管**所有**代码块（diff/math/patch 已有自己的层） |
+| `order: 100` | 与宿主 `register.ts` 现有层同量级，不抢占 |
+| 用 `ctx.slots.inject(...)` 而非顶层直接 `register` | 槽服务迟到时自动等到可用；随插件卸载注销 |
+| 不注册第二个槽、不注册会话节点 | 最小挂载点；卸载无残留 |
+
+# 层组件契约
+
+```ts
+type Props = {
+  lang: string            // 宿主 dispatch 的语言标记，恒为 'mermaid'
+  code: string            // 图源，图的全部信息
+  streaming: boolean      // 流式输出中
+  children: ReactNode     // 宿主原本的代码块（回退目标）
+  t: (key: string, vars?: Record<string, unknown>) => string  // 框架注入的翻译座位
+}
+```
+
+**行为契约**
+
+1. `streaming === true` → 返回 `children`，不解析、不闪烁。
+2. 渲染成功 → 返回 `[图容器, 源码切换条]`；不包裹 `children`。
+3. 解析失败或超限 → 返回 `[一行本地化说明, children]`；说明必须可见、可读屏、不带堆栈。
+4. 渲染中不改页面其余部分：不设全局样式、不动 `<html>`/`<body>`、不监听 `window` 的滚动或按键。
+5. 卸载/重渲染必须 `destroy()` pele 实例并断开 `ResizeObserver`，不留定时器、不留事件监听。
+6. 组件自身抛错时必须由本层的错误边界就地接管并渲染 `children`，不得让异常冒到宿主的渲染树、也不得让同消息其他块白屏（FR-014、FR-016）。
+
+# 降级契约（兼容性，对应 FR-014～FR-016）
+
+宿主仍在迭代，本层对"接口变了"的唯一正确反应是**安静地不画**。以下每条都是必须成立的行为，且都有一条可重复的断言（括号内为 `verify/check-bundle.mjs` 的断言名或夹具用例名）：
+
+7. **不注册也不抛**：`ctx.slots` 缺失、`inject` 抛错、`register` 签名变化 → 放弃注册，宿主照常渲染原代码块（`host apply survives a host that changed shape`）。
+8. **locale 可选**：`ctx.locale` 缺失或 `register` 失败 → 改用不带 `locale` 的注册重试；仍失败则放弃注册。宿主 `t` 抛错或返回非字符串 → 回落包内 en/zh 字典，图照画（夹具 `host-t-throws`）。
+9. **数据守卫**：`code` 不是字符串、取值器抛错、缺 `document` → 直接返回 `children`，不进入绘制（夹具 `bad-fence`）。
+10. **绘制期零外泄**：pele 在渲染子树里抛错 → 错误边界渲染 `children`，并在 `code` 变化时复位（夹具 `render-throws`）。
+11. **引擎不可用**：pele 未挂载或 `mount` 不存在 → 视为"该处不画"，保留原文并给一行本地化原因，不抛错（`an engine that fails to load leaves the picture to the host`）。
+
+# DOM 与可访问性契约
+
+- 图容器：`role="img"`、`aria-label` = 本地化的"图：{{type}}"，容器 `max-width: 100%`、`overflow: auto`。
+- 源码切换条：一个按钮（`<button type="button">`），文案"查看源码 / 隐藏源码"；展开的源码块保留语言标记 `mermaid`，可全选复制（FR-003）。
+- 缩放控件：仅在图宽超出容器时渲染；按钮有 `aria-label`；缩放只改图容器内部变换，不改变页面布局。
+- 键盘可达：所有按钮可 Tab 聚焦，`Enter`/`Space` 生效；图本身不设为 Tab 焦点。
+- 颜色：不使用硬编码色值；深浅主题切换后无需重新解析图源（pele 就地重绘）。
+
+# 样式边界
+
+- 只写行内样式或注入唯一前缀的 `<style>`（例如 `dsh-dyslexia-` 前缀），不覆盖宿主既有类名、不引入全局选择器。
+- 变量映射（容器上）：
+
+```
+--pele-bg: var(--dsw-alias-bg-layer-1);
+--pele-fg: var(--dsw-alias-label-primary);
+--pele-muted: var(--dsw-alias-label-secondary);
+--pele-line: var(--dsw-alias-border-l1);
+--pele-border: var(--dsw-alias-border-l2);
+--pele-accent: var(--dsw-alias-brand-primary);
+--pele-error: var(--dsw-alias-state-error-primary);
+--pele-font: inherit;
+```
+
+# 渲染引擎调用面（pele）
+
+| 调用 | 参数 | 说明 |
+|---|---|---|
+| `mount(el, code, options)` | `{ autoDirection: true, directionBreakpoint: 640, padding: 8, maxEdges, outputLimit, zoom: 'auto', onError }` | 同步生成 SVG 并自适容器宽 |
+| `refresh()` | — | 容器尺寸/字体变化后重排 |
+| `destroy()` | — | 释放 |
+| `Mounted.error` | `PeleError` | 判定失败路径 |
+| `Mounted.result.type` | string | 用于 `aria-label` 与提示文案 |
+
+**禁止**：`parse()` + 自绘（放弃 pele 的字体与主题适配）、`render()` 后手工塞进 DOM（放弃 `refresh()`）、把 SVG 序列化成字符串存任何地方。

@@ -1,0 +1,11 @@
+/.agent-state/spec_kit_component_update_cache.json
+node_modules/
+.tmp/
+.tools/
+*.tgz
+
+# Machine-local artifacts.
+__pycache__/
+*.pyc
+.specify/workflows/.cache/
+.specify/.workflow-install.lock

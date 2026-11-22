@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "DSH Dyslexia",
+    "description": "Draws each mermaid code block in a conversation as a diagram, in place in the message — no side panel, no second window. The code block stays the message’s own text, so it can be copied, searched, and still read after this plugin is turned off. Under every drawing: Show source and Copy source; on a phone the drawing reflows to the column width and zooms inside its own frame.",
+    "detail": "docs/DETAIL.md"
+  }
+}

@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="300" viewBox="0 0 640 300">
+  <rect width="640" height="300" fill="#F5F6FC"/>
+  <g id="source">
+    <rect x="36" y="62" width="176" height="176" rx="16" fill="#FFFFFF" stroke="#E4E8F6" stroke-width="2"/>
+    <path d="M36 78a16 16 0 0 1 16-16h144a16 16 0 0 1 16 16v18H36z" fill="#E4E8F6" fill-opacity="0.6"/>
+    <circle cx="56" cy="79" r="4" fill="#658EFF"/>
+    <circle cx="70" cy="79" r="4" fill="#B9C1D9"/>
+    <circle cx="84" cy="79" r="4" fill="#B9C1D9"/>
+    <rect x="60" y="108" width="30" height="9" rx="4.5" fill="#658EFF"/>
+    <rect x="96" y="128" width="60" height="9" rx="4.5" fill="#B9C1D9"/>
+    <rect x="60" y="148" width="40" height="9" rx="4.5" fill="#B9C1D9"/>
+    <rect x="104" y="168" width="48" height="9" rx="4.5" fill="#B9C1D9"/>
+    <rect x="84" y="188" width="64" height="9" rx="4.5" fill="#41E1AC"/>
+    <rect x="112" y="208" width="36" height="9" rx="4.5" fill="#B9C1D9"/>
+  </g>
+  <g id="arrow">
+    <path d="M220 150h16" stroke="#658EFF" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+    <path d="M233 143.5 244 150l-11 6.5z" fill="#658EFF"/>
+  </g>
+  <g id="figure">
+    <rect x="260" y="52" width="344" height="196" rx="14" fill="#FFFFFF" stroke="#E4E8F6" stroke-width="2"/>
+    <g style="--pele-bg:#ffffff;--pele-fg:#1f2430;--pele-muted:#6b7387;--pele-line:#4a5a86;--pele-surface:#eef2fb;--pele-surface-alt:#e2e9f8;--pele-border:#b9cbef;--pele-accent:#658eff;--pele-font:system-ui, sans-serif;--pele-font-mono:ui-monospace, monospace" transform="translate(321.64 72.00) scale(0.8026)">
+      <svg xmlns="http://www.w3.org/2000/svg" class="pele pele-flowchart" viewBox="0 0 275 152" width="275" height="152" style="max-width:100%;height:auto;--_bg:var(--pele-bg,#fff);--_fg:var(--pele-fg,#1f1f1f);--_m:var(--pele-muted,#6e6e6e);--_l:var(--pele-line,#1f1f1f);--_s:var(--pele-surface,#f3f3f3);--_a:var(--pele-surface-alt,#e6e6e6);--_b:var(--pele-border,#8a8a8a);--_c:var(--pele-accent,#5b7bd5);color:var(--_fg);--_r:var(--pele-radius,4px);--_fm:var(--pele-font-mono,monospace);font:13px sans-serif;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;font-family:var(--pele-font,sans-serif)" fill="var(--_fg)" role="graphics-document document" aria-roledescription="flowchart"><g class="pele-edges" fill="none" stroke="var(--_l)" stroke-linecap="round"><g class="pele-edge" data-id="L_A_B_0"><path d="M113.03,68C130.53,68 130.53,34 148.03,34L154.03,34"/><path class="pele-marker" d="M161.03,34L153.03,37.36L153.03,30.64Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge" data-id="L_A_C_0"><path d="M113.03,84C130.53,84 130.53,118 148.03,118L154.03,118"/><path class="pele-marker" d="M161.03,118L153.03,121.36L153.03,114.64Z" fill="var(--_l)" stroke="none"/></g></g><g class="pele-nodes"><g class="pele-node pele-shape-rect" data-id="A" transform="translate(62.51,76)"><rect x="-50.51" y="-22" width="101.03" height="44" fill="var(--_s)" stroke="var(--_b)" style="rx:var(--_r)"/><text class="pele-label" x="0" y="4.55" text-anchor="middle">Code block</text></g><g class="pele-node pele-shape-rect" data-id="B" transform="translate(203.58,34)"><rect x="-42.56" y="-22" width="85.11" height="44" fill="var(--_s)" stroke="var(--_b)" style="rx:var(--_r)"/><text class="pele-label" x="0" y="4.55" text-anchor="middle">Diagram</text></g><g class="pele-node pele-shape-rect" data-id="C" transform="translate(211.9,118)"><rect x="-50.88" y="-22" width="101.75" height="44" fill="var(--_s)" stroke="var(--_b)" style="rx:var(--_r)"/><text class="pele-label" x="0" y="4.55" text-anchor="middle">Source text</text></g></g></svg>
+    </g>
+    <path d="M278 202h308" stroke="#E4E8F6" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <g id="buttons">
+    <rect x="278" y="214" width="32" height="26" rx="13" fill="#E4E8F6" fill-opacity="0.8"/>
+    <rect x="318" y="214" width="32" height="26" rx="13" fill="#E4E8F6" fill-opacity="0.8"/>
+    <g stroke="#1F2430" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.7">
+      <rect x="288" y="221" width="9" height="11" rx="2.5"/>
+      <path d="M294 218.5h5.5a2.5 2.5 0 0 1 2.5 2.5v8.5"/>
+    </g>
+    <g stroke="#1F2430" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.7">
+      <path d="M331 221.5 326.5 226l4.5 4.5"/>
+      <path d="M337 221.5 341.5 226l-4.5 4.5"/>
+    </g>
+  </g>
+</svg>

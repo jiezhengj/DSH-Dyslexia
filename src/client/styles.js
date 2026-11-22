@@ -1,0 +1,92 @@
+/**
+ * Styles of one rendered picture.
+ *
+ * Everything is scoped under the `dsh-dyslexia-` prefix and reads the host
+ * theme variables, so light and dark follow the app. Colors are handed to the
+ * engine through its own `--pele-*` variables: the engine paints with them and
+ * repaints when the theme flips, without a re-render.
+ */
+
+const FIGURE_STYLE_ID = 'dsh-dyslexia-figure-style'
+const FIGURE_CLASS = 'dsh-dyslexia-figure'
+const NOTE_CLASS = 'dsh-dyslexia-note'
+const BAR_CLASS = 'dsh-dyslexia-bar'
+const BUTTON_CLASS = 'dsh-dyslexia-button'
+const SOURCE_CLASS = 'dsh-dyslexia-source'
+
+const FIGURE_CSS = [
+  `.${FIGURE_CLASS} {`,
+  '  --pele-bg: var(--dsw-alias-bg-layer-1);',
+  '  --pele-fg: var(--dsw-alias-label-primary);',
+  '  --pele-muted: var(--dsw-alias-label-secondary);',
+  '  --pele-line: var(--dsw-alias-border-l2);',
+  '  --pele-surface: var(--dsw-alias-bg-layer-2);',
+  '  --pele-surface-alt: var(--dsw-alias-bg-base);',
+  '  --pele-border: var(--dsw-alias-border-l1);',
+  '  --pele-accent: var(--dsw-alias-brand-primary);',
+  '  --pele-font: inherit;',
+  '  max-width: 100%;',
+  '  box-sizing: border-box;',
+  '  padding: 8px;',
+  '  border: 1px solid var(--dsw-alias-border-l1);',
+  '  border-radius: 8px;',
+  '  background: var(--dsw-alias-bg-layer-1);',
+  '  overflow: auto;',
+  '}',
+  `.${FIGURE_CLASS} svg {`,
+  '  display: block;',
+  '  max-width: 100%;',
+  '  height: auto;',
+  '}',
+  `.${FIGURE_CLASS} text {`,
+  '  font-family: inherit;',
+  '}',
+  `.${NOTE_CLASS} {`,
+  '  margin: 0 0 6px;',
+  '  font-size: 12px;',
+  '  color: var(--dsw-alias-label-secondary);',
+  '}',
+  `.${BAR_CLASS} {`,
+  '  display: flex;',
+  '  flex-wrap: wrap;',
+  '  gap: 6px;',
+  '  margin-top: 6px;',
+  '}',
+  `.${BUTTON_CLASS} {`,
+  '  font: inherit;',
+  '  font-size: 12px;',
+  '  line-height: 18px;',
+  '  padding: 2px 8px;',
+  '  border-radius: 6px;',
+  '  border: 1px solid var(--dsw-alias-border-l2);',
+  '  background: var(--dsw-alias-bg-layer-2);',
+  '  color: var(--dsw-alias-label-primary);',
+  '  cursor: pointer;',
+  '}',
+  `.${BUTTON_CLASS}:hover { border-color: var(--dsw-alias-border-l1); }`,
+  `.${BUTTON_CLASS}:focus-visible {`,
+  '  outline: 2px solid var(--dsw-alias-brand-primary);',
+  '  outline-offset: 1px;',
+  '}',
+  `.${SOURCE_CLASS} {`,
+  '  margin: 6px 0 0;',
+  '  padding: 8px;',
+  '  max-height: 320px;',
+  '  overflow: auto;',
+  '  font-size: 12px;',
+  '  border-radius: 6px;',
+  '  background: var(--dsw-alias-bg-base);',
+  '  border: 1px solid var(--dsw-alias-border-l1);',
+  '}',
+].join('\n')
+
+function ensureFigureStyles(doc) {
+  if (!doc || typeof doc.getElementById !== 'function') return
+  if (doc.getElementById(FIGURE_STYLE_ID)) return
+  const host = doc.head || doc.documentElement
+  if (!host || typeof doc.createElement !== 'function') return
+  const element = doc.createElement('style')
+  element.id = FIGURE_STYLE_ID
+  element.textContent = FIGURE_CSS
+  host.appendChild(element)
+}

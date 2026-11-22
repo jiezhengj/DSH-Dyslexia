@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "DSH Schémas lisibles",
+    "description": "Dessine chaque bloc de code mermaid d’une conversation sous forme de schéma, à sa place dans le message : ni panneau latéral, ni seconde fenêtre. Le bloc de code reste le texte du message, donc il peut être copié, recherché et lu même après la désactivation de ce greffon. Sous chaque schéma : Afficher la source et Copier la source ; sur un téléphone, le schéma se recompose à la largeur de la colonne et le zoom reste dans son cadre.",
+    "detail": "docs/DETAIL.fr.md"
+  }
+}

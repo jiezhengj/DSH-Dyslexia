@@ -1,0 +1,46 @@
+{
+  "name": "@jiezhengj/dsh-dyslexia",
+  "version": "0.1.1",
+  "description": "Draws mermaid code blocks in DeepSeek Harness conversations as diagrams, in place in the message.",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "mermaid",
+    "diagram",
+    "dyslexia",
+    "accessibility"
+  ],
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web"
+    }
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "docs",
+    "icon.svg",
+    "LICENSE",
+    "THIRD-PARTY-NOTICES.md",
+    "README*.md"
+  ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}
