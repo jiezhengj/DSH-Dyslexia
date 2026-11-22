@@ -24,8 +24,17 @@ jobs:
       - name: Use the npm that speaks OIDC
         run: npm install --global npm@latest
 
+      - name: Rebuild the chunk from source
+        run: node scripts/build-client.mjs
+
+      - name: Refuse to publish if the committed chunk is stale
+        run: git diff --exit-code -- client.js
+
       - name: Check the bundle before publishing
         run: node verify/check-bundle.mjs
+
+      - name: Draw in a real browser
+        run: node verify/run-harness.mjs
 
       - name: Publish
         run: npm publish --access public --provenance

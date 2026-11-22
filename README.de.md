@@ -26,6 +26,29 @@ Der Codeblock wird nie verbraucht. Er bleibt der Text der Nachricht: kopierbar, 
 - Acht Oberflächensprachen, dieselben, die DeepSeek Harness mitbringt.
 - Zur Laufzeit wird nichts geladen: Die Engine steckt im Plugin.
 
+## Daten und Datenschutz
+
+- Das Plugin stellt zur Laufzeit keine Netzwerkanfragen; die Zeichen-Engine ist in `client.js` gebündelt.
+- Es sammelt nichts und sendet nichts irgendwohin.
+- Es liest nur den Text des `mermaid`-Codeblocks, der bereits auf deiner Seite angezeigt wird, und schreibt nur das Diagramm in diese Seite.
+- Die Schaltfläche **Quelle kopieren** nutzt die Zwischenablage deines Browsers; nichts verlässt die Seite.
+- Deinem Sitzungsverlauf wird nichts hinzugefügt: Das Diagramm ist eine Darstellung, kein gespeichertes Objekt.
+
+## So überprüfst du es
+
+Voraussetzungen: Node.js 22 oder neuer sowie Chrome/Chromium für die Browser-Prüfungen.
+
+- `node verify/check-bundle.mjs` – statische und Engine-Prüfungen des ausgelieferten Pakets (Manifest, keine Netzwerkaufrufe, keine Versionsschwelle, die mitgelieferte Engine, acht Oberflächensprachen, Beispieldiagramme jedes unterstützten Typs). Gibt pro Prüfung eine Zeile aus und beendet sich bei Fehlschlag mit einem Wert ungleich null.
+- `node verify/run-harness.mjs` – führt die Browser-Prüfungen im Headless-Chrome gegen `verify/harness/index.html` aus (Zeichnen, acht Sprachen, ungünstige Hosts, fehlerhafte Diagramme, Kopieren, schmale 360-px-Spalte, Themenfarben). Setze `DSH_DYSLEXIA_CHROME` auf eine bestimmte Chrome-Programmdatei, falls die automatische Erkennung fehlschlägt.
+
+Beide Befehle liegen im Repository, sodass sich die Aussagen in dieser Datei jederzeit erneut prüfen lassen; dieselben Prüfungen führt auch die CI vor der Veröffentlichung aus.
+
+## Bekannte Grenzen
+
+- **Hier verifiziert:** Zeichnen im Chat in DSH Desktop `0.2.2-rc.5` verifiziert; Beschriftungs-Fallback verifiziert; Deinstallations-Fallback und Neuinstallation verifiziert; acht Oberflächensprachen verifiziert; schmale 360-px-Spalte verifiziert.
+- **Wahrscheinlich, aber auf deinem Rechner nicht bewiesen:** andere DSH-Versionen; andere Chromium-basierte Browser; dieselben Prüfungen auf Mobilgeräten (das Layout ist in einem 360-px-Viewport eines Desktop-Browsers verifiziert, nicht auf einem physischen Telefon); sehr große Diagramme (es gibt Grenzen: 24 KiB Quelltext, 2 MiB Zeichenausgabe, 400 Kanten; darüber hinaus fällt es auf den Codeblock zurück).
+- **Nicht durchgeführt:** ein Upgrade von DSH über eine Hauptversion hinweg wurde nicht geprobt; Diagramme werden nicht gezeichnet, solange eine Nachricht noch streamt; nur ` ```mermaid `-Blöcke werden behandelt (keine anderen Codeblock-Sprachen).
+
 ## Installation
 
 Installiere das Paket `@jiezhengj/dsh-dyslexia` in deinem DeepSeek-Harness-Profil (Plugin-Seite) und starte die App neu. Auf npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia

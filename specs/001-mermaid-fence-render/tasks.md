@@ -141,7 +141,7 @@ description: "Task list for 会话内图形渲染"
 
 - [x] T028 [P] 补全 `README.md`：安装、卸载、验证方法、已验证/未验证/已知不支持三档限制、数据与隐私说明
 - [x] T029 [P] 校准 `THIRD-PARTY-NOTICES.md` 与 `LICENSE`：pele 的 MIT 全文、来源与固定版本、我们的 MIT
-- [x] T030 打包复检：`npm pack --dry-run` 核对 `files` 清单不含 `src/`、`vendor/`、`scripts/`、`verify/`、`specs/`、`.specify/`、`.tmp/`；用打出的 tarball 在断网下重跑 E1/E4/E10/E12/E13
+- [ ] T030 打包复检：`npm pack --dry-run` 核对 0.1.3 的 33 个文件不含 `src/`、`vendor/`、`scripts/`、`verify/`、`specs/`、`.specify/`、`.tmp/`（清单已核对，断网 tarball 复跑未做，故不勾）
 - [ ] T031 汇总证据表（E1–E16）到交付说明，逐条标注已验证 / 未验证 / 已知不支持；未验证项不得写成"应该可以"
 - [x] T032 清理 `client.js` 生成物之外的多余产物（不留在仓库根）、确认 `.gitignore` 覆盖 `.tmp/` 与临时 spill 文件
 
@@ -158,8 +158,8 @@ description: "Task list for 会话内图形渲染"
 - [x] T037 [P] 渲染期兜底：`view.js` 增加错误边界与围栏数据守卫、`figure.js` 增加引擎缺失守卫 → 对应 FR-016
 - [x] T038 主机半边降级：`index.js` 的 `apply` 对缺失/变形 `systemPrompt` 静默跳过（不注册半截段落、不抛错）→ 对应 FR-014
 - [x] T039 静态证据：`verify/check-bundle.mjs` 由 17 项增至 22 项（新增"无版本门""可独立编译""畸形加载器不抛""工厂抛错仍可用""含边界与守卫""畸形宿主 ctx 不抛"）→ 对应 FR-017 / SC-008
-- [x] T040 渲染期证据：`.tmp/harness/index.html` 由 19 项增至 25 项，新增故障注入（宿主 `t` 抛错、围栏 `code` 取值器抛错、无 slots 服务、绘制抛错）→ 对应 FR-017 / SC-006
-- [ ] T041 真机验证 US5：在当前 DSH 版本上装/重启/看会话正常 + 用"畸形宿主"夹具复现降级，把结论写进 evidence（与 E1/E10/E11 同批做）
+- [x] T040 渲染期证据：夹具迁入仓库 `verify/harness/index.html` + `node verify/run-harness.mjs`，由 25 项增至 76 项（宿主 `t` 抛错/回显 key、`code`/`children` 取值器抛错、引擎抛错、无 slots 服务、坏语法、裁剪板缺失、窄屏、主题）→ 对应 FR-017 / SC-006 / SC-009
+- [ ] T041 真机验证 US5：装机后应用正常打开、会话正常、图照常显示（已由 E-LIVE 覆盖一部分）；"畸形宿主"降级只在夹具里复现，真机未注入 → 部分取证
 - [ ] T042 宿主升级演练：记录当前版本号，下一次 DSH 升级后检查"能打开、能进会话、历史图回退为文本"，并把结果追加到 evidence
 
 ---
@@ -235,55 +235,28 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 - `client.js` 是生成物但必须提交：宿主只认已构建单块 chunk，发布包里不能缺它
 - 任何一项无法验证，写进「未验证」，不要用"应该可以"替代
 
----
+## 实施状态（2026-11-23 更新）
 
-## 实施状态（2026-11-22）
+**已勾选**：Phase 1–2（T001–T011）、US1（T012–T016）、US2 的审计（T018）、US3 的代码与夹具（T021–T022）、US4 的静态证据（T024）、FR-011 能力播报（T026）、打包与清理（T028–T029、T032）、兼容性加固（T033–T040）、八语言/图标/README/发布（T043–T051）、标签回显修复（T053–T058）。
 
-已完成并勾选：代码与构建（T001–T016、T018、T021、T022、T024、T026），文档与打包（T028–T030、T032）。
-证据见 [evidence/verification.md](./evidence/verification.md)：构建 1 次通过，`verify/check-bundle.mjs` 17/17，
-真实 Chromium 里跑通客户端半边（含 360 px 窄屏与失败回退），`install_bundle` / `remove_bundle` 均为 applied，
-发布包 10 个文件且不含源码与构建脚本。
+**当前自动化证据**（随时可复跑，命令即证据）：
 
-仍未勾选（等真机 DSH 界面取证，不写成「已完成」）：T017、T019、T020、T023（界面部分）、T025（断网与裸机部分）、
-T027（`--dump-config` 核对）、T031（证据表汇总）。
+- `node verify/check-bundle.mjs` → **30 项全过**（含无版本门、产物可独立编译、畸形加载器不抛、工厂抛错仍可用、8 语言整句、说明页齐全、宿主半边恰好注册一段且畸形宿主静默）。
+- `node verify/run-harness.mjs` → 真实 Chromium 里 **76 项全过**（夹具 `verify/harness/index.html` 已提交，不再依赖 `.tmp`）。
 
-### 兼容性加固（2026-11-22 追加，用户要求；已补记为 Phase 9 与 spec US5 / FR-013～FR-017）
+**真机证据**（`evidence/verification.md` 的 E-LIVE）：会话内就地成图、卸载后同一消息回退为代码块、重装后立刻恢复、插件页中文标题与说明图、图名与按钮为可读中文。
 
-按"绝不让插件把 DSH 拖到打不开"的要求复核了 DSH 启动路径，改动与证据集中在 evidence 的 E-COMP 一节：
+**仍未勾选的，及原因**：
 
-- 删除 `engines` 与 `dsh.client.inject`：DSH 的启动前版本门（`dsh-app-boot` 的 `unmetRequirements()`，启动期 `throw`）不再有任何可判定依据，任何 DSH 版本都不会因本包拒绝启动。
-- 客户端半边改为整块 IIFE 自兜：宿主 loader/window 缺失、factory 抛错、槽注册失败、locale 服务变化、`t` 抛错、栅栏 props 异常、引擎缺失、渲染抛错，逐层降级，最坏情况只退成宿主原来的代码块。
-- 构建期加 `new Script(chunk)` 语法检查，避免语法错误连累宿主同一批 `<script>` 里的其他插件。
-- `verify/check-bundle.mjs` 由 17 项增至 22 项，浏览器夹具由 19 项增至 25 项（新增故障注入），全部通过。
-
-
-### 八种语言、图标、README 与发布（2026-11-22 追加，用户要求；T043–T052）
-
-用户提出四项要求（图标照官方风格重做、说明页对齐官方全部界面语言、README 双语索引 + 分语言简介、GitHub 建仓推送并在本机测试）。
-复核结果是官方界面语言 **8 种**（zh/en/ja/es/fr/de/ru/pt），不是 9 种；据此补了 Phase 10：
-
-- [x] T043 `icon.svg` 按官方图标风格重做（36×36、`fill="none"`、stroke 3、渐变 `#7CB7FF→#145AF3` + `#679EFE` 折线 + `#41E1AC` 描边节点），Chrome headless 出图逐版对比定稿
-- [x] T044 客户端字符串扩到 8 语言（`src/client/i18n.js` 的 `DICTIONARY`，10 个键 × 8 种语言；`fallbackLanguage()` 按 `documentElement.lang`/`navigator.language` 取语言码）
-- [x] T045 `scripts/build-preview.mjs` 生成 `docs/preview.svg`（640×300，含 pele 真实渲染的流程图，可重复生成）
-- [x] T046 8 份 `locale/<lang>.json`（title / description / detail 全部本地化，description 写清"就地画图、代码块仍是消息本体、关掉插件仍可读"）
-- [x] T047 8 份 `docs/DETAIL{,.zh,.ja,.es,.fr,.de,.ru,.pt}.md`（各自一行图片 + 该语言 alt）
-- [x] T048 `README.md` 索引（中英双语简介 + 8 语言链接）+ `README.{en,zh,ja,es,fr,de,ru,pt}.md`（同构：它做什么 / 为什么这样设计 / 你会得到什么 / 安装 / 示例 / 卸载与兼容性 / 许可）
-- [x] T049 `verify/check-bundle.mjs` 增至 24 项（新增"发布文件齐全""每种界面语言都有自己的说明页""清单指向 npm 可信的仓库"）
-- [x] T050 `package.json` 升 0.1.1，补 `repository`/`homepage`/`bugs`，`files` 收进 `docs` 与 `README*.md`
-- [x] T051 GitHub 建仓（`https://github.com/jiezhengj/DSH-Dyslexia`，public）并推送 `main`；`.github/workflows/publish.yml` 走 npm trusted publisher（OIDC + provenance）发布 0.1.1
-- [x] T052 重启 DSH 后的真机取证：插件页 8 语言说明与新图标、会话里就地画图、卸载后旧会话回退（对应 E-LIVE-1～6）
-
-证据：`evidence/verification.md` 的 E-LANG（语言数与说明页校验）、E-PUB2（Actions 发布与 provenance）、E-INS2（从 registry 安装 0.1.1）、E-LIVE-1～3（重启 0.1.2 后的插件页、说明页与会话内成图）。T052 已补做，界面层证据齐全。
-
-### 真机发现：标签回显 key（2026-11-22 追加，同一 feature 内修复，T053–T058）
-
-真机取证发现 `t` 在命名空间未注册时回显 key，界面出现 `copySource`/`figureLabel`。按 SDD 就地补记（FR-008 改写、SC-006 增至 7 类、新增 SC-009、research D20、data-model 增加降级行、contracts 第 8 条改写、夹具新增 `host-t-echoes-key`）。
-
-- [x] T053 改写 `src/client/i18n.js` 的 `translateFor`：新增 `isResolved()`（非空、不等于 key、无未替换占位符），未解析一律回落自带 8 语言字典（FR-008 / SC-009）
-- [x] T054 `verify/check-bundle.mjs` 增加断言 `host key echo falls back to bundled strings`（静态检查产物含该判定）
-- [x] T055 Chromium 夹具新增 `host-t-echoes-key`（`t = key => key` 时按钮与图名仍为本语言短语）
-- [x] T056 重建 `client.js`、跑全部静态断言与夹具，版本升 0.1.2
-- [x] T057 打 `v0.1.2` 标签经 GitHub Actions 发布，从 registry 安装回 `desktop` profile
-- [x] T058 重启后核对：图名/按钮为可读短语、图标、8 语言说明页、卸载回退（并入 T052，结果见 E-LIVE-1～6）
-
-证据要求：T054/T055 的断言名与 FR-008、SC-009 在 `evidence/verification.md` 里逐条对应（FR-017）。
+| 任务 | 状态 | 原因 |
+|---|---|---|
+| T017 窄屏真机 | 部分 | 360 px 由浏览器夹具覆盖（不是真机窗口缩放） |
+| T019 `session_search` 命中 | 未做 | 未在卸载态用会话检索工具查过该块原文（文本仍在消息里，属旁证） |
+| T020 重装恢复 + 卸载态新会话可读 | 重装部分已做（E-LIVE），新会话部分未单独取证 | — |
+| T023 界面部分 | 已由 E-LIVE 覆盖 | 图、按钮、失败回退在真机上均确认 |
+| T025 断网/裸机 | 未做 | 运行期零网络只有静态断言与 `file://` 夹具支撑 |
+| T027 `--dump-config` | 改口径 | 本机是 Desktop 发行版，PATH 无 `dsh` CLI；能力播报改用 check-bundle 的两项宿主机断言取证 |
+| T030 断网 tarball 复跑 | 未做 | 清单已核对，断网复跑未做 |
+| T031 证据表汇总 | 已由 `evidence/verification.md` 承担 | 该文件逐节写命令与判定 |
+| T041 真机验证 US5 | 部分 | 应用正常打开与会话正常已确认；"注入畸形宿主"只在夹具里做 |
+| T042 宿主升级演练 | 未做 | 未真的升级 DSH 一个版本；已写进 E-GAPS |

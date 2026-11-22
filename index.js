@@ -29,16 +29,29 @@ export function apply(ctx) {
   try {
     const prompt = ctx === null || ctx === undefined ? undefined : ctx.systemPrompt
     if (!prompt || typeof prompt.section !== 'function') return
-    prompt.section({
+    const result = prompt.section({
       name: SECTION_NAME,
       order: SECTION_ORDER,
       text: MERMAID_RENDER_PROMPT,
     })
-  } catch (error) {
-    try {
-      console.warn('dsh-dyslexia: prompt section skipped', error)
-    } catch (ignored) {
-      void ignored
+    // A later host may make `section` asynchronous; an unhandled rejection here
+    // would be noise in the host's console, so it is caught too.
+    if (result && typeof result.then === 'function') {
+      try {
+        result.then(undefined, (error) => warn('prompt section rejected', error))
+      } catch (error) {
+        warn('prompt section promise unusable', error)
+      }
     }
+  } catch (error) {
+    warn('prompt section skipped', error)
+  }
+}
+
+function warn(scope, error) {
+  try {
+    console.warn(`dsh-dyslexia: ${scope}`, error)
+  } catch (ignored) {
+    void ignored
   }
 }

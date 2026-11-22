@@ -38,7 +38,7 @@ $node = "C:\Users\jiezhengj\.dsh\dsh-runtimes\dsh-primary-runtime\dependencies\n
 
 1. 用 `plugin_manager` 的 `install_bundle` 指向本仓库根目录（需要 danger-full-access 权限，由用户批准）。
 2. 装完确认：`plugin_manager` 的列表里出现 `@jiezhengj/dsh-dyslexia`，标题与描述随当前界面语言显示。
-3. `dsh.client` 走 HMR 增量，安装/禁用/卸载都不需要重启桌面应用；若页面未生效，先刷新页面一次再判断。
+3. 生效范围（实测口径，两件事分开）：启用/停用/卸载**已在运行的界面里立刻生效**（层随 HMR 图增删，图与按钮立刻出现或消失）；换成**另一个版本的包**时需要重启 DSH，因为宿主进程里的宿主半边与页面里的 chunk 都要重新加载。
 
 卸载：`plugin_manager` 的 `remove_bundle`，目标 `@jiezhengj/dsh-dyslexia`。
 
@@ -84,12 +84,12 @@ npm pack --dry-run   # 或 pnpm pack --dry-run
 
 | 编号 | 做什么 | 通过标准 | 对应 |
 |---|---|---|---|
-| E-COMP-1 | `node verify/check-bundle.mjs` | 22 项全过，其中"无版本门""可独立编译""畸形加载器不抛""工厂抛错仍可用""含边界与守卫""畸形宿主 ctx 不抛"六组必须全绿 | FR-013～FR-017 |
+| E-COMP-1 | `node verify/check-bundle.mjs` | 30 项全过，其中"无版本门""可独立编译""畸形加载器不抛""工厂抛错仍可用""含边界与守卫""畸形宿主 ctx 不抛""宿主半边注册一段/畸形宿主静默"七组必须全绿 | FR-013～FR-017 |
 | E-COMP-2 | `node scripts/build-client.mjs` | 末尾 `new Script(chunk)` 语法检查通过（故意插入语法错误时必须失败） | FR-015 / SC-008 |
-| E-COMP-3 | Chromium 夹具 `.tmp/harness/index.html` | 25 项全绿，含 4 组故障注入（宿主 `t` 抛错、围栏 `code` 取值器抛错、无 slots 服务、绘制抛错），宿主侧无未捕获异常 | FR-014～FR-016 / SC-006 |
+| E-COMP-3 | `node verify/run-harness.mjs`（夹具 `verify/harness/index.html` 已提交） | 76 项全绿，含故障注入（宿主 `t` 抛错/回显 key、围栏 `code`/`children` 取值器抛错、引擎抛错、无 slots 服务、坏语法、裁剪板缺失），宿主侧无未捕获异常 | FR-014～FR-016 / SC-006 / SC-009 |
 | E-COMP-4 | 发布包清单核对 | `npm pack` 后的 `package.json` 无 `engines`、无 dsh peer、无 `dsh.client.inject` | FR-013 / SC-007 |
-| E-COMP-5 | 真机装/重启 | DSH 正常打开、会话正常、图照常显示；随后 `remove_bundle` 再打开旧会话，图回退为代码块 | FR-009 / FR-013 |
-| E-COMP-6 | 宿主升级演练（记版本号，下次升级后复跑） | 升级后应用能打开、历史图回退为文本、重装后图恢复 | US5 |
+| E-COMP-5 | 真机装/重启 | DSH 正常打开、会话正常、图照常显示；随后 `remove_bundle` 后旧会话立刻回退为代码块，重装后立刻恢复（已取证，见 evidence/verification.md 的 E-LIVE） | FR-009 / FR-013 |
+| E-COMP-6 | 宿主升级演练（记版本号，下次升级后复跑） | 升级后应用能打开、历史图回退为文本、重装后图恢复 | US5（**未取证**） |
 
 **写法要求**：E-COMP-5 与 E-COMP-6 未做时不得写"应该没问题"，只能写"未验证"并说明原因（与 T031 同一口径）。
 
@@ -101,13 +101,13 @@ npm pack --dry-run   # 或 pnpm pack --dry-run
 $node -v                                  # 只为跑校验脚本
 git push origin main                      # 先确认工作区干净
 # 改 package.json 的 version，然后：
-git commit -am "0.1.2: …"
-git tag -a v0.1.2 -m "0.1.2: …"
-git push origin main; git push origin v0.1.2
+git commit -am "0.1.3: …"
+git tag -a v0.1.3 -m "0.1.3: …"
+git push origin main; git push origin v0.1.3
 gh run watch                              # 观察 publish 工作流
 ```
 
-工作流依次做三件事：`node verify/check-bundle.mjs`（24 项，含"发布包指向可信仓库"）→ `npm publish --access public --provenance` → 把 provenance 写到 transparency log。
+工作流依次做五件事：`node scripts/build-client.mjs` 重建 chunk → `git diff --exit-code -- client.js` 拒绝发布陈旧产物 → `node verify/check-bundle.mjs`（30 项）→ `node verify/run-harness.mjs`（76 项浏览器检查）→ `npm publish --access public --provenance` 并把 provenance 写到 transparency log。
 
 - 版本号必须先改：tag 与 `package.json` 不一致时 npm 会拒绝。
 - `repository.url` 必须与 workflow 所在仓库一致，否则 `npm publish` 报 `E422 … Failed to validate repository information`。

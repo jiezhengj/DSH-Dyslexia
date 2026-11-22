@@ -5,6 +5,10 @@
  * narrow-screen contract: the picture is laid out for the width it is given
  * instead of being shrunk as a whole, and a picture that does not fit can be
  * zoomed inside its own frame.
+ *
+ * Failures are classified here, not printed here: the reader gets one complete
+ * sentence in their own language, while the engine's English, multi-line parse
+ * text is kept for the console and the tooltip.
  */
 
 const FIGURE_LIMITS = {
@@ -12,6 +16,8 @@ const FIGURE_LIMITS = {
   outputLimit: 2 * 1024 * 1024,
   maxEdges: 400,
 }
+
+const ENGINE_UNAVAILABLE = 'engine-unavailable'
 
 function figureFontSize(doc) {
   try {
@@ -41,22 +47,46 @@ function figureOptions(doc, labels) {
  * `Mounted.error`, so the caller can put the source back in its place.
  */
 function mountFigure(host, code, doc, labels) {
-  if (!pele || typeof pele.mount !== 'function') throw new Error('drawing engine unavailable')
+  if (!pele || typeof pele.mount !== 'function') {
+    const missing = new Error('drawing engine unavailable')
+    missing.code = ENGINE_UNAVAILABLE
+    throw missing
+  }
   return pele.mount(host, code, figureOptions(doc, labels))
 }
 
+/** `syntax`, `unavailable` or `other`: which sentence the reader should see. */
+function figureErrorKind(error) {
+  if (!error) return 'other'
+  try {
+    if (error && error.code === ENGINE_UNAVAILABLE) return 'unavailable'
+    const message = typeof error === 'string' ? error : String(error.message || '')
+    if (/parse|syntax|lexical|invalid/i.test(message)) return 'syntax'
+  } catch (ignored) {
+    void ignored
+  }
+  return 'other'
+}
+
 /**
- * One line of reason for the reader: the engine's parse errors span several
- * lines and end with a caret drawing, which is noise in the chat.
+ * The engine's own words, cut to one line. This is diagnostic material: it goes
+ * to the console and to the note's tooltip, never into the visible sentence.
  */
-function describeFigureError(error, fallback) {
-  if (!error) return fallback
-  const message = typeof error === 'string' ? error : String(error.message || '')
-  const first = message
-    .split('\n')
-    .map((line) => line.trim())
-    .filter((line) => line.length > 0)[0]
-  return first || fallback
+function describeFigureError(error) {
+  if (!error) return ''
+  let message = ''
+  try {
+    message = typeof error === 'string' ? error : String(error.message || '')
+  } catch (ignored) {
+    void ignored
+    return ''
+  }
+  return (
+    message
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0)[0] || ''
+  )
 }
 
 function figureType(mounted) {

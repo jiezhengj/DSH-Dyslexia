@@ -16,7 +16,7 @@
 
 **Storage**: 无。不新增会话实体、不写文件、不建索引；图源就是既有会话消息里的代码块文本。
 
-**Testing**: 不引入测试框架（遵守"依赖自包含"）。实现阶段提供三类证据：① `verify/check-bundle.mjs` 纯 Node 内置模块的静态断言（bundle 外形、允许的 `require` 白名单、无外部 URL、pele 版本与许可存在、manifest 字段完整、**无版本否决字段、产物可独立编译、宿主加载器异常下不抛出、工厂抛错时仍返回可用模块**）；② `.tmp/harness/` 里的真实 Chromium 夹具（React + `client.js` + 独立引擎，含**故障注入**：宿主 `t` 抛错、`code` 取值器抛错、无 slots 服务、畸形围栏数据）；③ 真实宿主里的装/卸/窄屏三类人工证据（见 quickstart.md 的证据表）。
+**Testing**: 不引入测试框架（遵守"依赖自包含"）。实现提供三类证据：① `node verify/check-bundle.mjs` 纯 Node 内置模块的静态与行为断言 30 项（bundle 外形、允许的 `require` 白名单、无外部 URL、pele 版本与许可存在、manifest 字段完整、8 语言文案与说明页完整、**无版本否决字段、产物可独立编译、宿主加载器异常下不抛出、工厂抛错时仍返回可用模块、宿主半边恰好注册一段且畸形宿主静默**）；② 提交进仓库的 `verify/harness/index.html` + `node verify/run-harness.mjs`，在真实 Chromium 里跑 76 项（React + `client.js` + 独立引擎，含**故障注入**：宿主 `t` 抛错/回显 key、`code`/`children` 取值器抛错、引擎抛错、无 slots 服务、坏语法、裁剪板缺失、360 px 窄屏、主题换色）；③ 真实宿主里的装/卸/重装与窄屏人工证据（见 quickstart.md 的证据表与 evidence/verification.md 的 E-LIVE）。
 
 **Target Platform**: DSH Desktop 0.2.2-rc.5（Web 前端，含内嵌桌面窗口）为唯一实测基线；**但不以任何版本字段声明基线**——清单里没有 `engines`、没有 dsh 的 peerDependencies，也没有对宿主客户端包的版本绑定（见"兼容性策略"）。
 
@@ -86,21 +86,31 @@ locale/en.json           # meta.title / meta.description / meta.detail（插件�
 locale/{zh,ja,es,fr,de,ru,pt}.json
 LICENSE                  # 本项目 MIT
 THIRD-PARTY-NOTICES.md   # pele 的 MIT 许可与来源固定版本
-README.md                # 装、卸、验证、兼容性承诺与已知限制
+README.md                # 索引：中英双语简介 + 链接到 8 份分语言 README
+README.{en,zh,ja,es,fr,de,ru,pt}.md
+icon.svg                 # 36×36 线描图标（官方风格）
+docs/
+├── preview.svg          # 说明页插图（scripts/build-preview.mjs 生成）
+└── DETAIL{,.zh,.ja,.es,.fr,.de,.ru,.pt}.md   # 每篇恰好一行图片
 src/client/
 ├── entry.js             # 槽注册（key: 'mermaid'）+ 可选的 locale 注册（无 import/export 的脚本片段）
 ├── figure.js            # pele 生命周期：mount / update / destroy，缩放与尺寸监听（引擎缺失自兜）
 ├── styles.js            # 主题令牌 → pele 变量映射 + 容器样式
-├── i18n.js              # 包内 8 语言字典 + 宿主翻译函数的安全包装（只采信真实译文）
+├── i18n.js              # 包内 8 语言字典（13 键）+ 宿主翻译函数的安全包装（只采信真实译文）
 └── view.js              # React 组件 + 错误边界：图 / 源码切换 / 失败回退 / 流式中占位
 scripts/
-└── build-client.mjs     # header + IIFE 自兜 + require('react') + vendored pele + 片段 → client.js（末尾语法检查）
+├── build-client.mjs     # header + IIFE 自兜 + require('react') + vendored pele + 片段 → client.js（末尾语法检查）
+└── build-preview.mjs    # pele 渲染示例 → docs/preview.svg
 vendor/pele/
-├── pele.global.js       # pele@1.13.0 的 global 构建（原样保存）
+├── pele.global.js       # pele@1.13.0 的 global build（原样保存）
 └── LICENSE
 verify/
-└── check-bundle.mjs     # 纯 Node 内置模块的静态断言（含兼容性检查组）
+├── check-bundle.mjs     # 纯 Node 内置模块的静态与行为断言（30 项）
+├── run-harness.mjs      # 用真实 Chromium 打开夹具并读判定
+└── harness/
+    ├── index.html       # 提交进仓库的浏览器夹具（76 项）
+    └── vendor/          # React 18.3.1 UMD 副本
 tests/                   # 不放测试框架；verify/ 即验收脚本
 ```
 
-**Structure Decision**: 仓库根目录就是 npm 包根目录（`specs/`、`.specify/`、`verify/`、`vendor/` 不进 `files`，只发布运行所需文件：`index.js`、`client.js`、`cordis.patch.yml`、`locale/*.json`、`LICENSE`、`THIRD-PARTY-NOTICES.md`、`README.md`）。`client.js` 由 `scripts/build-client.mjs` 从 `src/client/*.js` + `vendor/pele/pele.global.js` 拼出：不引入 bundler，因为唯一允许的外部符号是宿主的 `react`，拼接即可满足宿主"已构建单块 chunk"的要求，同时让 vendored 依赖和自家代码在仓库里可读、可审计。`src/client/*.js` 刻意写成不带 `import`/`export` 的脚本片段，构建脚本按固定顺序拼接，避免为拼接引入任何解析器。
+**Structure Decision**: 仓库根目录就是 npm 包根目录（`specs/`、`.specify/`、`verify/`、`vendor/`、`scripts/`、`src/` 不进 `files`）。发布内容 = 9 条 `files` 模式：`index.js`、`client.js`、`cordis.patch.yml`、`locale/*.json`（8 个）、`docs`（8 篇 `DETAIL*.md` + `preview.svg`）、`icon.svg`、`LICENSE`、`THIRD-PARTY-NOTICES.md`、`README*.md`（9 份，含索引），实际 24 个文件（`npm pack` 展开后为 33 个含 package.json 等）。`client.js` 由 `scripts/build-client.mjs` 从 `src/client/*.js` + `vendor/pele/pele.global.js` 拼出：不引入 bundler，因为唯一允许的外部符号是宿主的 `react`，拼接即可满足宿主"已构建单块 chunk"的要求，同时让 vendored 依赖和自家代码在仓库里可读、可审计。`src/client/*.js` 刻意写成不带 `import`/`export` 的脚本片段，构建脚本按固定顺序拼接，避免为拼接引入任何解析器。

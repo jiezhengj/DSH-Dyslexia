@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8" />
+    <title>dsh-dyslexia fixture</title>
+    <style>
+      :root {
+        --dsw-alias-bg-base: #ffffff;
+        --dsw-alias-bg-layer-1: #f6f7fb;
+        --dsw-alias-bg-layer-2: #eceef7;
+        --dsw-alias-border-l1: #d8dae6;
+        --dsw-alias-border-l2: #b9bdd0;
+        --dsw-alias-brand-primary: #4a6cf7;
+        --dsw-alias-label-primary: #101014;
+        --dsw-alias-label-secondary: #5b5f72;
+        --dsw-alias-state-error-primary: #d93025;
+        --dsw-alias-state-idle-primary: #8a8f9e;
+        --dsw-alias-state-success-primary: #1f9d55;
+        --dsw-alias-state-warn-primary: #c98a00;
+        --dsw-specific-sidebar-fill: #f2f3f8;
+      }
+      body {
+        margin: 0;
+        padding: 8px;
+        font: 14px/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif;
+        color: var(--dsw-alias-label-primary);
+        background: var(--dsw-alias-bg-base);
+      }
+      #log {
+        font: 12px/1.4 ui-monospace, monospace;
+        white-space: pre-wrap;
+        margin: 0 0 12px;
+      }
+      .stage {
+        width: 360px;
+        border: 1px dashed var(--dsw-alias-border-l2);
+      }
+      .host-block {
+        white-space: pre-wrap;
+        font: 13px/1.4 ui-monospace, monospace;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <pre id="log"></pre>
+    <div id="mount"></div>
+    <script src="vendor/react.production.min.js"></script>
+    <script src="vendor/react-dom.production.min.js"></script>
+    <script>
+      window.__results = []
+      window.__module = null
+      window.__loaderCalls = 0
+      window.__ModuleLoader__ = {
+        load(spec) {
+          window.__loaderCalls += 1
+          try {
+            window.__module = spec.factory((name) => (name === 'react' ? window.React : undefined))
+          } catch (error) {
+            window.__results.push(['bad', 'loader threw: ' + String(error && error.message)])
+          }
+        },
+      }
+    </script>
+    <script src="../../client.js"></script>
+    <script>
+      ;(async function () {
+        const React = window.React
+        const ReactDOM = window.ReactDOM
+        const results = window.__results
+        const LANGS = ['zh', 'en', 'ja', 'es', 'fr', 'de', 'ru', 'pt']
+        const EXACT = {
+          zh: { name: '图：flowchart', show: '查看源码', copy: '复制源码', hidden: '隐藏源码' },
+          en: { name: 'Diagram: flowchart', show: 'Show source', copy: 'Copy source', hidden: 'Hide source' },
+        }
+        const CODE = 'flowchart LR\n  A[Text] --> B[Picture]'
+        const BAD = 'flowchart TD\n  A-->'
+
+        const tick = (ms) => new Promise((resolve) => setTimeout(resolve, typeof ms === 'number' ? ms : 40))
+
+        function ok(name, detail) {
+          results.push(['ok', name + (detail ? ' — ' + detail : '')])
+        }
+
+        function bad(name, detail) {
+          results.push(['bad', name + (detail ? ' — ' + detail : '')])
+        }
+
+        function expect(condition, name, detail) {
+          if (condition) ok(name, detail)
+          else bad(name, detail)
+        }
+
+        function hostBlock(code) {
+          return React.createElement('pre', { className: 'host-block' }, code)
+        }
+
+        function makeContext(options) {
+          const defs = []
+          const slots = {
+            register(def, component) {
+              if (options && options.rejectLocale && def && def.locale) throw new Error('host rejects locale')
+              defs.push({ def, component })
+              return () => undefined
+            },
+            inject(name, fn) {
+              return fn()
+            },
+          }
+          const ctx = {
+            slots,
+            effect(fn) {
+              fn()
+              return () => undefined
+            },
+          }
+          if (!(options && options.noLocale)) {
+            ctx.locale = {
+              register() {
+                return () => undefined
+              },
+            }
+          }
+          return { ctx, defs }
+        }
+
+        function mount(Layer, props) {
+          const stage = document.createElement('div')
+          stage.className = 'stage'
+          document.getElementById('mount').appendChild(stage)
+          const root = ReactDOM.createRoot(stage)
+          let threw = null
+          try {
+            root.render(React.createElement(Layer, props))
+          } catch (error) {
+            threw = error
+          }
+          return { stage, root, threw }
+        }
+
+        function buttonsIn(stage) {
+          return Array.prototype.slice.call(stage.querySelectorAll('button')).map((button) => button.textContent)
+        }
+
+        /* ------------------------------------------------ module and layer */
+        try {
+          expect(window.__loaderCalls === 1, 'loading client.js registers one factory')
+          const module = window.__module
+          expect(module && typeof module.apply === 'function', 'the module exposes apply')
+          expect(module && Array.isArray(module.inject) && module.inject.join(',') === 'slots', 'the module asks for slots only', String(module && module.inject))
+          const { ctx, defs } = makeContext({})
+          module.apply(ctx)
+          expect(defs.length === 1, 'apply registers exactly one fence layer', 'count ' + defs.length)
+          const def = defs[0].def || {}
+          expect(def.name === 'conversation.chat.markdown.fence', 'layer sits on the fence slot', def.name)
+          expect(def.key === 'mermaid', 'layer is keyed to mermaid', String(def.key))
+          expect(def.id === '@jiezhengj/dsh-dyslexia/mermaid', 'layer id', String(def.id))
+          expect(def.order === 100, 'layer order', String(def.order))
+          expect(def.locale === 'dyslexia', 'layer claims the locale namespace', String(def.locale))
+          const Layer = defs[0].component
+          window.__layer = Layer
+
+          /* ------------------------------------------------------ languages */
+          const seen = {}
+          for (const lang of LANGS) {
+            document.documentElement.lang = lang
+            const view = mount(Layer, { code: CODE, streaming: false, children: hostBlock(CODE) })
+            await tick(80)
+            const figure = view.stage.querySelector('[role="img"]')
+            const labels = buttonsIn(view.stage)
+            const token = (figure && figure.getAttribute('aria-label')) || ''
+            const exact = EXACT[lang]
+            if (exact) {
+              expect(token === exact.name, `[${lang}] the figure names its type`, token)
+              expect(labels[0] === exact.show && labels[1] === exact.copy, `[${lang}] first render shows the two buttons`, labels.join(' | '))
+            }
+            expect(!!figure, `[${lang}] a picture is drawn`)
+            expect(labels.length === 2, `[${lang}] exactly two buttons`, String(labels.length))
+            const bare = labels.concat([token]).filter((text) => /copySource|showSource|hideSource|figureLabel|figureUntyped|copied|copyFailed/.test(text))
+            expect(bare.length === 0, `[${lang}] no internal key reaches the screen`, bare.join(','))
+            if (view.stage.querySelector('.dsh-dyslexia-bar button')) {
+              view.stage.querySelectorAll('button')[0].click()
+              await tick(30)
+              const hiddenLabels = buttonsIn(view.stage)
+              if (exact) expect(hiddenLabels[0] === exact.hidden, `[${lang}] the source toggle flips its word`, hiddenLabels[0])
+            }
+            seen[lang] = token + '|' + labels.join('|')
+            view.root.unmount()
+            view.stage.remove()
+          }
+          const en = seen.en
+          const untranslated = LANGS.filter((lang) => lang !== 'en' && seen[lang] === en)
+          expect(untranslated.length === 0, 'every interface language actually translates', untranslated.join(','))
+
+          /* ------------------------------------------------- host translate */
+          document.documentElement.lang = 'zh'
+          const hostVariants = [
+            ['echoes the key', (key) => key, 'key echo'],
+            ['throws', () => {
+              throw new Error('locale service changed')
+            }, 'throwing t'],
+            ['answers blanks', () => '   ', 'blank answer'],
+            ['echoes key with a value', (key) => key + ':value', 'key echo with value'],
+            ['leaves a placeholder', () => '{{missing}}', 'unfilled placeholder'],
+          ]
+          for (const [label, t, tag] of hostVariants) {
+            const view = mount(Layer, { code: CODE, streaming: false, children: hostBlock(CODE), t })
+            await tick(60)
+            const labels = buttonsIn(view.stage)
+            const token = (view.stage.querySelector('[role="img"]') || { getAttribute: () => '' }).getAttribute('aria-label')
+            expect(labels[0] === '查看源码' && labels[1] === '复制源码' && token === '图：flowchart', `a host t that ${label} still shows words`, labels.join(' | ') + ' / ' + token)
+            view.root.unmount()
+            view.stage.remove()
+          }
+
+          /* ---------------------------------------------------- host props */
+          const streamingTrue = mount(Layer, { code: CODE, streaming: true, children: hostBlock(CODE) })
+          await tick(50)
+          expect(!streamingTrue.stage.querySelector('[role="img"]') && streamingTrue.stage.textContent.indexOf(CODE) !== -1, 'a streaming fence shows only the host block')
+          streamingTrue.root.unmount()
+          streamingTrue.stage.remove()
+
+          const streamingOne = mount(Layer, { code: CODE, streaming: 1, children: hostBlock(CODE) })
+          await tick(50)
+          expect(!streamingOne.stage.querySelector('[role="img"]'), 'a truthy streaming flag is honoured')
+          streamingOne.root.unmount()
+          streamingOne.stage.remove()
+
+          const codeGetter = { streaming: false, children: hostBlock(CODE) }
+          Object.defineProperty(codeGetter, 'code', {
+            enumerable: true,
+            get() {
+              throw new Error('code getter exploded')
+            },
+          })
+          let codeGetterThrew = null
+          let codeGetterView = null
+          try {
+            // The element is built with plain props first, then its frozen props
+            // bag is turned hostile — this is how a host upgrade would hand a
+            // getter to the layer without React copying it at creation time.
+            const stage = document.createElement('div')
+            stage.className = 'stage'
+            document.getElementById('mount').appendChild(stage)
+            const root = ReactDOM.createRoot(stage)
+            const element = React.createElement(Layer, { streaming: false, children: hostBlock(CODE) })
+            Object.defineProperty(element.props, 'code', {
+              enumerable: true,
+              get() {
+                throw new Error('code getter exploded')
+              },
+            })
+            root.render(element)
+            codeGetterView = { stage, root }
+          } catch (error) {
+            codeGetterThrew = error
+          }
+          await tick(60)
+          expect(!codeGetterThrew, 'a throwing code getter does not reach the host')
+          expect(!!codeGetterView && codeGetterView.stage.textContent.indexOf(CODE) !== -1, 'a throwing code getter leaves the host block', codeGetterView ? JSON.stringify(codeGetterView.stage.textContent.slice(0, 40)) : 'no view')
+          if (codeGetterView) {
+            codeGetterView.root.unmount()
+            codeGetterView.stage.remove()
+          }
+
+          const childrenGetter = { code: CODE, streaming: false }
+          let childrenThrew = null
+          let childrenView = null
+          try {
+            const stage = document.createElement('div')
+            stage.className = 'stage'
+            document.getElementById('mount').appendChild(stage)
+            const root = ReactDOM.createRoot(stage)
+            const element = React.createElement(Layer, { code: CODE, streaming: false })
+            Object.defineProperty(element.props, 'children', {
+              enumerable: true,
+              get() {
+                throw new Error('children getter exploded')
+              },
+            })
+            root.render(element)
+            childrenView = { stage, root }
+          } catch (error) {
+            childrenThrew = error
+          }
+          await tick(60)
+          expect(!childrenThrew, 'a throwing children getter does not reach the host')
+          if (childrenView) {
+            childrenView.root.unmount()
+            childrenView.stage.remove()
+          }
+
+          const stringCode = mount(Layer, { code: 42, streaming: false, children: hostBlock('fallback') })
+          await tick(50)
+          expect(stringCode.stage.textContent.indexOf('fallback') !== -1 && !stringCode.stage.querySelector('[role="img"]'), 'a non-string fence is left to the host')
+          stringCode.root.unmount()
+          stringCode.stage.remove()
+
+          /* -------------------------------------------------- draw failures */
+          const broken = mount(Layer, { code: BAD, streaming: false, children: hostBlock(BAD) })
+          await tick(80)
+          const brokenNote = broken.stage.querySelector('.dsh-dyslexia-note')
+          expect(!!brokenNote, 'a broken diagram says why')
+          expect(brokenNote ? /源码/.test(brokenNote.textContent) : false, 'the reason is a complete sentence', brokenNote ? brokenNote.textContent : '')
+          expect(brokenNote ? /Parse error/.test(brokenNote.textContent) === false : false, 'the engine English is not pasted into the sentence')
+          expect(broken.stage.textContent.indexOf(BAD) !== -1, 'a broken diagram keeps the host block')
+          broken.root.unmount()
+          broken.stage.remove()
+
+          const orphan = mount(Layer, { code: BAD, streaming: false })
+          await tick(80)
+          expect(orphan.stage.textContent.indexOf(BAD) !== -1, 'a broken diagram without host children still shows its source')
+          orphan.root.unmount()
+          orphan.stage.remove()
+
+          const htmlDescriptor = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML')
+          let armed = true
+          Object.defineProperty(Element.prototype, 'innerHTML', {
+            configurable: true,
+            get() {
+              return htmlDescriptor.get.call(this)
+            },
+            set(value) {
+              if (armed) throw new Error('html assignment exploded')
+              htmlDescriptor.set.call(this, value)
+            },
+          })
+          let drawThrowView = null
+          try {
+            drawThrowView = mount(Layer, { code: CODE, streaming: false, children: hostBlock(CODE) })
+          } catch (error) {
+            void error
+          }
+          await tick(120)
+          armed = false
+          Object.defineProperty(Element.prototype, 'innerHTML', htmlDescriptor)
+          if (drawThrowView) {
+            expect(!!drawThrowView.stage.querySelector('.dsh-dyslexia-note'), 'a throwing engine leaves a sentence')
+            expect(drawThrowView.stage.textContent.indexOf(CODE) !== -1, 'a throwing engine keeps the host block')
+            drawThrowView.root.unmount()
+            drawThrowView.stage.remove()
+          } else {
+            bad('a throwing engine leaves a sentence', 'the layer did not render at all')
+          }
+
+          /* ------------------------------------------------------- copying */
+          const clipboardBackup = navigator.clipboard
+          let clipboardCalls = 0
+          Object.defineProperty(navigator, 'clipboard', {
+            configurable: true,
+            get() {
+              return undefined
+            },
+          })
+          const noClipboard = mount(Layer, { code: CODE, streaming: false, children: hostBlock(CODE) })
+          await tick(60)
+          const noClipboardButtons = noClipboard.stage.querySelectorAll('button')
+          if (noClipboardButtons[1]) noClipboardButtons[1].click()
+          await tick(40)
+          expect(buttonsIn(noClipboard.stage)[1] === '复制失败', 'a missing clipboard is reported, not faked', buttonsIn(noClipboard.stage).join(' | '))
+          noClipboard.root.unmount()
+          noClipboard.stage.remove()
+
+          Object.defineProperty(navigator, 'clipboard', {
+            configurable: true,
+            get() {
+              return {
+                writeText() {
+                  clipboardCalls += 1
+                  return Promise.resolve()
+                },
+              }
+            },
+          })
+          const withClipboard = mount(Layer, { code: CODE, streaming: false, children: hostBlock(CODE) })
+          await tick(60)
+          const withClipboardButtons = withClipboard.stage.querySelectorAll('button')
+          if (withClipboardButtons[1]) withClipboardButtons[1].click()
+          await tick(60)
+          expect(clipboardCalls === 1, 'the copy button writes once', String(clipboardCalls))
+          expect(buttonsIn(withClipboard.stage)[1] === '已复制', 'a real copy is reported as copied', buttonsIn(withClipboard.stage).join(' | '))
+          withClipboard.root.unmount()
+          withClipboard.stage.remove()
+          Object.defineProperty(navigator, 'clipboard', { configurable: true, value: clipboardBackup })
+
+          /* --------------------------------------------------- narrow screen */
+          const narrow = mount(Layer, { code: 'flowchart LR\n' + Array.from({ length: 16 }, (_, index) => `  N${index} --> N${index + 1}`).join('\n'), streaming: false, children: hostBlock('wide') })
+          await tick(120)
+          const narrowFigure = narrow.stage.querySelector('[role="img"]')
+          const stageWidth = narrow.stage.clientWidth
+          expect(!!narrowFigure && Math.abs(narrowFigure.clientWidth - stageWidth) <= 8, 'the picture takes the column width', (narrowFigure ? narrowFigure.clientWidth : 0) + '/' + stageWidth)
+          expect(narrow.stage.scrollWidth <= stageWidth + 1, 'a wide picture does not widen the column', narrow.stage.scrollWidth + '/' + stageWidth)
+          const pageOverflow = document.documentElement.scrollWidth - document.documentElement.clientWidth
+          expect(pageOverflow <= 1, 'the page itself never overflows', String(pageOverflow))
+
+          /* --------------------------------------------------------- theme */
+          const themed = mount(Layer, { code: CODE, streaming: false, children: hostBlock(CODE) })
+          await tick(90)
+          const themedText = themed.stage.querySelector('[role="img"] svg text')
+          const firstFill = themedText ? getComputedStyle(themedText).fill : ''
+          themed.stage.style.setProperty('--dsw-alias-label-primary', 'rgb(1, 2, 3)')
+          await tick(60)
+          const secondText = themed.stage.querySelector('[role="img"] svg text')
+          const secondFill = secondText ? getComputedStyle(secondText).fill : ''
+          expect(!!themedText && !!secondText, 'a drawn picture has text to colour')
+          expect(firstFill !== '' && firstFill !== secondFill, 'the picture follows the host colour without reloading', firstFill + ' -> ' + secondFill)
+          themed.root.unmount()
+          themed.stage.remove()
+          narrow.root.unmount()
+          narrow.stage.remove()
+
+          /* ---------------------------------------------- host that says no */
+          const retry = makeContext({ rejectLocale: true })
+          let retryThrew = null
+          try {
+            window.__module.apply(retry.ctx)
+          } catch (error) {
+            retryThrew = error
+          }
+          expect(!retryThrew, 'a host that rejects the locale option does not break apply')
+          expect(retry.defs.length === 1, 'the layer is registered once after the retry', String(retry.defs.length))
+          expect(!!retry.defs[0] && retry.defs[0].def.locale === undefined, 'the retried registration drops the locale option', JSON.stringify(retry.defs[0] && retry.defs[0].def))
+
+          for (const hostile of [undefined, null, {}, { slots: null }, { slots: {} }, { slots: { inject() {}, register() {} } }]) {
+            let hostileThrew = null
+            try {
+              window.__module.apply(hostile)
+            } catch (error) {
+              hostileThrew = error
+            }
+            expect(!hostileThrew, 'apply stays silent on a changed host', String(hostileThrew && hostileThrew.message))
+          }
+          /* ---------------------------------- no internal key is ever shown */
+          const keys = ['copyFailed', 'copySource', 'engineUnavailable', 'figureLabel', 'figureUntyped', 'renderFailed', 'syntaxError']
+          const keyEcho = mount(Layer, { code: BAD, streaming: false, children: hostBlock(BAD), t: (key) => key })
+          await tick(90)
+          const keyEchoText = keyEcho.stage.textContent + ' ' + Array.from(keyEcho.stage.querySelectorAll('[aria-label]')).map((node) => node.getAttribute('aria-label')).join(' ')
+          const leaked = keys.filter((key) => keyEchoText.indexOf(key) !== -1)
+          expect(leaked.length === 0, 'no internal key reaches the eye', 'leaked: ' + leaked.join(', '))
+          keyEcho.root.unmount()
+          keyEcho.stage.remove()
+        } catch (error) {
+          bad('fixture aborted', String(error && error.stack ? error.stack.split('\n')[0] : error))
+        }
+
+        const failed = results.filter((entry) => entry[0] === 'bad').length
+        const passed = results.length - failed
+        document.getElementById('log').textContent = results.map((entry) => `[${entry[0]}] ${entry[1]}`).join('\n')
+        document.documentElement.setAttribute('data-dsh-checks', `ok:${passed}/failed:${failed}`)
+      })()
+    </script>
+  </body>
+</html>

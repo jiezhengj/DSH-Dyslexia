@@ -53,7 +53,12 @@ function apply(ctx) {
   try {
     const locale = ctx.locale
     if (locale && typeof locale.register === 'function') {
-      ctx.effect(() => locale.register(LOCALE_NAMESPACE, DICTIONARY), 'dsh-dyslexia: figure strings')
+      const register = () => locale.register(LOCALE_NAMESPACE, DICTIONARY)
+      if (typeof ctx.effect === 'function') {
+        ctx.effect(register, 'dsh-dyslexia: figure strings')
+      } else {
+        register()
+      }
     }
   } catch (error) {
     report('locale', error)

@@ -26,6 +26,29 @@ Le bloc de code n’est jamais consommé. Il reste le texte du message : on peut
 - Huit langues d’interface, les mêmes que celles livrées avec DeepSeek Harness.
 - Aucun téléchargement à l’exécution : le moteur est dans le greffon.
 
+## Données et confidentialité
+
+- Le greffon n’effectue aucune requête réseau à l’exécution ; le moteur de dessin est embarqué dans `client.js`.
+- Il ne collecte rien et n’envoie rien nulle part.
+- Il lit uniquement le texte du bloc de code `mermaid` déjà affiché dans votre page, et il n’écrit que le schéma dans cette page.
+- Le bouton **Copier la source** utilise le presse-papiers de votre navigateur ; rien ne quitte la page.
+- Rien n’est ajouté à l’historique de votre session : le schéma est un rendu, pas un objet stocké.
+
+## Comment vérifier
+
+Prérequis : Node.js 22 ou plus récent, et Chrome/Chromium pour les vérifications dans le navigateur.
+
+- `node verify/check-bundle.mjs` — vérifications statiques et du moteur sur le paquet livré (manifeste, aucun appel réseau, aucun seuil de version, moteur embarqué, huit langues d’interface, schémas d’exemple pour chaque type pris en charge). Affiche une ligne par contrôle et sort avec un code non nul en cas d’échec.
+- `node verify/run-harness.mjs` — exécute les contrôles navigateur dans Chrome sans tête sur `verify/harness/index.html` (dessin, huit langues, hôtes hostiles, schémas cassés, copie, colonne étroite de 360 px, couleurs du thème). Définissez `DSH_DYSLEXIA_CHROME` vers un exécutable Chrome précis si la détection automatique échoue.
+
+Les deux commandes sont dans le dépôt, si bien que ce qui est affirmé dans ce fichier peut être revérifié à tout moment ; ce sont aussi celles que l’intégration continue exécute avant publication.
+
+## Limites connues
+
+- **Vérifié ici :** dessin dans la discussion vérifié dans DSH bureau `0.2.2-rc.5` ; repli des libellés vérifié ; repli à la désinstallation et réinstallation vérifiés ; huit langues d’interface vérifiées ; colonne étroite de 360 px vérifiée.
+- **Probable, mais non prouvé sur votre machine :** autres versions de DSH ; autres navigateurs basés sur Chromium ; les mêmes vérifications sur appareils mobiles (la mise en page est vérifiée dans une fenêtre d’affichage de 360 px d’un navigateur de bureau, pas sur un téléphone physique) ; très grands schémas (il existe des limites : 24 KiB de source, 2 MiB de sortie dessinée, 400 arêtes ; au-delà, il se replie sur le bloc de code).
+- **Non effectué :** une mise à niveau majeure de DSH n’a pas été répétée ; les schémas ne sont pas dessinés tant qu’un message est encore en cours de diffusion ; seuls les blocs ` ```mermaid ` sont pris en charge (pas les autres langages de bloc de code).
+
 ## Installation
 
 Installez le paquet `@jiezhengj/dsh-dyslexia` dans votre profil DeepSeek Harness (page des greffons), puis redémarrez l’application. Sur npm : https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia

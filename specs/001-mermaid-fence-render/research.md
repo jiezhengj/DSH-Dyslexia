@@ -170,3 +170,17 @@ renderSlot('conversation.chat.markdown.fence', fence, {
 - `pele.global.js`：外层是 `"use strict";var pele=(()=>{…})();`，**不自带** `window.pele` 赋值；构建脚本已把整个文件包在 `try { … pele = <表达式> } catch` 里，失败则 `pele = null`，由 `figure.js` 的引擎守卫降级。全局对象键为 `PeleError, detectType, enableZoom, forgetTextWidths, mount, parse, register, registered, render, supports`。
 - `require('react')` 足够：层组件全部用 `React.createElement`，不需要 `react/jsx-runtime`；Chromium 夹具里以 `require` 返回宿主注入的 React 18.3.1 验证通过。
 - locale 命名空间：`ctx.locale.register('dyslexia', …)` 与槽注册里的 `locale: 'dyslexia'` 一致；夹具断言槽定义为 `{"name":"conversation.chat.markdown.fence","id":"@jiezhengj/dsh-dyslexia/mermaid","key":"mermaid","order":100,"locale":"dyslexia"}`。带 locale 的注册失败时会退回不带 locale 的注册（标签改用包内字典）。**补充实测**：`inject = ['slots']` 时 `ctx.locale` 不可用、注册被跳过，宿主 `t` 会回显 key——所以标签正确性最终由 D20 的"自带字典 + 只采信真实译文"保证，而不是由命名空间注册保证。
+
+## D21 证据基础设施进仓库，而不是留在被忽略的临时目录（2026-11-23 修订）
+
+**问题**：初版的浏览器夹具放在 `.tmp/harness/`，而 `.tmp/` 被 `.gitignore` 忽略。于是"夹具 19/25/28 项全绿"这类说法在别人 clone 之后无法复跑，FR-017（每条加固都要有可重复的自动化证据）实际上不成立。
+
+**决定**：
+
+- 夹具迁入 `verify/harness/index.html`，React 18.3.1 的 UMD 副本放在同目录 `verify/harness/vendor/`（不联网、不装依赖）。
+- 新增 `verify/run-harness.mjs`：找本机 Chrome（`DSH_DYSLEXIA_CHROME` → 常见安装路径 → `PATH`），用 `--headless=new --dump-dom` 打开 `file://` 页面，读页面写出的 `data-dsh-checks="ok:N/failed:M"` 判定，失败时打印 `[bad]` 行并退出 1。
+- `package.json` 加 `scripts`：`build` / `verify` / `harness` / `test` / `prepack`（打包前重建并自检，避免发出陈旧产物）。
+- 发布 workflow 增加三步：重建 → `git diff --exit-code -- client.js` 拒绝陈旧产物 → 跑 `check-bundle` 与 `run-harness`，之后才 `npm publish`。
+- `.tmp/` 仍然忽略：它只是我本机的一次性实验区，不再承担任何证据职责。
+
+**代价**：仓库多了 React UMD 两个文件和约 900 行夹具；换来的是任何人 clone 后能自己重算每一个"已验证"。

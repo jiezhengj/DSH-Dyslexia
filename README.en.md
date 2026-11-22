@@ -26,6 +26,29 @@ The code block is never consumed. It stays in the message as text: it can be cop
 - Eight interface languages, the same set DeepSeek Harness ships.
 - Nothing is fetched at runtime: the engine is inside the plugin.
 
+## Data and privacy
+
+- The plugin makes no network requests at runtime; the diagram engine is bundled inside `client.js`.
+- It collects nothing and sends nothing anywhere.
+- It reads only the `mermaid` code block text that is already displayed in your page, and it writes only the diagram into that page.
+- The **Copy source** button uses your browser clipboard; nothing leaves the page.
+- Nothing is added to your session history: the diagram is a rendering, not a stored object.
+
+## How to verify
+
+Requirements: Node.js 22 or newer, and Chrome/Chromium for the browser checks.
+
+- `node verify/check-bundle.mjs` — static and engine checks of the shipped bundle (manifest, no network calls, no version gate, the vendored engine, eight interface languages, sample diagrams of every supported type). Prints one line per check and exits non-zero on failure.
+- `node verify/run-harness.mjs` — runs the browser checks in headless Chrome against `verify/harness/index.html` (drawing, eight languages, hostile hosts, broken diagrams, copy, narrow 360 px column, theme colours). Set `DSH_DYSLEXIA_CHROME` to point at a specific Chrome executable if auto-detection fails.
+
+Both commands are in the repository, so the claims in this file can be re-checked at any time; they are also what CI runs before publishing.
+
+## Known limits
+
+- **Verified here:** in-chat drawing verified in DSH desktop `0.2.2-rc.5`; label fallback verified; uninstall fallback and reinstall verified; eight interface languages verified; narrow 360 px column verified.
+- **Likely, not proven on your machine:** other DSH versions; other Chromium-based browsers; the same checks on mobile devices (the layout is verified in a 360 px viewport in a desktop browser, not on a physical phone); very large diagrams (limits: source 24 KiB, drawing output 2 MiB, 400 edges; beyond that it falls back to the code block).
+- **Not done:** upgrading DSH across a major version has not been rehearsed; diagrams are not drawn while a message is still streaming; only ` ```mermaid ` fences are handled (not other fence languages).
+
 ## Install
 
 Install the package `@jiezhengj/dsh-dyslexia` in your DeepSeek Harness profile (the Plugins page), then restart the app. The package is on npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia.

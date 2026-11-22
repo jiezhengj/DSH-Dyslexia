@@ -26,6 +26,29 @@ O bloco de código nunca é consumido. Continua sendo o texto da mensagem: pode 
 - Oito idiomas de interface, os mesmos que o DeepSeek Harness traz.
 - Nada é buscado em tempo de execução: o motor está dentro do plugin.
 
+## Dados e privacidade
+
+- O plugin não faz nenhuma requisição de rede em tempo de execução; o motor de desenho vem empacotado dentro de `client.js`.
+- Ele não coleta nada e não envia nada para lugar nenhum.
+- Ele lê apenas o texto do bloco de código `mermaid` que já está exibido na sua página, e escreve apenas o diagrama nessa página.
+- O botão **Copiar o código** usa a área de transferência do seu navegador; nada sai da página.
+- Nada é adicionado ao histórico da sua sessão: o diagrama é uma renderização, não um objeto armazenado.
+
+## Como verificar
+
+Requisitos: Node.js 22 ou mais recente, e Chrome/Chromium para as verificações no navegador.
+
+- `node verify/check-bundle.mjs` — verificações estáticas e do motor sobre o pacote entregue (manifesto, ausência de chamadas de rede, ausência de trava de versão, o motor empacotado, oito idiomas de interface, diagramas de exemplo de cada tipo suportado). Imprime uma linha por verificação e sai com código diferente de zero em caso de falha.
+- `node verify/run-harness.mjs` — executa as verificações no navegador em Chrome headless contra `verify/harness/index.html` (desenho, oito idiomas, anfitriões hostis, diagramas quebrados, cópia, coluna estreita de 360 px, cores do tema). Defina `DSH_DYSLEXIA_CHROME` apontando para um executável específico do Chrome se a detecção automática falhar.
+
+Os dois comandos estão no repositório, portanto o que este arquivo afirma pode ser conferido novamente a qualquer momento; são também os comandos que a CI executa antes de publicar.
+
+## Limites conhecidos
+
+- **Verificado aqui:** desenho no chat verificado no DSH desktop `0.2.2-rc.5`; fallback de rótulos verificado; fallback ao desinstalar e reinstalação verificados; oito idiomas de interface verificados; coluna estreita de 360 px verificada.
+- **Provável, mas não provado na sua máquina:** outras versões do DSH; outros navegadores baseados em Chromium; as mesmas verificações em dispositivos móveis (o layout foi verificado em uma viewport de 360 px em um navegador de desktop, não em um celular físico); diagramas muito grandes (há limites: 24 KiB de código-fonte, 2 MiB de saída desenhada, 400 arestas; acima disso ele volta ao bloco de código).
+- **Não feito:** a atualização do DSH entre versões principais não foi ensaiada; os diagramas não são desenhados enquanto a mensagem ainda está sendo transmitida; apenas blocos ` ```mermaid ` são tratados (não outras linguagens de bloco de código).
+
 ## Instalação
 
 Instale o pacote `@jiezhengj/dsh-dyslexia` no seu perfil do DeepSeek Harness (página de plugins) e reinicie o aplicativo. No npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia

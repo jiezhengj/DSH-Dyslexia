@@ -1,4 +1,4 @@
-/*! @jiezhengj/dsh-dyslexia 0.1.2 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) */
+/*! @jiezhengj/dsh-dyslexia 0.1.3 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:715044a2feacdfb469ff71e413d11262 */
 ;(function () {
   function reportLoadFailure(scope, error) {
     try { console.error('dsh-dyslexia: ' + scope, error) } catch (_error) {}
@@ -269,6 +269,11 @@ function ensureFigureStyles(doc) {
  * ships (zh, en, ja, es, fr, de, ru, pt). The host serves the dictionary this
  * module exports; the copy here is also the fallback used before the host locale
  * service answers, so a figure never shows a bare key.
+ *
+ * Every visible sentence is complete in its own language: no English fragment is
+ * pasted into a Chinese label, and the engine's own error text (which is English
+ * and multi-line) never reaches the reader — it goes to the console and to the
+ * note's tooltip instead.
  */
 
 const LOCALE_NAMESPACE = 'dyslexia'
@@ -276,97 +281,121 @@ const LOCALE_NAMESPACE = 'dyslexia'
 const DICTIONARY = {
   en: {
     copied: 'Copied',
+    copyFailed: 'Copy failed',
     copySource: 'Copy source',
+    engineUnavailable: 'The drawing engine is unavailable, so the source is shown.',
     figureLabel: 'Diagram: {{type}}',
+    figureUntyped: 'Diagram',
     hideSource: 'Hide source',
-    renderFailed: 'This diagram cannot be drawn, so its source is shown: {{reason}}',
+    renderFailed: 'This diagram cannot be drawn, so its source is shown.',
     resetZoom: 'Reset zoom',
     showSource: 'Show source',
-    syntaxError: 'the diagram syntax is not valid',
+    syntaxError: 'The diagram syntax is not valid, so its source is shown.',
     zoomIn: 'Zoom in',
     zoomOut: 'Zoom out',
   },
   zh: {
     copied: '已复制',
+    copyFailed: '复制失败',
     copySource: '复制源码',
+    engineUnavailable: '绘图引擎不可用，已改为显示源码。',
     figureLabel: '图：{{type}}',
+    figureUntyped: '图',
     hideSource: '隐藏源码',
-    renderFailed: '这张图无法绘制，已改为显示源码：{{reason}}',
+    renderFailed: '这张图无法绘制，已改为显示源码。',
     resetZoom: '重置缩放',
     showSource: '查看源码',
-    syntaxError: '图的语法不合法',
+    syntaxError: '图里的语法有误，已改为显示源码。',
     zoomIn: '放大',
     zoomOut: '缩小',
   },
   ja: {
     copied: 'コピーしました',
+    copyFailed: 'コピーできませんでした',
     copySource: 'ソースをコピー',
+    engineUnavailable: '描画エンジンを利用できないため、ソースを表示しています。',
     figureLabel: '図：{{type}}',
+    figureUntyped: '図',
     hideSource: 'ソースを隠す',
-    renderFailed: 'この図は描画できないため、ソースを表示しています：{{reason}}',
+    renderFailed: 'この図は描画できないため、ソースを表示しています。',
     resetZoom: '倍率をリセット',
     showSource: 'ソースを表示',
-    syntaxError: '図の構文が正しくありません',
+    syntaxError: '図の構文が正しくないため、ソースを表示しています。',
     zoomIn: '拡大',
     zoomOut: '縮小',
   },
   es: {
     copied: 'Copiado',
+    copyFailed: 'No se pudo copiar',
     copySource: 'Copiar el código',
+    engineUnavailable: 'El motor de dibujo no está disponible, así que se muestra el código.',
     figureLabel: 'Diagrama: {{type}}',
+    figureUntyped: 'Diagrama',
     hideSource: 'Ocultar el código',
-    renderFailed: 'No se puede dibujar este diagrama, así que se muestra su código: {{reason}}',
+    renderFailed: 'No se puede dibujar este diagrama, así que se muestra su código.',
     resetZoom: 'Restablecer el zoom',
     showSource: 'Mostrar el código',
-    syntaxError: 'la sintaxis del diagrama no es válida',
+    syntaxError: 'La sintaxis del diagrama no es válida, así que se muestra su código.',
     zoomIn: 'Acercar',
     zoomOut: 'Alejar',
   },
   fr: {
     copied: 'Copié',
+    copyFailed: 'Échec de la copie',
     copySource: 'Copier la source',
+    engineUnavailable: "Le moteur de dessin n'est pas disponible ; la source est affichée.",
     figureLabel: 'Schéma : {{type}}',
+    figureUntyped: 'Schéma',
     hideSource: 'Masquer la source',
-    renderFailed: 'Impossible de dessiner ce schéma ; sa source est affichée : {{reason}}',
+    renderFailed: 'Impossible de dessiner ce schéma ; sa source est affichée.',
     resetZoom: 'Réinitialiser le zoom',
     showSource: 'Afficher la source',
-    syntaxError: "la syntaxe du schéma n'est pas valide",
+    syntaxError: "La syntaxe du schéma n'est pas valide ; sa source est affichée.",
     zoomIn: 'Zoomer',
     zoomOut: 'Dézoomer',
   },
   de: {
     copied: 'Kopiert',
+    copyFailed: 'Kopieren fehlgeschlagen',
     copySource: 'Quelle kopieren',
+    engineUnavailable: 'Die Zeichen-Engine ist nicht verfügbar, daher wird die Quelle angezeigt.',
     figureLabel: 'Diagramm: {{type}}',
+    figureUntyped: 'Diagramm',
     hideSource: 'Quelle ausblenden',
-    renderFailed: 'Dieses Diagramm lässt sich nicht zeichnen, daher wird seine Quelle angezeigt: {{reason}}',
+    renderFailed: 'Dieses Diagramm lässt sich nicht zeichnen, daher wird seine Quelle angezeigt.',
     resetZoom: 'Zoom zurücksetzen',
     showSource: 'Quelle anzeigen',
-    syntaxError: 'die Diagrammsyntax ist ungültig',
+    syntaxError: 'Die Diagrammsyntax ist ungültig, daher wird ihre Quelle angezeigt.',
     zoomIn: 'Vergrößern',
     zoomOut: 'Verkleinern',
   },
   ru: {
     copied: 'Скопировано',
+    copyFailed: 'Не удалось скопировать',
     copySource: 'Копировать код',
+    engineUnavailable: 'Движок отрисовки недоступен, поэтому показан код.',
     figureLabel: 'Диаграмма: {{type}}',
+    figureUntyped: 'Диаграмма',
     hideSource: 'Скрыть код',
-    renderFailed: 'Эту диаграмму не удалось нарисовать, поэтому показан её код: {{reason}}',
+    renderFailed: 'Эту диаграмму не удалось нарисовать, поэтому показан её код.',
     resetZoom: 'Сбросить масштаб',
     showSource: 'Показать код',
-    syntaxError: 'синтаксис диаграммы неверен',
+    syntaxError: 'Синтаксис диаграммы неверен, поэтому показан её код.',
     zoomIn: 'Увеличить',
     zoomOut: 'Уменьшить',
   },
   pt: {
     copied: 'Copiado',
+    copyFailed: 'Não foi possível copiar',
     copySource: 'Copiar o código',
+    engineUnavailable: 'O mecanismo de desenho não está disponível, então o código é exibido.',
     figureLabel: 'Diagrama: {{type}}',
+    figureUntyped: 'Diagrama',
     hideSource: 'Ocultar o código',
-    renderFailed: 'Não foi possível desenhar este diagrama, então o código é exibido: {{reason}}',
+    renderFailed: 'Não foi possível desenhar este diagrama, então o código é exibido.',
     resetZoom: 'Redefinir o zoom',
     showSource: 'Mostrar o código',
-    syntaxError: 'a sintaxe do diagrama não é válida',
+    syntaxError: 'A sintaxe do diagrama não é válida, então o código é exibido.',
     zoomIn: 'Ampliar',
     zoomOut: 'Reduzir',
   },
@@ -407,28 +436,37 @@ function makeFallbackTranslate(doc) {
 }
 
 /**
- * A host answer counts only when it is a real translation: a non-empty string
- * that is not the key echoed back and that no longer carries an unfilled
- * placeholder. A host that has not registered this plugin's namespace answers
- * with the key itself, which is how a bare `copySource` once reached a screen.
+ * A host answer counts only when it is a real translation: a non-empty,
+ * non-blank string that is not the key echoed back and that no longer carries an
+ * unfilled placeholder. A host that has not registered this plugin's namespace
+ * answers with the key itself, which is how a bare `copySource` once reached a
+ * screen; a host that answers with blanks would otherwise leave a blank button.
  */
 function isResolved(value, key) {
-  if (typeof value !== 'string' || value.length === 0) return false
-  if (value.indexOf(key) !== -1) return false
-  return value.indexOf('{{') === -1
+  if (typeof value !== 'string') return false
+  const trimmed = value.trim()
+  if (trimmed.length === 0) return false
+  if (trimmed.indexOf(key) !== -1) return false
+  return trimmed.indexOf('{{') === -1
 }
 
 /**
  * A host `t` is used when it answers with a real translation and its signature
- * still matches; anything else — a changed signature, a throw, an empty answer,
+ * still matches; anything else — a changed signature, a throw, a blank answer,
  * the key echoed back, an unfilled placeholder — falls back to the strings
  * shipped here, so a picture is never lost over a label and no internal key is
  * ever shown.
  */
 function translateFor(props, doc) {
   const fallback = makeFallbackTranslate(doc)
-  if (typeof props.t !== 'function') return fallback
-  const hostTranslate = props.t
+  let hostTranslate = null
+  try {
+    hostTranslate = typeof props.t === 'function' ? props.t : null
+  } catch (error) {
+    void error
+    hostTranslate = null
+  }
+  if (!hostTranslate) return fallback
   return function translate(key, values) {
     try {
       const value = hostTranslate(key, values)
@@ -447,6 +485,10 @@ function translateFor(props, doc) {
  * narrow-screen contract: the picture is laid out for the width it is given
  * instead of being shrunk as a whole, and a picture that does not fit can be
  * zoomed inside its own frame.
+ *
+ * Failures are classified here, not printed here: the reader gets one complete
+ * sentence in their own language, while the engine's English, multi-line parse
+ * text is kept for the console and the tooltip.
  */
 
 const FIGURE_LIMITS = {
@@ -454,6 +496,8 @@ const FIGURE_LIMITS = {
   outputLimit: 2 * 1024 * 1024,
   maxEdges: 400,
 }
+
+const ENGINE_UNAVAILABLE = 'engine-unavailable'
 
 function figureFontSize(doc) {
   try {
@@ -483,22 +527,46 @@ function figureOptions(doc, labels) {
  * `Mounted.error`, so the caller can put the source back in its place.
  */
 function mountFigure(host, code, doc, labels) {
-  if (!pele || typeof pele.mount !== 'function') throw new Error('drawing engine unavailable')
+  if (!pele || typeof pele.mount !== 'function') {
+    const missing = new Error('drawing engine unavailable')
+    missing.code = ENGINE_UNAVAILABLE
+    throw missing
+  }
   return pele.mount(host, code, figureOptions(doc, labels))
 }
 
+/** `syntax`, `unavailable` or `other`: which sentence the reader should see. */
+function figureErrorKind(error) {
+  if (!error) return 'other'
+  try {
+    if (error && error.code === ENGINE_UNAVAILABLE) return 'unavailable'
+    const message = typeof error === 'string' ? error : String(error.message || '')
+    if (/parse|syntax|lexical|invalid/i.test(message)) return 'syntax'
+  } catch (ignored) {
+    void ignored
+  }
+  return 'other'
+}
+
 /**
- * One line of reason for the reader: the engine's parse errors span several
- * lines and end with a caret drawing, which is noise in the chat.
+ * The engine's own words, cut to one line. This is diagnostic material: it goes
+ * to the console and to the note's tooltip, never into the visible sentence.
  */
-function describeFigureError(error, fallback) {
-  if (!error) return fallback
-  const message = typeof error === 'string' ? error : String(error.message || '')
-  const first = message
-    .split('\n')
-    .map((line) => line.trim())
-    .filter((line) => line.length > 0)[0]
-  return first || fallback
+function describeFigureError(error) {
+  if (!error) return ''
+  let message = ''
+  try {
+    message = typeof error === 'string' ? error : String(error.message || '')
+  } catch (ignored) {
+    void ignored
+    return ''
+  }
+  return (
+    message
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0)[0] || ''
+  )
 }
 
 function figureType(mounted) {
@@ -511,24 +579,56 @@ function figureType(mounted) {
  *
  * It receives one `mermaid` fence from the chat flow and gives back the drawn
  * picture, or — when the drawing cannot happen — the source block it was given,
- * unchanged, plus one line saying why. The text is never hidden: a reader can
- * always open the source of a picture that did draw.
+ * unchanged, plus one complete sentence in the reader's language saying why. The
+ * text is never hidden: a reader can always open the source of a picture that did
+ * draw.
+ *
+ * Every read of a host prop goes through `safeRead`, because a host upgrade can
+ * turn `code` or `children` into a getter that throws. A throw here would leave
+ * the conversation with no picture *and* no source, and would be re-thrown by the
+ * boundary below, which is exactly what the reader must never see.
  */
 
 const COPIED_FEEDBACK_MS = 1500
 
+function safeRead(source, name) {
+  try {
+    const value = source === null || source === undefined ? undefined : source[name]
+    return { ok: true, value }
+  } catch (error) {
+    report('figure props', error)
+    return { ok: false, value: undefined }
+  }
+}
+
+/** Everything the layer needs from the host, read once and safely. */
+function readLayerInput(props) {
+  const code = safeRead(props, 'code')
+  const streaming = safeRead(props, 'streaming')
+  const children = safeRead(props, 'children')
+  return {
+    code: code.ok && typeof code.value === 'string' ? code.value : '',
+    hasCode: code.ok && typeof code.value === 'string',
+    streaming: streaming.ok ? Boolean(streaming.value) : false,
+    children: children.ok && children.value !== undefined ? children.value : null,
+  }
+}
+
 function MermaidFenceLayer(props) {
   const doc = typeof document === 'undefined' ? null : document
-  const code = typeof props.code === 'string' ? props.code : ''
-  const streaming = props.streaming === true
-  const children = props.children === undefined ? null : props.children
+  const input = readLayerInput(props)
+  const code = input.code
+  const streaming = input.streaming
+  const children = input.children
 
-  const translate = React.useMemo(() => translateFor(props, doc), [props.t, doc])
+  const hostTranslate = safeRead(props, 't').value
+  const translate = React.useMemo(() => translateFor({ t: hostTranslate }, doc), [hostTranslate, doc])
   const [status, setStatus] = React.useState('pending')
-  const [reason, setReason] = React.useState('')
+  const [reasonKind, setReasonKind] = React.useState('other')
+  const [detail, setDetail] = React.useState('')
   const [figureKind, setFigureKind] = React.useState('')
   const [showSource, setShowSource] = React.useState(false)
-  const [copied, setCopied] = React.useState(false)
+  const [copyState, setCopyState] = React.useState('idle')
   const hostRef = React.useRef(null)
   const mountedRef = React.useRef(null)
   const observerRef = React.useRef(null)
@@ -560,13 +660,25 @@ function MermaidFenceLayer(props) {
       zoomIn: translate('zoomIn'),
       zoomOut: translate('zoomOut'),
     }
+    const fail = (error) => {
+      const raw = describeFigureError(error)
+      host.textContent = ''
+      setStatus('failed')
+      setReasonKind(figureErrorKind(error))
+      setDetail(raw)
+      if (raw) {
+        try {
+          console.warn('dsh-dyslexia: diagram not drawn', raw)
+        } catch (ignored) {
+          void ignored
+        }
+      }
+    }
     let mounted = null
     try {
       mounted = mountFigure(host, code, doc, labels)
     } catch (error) {
-      host.textContent = ''
-      setStatus('failed')
-      setReason(describeFigureError(error, translate('syntaxError')))
+      fail(error)
       return undefined
     }
     const failure = mounted && mounted.error ? mounted.error : null
@@ -578,9 +690,7 @@ function MermaidFenceLayer(props) {
           void error
         }
       }
-      host.textContent = ''
-      setStatus('failed')
-      setReason(describeFigureError(failure, translate('syntaxError')))
+      fail(failure)
       return undefined
     }
     mountedRef.current = mounted
@@ -612,23 +722,46 @@ function MermaidFenceLayer(props) {
     [],
   )
 
-  const copySource = React.useCallback(() => {
-    try {
-      const clipboard = typeof navigator === 'undefined' ? null : navigator.clipboard
-      if (clipboard && typeof clipboard.writeText === 'function') {
-        const pending = clipboard.writeText(code)
-        if (pending && typeof pending.catch === 'function') pending.catch(() => undefined)
-      }
-    } catch (error) {
-      void error
-    }
-    setCopied(true)
+  const finishCopy = React.useCallback((state) => {
+    setCopyState(state)
     if (copiedTimerRef.current !== null) clearTimeout(copiedTimerRef.current)
     copiedTimerRef.current = setTimeout(() => {
       copiedTimerRef.current = null
-      setCopied(false)
+      setCopyState('idle')
     }, COPIED_FEEDBACK_MS)
-  }, [code])
+  }, [])
+
+  /**
+   * Copies the source, and only says "Copied" once the text really went to the
+   * clipboard: a reader who is told the wrong thing cannot check it.
+   */
+  const copySource = React.useCallback(() => {
+    let clipboard = null
+    try {
+      clipboard = typeof navigator === 'undefined' ? null : navigator.clipboard
+    } catch (error) {
+      void error
+      clipboard = null
+    }
+    if (!clipboard || typeof clipboard.writeText !== 'function') {
+      finishCopy('failed')
+      return
+    }
+    try {
+      const pending = clipboard.writeText(code)
+      if (pending && typeof pending.then === 'function') {
+        pending.then(
+          () => finishCopy('copied'),
+          () => finishCopy('failed'),
+        )
+        return
+      }
+      finishCopy('copied')
+    } catch (error) {
+      void error
+      finishCopy('failed')
+    }
+  }, [code, finishCopy])
 
   const toggleSource = React.useCallback(() => {
     setShowSource((value) => !value)
@@ -639,13 +772,19 @@ function MermaidFenceLayer(props) {
   const failed = status === 'failed'
   const rendered = status === 'rendered'
 
+  const figureLabel = figureKind
+    ? translate('figureLabel', { type: figureKind })
+    : translate('figureUntyped')
+
   const figure = React.createElement('div', {
     className: FIGURE_CLASS,
     ref: hostRef,
     role: 'img',
-    'aria-label': translate('figureLabel', { type: figureKind || 'diagram' }),
+    'aria-label': figureLabel,
     style: failed ? { display: 'none' } : undefined,
   })
+
+  const copyLabel = copyState === 'copied' ? 'copied' : copyState === 'failed' ? 'copyFailed' : 'copySource'
 
   const actions = rendered
     ? React.createElement(
@@ -664,7 +803,7 @@ function MermaidFenceLayer(props) {
         React.createElement(
           'button',
           { type: 'button', className: BUTTON_CLASS, onClick: copySource },
-          copied ? translate('copied') : translate('copySource'),
+          translate(copyLabel),
         ),
       )
     : null
@@ -677,33 +816,39 @@ function MermaidFenceLayer(props) {
       )
     : null
 
+  const noteText =
+    reasonKind === 'syntax'
+      ? translate('syntaxError')
+      : reasonKind === 'unavailable'
+        ? translate('engineUnavailable')
+        : translate('renderFailed')
+
   const note = failed
-    ? React.createElement(
-        'p',
-        { className: NOTE_CLASS },
-        translate('renderFailed', { reason }),
-      )
+    ? React.createElement('p', { className: NOTE_CLASS, title: detail || undefined }, noteText)
     : null
 
-  return React.createElement(
-    React.Fragment,
-    null,
-    note,
-    figure,
-    actions,
-    source,
-    failed ? children : null,
-  )
+  const fallback = failed
+    ? children !== null
+      ? children
+      : React.createElement(
+          'pre',
+          { className: SOURCE_CLASS },
+          React.createElement('code', null, code),
+        )
+    : null
+
+  return React.createElement(React.Fragment, null, note, figure, actions, source, fallback)
 }
 
 /**
  * The safety net around the picture.
  *
  * A host upgrade can hand this layer props it no longer understands, a code
- * block whose text is not a string, or a document-less environment; the engine
- * can also throw while drawing. Any of those must cost one picture, never the
- * conversation: the boundary answers with the fence's own children, which is
- * exactly what the host would have rendered without this plugin.
+ * block whose text is not a string, a getter that throws, or a document-less
+ * environment; the engine can also throw while drawing. Any of those must cost
+ * one picture, never the conversation: the boundary answers with the fence's own
+ * children, which is exactly what the host would have rendered without this
+ * plugin.
  */
 class FigureBoundary extends React.Component {
   constructor(props) {
@@ -720,23 +865,27 @@ class FigureBoundary extends React.Component {
   }
 
   componentDidUpdate(previous) {
-    if (this.state.failed && previous.code !== this.props.code) this.setState({ failed: false })
+    try {
+      const before = previous === null || previous === undefined ? undefined : previous.code
+      const now = this.props === null || this.props === undefined ? undefined : this.props.code
+      if (this.state.failed && before !== now) this.setState({ failed: false })
+    } catch (error) {
+      void error
+    }
   }
 
   render() {
-    const props = this.props
-    const children = props.children === undefined ? null : props.children
-    if (this.state.failed) return children
+    const input = readLayerInput(this.props)
+    if (this.state.failed) return input.children
     try {
-      if (typeof props.code !== 'string' || typeof document === 'undefined') return children
-      return React.createElement(MermaidFenceLayer, props)
+      if (!input.hasCode || typeof document === 'undefined') return input.children
+      return React.createElement(MermaidFenceLayer, this.props)
     } catch (error) {
       report('figure props', error)
-      return children
+      return input.children
     }
   }
 }
-
 
 /**
  * Client half of `@jiezhengj/dsh-dyslexia`.
@@ -793,7 +942,12 @@ function apply(ctx) {
   try {
     const locale = ctx.locale
     if (locale && typeof locale.register === 'function') {
-      ctx.effect(() => locale.register(LOCALE_NAMESPACE, DICTIONARY), 'dsh-dyslexia: figure strings')
+      const register = () => locale.register(LOCALE_NAMESPACE, DICTIONARY)
+      if (typeof ctx.effect === 'function') {
+        ctx.effect(register, 'dsh-dyslexia: figure strings')
+      } else {
+        register()
+      }
     }
   } catch (error) {
     report('locale', error)

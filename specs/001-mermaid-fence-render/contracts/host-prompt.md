@@ -41,7 +41,7 @@ export function apply(ctx) {
 
 1. 事实：标记为 `mermaid` 的 Markdown 代码块会在会话里**就地**渲染成图（不是被保存成文件，也不在侧栏）。
 2. 图源即信息：渲染结果可以随时丢弃，所以代码块本身必须写全图里的信息，文字要能独立读懂。
-3. 支持的语法范围：Mermaid 12.1（flowchart / sequence / class / state / ER / gantt / timeline / mindmap / kanban / xychart / C4 / architecture 等内置图类型）。
+3. 支持的语法范围：Mermaid 语法（flowchart / sequence / class / state / ER / gantt / timeline / mindmap / kanban / xychart / C4 / architecture 等内置图类型）。**不写具体版本号**：版本号会在宿主升级后变成错误信息，实测内联引擎为 1.13.0 时该段刻意不带版本。
 4. 失败可见：语法不合法或规模超限时，读者看到的是代码块本身加一句原因说明——因此不要指望"渲染器帮你兜底表达"。
 
 **必须不包含**（违反即视为破坏原则 I）：

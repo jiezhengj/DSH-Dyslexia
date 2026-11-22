@@ -8,6 +8,7 @@
  */
 
 import { readFileSync, statSync } from 'node:fs'
+import { createHash } from 'node:crypto'
 import { dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { runInNewContext, Script } from 'node:vm'
@@ -173,7 +174,7 @@ check('client.js is one loader chunk keyed by the package name', () => {
   assert(chunk.includes('exports.apply = apply'), 'client.js does not export apply')
   assert(chunk.includes('exports.inject = inject'), 'client.js does not export inject')
   assert(!body.includes('</script'), 'an inline </script would end the host page')
-  return `${chunk.length} bytes`
+  return `${statSync(join(ROOT, 'client.js')).size} bytes`
 })
 
 check('client.js requires react and nothing else', () => {
@@ -242,11 +243,11 @@ check('a failing factory still yields a silent module', () => {
 })
 
 check('an engine that fails to load leaves the picture to the host', () => {
-  assert(chunk.includes("report['figure render']") === false, 'sanity: no bracket access to report')
-  assert(chunk.includes("report('figure render'"), 'the layer boundary does not report render failures')
   assert(chunk.includes('getDerivedStateFromError'), 'the layer has no error boundary')
-  assert(chunk.includes("typeof props.code !== 'string'"), 'the layer does not guard the fence props')
-  return 'boundary + prop guard present'
+  assert(chunk.includes('function readLayerInput'), 'the layer does not read the fence props defensively')
+  assert(chunk.includes('safeRead'), 'the layer reads host props without a guard')
+  assert(chunk.includes('engineUnavailable'), 'the layer has no sentence for a missing engine')
+  return 'boundary + guarded props + engine sentence'
 })
 
 check('the layer is keyed to mermaid on the fence slot', () => {
@@ -361,13 +362,125 @@ check('a broken diagram reports a one-line reason', () => {
 check('host key echo falls back to bundled strings', () => {
   const source = read('src/client/i18n.js')
   assert(/function isResolved/.test(source), 'i18n.js has no resolution guard')
-  assert(source.indexOf('value.indexOf(key) !== -1') !== -1, 'i18n.js accepts the key echoed back')
+  assert(source.indexOf('trimmed.indexOf(key) !== -1') !== -1, 'i18n.js accepts the key echoed back')
   assert(source.indexOf("indexOf('{{')") !== -1, 'i18n.js accepts an unfilled placeholder')
+  assert(source.indexOf('trimmed.length === 0') !== -1, 'i18n.js accepts a blank translation')
   assert(/LANGUAGE_CODES/.test(source), 'i18n.js has no language list')
   for (const lang of ['en', 'zh', 'ja', 'es', 'fr', 'de', 'ru', 'pt']) {
     assert(source.indexOf('\n  ' + lang + ': {') !== -1, 'i18n.js is missing the ' + lang + ' strings')
   }
-  assert(chunk.indexOf('value.indexOf(key) !== -1') !== -1, 'client.js is stale: rebuild it from src/client/i18n.js')
+  return 'key echo, blanks, placeholders rejected'
+})
+
+check('every language carries the same complete sentences', () => {
+  const source = read('src/client/i18n.js')
+  const keys = [
+    'copied',
+    'copyFailed',
+    'copySource',
+    'engineUnavailable',
+    'figureLabel',
+    'figureUntyped',
+    'hideSource',
+    'renderFailed',
+    'resetZoom',
+    'showSource',
+    'syntaxError',
+    'zoomIn',
+    'zoomOut',
+  ]
+  for (const key of keys) {
+    const count = (source.match(new RegExp('\\n    ' + key + ':', 'g')) || []).length
+    assert(count === 8, `${key} appears in ${count} languages, expected 8`)
+  }
+  assert(!source.includes('{{reason}}'), 'the engine reason is pasted into a visible sentence')
+  return `${keys.length} keys x 8 languages, no engine text in labels`
+})
+
+check('client.js matches the sources it claims', () => {
+  const fragments = ['styles.js', 'i18n.js', 'figure.js', 'view.js', 'entry.js'].map((name) => read(`src/client/${name}`))
+  const hash = createHash('sha256')
+  hash.update(manifest.name)
+  hash.update('\u0000')
+  hash.update(String(manifest.version))
+  hash.update('\u0000')
+  fragments.forEach((text) => {
+    hash.update(text)
+    hash.update('\u0000')
+  })
+  const expected = hash.digest('hex').slice(0, 32)
+  const found = /sources sha256:([0-9a-f]{32})/.exec(chunk)
+  assert(found, 'client.js carries no source fingerprint')
+  assert(found[1] === expected, `client.js is stale: rebuild it (chunk ${found[1]}, sources ${expected})`)
+  return `${expected}`
+})
+
+check('a factory that cannot build never throws at the host', () => {
+  let factory = null
+  loadChunk({ window: { __ModuleLoader__: { load(spec) { factory = spec.factory } } } })
+  assert(typeof factory === 'function', 'the loader never received a factory')
+  // A host whose `react` throws on any property access: module evaluation blows
+  // up inside `buildModule`, and the factory must still answer with a module.
+  const explosive = new Proxy(
+    {},
+    {
+      get() {
+        throw new Error('react went feral')
+      },
+      has() {
+        throw new Error('react went feral')
+      },
+    },
+  )
+  const module = factory(() => explosive)
+  assert(module && typeof module.apply === 'function', 'the factory did not return a module')
+  assert(Array.isArray(module.inject), 'the fallback module has no inject')
+  assert(module.inject.length === 0, 'the fallback module must ask for nothing')
+  module.apply({})
+  return 'module-level throw contained, empty module returned'
+})
+
+/* ------------------------------------------------- host half, for real */
+
+const hostHalf = await import(pathToFileURL(join(ROOT, 'index.js')).href)
+
+check('the host half registers exactly one capability section', () => {
+  const sections = []
+  hostHalf.apply({
+    systemPrompt: {
+      section(def) {
+        sections.push(def)
+        return () => undefined
+      },
+    },
+  })
+  assert(sections.length === 1, `the host half added ${sections.length} sections`)
+  const [section] = sections
+  assert(section.name === 'ui:dsh-dyslexia', `section name ${section.name}`)
+  assert(section.order === 9000, `section order ${section.order}`)
+  assert(typeof section.text === 'string' && section.text.trim().length > 0, 'the section has no text')
+  return `${section.name}, order ${section.order}, ${section.text.trim().split(/\s+/).length} words`
+})
+
+check('the host half stays silent when the host changed shape', () => {
+  for (const ctx of [undefined, null, {}, { systemPrompt: null }, { systemPrompt: {} }]) {
+    hostHalf.apply(ctx)
+  }
+  hostHalf.apply({
+    systemPrompt: {
+      section() {
+        throw new Error('system prompt service changed')
+      },
+    },
+  })
+  hostHalf.apply({
+    systemPrompt: {
+      section() {
+        return Promise.reject(new Error('asynchronous failure'))
+      },
+    },
+  })
+  return 'five silent hosts, one throwing section'
 })
 
 /* ---------------------------------------------------------------- report */

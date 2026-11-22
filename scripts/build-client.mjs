@@ -16,6 +16,7 @@
  */
 
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
+import { createHash } from 'node:crypto'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Script } from 'node:vm'
@@ -49,9 +50,27 @@ const fragments = SOURCES.map((name) => {
 })
 
 const banner = [
-  `/*! ${manifest.name} ${manifest.version} | MIT | bundles Pele ${engineVersion} (MIT, see THIRD-PARTY-NOTICES.md) */`,
+  `/*! ${manifest.name} ${manifest.version} | MIT | bundles Pele ${engineVersion} (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:${sourceFingerprint(manifest, fragments)} */`,
   '',
 ].join('\n')
+
+/**
+ * A digest of everything the chunk is built from, printed in the banner so a
+ * stale `client.js` can be detected instead of published. `verify/check-bundle.mjs`
+ * recomputes it from the same inputs.
+ */
+function sourceFingerprint(manifest, fragments) {
+  const hash = createHash('sha256')
+  hash.update(manifest.name)
+  hash.update('\u0000')
+  hash.update(String(manifest.version))
+  hash.update('\u0000')
+  fragments.forEach((text) => {
+    hash.update(text)
+    hash.update('\u0000')
+  })
+  return hash.digest('hex').slice(0, 32)
+}
 
 const header = [
   ';(function () {',
@@ -114,5 +133,5 @@ try {
 writeFileSync(OUTPUT, chunk)
 
 process.stdout.write(
-  `build-client: ${manifest.name} -> client.js (${chunk.length} bytes, engine ${engineVersion}, sources ${SOURCES.length}, syntax ok)\n`,
+  `build-client: ${manifest.name} -> client.js (${Buffer.byteLength(chunk, 'utf8')} bytes, ${chunk.length} characters, engine ${engineVersion}, sources ${SOURCES.length}, syntax ok)\n`,
 )
