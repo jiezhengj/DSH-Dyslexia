@@ -103,9 +103,9 @@ renderSlot('conversation.chat.markdown.fence', fence, {
 
 ## D12 文案与本地化
 
-**结论**：浏览器半边在 `apply` 里 `ctx.locale.register('dyslexia', { zh, en })`（两个基线语言必填），把 `locale: 'dyslexia'` 写进槽注册，组件通过框架注入的 `t` 取文案；插件卡片文案放 `locale/en.json` 与 `locale/zh.json` 的 `meta.title`/`meta.description`。
+**结论**：浏览器半边自带 8 种界面语言（`zh, en, ja, es, fr, de, ru, pt`，与宿主 `dsh-client-locale` 支持的语言集合一致）的文案字典，语言按 `document.documentElement.lang` 取（缺失时看 `navigator.language`，再不行回退 `en`）；`apply` 里仍尝试 `ctx.locale.register('dyslexia', DICTIONARY)` 并把 `locale: 'dyslexia'` 写进槽注册，但**不依赖**它：宿主 `t` 只在返回"真实译文"时采信（非空、不等于 key、无未替换的 `{{}}` 占位符）。插件卡片文案放 `locale/<lang>.json` 的 `meta.title`/`meta.description`/`meta.detail`。
 
-**依据**：`dsh-client-locale/README.md`：`ctx.locale.register(ns, { zh, en, ja })`、"requires both baseline locales (`zh` and `en`)"、消费者用 `ctx.locale.bind(ns)` 或框架注入的 `t` 座位、"slot-rendered copy updates without a reload"；ui-chat 的槽注册带 `locale: NS` 且其 `FenceLayers` 用 `PropsLocale<'chat'>`；`@deepseek-ai/dsh-client-ui-chat/locale/{zh,en}.json` 就是 `{"meta":{"title","description"}}` 这两份文件。
+**依据**：`dsh-client-locale` 实测只注册 `ja/es/fr/de/ru/pt` 六种并内建 `zh`/`en`，即 8 种（无 `zh-TW`/`yue`/`ko`）；`ctx.locale.register(ns, { zh, en, ja })` 要求至少 `zh`/`en` 两个基线语言，消费者用 `ctx.locale.bind(ns)` 或框架注入的 `t` 座位。**实测反证（2026-11-22，真机）**：`inject` 不含 `locale` 时 `ctx.locale` 取不到、注册被静默跳过，而宿主 `t` 在命名空间未注册时**把 key 原样返回**（旧版 `translateFor` 只判断"非空字符串"就采信，导致界面出现裸 key `copySource`/`figureLabel`）。故"自带字典 + 只采信真实译文"才是可靠路径；见 D20。
 
 ## D13 安装路径
 
@@ -159,8 +159,14 @@ renderSlot('conversation.chat.markdown.fence', fence, {
 
 **依据**：spec FR-017（加固必须有可重复的自动化证据）与 SC-006/SC-007/SC-008；宪法"开发与验证流程"要求未验证项必须标注。
 
+## D20 标签只采信"真实译文"，回显的 key 一律当未解析
+
+**结论**：`translateFor` 对宿主 `t` 的返回值加三道判定——非空字符串、不等于请求的 key、不含未替换的 `{{占位符}}`；任何一条不满足就改用包内 8 语言字典。语言按 `document.documentElement.lang` → `navigator.language` → `en` 的顺序确定。断言名：静态检查 `host key echo falls back to bundled strings`、夹具 `host-t-echoes-key`。
+
+**依据**：真机实测（2026-11-22）宿主 `t` 在命名空间未注册时返回 key 本身，且**不抛错、不为空**，旧判定 `typeof value === 'string' && value.length > 0` 因此放行，界面上出现 `copySource`、`figureLabel` 这类内部 key；同类"看起来成功其实没生效"的签名变化也会这样伪装，故判定必须比"有返回值"更强。spec FR-008（8 语言 + 不得显示内部 key）、SC-009；宪法 IV（降级不得降低可读性）。
+
 # 七、原"未确定项"的实测结论（2026-11-22）
 
 - `pele.global.js`：外层是 `"use strict";var pele=(()=>{…})();`，**不自带** `window.pele` 赋值；构建脚本已把整个文件包在 `try { … pele = <表达式> } catch` 里，失败则 `pele = null`，由 `figure.js` 的引擎守卫降级。全局对象键为 `PeleError, detectType, enableZoom, forgetTextWidths, mount, parse, register, registered, render, supports`。
 - `require('react')` 足够：层组件全部用 `React.createElement`，不需要 `react/jsx-runtime`；Chromium 夹具里以 `require` 返回宿主注入的 React 18.3.1 验证通过。
-- locale 命名空间：`ctx.locale.register('dyslexia', …)` 与槽注册里的 `locale: 'dyslexia'` 一致；夹具断言槽定义为 `{"name":"conversation.chat.markdown.fence","id":"@jiezhengj/dsh-dyslexia/mermaid","key":"mermaid","order":100,"locale":"dyslexia"}`。带 locale 的注册失败时会退回不带 locale 的注册（标签改用包内字典）。
+- locale 命名空间：`ctx.locale.register('dyslexia', …)` 与槽注册里的 `locale: 'dyslexia'` 一致；夹具断言槽定义为 `{"name":"conversation.chat.markdown.fence","id":"@jiezhengj/dsh-dyslexia/mermaid","key":"mermaid","order":100,"locale":"dyslexia"}`。带 locale 的注册失败时会退回不带 locale 的注册（标签改用包内字典）。**补充实测**：`inject = ['slots']` 时 `ctx.locale` 不可用、注册被跳过，宿主 `t` 会回显 key——所以标签正确性最终由 D20 的"自带字典 + 只采信真实译文"保证，而不是由命名空间注册保证。

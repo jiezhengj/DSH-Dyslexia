@@ -8,8 +8,8 @@
 
 | 导出 | 类型 | 说明 |
 |---|---|---|
-| `inject` | `string[]` | 客户端服务名，本插件为 `['locale']`（服务以包名形式注入时按宿主实际名调整） |
-| `apply` | `(ctx) => void` | 注册 locale 字典与槽层 |
+| `inject` | `string[]` | 客户端服务名，本插件为 `['slots']`（`locale` 不可用时不依赖它；见下） |
+| `apply` | `(ctx) => void` | 尝试注册 locale 字典（可选）并注册槽层 |
 
 # 槽注册
 
@@ -62,7 +62,7 @@ type Props = {
 宿主仍在迭代，本层对"接口变了"的唯一正确反应是**安静地不画**。以下每条都是必须成立的行为，且都有一条可重复的断言（括号内为 `verify/check-bundle.mjs` 的断言名或夹具用例名）：
 
 7. **不注册也不抛**：`ctx.slots` 缺失、`inject` 抛错、`register` 签名变化 → 放弃注册，宿主照常渲染原代码块（`host apply survives a host that changed shape`）。
-8. **locale 可选**：`ctx.locale` 缺失或 `register` 失败 → 改用不带 `locale` 的注册重试；仍失败则放弃注册。宿主 `t` 抛错或返回非字符串 → 回落包内 en/zh 字典，图照画（夹具 `host-t-throws`）。
+8. **locale 可选且不可信**：`ctx.locale` 缺失或 `register` 失败 → 改用不带 `locale` 的注册重试；仍失败则放弃注册。宿主 `t` 只有在返回"真实译文"时才采信——非空字符串、不等于请求的 key、不含未替换的 `{{占位符}}`；否则用包内 8 语言字典（夹具 `host-t-throws`、`host-t-echoes-key`）。
 9. **数据守卫**：`code` 不是字符串、取值器抛错、缺 `document` → 直接返回 `children`，不进入绘制（夹具 `bad-fence`）。
 10. **绘制期零外泄**：pele 在渲染子树里抛错 → 错误边界渲染 `children`，并在 `code` 变化时复位（夹具 `render-throws`）。
 11. **引擎不可用**：pele 未挂载或 `mount` 不存在 → 视为"该处不画"，保留原文并给一行本地化原因，不抛错（`an engine that fails to load leaves the picture to the host`）。

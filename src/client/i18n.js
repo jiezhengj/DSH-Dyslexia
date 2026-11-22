@@ -141,10 +141,23 @@ function makeFallbackTranslate(doc) {
 }
 
 /**
- * A host `t` is used when it answers with a string and its signature still
- * matches; anything else — a changed signature, a throw, an empty answer —
- * falls back to the strings shipped here, so a picture is never lost over a
- * label.
+ * A host answer counts only when it is a real translation: a non-empty string
+ * that is not the key echoed back and that no longer carries an unfilled
+ * placeholder. A host that has not registered this plugin's namespace answers
+ * with the key itself, which is how a bare `copySource` once reached a screen.
+ */
+function isResolved(value, key) {
+  if (typeof value !== 'string' || value.length === 0) return false
+  if (value.indexOf(key) !== -1) return false
+  return value.indexOf('{{') === -1
+}
+
+/**
+ * A host `t` is used when it answers with a real translation and its signature
+ * still matches; anything else — a changed signature, a throw, an empty answer,
+ * the key echoed back, an unfilled placeholder — falls back to the strings
+ * shipped here, so a picture is never lost over a label and no internal key is
+ * ever shown.
  */
 function translateFor(props, doc) {
   const fallback = makeFallbackTranslate(doc)
@@ -153,7 +166,7 @@ function translateFor(props, doc) {
   return function translate(key, values) {
     try {
       const value = hostTranslate(key, values)
-      if (typeof value === 'string' && value.length > 0) return value
+      if (isResolved(value, key)) return value
     } catch (error) {
       void error
     }

@@ -164,3 +164,13 @@ THIRD-PARTY-NOTICES.md
 - `locale/<lang>.json` 各带 `meta.title`、`meta.description`、`meta.detail`；`docs/DETAIL{,.zh,.ja,.es,.fr,.de,.ru,.pt}.md` 各自是"一行图片 + 该语言 alt"，指向同目录 `preview.svg`。
 - `verify/check-bundle.mjs` 第 6 项 "every interface language has its own plugin page" 校验：8 个 locale 都能解析、title 互不相同、description 长度 ≥ 80、detail 以 `.md` 结尾、对应文档恰好一行且形如 `![alt](preview.svg)`。
 - `README.md` 是索引（中英双语简介 + 8 语言链接），`README.en.md` + `README.zh.md` + 6 份其他语言 README 结构一致（它做什么 / 为什么这样设计 / 你会得到什么 / 安装 / 示例 / 卸载与兼容性 / 许可）。
+
+## E-LABEL 标签只采信真实译文（0.1.2，FR-008 / SC-009 / research D20）
+
+真机发现：宿主 `t` 在命名空间未注册时**把 key 原样返回**（不抛错、不为空），旧版 `translateFor` 只判断"非空字符串"就采信，界面上出现裸 key `copySource` / `figureLabel`（`agent-desktop find --role button --app "DeepSeek Harness"` 实证）。
+
+- E-LABEL-1（静态，`verify/check-bundle.mjs` 第 25 项 `host key echo falls back to bundled strings`）：`src/client/i18n.js` 必须含 `isResolved` 判定与 8 份语言表；`client.js` 必须已重建（含同一判定），否则该断言失败。现 25/25 通过。
+- E-LABEL-2（行为，Chromium 夹具 `host-t-echoes-key`）：`t = (key) => key` 时，两个按钮仍是"查看源码 / 复制源码"，图的无障碍名仍是"图：flowchart"，无 camelCase key、无 `{{占位符}}`。
+- E-LABEL-3（行为，同类夹具 `host-t-throws`）：`t` 抛错时同样回落自带文案，图照画。夹具现 27 项全绿（0 失败）。
+- 判定规则（`src/client/i18n.js`）：返回值必须是字符串、非空、**不含请求的 key**、不含未替换的 `{{…}}`；否则回落 8 语言字典，语言按 `document.documentElement.lang` → `navigator.language` → `en`。
+- 未取证：重启 DSH 后在真实会话里确认标签中文正确（并入 T052/T058）。

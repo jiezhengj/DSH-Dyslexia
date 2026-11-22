@@ -274,3 +274,16 @@ T027（`--dump-config` 核对）、T031（证据表汇总）。
 - [ ] T052 重启 DSH 后的真机取证：插件页 8 语言说明与新图标、会话里就地画图、卸载后旧会话回退（对应 E-COMP-5 / E1 / E10 / E11）
 
 证据：`evidence/verification.md` 的 E-LANG（语言数与说明页校验）、E-PUB2（Actions 发布与 provenance）、E-INS2（从 registry 安装 0.1.1）。T052 未做，因此仍不写"已在 DSH 界面里确认"。
+
+### 真机发现：标签回显 key（2026-11-22 追加，同一 feature 内修复，T053–T058）
+
+真机取证发现 `t` 在命名空间未注册时回显 key，界面出现 `copySource`/`figureLabel`。按 SDD 就地补记（FR-008 改写、SC-006 增至 7 类、新增 SC-009、research D20、data-model 增加降级行、contracts 第 8 条改写、夹具新增 `host-t-echoes-key`）。
+
+- [x] T053 改写 `src/client/i18n.js` 的 `translateFor`：新增 `isResolved()`（非空、不等于 key、无未替换占位符），未解析一律回落自带 8 语言字典（FR-008 / SC-009）
+- [x] T054 `verify/check-bundle.mjs` 增加断言 `host key echo falls back to bundled strings`（静态检查产物含该判定）
+- [x] T055 Chromium 夹具新增 `host-t-echoes-key`（`t = key => key` 时按钮与图名仍为本语言短语）
+- [x] T056 重建 `client.js`、跑全部静态断言与夹具，版本升 0.1.2
+- [ ] T057 打 `v0.1.2` 标签经 GitHub Actions 发布，从 registry 安装回 `desktop` profile
+- [ ] T058 重启后核对：图名/按钮为可读短语、图标、8 语言说明页、卸载回退（并入 T052）
+
+证据要求：T054/T055 的断言名与 FR-008、SC-009 在 `evidence/verification.md` 里逐条对应（FR-017）。

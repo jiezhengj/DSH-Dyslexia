@@ -74,7 +74,8 @@
 | 工厂内 `require`/初始化抛错 | 宿主注入的 `react` 缺失等 | 返回空模块 `{ apply(){}, inject: [] }` | `a failing factory still yields a silent module`（FR-015） |
 | 引擎 IIFE 抛错 | pele 在未知宿主里执行失败 | 图不画，代码块原样显示，并有一行原因 | `an engine that fails to load leaves the picture to the host`（FR-014） |
 | 缺 `slots` 服务 / 注册签名变化 | 宿主接口变化 | 不注册层，代码块原样显示 | `host apply survives a host that changed shape`（FR-014） |
-| 缺 `locale` 或 `t` 抛错 | 宿主本地化接口变化 | 图照画，标签回落包内中/英字典 | 同上 + 夹具 `host-t-throws`（FR-014） |
+| 缺 `locale` 或 `t` 抛错 | 宿主本地化接口变化 | 图照画，标签回落包内 8 语言字典 | 同上 + 夹具 `host-t-throws`（FR-014） |
+| `t` 把 key 原样回显 / 占位符未替换 | 宿主命名空间未注册（实测行为） | 图照画，标签用包内 8 语言字典，界面上不出现 `copySource` 这类内部 key | `host key echo falls back to bundled strings` + 夹具 `host-t-echoes-key`（FR-008 / SC-009） |
 | 缺 `systemPrompt` | 宿主提示词接口变化 | 不注入那段话，其余照常 | 同上（FR-014） |
 | 围栏数据畸形（`code` 非字符串、取值器抛错） | 宿主数据形态变化 | 交回宿主原本的代码块 | 夹具 `bad-fence`（FR-016） |
 | 绘制期异常 | pele 在渲染子树里抛错 | 错误边界接管，交回代码块 | 夹具 `render-throws`（FR-016） |

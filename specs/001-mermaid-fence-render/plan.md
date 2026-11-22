@@ -41,7 +41,7 @@
 - **III 依赖自包含** — PASS：`pele` 以 vendored 文件形式随包发布并打进 `client.js`；不引入 CDN、不引入 npm 安装步骤、不用打包器；`client.js` 是已构建单块 chunk，符合宿主"entry 不能同步 require 相邻 client*.js"的限制。
 - **IV 降级不丢数据** — PASS（本功能最重的一项）：hoc 层缺省即回退（"with no applicable layer the content renders unchanged"）；异常时渲染 `children`；浏览器半边整体不注册任何持久化实体，卸载即无痕；重装后由图源重画；**并追加启动侧降级**——插件不得把宿主拖到打不开（见"兼容性策略"与 FR-013～FR-016）。
 - **V 窄屏先行** — PASS：`mount()` 按容器宽重排 + ResizeObserver 触发 `refresh()`；`autoDirection` + `directionBreakpoint` 处理窄屏流程图；溢出在图内滚动；缩放控件只作用于图自身。
-- **技术约束** — PASS：配色全部走 `--dsw-alias-*` 主题令牌并映射到 pele 的 `--pele-*` 变量；可见文字走 `ctx.locale.register('dyslexia', { zh, en })` 并在注册槽层时带 `locale: 'dyslexia'`；插件标题/描述用 `locale/{en,zh}.json` 的 `meta` 段；LICENSE 与第三方许可随包发布。
+- **技术约束** — PASS：配色全部走 `--dsw-alias-*` 主题令牌并映射到 pele 的 `--pele-*` 变量；可见文字走包内 8 语言字典（`zh, en, ja, es, fr, de, ru, pt`），并尝试 `ctx.locale.register('dyslexia', DICTIONARY)` 与带 `locale: 'dyslexia'` 的槽注册作为兜底；插件卡片文案用 `locale/<lang>.json` 的 `meta` 段（8 份）；LICENSE 与第三方许可随包发布。
 - **验证流程** — PASS：装、卸、窄屏三类证据在 quickstart.md 里列成表；打包后核对 `npm pack` 文件清单并断网复跑；无法验证的项在交付说明里显式标注。
 
 无违反项，`Complexity Tracking` 留空。
@@ -52,7 +52,7 @@
 
 1. **不使用任何版本否决字段**（FR-013）。宿主的启动门在 `dsh-app-boot`：`unmetRequirements()` 只读插件自身的 `engines.dsh`（或 dsh 的 peer 版本），`lib/index.js:1811-1812` 一旦判定不满足就 `throw`，profile 根本起不来。因此清单里不写 `engines`、不写 dsh peer；包级 `dsh.client.inject` 也不写宿主客户端包名，避免升级后名字变化导致加载图缺边。
 2. **客户端产物自兜**（FR-015）。产物用 IIFE 包住：缺 `window.__ModuleLoader__`、加载器 `load` 抛错、工厂内 `require` 抛错，都只记录并返回一个空模块 `{ apply(){}, inject: [] }`；pele 引擎的 IIFE 也用 try/catch 包住，失败则置空。构建末尾用 `new Script(chunk)` 做编译期语法检查——语法错误在发布前就失败，而不是到用户机器上连累同批 `<script>`。
-3. **服务与注册全部按可选处理**（FR-014）。`apply()` 对 styles / locale / slots 三段各自 try/catch；`slots.register` 带 locale 失败则去掉 locale 重试，再失败就放弃注册；宿主 `t` 抛错或返回非字符串时回落到包内 en/zh 字典。
+3. **服务与注册全部按可选处理**（FR-014）。`apply()` 对 styles / locale / slots 三段各自 try/catch；`slots.register` 带 locale 失败则去掉 locale 重试，再失败就放弃注册；宿主 `t` 抛错、返回非字符串、把 key 原样回显或占位符未替换时，回落到包内 8 语言字典（FR-008）。
 4. **渲染与数据双向兜底**（FR-016）。React 错误边界接管绘制期异常并渲染 `children`；`code` 非字符串、缺 `document`、字段缺失时直接交回宿主代码块；引擎不可用则记为一行原因并保留原文。
 
 ## Project Structure
@@ -82,16 +82,16 @@ package.json             # name/main/exports/dsh{bundle,client}/files（无 engi
 index.js                 # 宿主半边：export name / inject / apply → 一条提示词段（全段 try/catch）
 client.js                # 生成物：IIFE 自兜 + window.__ModuleLoader__.load(...) 单块 chunk（提交进仓库）
 cordis.patch.yml         # 一条 insert 行，把本包挂进 profile
-locale/en.json           # meta.title / meta.description（插件卡片文案）
-locale/zh.json
+locale/en.json           # meta.title / meta.description / meta.detail（插件卡片文案，8 个语言文件）
+locale/{zh,ja,es,fr,de,ru,pt}.json
 LICENSE                  # 本项目 MIT
 THIRD-PARTY-NOTICES.md   # pele 的 MIT 许可与来源固定版本
 README.md                # 装、卸、验证、兼容性承诺与已知限制
 src/client/
-├── entry.js             # 槽注册（key: 'mermaid'）+ locale 注册（无 import/export 的脚本片段）
+├── entry.js             # 槽注册（key: 'mermaid'）+ 可选的 locale 注册（无 import/export 的脚本片段）
 ├── figure.js            # pele 生命周期：mount / update / destroy，缩放与尺寸监听（引擎缺失自兜）
 ├── styles.js            # 主题令牌 → pele 变量映射 + 容器样式
-├── i18n.js              # 包内 en/zh 字典 + 宿主翻译函数的安全包装
+├── i18n.js              # 包内 8 语言字典 + 宿主翻译函数的安全包装（只采信真实译文）
 └── view.js              # React 组件 + 错误边界：图 / 源码切换 / 失败回退 / 流式中占位
 scripts/
 └── build-client.mjs     # header + IIFE 自兜 + require('react') + vendored pele + 片段 → client.js（末尾语法检查）

@@ -358,6 +358,18 @@ check('a broken diagram reports a one-line reason', () => {
   return first
 })
 
+check('host key echo falls back to bundled strings', () => {
+  const source = read('src/client/i18n.js')
+  assert(/function isResolved/.test(source), 'i18n.js has no resolution guard')
+  assert(source.indexOf('value.indexOf(key) !== -1') !== -1, 'i18n.js accepts the key echoed back')
+  assert(source.indexOf("indexOf('{{')") !== -1, 'i18n.js accepts an unfilled placeholder')
+  assert(/LANGUAGE_CODES/.test(source), 'i18n.js has no language list')
+  for (const lang of ['en', 'zh', 'ja', 'es', 'fr', 'de', 'ru', 'pt']) {
+    assert(source.indexOf('\n  ' + lang + ': {') !== -1, 'i18n.js is missing the ' + lang + ' strings')
+  }
+  assert(chunk.indexOf('value.indexOf(key) !== -1') !== -1, 'client.js is stale: rebuild it from src/client/i18n.js')
+})
+
 /* ---------------------------------------------------------------- report */
 
 for (const line of notices) process.stdout.write(`${line}\n`)
