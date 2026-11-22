@@ -102,7 +102,7 @@ $node -v                                  # 只为跑校验脚本
 git push origin main                      # 先确认工作区干净
 # 改 package.json 的 version，然后：
 git commit -am "<version>: …"
-git tag -a v<version> -m "0.1.7: …"
+git tag -a v<version> -m "<version>: 一句话说清这次改了什么"
 git push origin main; git push origin v<version>
 gh run watch                              # 观察 publish 工作流
 ```

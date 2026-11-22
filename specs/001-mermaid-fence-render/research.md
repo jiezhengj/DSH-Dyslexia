@@ -155,7 +155,7 @@ renderSlot('conversation.chat.markdown.fence', fence, {
 
 ## D19 兼容性也要有证据，且必须逐条对应要求
 
-**结论**：`verify/check-bundle.mjs` 用 7 组兼容性断言（无版本门 / 可独立编译 / 畸形加载器下不抛 / 工厂抛错仍可用 / 含边界与守卫 / 畸形宿主 ctx 下 `apply` 不抛），Chromium 夹具再用故障注入覆盖渲染期。断言名与 FR 编号在 `contracts/client-fence-layer.md` 与 `evidence/verification.md` 里对应。
+**结论**：`verify/check-bundle.mjs` 用 7 组兼容性断言（① 无版本门；② 产物可独立编译；③ 畸形加载器下不抛；④ 工厂抛错仍返回可用模块；⑤ 含错误边界与数据守卫；⑥ 畸形 `ctx` 下 `apply` 不抛；⑦ 停用后不留残留——样式表、locale 注册与围栏层都被释放），Chromium 夹具再用故障注入覆盖渲染期。断言名与 FR 编号在 `contracts/client-fence-layer.md` 与 `evidence/verification.md` 里对应。
 
 **依据**：spec FR-017（加固必须有可重复的自动化证据）与 SC-006/SC-007/SC-008；宪法"开发与验证流程"要求未验证项必须标注。
 
@@ -183,7 +183,7 @@ renderSlot('conversation.chat.markdown.fence', fence, {
 - 发布 workflow 增加三步：重建 → `git diff --exit-code -- client.js` 拒绝陈旧产物 → 跑 `check-bundle` 与 `run-harness`，之后才 `npm publish`。
 - `.tmp/` 仍然忽略：它只是我本机的一次性实验区，不再承担任何证据职责。
 
-**代价**：仓库多了 React UMD 两个文件和 839 行夹具 + 122 行驱动（合计 861 行）；换来的是任何人 clone 后能自己重算每一个"已验证"。
+**代价**：仓库多了 React UMD 两个文件和 839 行夹具 + 122 行驱动（合计 961 行）；换来的是任何人 clone 后能自己重算每一个"已验证"。
 
 ## D22 无障碍：图像角色只给图本身，复制结果用实时区域播报（2026-11-23 修订）
 

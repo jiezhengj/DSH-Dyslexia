@@ -7,7 +7,7 @@
 ```json
 {
   "name": "@jiezhengj/dsh-dyslexia",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Draws mermaid code blocks in DeepSeek Harness conversations as diagrams, in place in the message.",
   "type": "module",
   "main": "index.js",

@@ -194,15 +194,38 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.9 | client.js 769386 bytes | all 118 ch
 `role="img"` 让一张图对读屏是一个**有名字的图形**，而不是一堆散落的 `<text>`，代价是：**一旦容器声明为 `img`，辅助技术不再念其中的文字**，图里的节点文字对读屏用户不可达。这是有意的取舍，补偿有三条：
 
 1. 名字可本地化：`svg` 上的 `aria-label` 来自 8 种界面语言的 `figureLabel`（纯名词，不拼引擎类型），并删掉引擎塞进来的英文 `aria-roledescription="flowchart"`；夹具逐语言断言 `the image carries the localised name` 与 `the image carries no english role description`。
-2. 可读文本始终可得：图下"查看源码"按钮展开同一段 Mermaid 源码（`dsh-dyslexia-source`），源码本身就是信息本体；夹具 `the source panel shows the code` 与"内部 key 不外泄"覆盖。
-3. 引擎自己的缩放控件留在图像**之外**并可聚焦：夹具 `the zoom buttons speak the interface language`、`every reachable zoom button can be focused`，且"小图不渲染缩放控件"（`a picture that fits offers no zoom buttons`）。
+2. 可读文本始终可得：图下"查看源码"按钮展开同一段 Mermaid 源码（`dsh-dyslexia-source`），源码本身就是信息本体；夹具 `the source toggle flips its word` 与 `a broken diagram without host children still shows its source`，还有"内部 key 不外泄"覆盖。
+3. 引擎自己的缩放控件留在图像**之外**并可聚焦：夹具 `the zoom buttons speak the interface language`、`the zoom buttons sit outside the image`、`every enabled zoom button can take the keyboard`，且"小图不渲染缩放控件"（`a picture that fits offers no zoom buttons`）。
 
 因此"读屏用户听不到图内文字"是登记在案的已知取舍，而不是缺陷；可读文本走源码面板，这也是"文本即信息本体"在无障碍上的同一条原则。
+
+## E-PROBE 夹具能失败吗：三次探针运行
+
+第六轮实现评审抓到过一类特殊缺陷——**断言写了但恒真**（夹具没有真的制造它声称的场景），因此"套件全绿"本身不构成证据。下面三次探针是 0.1.9 发布前在同一个工作树上真实做过的：故意破坏被断言保护的代码，再跑 `node verify/run-harness.mjs`，确认对应断言**变红**，然后 `git checkout -- .` 还原。
+
+| 探针 | 破坏方式 | 跑出来变红的断言 | 观察到值 | 说明 |
+|---|---|---|---|---|
+| P1 只删 MutationObserver 的赋值 | `src/client/view.js` 里 `watcherRef.current = watcher` → `void watcher` | 无（仍然全绿） | — | 节点替换同时会触发 `ResizeObserver`，两条路径互相兜底；所以"单删一条"不构成证明，这也是评审 P0 的由来 |
+| P2 删掉重标注的两处调用 | `labelFigure(host, translateRef.current)` ×2 → `void 0` | `a swapped drawing is named again`、`a resized drawing stays named` | `graphics-document document\|null\|roledesc=flowchart` | 引擎换掉 `<svg>` 后角色与名字都没回来——用户听到的正是英文 `flowchart` |
+| P3 不释放样式表 | `entry.js` 的 `ctx.effect(() => drop, 'dsh-dyslexia: figure styles')` → `void drop` | `styles and strings are claimed as effects`、`disabling the plugin takes its stylesheet away` | `1` / `true` | 正常值分别是 `2` / `false`；`true` 表示停用后 `<style>` 仍留在文档里 |
+
+`check-bundle` 里另有一条静态守护 `the fixtures assert what the fixes promise, and can fail`：它要求 P2/P3 里那几个"能变红的断言名"继续存在，否则说明有人把夹具删了而代码检查仍绿。
 
 ## E-COMP 兼容性断言与要求逐条对应
 
 | 要求 | 可复跑的断言 |
 |---|---|
+| FR-001 就地成图、不改消息 | 浏览器：`[zh] a picture is drawn`、`[zh] exactly two buttons`；真机：E-LIVE-2（0.1.2，见 G13） |
+| FR-002 不打开侧栏、不生成文件、不新增会话条目 | 静态：`client.js never reaches the network`（不写文件、不发请求）、`published files leave the build sources out`；结构层面在 E-LIVE-2 描述过，但真机面未核对（G12） |
+| FR-003 图旁可看源码与复制 | 浏览器：`[zh] the source toggle flips its word`、`the copy button writes once`、`a real copy is reported as copied` |
+| FR-004 渲染失败回退原文 + 可读原因 | 静态：`a broken diagram reports a one-line reason`；浏览器：`a source past the size limit says why`、`a source past the size limit keeps the host block`、`a broken diagram without host children still shows its source` |
+| FR-005 浏览器端渲染、零网络请求 | 静态：`client.js never reaches the network`、`client.js carries the vendored engine`；断网实跑仍未做（G9） |
+| FR-006 按容器宽度重排、页面不横向溢出 | 浏览器：`the picture takes the column width`、`a wide picture does not widen the column`；真机触控未试（G2） |
+| FR-007 跟随宿主主题并在切换后更新 | 浏览器：`the picture follows the host colour without reloading`；真实明暗切换未做（G10） |
+| FR-008 8 种界面语言可读、畸形翻译服务回退 | 静态：`every language carries the same complete sentences`、`host key echo falls back to bundled strings`；浏览器：`[ja] the picture is drawn`（8 语言各一轮）、`a host t that echoes the key still shows words`、`a host t that throws still shows words`、`no internal key reaches the eye` |
+| FR-009 卸载/禁用/出错时回退文本 | 浏览器：`disabling the plugin takes its stylesheet away`、`a throwing children getter does not reach the host`、`styles and strings are claimed as effects`；真机卸载回退见 E-LIVE-5（0.1.2，见 G13） |
+| FR-010 重装后图恢复、无需迁移 | 真机：E-LIVE-6（0.1.2，见 G13）；数据层面由 `data-model.md` 的"图源只在消息文本里"保证 |
+| FR-011 启用时让模型知情、停用后消失 | 静态：`the host half registers exactly one capability section`、`the host half stays silent when the host changed shape`；"停用后模型侧看不到"未实测（G11） |
 | FR-012 不需要改任何指令文件就生效 | 静态：`nothing in the package asks you to edit an instruction file`（17 个随包文本文件里不出现 `AGENTS.md`/`CLAUDE.md`/`.cursorrules`，`client.js` 与 `index.js` 也不读写它们） |
 | FR-013 不声明版本否决字段 | `no dsh version gate can refuse a start` |
 | FR-014 启动/运行失败就地降级 | `apply stays silent on a changed host`、`a host that rejects the locale option does not break apply`、`a throwing engine leaves a sentence`、`an engine that fails to load leaves the picture to the host` |
@@ -234,6 +257,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.9 | client.js 769386 bytes | all 118 ch
 | 0.1.6 | `45050133828` | success，provenance logIndex `4047226918` | `8a0a2425c87d7b864b6d6089500bae6a12fe9637` |
 | 0.1.7 | `45052680467` | success，provenance logIndex `4047274153` | `935b05b457e8756ab8b45593252ab44594def0e1` |
 | 0.1.8 | `45055683813` | success，provenance logIndex `4047584418` | `30408a56f8e3d3054e7ace7feafa0fbde8e676b6` |
+| 0.1.9 | `45059529254` | success，provenance logIndex `4047793870` | `71feabc22885e097974a35668e4717837fefd226` |
 
 0.1.5 发布提交（`eeb4a05`，tag `v0.1.5`）的 CI 日志如下——**当时夹具是 82 项**：
 
@@ -266,6 +290,15 @@ npm notice total files: 33
 ```
 
 | `0.1.9` | `45059529254` | success | `71feabc22885e097974a35668e4717837fefd226` | `4047793870` | 33 | 36 项静态 + 118 项浏览器，与本机逐字一致 |
+
+0.1.9 发布提交（tag `v0.1.9`，run `45059529254`）的 CI 日志——两套检查的规模与本机一致（36 静态 + 118 浏览器），只有 `run-harness` 行末尾的浏览器路径不同（CI 是 `/usr/bin/google-chrome`，本机是 `C:/Program Files/Google/Chrome/Application/chrome.exe`）：
+
+```text
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.9 | client.js 769386 bytes | sources sha256:17eb5c7a6fb8339a904cfa56c6540d3b | all 36 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.1.9 | client.js 769386 bytes | all 118 checks passed (/usr/bin/google-chrome)
+npm notice shasum: 71feabc22885e097974a35668e4717837fefd226
+npm notice total files: 33
+```
 
 ## E-CI 发布前检查抓到一个真实缺陷（0.1.5 第一次运行）
 
@@ -310,14 +343,14 @@ Done in 2.6s using pnpm v11.28.5
 | 卸载插件后，同一条消息变回纯文本代码块，无报错无占位 | `remove_bundle` 后 `flowchart LR … A[代码块] --> B[就地成图]` 原样显示，`role="img"`（`agent-desktop` 报告为 image）与按钮计数为 0 | US2/FR-009（不含 SC-002 的会话检索命中） |
 | 重新安装后图与按钮立刻回来，历史消息不用改 | `install_bundle` 后同一屏立刻渲染 | FR-010 |
 
-## E-GAPS 没有取证的部分（共 12 项）
+## E-GAPS 没有取证的部分（共 13 项）
 
 真机、设备与离线条件（都要求动手换条件，不能在 CI 里做）：
 
 - **G1 宿主升级演练（T042）**：需要在真实 DSH 升级时验证"升级后仍能打开、插件不连累启动"。目前只有源码级论证（`unpatch` 语义、无 `engines` 门、`ctx.effect` 清理、层与包同生命周期）与 0.1.8 的 CI/夹具证据，没有一次真实升级。
 - **G2 实体手机/平板触控（T023 的硬件部分）**：窄屏证据来自 headless Chrome 的 360 px 夹具（`the picture takes the column width`、`a wide picture does not widen the column`、`the page itself never overflows`），不是真实设备触控。
 - **G3 断网裸机安装（T025）**：`client.js never reaches the network` 只证明产物没有网络调用；"一台没有任何缓存/CDN 的机器上离线装得上"没有验证。
-- **G4 畸形宿主的真机注入（T041）**：宿主机侧 7 次 `apply`（5 种静默 ctx + 2 次异常调用）与客户端 7 种畸形 ctx（缺 `systemPrompt`、`section` 抛错、返回 rejected Promise 等）只在夹具与 `check-bundle` 的 vm 里复现，没有在一次真实宿主里注入过。
+- **G4 畸形宿主的真机注入（T041）**：宿主机侧 7 次 `apply`（5 种静默 ctx + 2 次异常调用）与客户端 7 种畸形 `ctx`（`undefined`、`null`、`{}`、`{slots:null}`、`{slots:{}}`、`inject`/`register` 为空函数、`inject` 抛错）只在夹具与 `check-bundle` 的 vm 里复现，没有在一次真实宿主里注入过。
 - **G5 quickstart 的 E1–E16 逐条复跑（T031）**：证据表本身不是证据。其中 E2（同一条消息两块 `mermaid` 并存）、E16（非 `mermaid` 的代码块不受影响）**既没有夹具、也没有真机观察**——108 项夹具里没有这两类用例。E10（**卸载后旧会话回退为代码块**）有 0.1.2 的真机观察；E15 按 `quickstart.md` 的定义是"**未装插件的新会话不产生只有插件才看得懂的内容**"，它既没有夹具也没有真机观察（0.1.2 的观察里没有这一条）。
 
 指标类（定义写得出来，但没有一条被真正测量）：
@@ -332,7 +365,8 @@ Done in 2.6s using pnpm v11.28.5
 
 - **G11 FR-011 的后半（停用插件后提示词段消失）**：只有 `apply` 注册段的静态证据与宿主半边契约，没有"停用后模型侧看不到"的实测（T027）。
 - **G12 FR-002 的真机面（不打开侧栏、不生成文件、不新增会话条目）**：插件在结构上不写文件、不碰宿主布局（静态可读），但没有一次真机上"看完这张图，磁盘与会话条目都没变"的核对。
+- **G13 当前版本的重启后真机核对（T079）**：`E-LIVE` 的观察取自 **0.1.2**——插件页的 8 语言说明、图名的语言、两个按钮的文案、复制播报、卸载回退与重装恢复都是那时看的；0.1.3–0.1.9 改过 `view.js`、`i18n.js`、`entry.js`、`styles.js`，这些观察不能自动转移（见 `E-LIVE` 自己的版本注记）。0.1.9 已发布并装进 `desktop` profile，但**没有在重启后的宿主里逐项复核过**，所以算未取证。
 
 ---
 
-**本文件与 tasks.md 的关系**：`tasks.md` 末尾的状态表逐行对应上面 12 项，两处若不一致，以本文件为准（本文件是证据的归属地，`tasks.md` 是工作项的记录）。
+**本文件与 tasks.md 的关系**：`tasks.md` 末尾的状态表逐行对应上面 13 项，两处若不一致，以本文件为准（本文件是证据的归属地，`tasks.md` 是工作项的记录）。

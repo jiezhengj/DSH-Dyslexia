@@ -219,7 +219,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T076 `verify/check-bundle.mjs` 新增"图是图像、复制被播报"一项，并让报告行自带 `包名@版本 | 字节数 | 源码指纹`，让任何粘贴的输出自证来自哪棵树
 - [x] T077 夹具新增五类用例（超限源码、流式→完成、falsy children、`t` 换身份不重绘、复制播报），无障碍结构另加三项（组名、缩放按钮在图像外、可聚焦）；`verify/run-harness.mjs` 增加 `--list` 以便证据整段引用单次运行
 - [x] T078 `spec.md` 增 FR-018 与 SC-010；`contracts/client-fence-layer.md`、`data-model.md`、`research.md`（D22）同步
-- [ ] T079 重启 DSH 后做真机核对（图名/按钮/播报/插件页说明/卸载回退）。**0.1.9 的发布与安装已完成，但重启核对未做**：运行中的界面仍加载旧 chunk；E-LIVE 里能查到的真机观察仍是 **0.1.2**，0.1.7 从未在真实宿主里跑过，0.1.9 同样如此。
+- [ ] T079 重启 DSH 后做真机核对（图名/按钮/播报/插件页说明/卸载回退）。**0.1.9 的发布与安装已完成，但重启核对未做**：运行中的界面仍加载旧 chunk；E-LIVE 里能查到的真机观察仍是 **0.1.2**，0.1.7 与 0.1.8 从未在真实宿主里跑过，0.1.9 同样如此。
 - [ ] T080 再次请两位评审复核（目标 PASS），通过后把 feature 001 标记完成
 
 ## Phase 14: 第三轮独立评审后的修复（2026-11-23 追加，版本 0.1.6）
@@ -253,8 +253,8 @@ description: "Task list for 会话内图形渲染"
 - [x] T099 `isRenderableChild` 真正白名单化：只放行 React 收的形状（元素、非空字符串、非零数字、逐项检查过的数组），iterable 不再放行 → FR-016
 - [x] T100 宿主块渲染包进 `SafeChildren` 边界：宿主块自己抛错时降级为源码文本，绝不二次抛出（二次抛出会逃出图片边界、让消息空白） → FR-016
 - [x] T101 `i18n.js` 的内置字典改为**每次调用按当前界面语言取表**（原先在创建时捕获），语言切换后图名、按钮、缩放控件同时跟随 → FR-008 / FR-018
-- [x] T102 夹具 +7 项：重排版后仍命名（800px→220px）、iterable `children`、自身抛错的宿主块、注入抛错的 `inject` 宿主、缩放按钮随语言切换等 → 118 项全过
-- [x] T103 `check-bundle` +2 项：`a re-laid-out drawing is named again, not just at mount`、`a host block that throws cannot empty the message` → 35 项全过
+- [x] T102 夹具 +7 项：重排版后仍命名（800px→220px）、iterable `children`、自身抛错的宿主块、注入抛错的 `inject` 宿主、缩放按钮随语言切换等 → 108 → 109 项（后续 T108/T112/T115 又加到 118）
+- [x] T103 `check-bundle` +2 项：`a re-laid-out drawing is named again, not just at mount`、`a host block that throws cannot empty the message` → 36 项全过
 - [x] T104 文档更正（第五轮评审逐条）：`inject` 抛错确有夹具、92/101 → 109 项（0.1.9 起 118 项）、行数、畸形宿主"5 种静默 + 2 次异常"不再混用、G5 的 E15 定义、T052 的观察条数、`data-model` 的断言指向、`Mounted.result.type` 不进入 `aria-label` → 见 Phase 16 本条
 - [x] T105 打 `v0.1.8`（提交 `603a75d`）、GitHub Actions run `45055683813` success（provenance logIndex `4047584418`、tarball shasum `30408a56f8e3d3054e7ace7feafa0fbde8e676b6`、`total files: 33`）、CI 与本机同为 34 项静态 + 108 项浏览器；`remove_bundle` 卸 0.1.7 → `install_bundle @jiezhengj/dsh-dyslexia@0.1.8` applied，profile 依赖 `"0.1.8"`，安装副本 `client.js` 768340 字节 / SHA256 `E632EA8E7E5ECC1DA705B69298859D6E35BBE6E863BA0E00D2F6824ACC481755` 与仓库根一致
 
@@ -266,7 +266,7 @@ description: "Task list for 会话内图形渲染"
 
 **目的**：第六轮文档评审给出两个 P0——"未取证项全在 E-GAPS"的声明不成立（FR-012 无任何承接）、把 0.1.6 时 92 项的运行记成 108 项；另有若干断言名不存在、计数口径三套。本阶段把两条缺口补成真断言（而不是继续挂在 E-GAPS 上），并把 README 里"偏好写进 `AGENTS.md`"的措辞删掉——那与"装好即生效、不需要改任何指令文件"矛盾。
 
-- [x] T107 `check-bundle` +1 项 `nothing in the package asks you to edit an instruction file`：17 个随包文本文件不得出现 `AGENTS.md`/`CLAUDE.md`/`.cursorrules`，`client.js` 与 `index.js` 也不读写它们 → FR-012（35 项）
+- [x] T107 `check-bundle` +1 项 `nothing in the package asks you to edit an instruction file`：17 个随包文本文件不得出现 `AGENTS.md`/`CLAUDE.md`/`.cursorrules`，`client.js` 与 `index.js` 也不读写它们 → FR-012（36 项）
 - [x] T108 夹具 +1 项 `a picture that fits offers no zoom buttons`：小图不渲染引擎缩放控件，与"超宽图有 3 个"配对 → FR-018 的条件渲染（109 项，0.1.9 起 118 项）
 - [x] T109 9 份 README 的设计说明把"偏好写在自己的 `AGENTS.md`"改为"装好即生效，不需要改任何指令文件"（与 T107 的断言一致）
 - [x] T110 第六轮文档评审逐条：T087 的 `run-harness` 92 项（不是 108）、`evidence` 头版本 0.1.9、`plan.md` 的 108/34 口径、`quickstart` 的 34 项与发布示例占位符、`contracts/client-fence-layer.md` 的 `a host that rejects the locale option does not break apply` / `the retried registration drops the locale option`、`contracts/plugin-manifest.md` 的 `apply stays silent on a changed host` 与"七种"、T079/quickstart 的 0.1.8、`research.md` 的 7 组与"739 行夹具 + 122 行驱动"、`checklists` 的 SC-009～SC-010、G4 行口径
@@ -276,7 +276,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T115 夹具的假 `ctx` 按 cordis 语义收集 disposer，并断言卸载后 `<style id="dsh-dyslexia-figure-style">` 消失、层与 locale 注销被调用
 - [x] T116 `check-bundle` +1 项 `the fixtures assert what the fixes promise, and can fail`：把评审证明"恒真"的那几条断言名（换节点、重命名、缩放条件渲染、卸载清理）逐一要求存在于夹具里，防止有人删掉夹具而代码检查仍绿 → 36 项
 - [x] T117 卸载清理的证据：夹具的假 `ctx` 按 cordis 语义执行 disposer，断言卸载后样式表消失、locale 注销与层注销各被调用一次；探针验证——把 `entry.js` 的 `ctx.effect(() => drop, …)` 换成 `void drop` 后这两条变红
-- [ ] T111 打 `v0.1.9`、发布、从 registry 装回，并请第七轮双评审复核
+- [x] T111 打 `v0.1.9`（提交 `eddad24`）、发布并从 registry 装回 —— GitHub Actions run `45059529254` success（provenance logIndex `4047793870`、tarball shasum `71feabc22885e097974a35668e4717837fefd226`、`total files: 33`）；`remove_bundle` 卸 0.1.8 → `install_bundle @jiezhengj/dsh-dyslexia@0.1.9` applied，profile 依赖 `"0.1.9"`，安装副本 `client.js` 769,386 字节 / SHA256 `DAD0A3334BB557C77E8B0C9E1183C654980F86A5B3A783134F888C422A3067A8` 与仓库根一致；第七轮双评审进行中（T118）
 
 ## Dependencies & Execution Order
 
@@ -366,7 +366,7 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 | G1 | T042 宿主升级演练 | 未做 | 未真的升级 DSH 一个版本；只有源码级论证与 CI/夹具证据 |
 | G2 | T023 实体手机/平板触控 | 部分 | 360 px 无横向溢出由夹具覆盖（不是真机窗口），触屏缩放与复位未在真机试 |
 | G3 | T025 断网/裸机安装 | 未做 | 运行期零网络只有静态断言与 `file://` 夹具支撑 |
-| G4 | T041 真机注入畸形宿主 | 部分 | 应用能正常打开、会话正常已确认；六种畸形宿主只在夹具与 vm 里复现 |
+| G4 | T041 真机注入畸形宿主 | 部分 | 应用能正常打开、会话正常已确认；七种畸形宿主只在夹具与 vm 里复现 |
 | G5 | T031 E1–E16 逐条复跑 | 部分 | E1/E3/E4/E5 有夹具或 E-LIVE（0.1.2）支撑；E2 多图并存、E16 其他代码块不受影响、E15（未装插件的新会话不产生只有插件才看得懂的内容）都无夹具也无真机观察；E10（卸载后旧会话回退）有 0.1.2 观察 |
 | G6 | SC-001 计时 | 未做 | 没有"1 秒内出图"的计时 |
 | G7 | SC-002 检索命中（T019） | 未做 | 未在卸载态用 `session_search` 查过该块原文 |
@@ -375,10 +375,11 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 | G10 | SC-005 主题切换 | 部分 | 只验证了换 CSS 变量后变色，没做明→暗→明切换 |
 | G11 | FR-011 停用后提示词消失（T027） | 未做 | 宿主半边只有静态断言；本机 PATH 无 `dsh` CLI，改用 vm 断言，但不证明真实会话里停用后消失 |
 | G12 | FR-002 真机"无侧栏/无新文件" | 未做 | 结构上不写文件、不碰宿主布局，但没有一次真机核对磁盘与会话条目未变 |
+| G13 | T079 当前版本的重启后真机核对 | 未做 | 0.1.9 已发布并装进 profile `desktop`，但运行中的界面仍加载旧 chunk；`E-LIVE` 的观察取自 **0.1.2**，不能自动转移 |
 
 **已完成但需重启复核的项**：
 
 | 项 | 状态 | 说明 |
 |---|---|---|
 | T070 0.1.3 重启核对 | 已作废 | 由 T079 取代 |
-| T079 重启后真机核对 | 未做 | 0.1.9 已发布并装进 profile `desktop`，运行中的界面仍加载旧 chunk；重启后才换新，届时核对图名/按钮/播报/插件页说明/卸载回退，并把 E-LIVE 改写成 0.1.9 的记录。E-LIVE 里现有的观察是 0.1.2 的 |
+| T079 重启后真机核对（0.1.9） | 未做 | 0.1.9 已发布并装进 profile `desktop`，运行中的界面仍加载旧 chunk；重启后才换新，届时核对图名/按钮/播报/插件页说明/卸载回退，并把 E-LIVE 改写成 0.1.9 的记录。E-LIVE 里现有的观察是 0.1.2 的 |
