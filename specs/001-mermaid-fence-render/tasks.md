@@ -404,7 +404,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T204 `evidence/verification.md` 的 E-LIVE 引言"从 0.1.2 到 0.1.13"改为"从 0.1.2 到 0.1.18"，G13 区间改 0.1.3–0.1.18；`README.md` 的中文半句补回"（插件 `0.1.2`，真机只覆盖中文说明页）"，与英文半句和 `README.zh.md` 对齐
 - [x] T205 `tasks.md` 的 T187 去掉无法在 E-PROBE 表里复核的"探针 P12b"编号，改写成本轮复跑的事实（往 `files` 加一个条目后报告串仍为 `24 required files`，说明打包总数已是派生值）
 - [x] T206 因为本轮改了随包文本（`README.md`），升版本到 `0.1.18`、重建 `client.js`（fingerprint `f5b4e6eb…`）、复跑 37 / 216，避免仓库与已发布 tarball 的 README 不一致
-- [ ] T207 发布 `v0.1.18`、从 registry 装回 profile `desktop`、补 E-PUB/E-INS 行
+- [x] T207 发布 `v0.1.18`（run `45082937620`，shasum `a84c639452632014ea9fbde9063b7b4f06d236d5`，logIndex `4048815195`，33 文件）、从 registry 装回 profile `desktop`（依赖 `0.1.18`、安装副本 769,391 字节 / `3C6AABC1…37F1`，与仓库根逐字节相同）、补 E-PUB/E-INS 行
 - [ ] T208 第十六轮双评审（目标 PASS；两份都 PASS 才把 feature 001 标记完成）
 
 ## Dependencies & Execution Order
