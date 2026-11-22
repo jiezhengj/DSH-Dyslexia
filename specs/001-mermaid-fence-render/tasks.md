@@ -256,3 +256,21 @@ T027（`--dump-config` 核对）、T031（证据表汇总）。
 - 构建期加 `new Script(chunk)` 语法检查，避免语法错误连累宿主同一批 `<script>` 里的其他插件。
 - `verify/check-bundle.mjs` 由 17 项增至 22 项，浏览器夹具由 19 项增至 25 项（新增故障注入），全部通过。
 
+
+### 八种语言、图标、README 与发布（2026-11-22 追加，用户要求；T043–T052）
+
+用户提出四项要求（图标照官方风格重做、说明页对齐官方全部界面语言、README 双语索引 + 分语言简介、GitHub 建仓推送并在本机测试）。
+复核结果是官方界面语言 **8 种**（zh/en/ja/es/fr/de/ru/pt），不是 9 种；据此补了 Phase 10：
+
+- [x] T043 `icon.svg` 按官方图标风格重做（36×36、`fill="none"`、stroke 3、渐变 `#7CB7FF→#145AF3` + `#679EFE` 折线 + `#41E1AC` 描边节点），Chrome headless 出图逐版对比定稿
+- [x] T044 客户端字符串扩到 8 语言（`src/client/i18n.js` 的 `DICTIONARY`，10 个键 × 8 种语言；`fallbackLanguage()` 按 `documentElement.lang`/`navigator.language` 取语言码）
+- [x] T045 `scripts/build-preview.mjs` 生成 `docs/preview.svg`（640×300，含 pele 真实渲染的流程图，可重复生成）
+- [x] T046 8 份 `locale/<lang>.json`（title / description / detail 全部本地化，description 写清"就地画图、代码块仍是消息本体、关掉插件仍可读"）
+- [x] T047 8 份 `docs/DETAIL{,.zh,.ja,.es,.fr,.de,.ru,.pt}.md`（各自一行图片 + 该语言 alt）
+- [x] T048 `README.md` 索引（中英双语简介 + 8 语言链接）+ `README.{en,zh,ja,es,fr,de,ru,pt}.md`（同构：它做什么 / 为什么这样设计 / 你会得到什么 / 安装 / 示例 / 卸载与兼容性 / 许可）
+- [x] T049 `verify/check-bundle.mjs` 增至 24 项（新增"发布文件齐全""每种界面语言都有自己的说明页""清单指向 npm 可信的仓库"）
+- [x] T050 `package.json` 升 0.1.1，补 `repository`/`homepage`/`bugs`，`files` 收进 `docs` 与 `README*.md`
+- [x] T051 GitHub 建仓（`https://github.com/jiezhengj/DSH-Dyslexia`，public）并推送 `main`；`.github/workflows/publish.yml` 走 npm trusted publisher（OIDC + provenance）发布 0.1.1
+- [ ] T052 重启 DSH 后的真机取证：插件页 8 语言说明与新图标、会话里就地画图、卸载后旧会话回退（对应 E-COMP-5 / E1 / E10 / E11）
+
+证据：`evidence/verification.md` 的 E-LANG（语言数与说明页校验）、E-PUB2（Actions 发布与 provenance）、E-INS2（从 registry 安装 0.1.1）。T052 未做，因此仍不写"已在 DSH 界面里确认"。
