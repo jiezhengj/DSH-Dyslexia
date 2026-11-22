@@ -1,6 +1,6 @@
 # 验证证据
 
-本文件只记录**已经真实跑过**的命令输出。E-BLD、E-CHK、E-HARN 三段各自来自一次运行，其中 E-CHK 与 E-HARN 的报告行自带 `包名@版本 | client.js 字节数 | sources sha256:<指纹>`，所以这两段可被追溯到具体的一棵树；E-BLD 是构建日志本身（它写出 `client.js`，随后由这两段报告行限定）。E-PUB 记录 CI 运行，E-INS 与 E-LIVE 记录真机操作，各自注明版本与 run，不能当成"同一次运行"的输出。当前版本：`0.1.16`。
+本文件只记录**已经真实跑过**的命令输出。E-BLD、E-CHK、E-HARN 三段各自来自一次运行，其中 E-CHK 与 E-HARN 的报告行自带 `包名@版本 | client.js 字节数 | sources sha256:<指纹>`，所以这两段可被追溯到具体的一棵树；E-BLD 是构建日志本身（它写出 `client.js`，随后由这两段报告行限定）。E-PUB 记录 CI 运行，E-INS 与 E-LIVE 记录真机操作，各自注明版本与 run，不能当成"同一次运行"的输出。当前版本：`0.1.17`。
 
 复跑方式（任何人 clone 后都一样）：
 
@@ -19,12 +19,12 @@ build-client: @jiezhengj/dsh-dyslexia -> client.js (769391 bytes, 768361 charact
 ## E-CHK 静态与行为校验
 
 ```text
-ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.16
+ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.17
 ok   package.json points at the repository npm trusts — git+https://github.com/jiezhengj/DSH-Dyslexia.git
 ok   package.json declares the bundle patch and the client half — platform web, no package inject
 ok   no dsh version gate can refuse a start — no engines.dsh, no dsh peers
 ok   published files leave the build sources out — 9 patterns
-ok   the required published files exist — 24 required of the 33 packed files
+ok   the required published files exist — 24 required files
 ok   every interface language has its own plugin page — 8 languages
 ok   cordis.patch.yml inserts the plugin by package name — 3 lines
 ok   both locales carry metadata — en, zh
@@ -46,7 +46,7 @@ ok   every supported sample type draws an svg — flowchart:218x64 sequence:184x
 ok   a broken diagram reports a one-line reason — Parse error on line 2:
 ok   host key echo falls back to bundled strings — key echo, blanks, placeholders rejected
 ok   every language carries the same complete sentences — 12 keys x 8 languages, no engine text in labels
-ok   client.js matches the sources it claims — f837913297259c0f99bc780f154d287a
+ok   client.js matches the sources it claims — 1c53080c47f54e1b683218022207dcd1
 ok   the picture is the image, and the copy answer is announced — label is a noun, role="img" on the svg, copy result announced
 ok   host children react would refuse fall back to the source — objects, functions and mixed arrays fall back to the source text
 ok   every drawing the engine swaps in is named again — the engine owns re-layout; every swapped drawing node and its zoom buttons are renamed, strings follow the language
@@ -55,9 +55,9 @@ ok   a factory that cannot build never throws at the host — module-level throw
 ok   nothing in the package asks you to edit an instruction file — 17 shipped text files, no instruction-file ask
 ok   the host half registers exactly one capability section — ui:dsh-dyslexia, order 9000, 85 words
 ok   the host half stays silent when the host changed shape — five silent hosts, two throwing sections
-ok   the fixtures assert what the fixes promise, and can fail — 19 assertions present and carrying a condition
+ok   the fixtures assert what the fixes promise, and can fail — 21 assertions present and carrying a condition
 
-check-bundle: @jiezhengj/dsh-dyslexia@0.1.16 | client.js 769391 bytes | sources sha256:f837913297259c0f99bc780f154d287a | all 37 checks passed
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.17 | client.js 769391 bytes | sources sha256:1c53080c47f54e1b683218022207dcd1 | all 37 checks passed
 ```
 
 ## E-HARN 浏览器行为校验
@@ -202,6 +202,9 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.16 | client.js 769391 bytes | sources 
 [ok] the opened panel is on screen before the source changes — 1
 [ok] a source swapped for a broken one is shown once, not twice — copies=1 panels=0
 [ok] the swapped-in failure still says why
+[ok] the panel is open before a new fence replaces the text — 1
+[ok] a new fence closes a panel the reader opened for the old one — panels=0
+[ok] the new fence offers the panel closed, not open — false
 [ok] the copy answer is on screen before the source changes — 已复制
 [ok] a copy answer does not outlive the source it described
 [ok] a missing clipboard is reported, not faked — 复制失败 / 查看源码 | 复制源码
@@ -280,7 +283,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.16 | client.js 769391 bytes | sources 
 [ok] the zoom buttons speak the interface language — 放大 | 缩小 | 重置缩放
 [ok] every zoom button in reach can take the keyboard — 1/1 reachable of 3
 [ok] every zoom button is reachable once the picture is zoomed — 3/3 after zoom
-run-harness: @jiezhengj/dsh-dyslexia@0.1.16 | client.js 769391 bytes | sources sha256:f837913297259c0f99bc780f154d287a | all 213 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+run-harness: @jiezhengj/dsh-dyslexia@0.1.17 | client.js 769391 bytes | sources sha256:1c53080c47f54e1b683218022207dcd1 | all 216 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
 同一次运行的 stderr 另有 7 段被**刻意捕获**的异常堆栈（loader ×3、prompt section ×3、module ×1，例如 `dsh-dyslexia: loader Error: host changed the loader`、`dsh-dyslexia: prompt section rejected Error: asynchronous failure`）：它们来自敌意宿主用例，属正常输出，不是失败。
@@ -297,7 +300,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.16 | client.js 769391 bytes | sources s
 
 ## E-PROBE 夹具能失败吗：用破坏性探针验证
 
-如果一个断言恒真，"套件全绿"就不构成证据。0.1.8 至 0.1.15 期间共做了十四次探针：故意破坏被断言保护的代码、重建 `client.js`、跑两套检查、确认目标断言**变红**，再还原（0.1.10 起的几次在 `%TEMP%` 的仓库副本里做，不动工作树）。报告行里的项数属于**当时的套件**：0.1.10 = 119 项、0.1.11 = 152 项、0.1.12 = 156 项、0.1.13 = 197 项。
+如果一个断言恒真，"套件全绿"就不构成证据。0.1.8 至 0.1.17 期间共做了十五次探针：故意破坏被断言保护的代码、重建 `client.js`、跑两套检查、确认目标断言**变红**，再还原（0.1.10 起的几次在 `%TEMP%` 的仓库副本里做，不动工作树）。报告行里的项数属于**当时的套件**：0.1.10 = 119 项、0.1.11 = 152 项、0.1.12 = 156 项、0.1.13 = 197 项、0.1.14 = 205 项、0.1.15 起 = 213 项、0.1.17 起 = 216 项。
 
 | 探针 | 破坏方式 | 变红的断言（含报告行） | 说明 |
 |---|---|---|---|
@@ -315,6 +318,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.16 | client.js 769391 bytes | sources s
 | PR2 | 0.1.14 时：把 `showSource && !failed` 换成 `showSource` | **没有断言变红（205 全过）** | 如实记录：这条守卫是防御性的——源码一换，PR1 的重置 effect 已经收起面板，所以失败态下不会出现第二份源码；因此不能把 PR2 当成「该守卫可证伪」的证据 |
 | PR3 | 0.1.14 时：把 `FigureBoundary.render` 里 `try { input = readLayerInput(this.props) }` 拆开，直接读 | 夹具 `a fence whose props read throws is left to the host, not the message` 报 `""`（整条消息被清空） | `run-harness: 1 failed, 204 passed`，exit 1 |
 | PT1 | 0.1.15 时：把 `src/client/view.js` 的 `finishCopy('failed')` 全换成 `finishCopy('copied')` | 8 条 `[lang] a refused clipboard says so` 全部变红（`已复制 / expected 复制失败` 等） | `run-harness: 8 failed, 205 passed`，exit 1 |
+| PS1 | 0.1.17 时：只删掉 `src/client/view.js` 里 `setShowSource(false)` 一行（保留 `setCopyState('idle')`） | 夹具 `a new fence closes a panel the reader opened for the old one` → `panels=1`（应 0）、`the new fence offers the panel closed, not open` → `true`（应 `false`） | `run-harness: 2 failed, 214 passed`，exit 1。0.1.17 之前这一行删掉没有任何断言变红（第十三轮实现评审 P3-7 指出的覆盖缺口），所以新增这两条才让"源码一换就收起面板"成为可证伪的行为 |
 
 静态检查里另有一条守护 `the fixtures assert what the fixes promise, and can fail`：它要求 P1/P2/P4/P5/PA/PB/PC 里那几个"能变红的断言名"继续存在于夹具中，并且每条名字必须落在带条件的 `expect(` 调用里（掏空断言体会红），否则说明有人把夹具删了而代码检查仍绿。P6/P7 是另一道：两套检查各自的条目数被钉死，删一条也会红。
 
@@ -690,7 +694,7 @@ Done in 2.5s using pnpm v11.28.5
 
 ## E-LIVE 真机（DSH 桌面窗口内）
 
-**以下记录来自 0.1.2**，当前版本（0.1.16）的重启核对是 T079（**尚未取证**，见 G13）。之所以保留，是因为它们证明了链路本身可用；从 0.1.2 到 0.1.13 渲染层改过多次（`role` 结构、`aria-roledescription` 的移除与重排版后重标、可见的复制反馈、空/非法 `children` 的处理、源码块的 `language-mermaid` 标记、外层盒子去掉名字），所以这些观察**不能**自动转移到 `0.1.16`。
+**以下记录来自 0.1.2**，当前版本（0.1.17）的重启核对是 T079（**尚未取证**，见 G13）。之所以保留，是因为它们证明了链路本身可用；从 0.1.2 到 0.1.13 渲染层改过多次（`role` 结构、`aria-roledescription` 的移除与重排版后重标、可见的复制反馈、空/非法 `children` 的处理、源码块的 `language-mermaid` 标记、外层盒子去掉名字），所以这些观察**不能**自动转移到 `0.1.17`。
 
 | 观察 | 当时的证据 | 归属 |
 |---|---|---|

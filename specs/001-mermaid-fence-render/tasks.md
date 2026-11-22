@@ -374,6 +374,16 @@ description: "Task list for 会话内图形渲染"
 - [x] T183 发布 `v0.1.16`（run `45079253651`，shasum `4a559a0cd107e2dd2175b2d2ff10e3075a53e309`，logIndex `4048629730`，33 文件）、从 registry 装回 profile `desktop`（依赖 `0.1.16`、安装副本 769,391 字节 / `9A5ADC5B…BB3D`）、补 E-PUB/E-INS 的 0.1.16 行
 - [ ] T184 第十四轮双评审（文档 + 实现）；两份都 PASS 才把 feature 001 标记完成
 
+## Phase 26: 第十三轮实现评审的 P3 收口（2026-11-23 追加，版本 0.1.17）
+
+- [x] T185 夹具补两条把"源码一换就收起面板"变成可证伪行为：`a new fence closes a panel the reader opened for the old one`（先打开面板，再用另一段**有效**源码替换，断言 `.dsh-dyslexia-source` 计数为 0）与 `the new fence offers the panel closed, not open`（`aria-expanded === 'false'`）；新增常量 `NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'`
+- [x] T186 探针 PS1（`%TEMP%\r16-probe` 副本）：只删 `setShowSource(false)` → 上述两条变红（`panels=1`、`true`），`run-harness: 2 failed, 214 passed`，exit 1；0.1.17 之前删这一行没有任何断言变红（第十三轮实现评审 P3-7 的覆盖缺口）
+- [x] T187 `verify/check-bundle.mjs` 的 `the required published files exist` 不再把打包总数写死：返回 `${required.length} required files`（原为 `24 required of the 33 packed files`，探针 P12b 证明加一个文件后仍报"33"）；`needed` 名单补两条新断言名
+- [x] T188 `verify/run-harness.mjs` 的 `EXPECTED_CHECKS` 由 213 改 216（新增三条：两条面板断言 + 既有 `the opened panel is on screen before the source changes` 已计入）
+- [x] T189 文档计数与行数：`plan.md`（216、`check-bundle.mjs` 663 行、`harness/index.html` 1163 行）、`quickstart.md`、`research.md`（1163 + 131 = 1294）、`contracts/plugin-manifest.md`、`evidence/verification.md`（E-BLD/E-CHK/E-HARN 用 0.1.17 单次运行重写、E-PROBE 增 PS1 并把项数口径补到 0.1.17 = 216）
+- [ ] T190 发布 `v0.1.17`、从 registry 装回 profile `desktop`、补 E-PUB/E-INS 的 0.1.17 行
+- [ ] T191 第十四轮双评审（文档 + 实现）；两份都 PASS 才把 feature 001 标记完成
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

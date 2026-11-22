@@ -99,7 +99,7 @@
 
 与清单直接相关的断言：
 
-1. `package.json` 的 9 条 `files` 模式覆盖 32 个实际文件（`npm pack` 展开为 33 个，含 `package.json`），清单由 `npm pack --dry-run` 核对；`check-bundle` 里那条 `the required published files exist` 断言只覆盖其中 **24 个必须存在的文件**（8 个基础文件 + 8 个 `locale/<lang>.json` + 8 份 `README.<lang>.md`；该检查的报告串是 `24 required of the 33 packed files`）；8 篇 `DETAIL*.md` 由 `every interface language has its own plugin page` 证明，`package.json` 由 `npm pack` 清单证明，都不由那条断言证明。未匹配到 `src/`、`vendor/`、`scripts/`、`verify/`、`specs/` 下任何路径。
+1. `package.json` 的 9 条 `files` 模式覆盖 32 个实际文件（`npm pack` 展开为 33 个，含 `package.json`），清单由 `npm pack --dry-run` 核对；`check-bundle` 里那条 `the required published files exist` 断言只覆盖其中 **24 个必须存在的文件**（8 个基础文件 + 8 个 `locale/<lang>.json` + 8 份 `README.<lang>.md`；该检查的报告串是 `24 required files`（打包总数由 `npm pack --dry-run` 给出，不写死在断言里——写死的话，打包清单变了它还是一句"33"却说不出错））；8 篇 `DETAIL*.md` 由 `every interface language has its own plugin page` 证明，`package.json` 由 `npm pack` 清单证明，都不由那条断言证明。未匹配到 `src/`、`vendor/`、`scripts/`、`verify/`、`specs/` 下任何路径。
 2. `exports["./client"]` 指向的文件存在，以授权 banner 开头，`window.__ModuleLoader__.load(` 的 `id` 与包名逐字相等，导出 `apply` 与 `inject`，且正文不含 `</script`。
 3. `client.js` 中 `require(` 的实参集合 ⊆ {`react`}。
 4. `client.js` 不含 `fetch(`、`XMLHttpRequest`、动态 `import(`、外部 `http(s)://` 资源引用（仅保留 SVG 命名空间字符串）；内联 `Pele 1.13.0`。
@@ -116,7 +116,7 @@
 15. **文案完整**：12 个键 × 8 语言齐全，失败整句里不含 `{{reason}}`、不含引擎英文。
 16. **key 回显防线**：`i18n.js` 的 `isResolved` 拒绝回显 key、纯空白、未替换占位符。
 
-# 浏览器行为校验（`node verify/run-harness.mjs --list`，213 项）
+# 浏览器行为校验（`node verify/run-harness.mjs --list`，216 项）
 
 夹具 `verify/harness/index.html` 提交进仓库，用真实 Chromium 打开 `file://`，覆盖：槽注册形状、8 语言逐个驱动、5 类敌意 `t`、绘制/坏图/引擎抛错/getter 抛错、复制成功与失败、360 px 窄屏、主题换色、locale 重试、7 种畸形 `ctx`、内部 key 不外泄。
 

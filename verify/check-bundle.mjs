@@ -117,7 +117,7 @@ check('the required published files exist', () => {
     const size = statSync(join(ROOT, relative)).size
     assert(size > 0, `${relative} is empty`)
   })
-  return `${required.length} required of the 33 packed files`
+  return `${required.length} required files`
 })
 
 check('every interface language has its own plugin page', () => {
@@ -619,6 +619,8 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
     'the column measurement can see an overflow',
     'every zoom button is reachable once the picture is zoomed',
     'a source swapped for a broken one is shown once, not twice',
+  'a new fence closes a panel the reader opened for the old one',
+  'the new fence offers the panel closed, not open',
     'a copy answer does not outlive the source it described',
     'a fence whose props read throws is left to the host, not the message',
     'a host without effects keeps one stylesheet, not one per apply',

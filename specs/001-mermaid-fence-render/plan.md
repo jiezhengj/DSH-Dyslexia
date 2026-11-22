@@ -30,7 +30,7 @@
 - 所有宿主服务调用、注册调用、渲染调用都就地降级，绝不把异常抛回宿主；
 - 宿主派发的数据不符合预期时，一律交回宿主原本的代码块。
 
-**Scale/Scope**: 单张图通常 5–20 个节点；上限由 pele 的 `limit`/`outputLimit`/`maxEdges` 约束，超限即回退为文本（FR-004）。代码量实况（2026-11-23，0.1.16）：宿主 `index.js` 57 行；`src/client` 共 1000 行（view 484 / i18n 209 / styles 122 / figure 91 / entry 94）；`scripts/build-client.mjs` 147 行；`verify/check-bundle.mjs` 661 行；`verify/harness/index.html` 1131 行 + 驱动 `verify/run-harness.mjs` 131 行。
+**Scale/Scope**: 单张图通常 5–20 个节点；上限由 pele 的 `limit`/`outputLimit`/`maxEdges` 约束，超限即回退为文本（FR-004）。代码量实况（2026-11-23，0.1.17）：宿主 `index.js` 57 行；`src/client` 共 1000 行（view 484 / i18n 209 / styles 122 / figure 91 / entry 94）；`scripts/build-client.mjs` 147 行；`verify/check-bundle.mjs` 663 行；`verify/harness/index.html` 1163 行 + 驱动 `verify/run-harness.mjs` 131 行。
 
 ## Constitution Check
 
@@ -108,7 +108,7 @@ verify/
 ├── check-bundle.mjs     # 纯 Node 内置模块的静态与行为断言（37 项）
 ├── run-harness.mjs      # 用真实 Chromium 打开夹具并读判定
 └── harness/
-    ├── index.html       # 提交进仓库的浏览器夹具（213 项）
+    ├── index.html       # 提交进仓库的浏览器夹具（216 项）
     └── vendor/          # React 18.3.1 UMD 副本
 tests/                   # 不放测试框架；verify/ 即验收脚本
 ```

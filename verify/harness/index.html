@@ -81,6 +81,7 @@
         }
         const missingLanguage = LANGS.filter((lang) => !EXACT[lang] || !EXACT[lang].copied)
         const CODE = 'flowchart LR\n  A[Text] --> B[Picture]'
+const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
         const BAD = 'flowchart TD\n  A-->'
         const WIDE = 'flowchart LR\n  A[aaaaaaaaaaaaaaaaaaaa] --> B[bbbbbbbbbbbbbbbbbbbb]\n  B --> C[cccccccccccccccccccc]'
 
@@ -508,6 +509,37 @@
           expect(!!swappedView.stage.querySelector('.dsh-dyslexia-note'), 'the swapped-in failure still says why')
           swappedView.root.unmount()
           swappedView.stage.remove()
+
+          /* A panel the reader opened belongs to the text they opened it for:
+           * when a different (still valid) fence replaces it, the panel must be
+           * closed again — otherwise the next diagram arrives with a panel that
+           * the reader never asked for. The broken-source case above cannot see
+           * this, because a failed fence hides the panel anyway. */
+          const nextSourceView = mount(Layer, { code: CODE, streaming: false, children: hostBlock(CODE) })
+          await tick(80)
+          const nextToggle = nextSourceView.stage.querySelectorAll('button')[0]
+          if (nextToggle) nextToggle.click()
+          await tick(60)
+          expect(
+            nextSourceView.stage.querySelectorAll('.dsh-dyslexia-source').length === 1,
+            'the panel is open before a new fence replaces the text',
+            String(nextSourceView.stage.querySelectorAll('.dsh-dyslexia-source').length),
+          )
+          nextSourceView.root.render(React.createElement(Layer, { code: NEXT_CODE, streaming: false, children: hostBlock(NEXT_CODE) }))
+          await tick(140)
+          expect(
+            nextSourceView.stage.querySelectorAll('.dsh-dyslexia-source').length === 0,
+            'a new fence closes a panel the reader opened for the old one',
+            'panels=' + nextSourceView.stage.querySelectorAll('.dsh-dyslexia-source').length,
+          )
+          const nextToggleAgain = nextSourceView.stage.querySelectorAll('button')[0]
+          expect(
+            nextToggleAgain && nextToggleAgain.getAttribute('aria-expanded') === 'false',
+            'the new fence offers the panel closed, not open',
+            nextToggleAgain ? String(nextToggleAgain.getAttribute('aria-expanded')) : 'no toggle',
+          )
+          nextSourceView.root.unmount()
+          nextSourceView.stage.remove()
 
           const answerView = mount(Layer, { code: CODE, streaming: false, children: hostBlock(CODE) })
           await tick(80)
