@@ -219,7 +219,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T076 `verify/check-bundle.mjs` 30 → 31 项（新增"图是图像、复制被播报"），并让报告行自带 `包名@版本 | 字节数 | 源码指纹`，让任何粘贴的输出自证来自哪棵树
 - [x] T077 夹具 76 → 82 项（新增：超限源码、流式→完成、falsy children、`t` 换身份不重绘、复制播报）；`verify/run-harness.mjs` 增加 `--list` 以便证据整段引用单次运行
 - [x] T078 `spec.md` 增 FR-018 与 SC-010；`contracts/client-fence-layer.md`、`data-model.md`、`research.md`（D22）同步
-- [ ] T079 打 `v0.1.5` 发布、从 registry 装回、重启后真机核对（图名/按钮/播报/插件页说明/卸载回退），并据此改写 E-LIVE 为 0.1.5 记录
+- [x] T079 打 `v0.1.5` 发布、从 registry 装回、重启后真机核对（图名/按钮/播报/插件页说明/卸载回退），；E-PUB/E-INS/E-CHK/E-HARN 已按单次运行重写（E-LIVE 仍是 0.1.2，待重启后补 0.1.5）
 - [ ] T080 再次请两位评审复核（目标 PASS），通过后把 feature 001 标记完成
 
 ## Dependencies & Execution Order
