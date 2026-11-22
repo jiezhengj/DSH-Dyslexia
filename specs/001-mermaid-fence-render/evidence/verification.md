@@ -379,6 +379,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.18 | client.js 769391 bytes | sources s
 | 0.1.15 | `45077593236` | success | `5fbef04ff91abd350983df0349386f13df8e2a27` | `4048568677` | 33 |
 | 0.1.16 | `45079253651` | success | `4a559a0cd107e2dd2175b2d2ff10e3075a53e309` | `4048629730` | 33 |
 | 0.1.17 | `45079768869` | success | `e7db974d5fe519d9d454b9a5807ce7d49f943955` | `4048647791` | 33 |
+| 0.1.18 | `45082937620` | success | `a84c639452632014ea9fbde9063b7b4f06d236d5` | `4048815195` | 33 |
 
 > `—` 表示该次发布没有对应记录：0.1.0 是手动 `npm publish`，没有 provenance；0.1.5 的第一次是失败的运行，没有产物。0.1.3 与 0.1.4 当时没有记下 logIndex，这里写"未记录"而不是补造一个。
 
@@ -666,6 +667,16 @@ npm notice total files: 33
 npm notice publish Provenance statement published to transparency log: https://search.sigstore.dev/?logIndex=4048647791
 ```
 
+0.1.18（run `45082937620`，37 项静态 / 216 项浏览器）：
+
+```text
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.18 | client.js 769391 bytes | sources sha256:f5b4e6eb0b1402f42ba0fcc19e23df9e | all 37 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.1.18 | client.js 769391 bytes | sources sha256:f5b4e6eb0b1402f42ba0fcc19e23df9e | all 216 checks passed (/usr/bin/google-chrome)
+npm notice shasum: a84c639452632014ea9fbde9063b7b4f06d236d5
+npm notice total files: 33
+npm notice publish Provenance statement published to transparency log: https://search.sigstore.dev/?logIndex=4048815195
+```
+
 ## E-CI 发布前检查抓到一个真实缺陷（0.1.5 第一次运行）
 
 `45046044274` 在 "Refuse to publish if the committed chunk is stale" 这一步失败：
@@ -681,11 +692,11 @@ npm notice publish Provenance statement published to transparency log: https://s
 
 ## E-INS 从 registry 安装
 
-`plugin_manager remove_bundle @jiezhengj/dsh-dyslexia`（卸 0.1.16，pnpm 输出 `- @jiezhengj/dsh-dyslexia 0.1.16`）→ `install_bundle` 目标 `@jiezhengj/dsh-dyslexia@0.1.17`，结果 `application: "applied"`、`version: "0.1.17"`，pnpm 输出：
+`plugin_manager remove_bundle @jiezhengj/dsh-dyslexia`（卸 0.1.17，pnpm 输出 `- @jiezhengj/dsh-dyslexia 0.1.17`）→ `install_bundle` 目标 `@jiezhengj/dsh-dyslexia@0.1.18`，结果 `application: "applied"`、`version: "0.1.18"`，pnpm 输出：
 
 ```text
 dependencies:
-+ @jiezhengj/dsh-dyslexia 0.1.17
++ @jiezhengj/dsh-dyslexia 0.1.18
 
 Done in 2.4s using pnpm v11.28.5
 ```
@@ -696,11 +707,11 @@ Done in 2.4s using pnpm v11.28.5
 
 | 检查 | 实测 |
 |---|---|
-| profile 依赖 | `"@jiezhengj/dsh-dyslexia": "0.1.17"`（版本号，不是 `link:`） |
-| `node_modules/@jiezhengj/dsh-dyslexia/client.js` | 769,391 字节，SHA256 `2FE079ED413AA87AA0EF61A5AB219E1D1C47E66378F1568876C6F4C1E321B43B`（与仓库根逐字节相同） |
+| profile 依赖 | `"@jiezhengj/dsh-dyslexia": "0.1.18"`（版本号，不是 `link:`） |
+| `node_modules/@jiezhengj/dsh-dyslexia/client.js` | 769,391 字节，SHA256 `3C6AABC1DCE749B1BE2FAF743B4F5CC91492A798A54597FD2FE0AF3B43AF37F1`（与仓库根逐字节相同） |
 | `locale/` | 8 个 json |
 | `docs/` | 9 个文件（8 篇 `DETAIL*.md` + `preview.svg`） |
-| 包内 `version` | `0.1.17` |
+| 包内 `version` | `0.1.18` |
 
 ## E-LIVE 真机（DSH 桌面窗口内）
 
@@ -735,7 +746,7 @@ Done in 2.4s using pnpm v11.28.5
 
 - **G11 FR-011 的后半（停用插件后提示词段消失）**：只有 `apply` 注册段的静态证据与宿主半边契约，没有"停用后模型侧看不到"的实测（T027）。
 - **G12 FR-002 的真机面（不打开侧栏、不生成文件、不新增会话条目）**：插件在结构上不写文件、不碰宿主布局（静态可读），但没有一次真机上"看完这张图，磁盘与会话条目都没变"的核对。
-- **G13 当前版本的重启后真机核对（T079）**：`E-LIVE` 的观察取自 **0.1.2**，且只有四件事——插件页的**中文**说明与插图、会话里就地成图（图名 `图：flowchart`、两个按钮）、卸载后同一条消息回退为代码块、重装后图与按钮立刻回来。**复制播报**（0.1.5 起才有）与**其余 7 种语言的插件页**从未在真机上看过，不能算已观察。0.1.3–0.1.18 改过 `view.js`、`i18n.js`、`entry.js`、`styles.js`，这些观察不能自动转移。0.1.11 至 0.1.18 都已发布并装进 `desktop` profile，但**没有在重启后的宿主里逐项复核过**，所以算未取证。
+- **G13 当前版本的重启后真机核对（T079）**：`E-LIVE` 的观察取自 **0.1.2**，且只有四件事——插件页的**中文**说明与插图、会话里就地成图（图名 `图：flowchart`、两个按钮）、卸载后同一条消息回退为代码块、重装后图与按钮立刻回来。**复制播报**（0.1.5 起才有）与**其余 7 种语言的插件页**从未在真机上看过，不能算已观察。0.1.3–0.1.17 改过 `view.js`、`i18n.js`、`entry.js`、`styles.js`（0.1.18 只改了文档与 README），这些观察不能自动转移。0.1.11 至 0.1.18 都已发布并装进 `desktop` profile，但**没有在重启后的宿主里逐项复核过**，所以算未取证。
 - **G14 真实窗口缩放时的引擎重绘（FR-018 的端到端面）**：0.1.10 把重排版交给引擎自己的 `ResizeObserver`（pele 内部），插件只负责"节点被换回来就重新命名"。夹具能证明"节点被换 → 立刻重新命名"，但**无法让引擎在无头浏览器里真的因窗口缩放而重绘**（无头环境第一帧之后不再派发帧与 ResizeObserver 通知）。真实窗口里"拖窄窗口 → 引擎重绘 → 名字回来"这条链只有机制级证据。
 - **G15 尚未覆盖的加固面（第十轮实现评审记录）**：`src/client/figure.js` 的 `outputLimit`（2 MiB）与 `maxEdges`（400）没有用例；`src/client/entry.js` 里 `slots.inject(...)` 返回的 disposer 被丢掉（层本身随 `apply` 的作用域一起消失，但没有"二次 apply 不重复注册"或"inject 的句柄被单独释放"的断言）；`package.json` 的 `prepack` 只跑构建与 `check-bundle`，不跑夹具（依赖 CI 的五步兜住）；`package.json` 若加入 `engines.node` 等非 `dsh` 子键，`no dsh version gate can refuse a start` 不会变红（当前清单没有 `engines` 键，属"没有断言的清单形状面"）。这五项都不影响已发布行为，但都属于"没有证据的加固"。
 - **G16 vendor 文本与换节点的无头局限（记录）**：`client.js` 里 vendor 许可注释含 `https://github.com/obsidianmd/pele`，属静态文本、无网络行为；「引擎换掉 `<svg>` 后重新命名」在无头环境里只能靠夹具重放（真实拖窄窗口的端到端见 G14）。规模上限按 G15 记，这里不重复。
