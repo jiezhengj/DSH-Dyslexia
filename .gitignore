@@ -9,3 +9,4 @@ __pycache__/
 *.pyc
 .specify/workflows/.cache/
 .specify/.workflow-install.lock
+.tmp-ls.json
