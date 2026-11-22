@@ -397,7 +397,10 @@ check('every language carries the same complete sentences', () => {
 })
 
 function sourceFingerprint() {
-  const fragments = ['styles.js', 'i18n.js', 'figure.js', 'view.js', 'entry.js'].map((name) => read(`src/client/${name}`))
+  // Same normalisation as the builder: CRLF and LF checkouts must agree.
+  const fragments = ['styles.js', 'i18n.js', 'figure.js', 'view.js', 'entry.js'].map((name) =>
+    read(`src/client/${name}`).replace(/\r\n/g, '\n'),
+  )
   const hash = createHash('sha256')
   hash.update(manifest.name)
   hash.update('\u0000')

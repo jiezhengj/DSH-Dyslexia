@@ -42,8 +42,18 @@ if (vendor.includes('sourceMappingURL')) fail('vendored engine must not point at
 
 const engineVersion = (vendor.match(/Pele (\d+\.\d+\.\d+)/) || [])[1] || 'unknown'
 
+/**
+ * Sources are read with their newlines normalised to LF. A Windows checkout can
+ * hand over CRLF, and the committed chunk is LF (`.gitattributes`), so without
+ * this the same sources would produce two different chunks — which is exactly how
+ * a "stale chunk" guard turns into a false alarm on a clean build.
+ */
+function readSource(name) {
+  return readFileSync(join(ROOT, 'src', 'client', name), 'utf8').replace(/\r\n/g, '\n')
+}
+
 const fragments = SOURCES.map((name) => {
-  const text = readFileSync(join(ROOT, 'src', 'client', name), 'utf8')
+  const text = readSource(name)
   if (text.includes('</script')) fail(`${name}: an inline </script would end the host page`)
   if (!text.endsWith('\n')) fail(`${name}: must end with a newline`)
   return text
