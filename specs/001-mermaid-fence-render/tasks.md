@@ -242,7 +242,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T093 `ensureFigureStyles` 返回自己注入的 `<style>`，`apply` 用 `ctx.effect(() => drop)` 在停用时移除（注意 `ctx.effect(setup)` 把返回值当清理函数，把清理函数当 setup 传会立刻执行）
 - [x] T094 夹具补 9 项：对象 `children`、函数 `children`、失败图 + 对象 `children`、含对象的数组 `children`（各断言"消息不为空"且"没有 React #31"）、流式无宿主块仍显示源码、以及图像名/无英文 role description/全图唯一图像三项 → 92 → 101 项
 - [x] T095 文档更正：证据版本口径（0.1.5 → 0.1.7）、E-LIVE 的缺口绑定到 0.1.7、G5 改成"E2/E16 无夹具无观察"、E15 编号纠正、FR-016/FR-018 补齐断言名、plan 与 research 的实测行数（客户端 842 / 夹具 582 / 驱动 122）、T040 与 T083 的项数历史（76 → 82 → 92 → 101）、T088 勾选、T070 标作废、删掉多余围栏
-- [ ] T096 打 `v0.1.7` 发布并从 registry 装回 `desktop` profile
+- [x] T096 打 `v0.1.7` 发布并从 registry 装回 `desktop` profile —— 已完成：run `45052680467`，provenance logIndex `4047274153`，shasum `935b05b457e8756ab8b45593252ab44594def0e1`；`install_bundle` 装成 `0.1.7`，profile 依赖 `"0.1.7"`，安装副本 765002 字节、SHA256 `4DD2F68573DD7943CC1130488477A9B88F5045EE32BB8739C1AA8A6CFA3972B6` 与仓库一致
 - [ ] T097 第五轮双评审复核；通过后把 feature 001 标记完成
 
 ## Dependencies & Execution Order
