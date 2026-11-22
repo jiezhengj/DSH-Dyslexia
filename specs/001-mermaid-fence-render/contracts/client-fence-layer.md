@@ -54,7 +54,7 @@ type Props = {
 2. 渲染成功 → 返回 `[图容器, 源码切换条]`；不包裹 `children`。
 3. 解析失败或超限 → 返回 `[一行本地化说明, children]`；说明必须可见、可读屏、不带堆栈。
 4. 渲染中不改页面其余部分：不设全局样式、不动 `<html>`/`<body>`、不监听 `window` 的滚动或按键。
-5. 卸载/重渲染必须 `destroy()` pele 实例并断开 `ResizeObserver`，不留定时器、不留事件监听。
+5. 卸载/重渲染必须 `destroy()` pele 实例并断开自己的 `MutationObserver`，不留定时器、不留事件监听。**重排版不归插件管**：引擎自己的尺寸观察会重绘，插件不另建 `ResizeObserver`、不 `requestAnimationFrame`（0.1.10 起，见 `research.md` D22）。
 6. 组件自身抛错时必须由本层的错误边界就地接管并渲染 `children`，不得让异常冒到宿主的渲染树、也不得让同消息其他块白屏（FR-014、FR-016）。
 
 # 降级契约（兼容性，对应 FR-014～FR-016）
@@ -70,7 +70,7 @@ type Props = {
 
 # DOM 与可访问性契约
 
-- 结构：外层 `div.dsh-dyslexia-group`（`role="group"`、`aria-label` = 本地化的纯名词"图/Diagram/…"），内层 `div.dsh-dyslexia-figure` 是唯一的挂载点，`max-width: 100%`、`overflow: auto`。
+- 结构：外层 `div.dsh-dyslexia-group`（`role="group"`，**自身不带 `aria-label`**——名字已经由里面的图像提供，两处都写会让读屏念两遍），内层 `div.dsh-dyslexia-figure` 是唯一的挂载点，`max-width: 100%`、`overflow: auto`。
 - 图像角色：`role="img"` + `aria-label` 只落在引擎画出的 `svg` 上（且全图恰好一个），挂载点 `role="presentation"`。理由：pele 会把自己的缩放按钮追加在挂载点里，若 `role="img"` 落在容器上，读屏会把缩放按钮当成图像的一部分而无法单独聚焦（FR-018）。
 - 引擎标记：挂载后移除引擎自带的 `aria-roledescription`（它会读出英文引擎类型，如 `flowchart`）；换界面语言时就地改写 `svg` 的 `aria-label`，不重挂载（不丢缩放状态）。
 - 命名：`aria-label` 只用本地化名词，**不拼引擎类型**（不出现 `flowchart`、`{{type}}` 之类技术标记）。

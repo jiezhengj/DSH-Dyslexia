@@ -6,20 +6,20 @@
 
 ```bash
 node scripts/build-client.mjs       # 由 src/client/*.js + vendor/pele 生成 client.js
-node verify/check-bundle.mjs        # 34 项静态与行为断言，纯 Node 内置模块
-node verify/run-harness.mjs --list  # 108 项浏览器断言，需要本机 Chrome
+node verify/check-bundle.mjs        # 36 项静态与行为断言，纯 Node 内置模块
+node verify/run-harness.mjs --list  # 119 项浏览器断言，需要本机 Chrome
 ```
 
 ## E-BLD 构建
 
 ```text
-build-client: @jiezhengj/dsh-dyslexia -> client.js (769386 bytes, 768356 characters, engine 1.13.0, sources 5, syntax ok)
+build-client: @jiezhengj/dsh-dyslexia -> client.js (767298 bytes, 766268 characters, engine 1.13.0, sources 5, syntax ok)
 ```
 
 ## E-CHK 静态与行为校验
 
 ```text
-ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.9
+ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.10
 ok   package.json points at the repository npm trusts — git+https://github.com/jiezhengj/DSH-Dyslexia.git
 ok   package.json declares the bundle patch and the client half — platform web, no package inject
 ok   no dsh version gate can refuse a start — no engines.dsh, no dsh peers
@@ -28,7 +28,7 @@ ok   every published file exists — 24 files
 ok   every interface language has its own plugin page — 8 languages
 ok   cordis.patch.yml inserts the plugin by package name — 3 lines
 ok   both locales carry metadata — en, zh
-ok   client.js is one loader chunk keyed by the package name — 769386 bytes
+ok   client.js is one loader chunk keyed by the package name — 767298 bytes
 ok   client.js requires react and nothing else — react
 ok   client.js never reaches the network — no fetch, no XHR, no dynamic import, no remote URL
 ok   client.js carries the vendored engine — Pele 1.13.0 inlined
@@ -45,20 +45,17 @@ ok   every supported sample type draws an svg — flowchart:218x64 sequence:184x
 ok   a broken diagram reports a one-line reason — Parse error on line 2:
 ok   host key echo falls back to bundled strings — key echo, blanks, placeholders rejected
 ok   every language carries the same complete sentences — 12 keys x 8 languages, no engine text in labels
-ok   client.js matches the sources it claims — 17eb5c7a6fb8339a904cfa56c6540d3b
+ok   client.js matches the sources it claims — 336ea7199fb90a0c8202c03e0c14bbe7
 ok   the picture is the image, and the copy answer is announced — label is a noun, role="img" on the svg, copy result announced
 ok   host children react would refuse fall back to the source — objects, functions and mixed arrays fall back to the source text
-ok   a re-laid-out drawing is named again, not just at mount — labelling runs at mount, after re-layout and on a swapped node; strings follow the language
+ok   every drawing the engine swaps in is named again — the engine owns re-layout; every swapped drawing node and its zoom buttons are renamed, strings follow the language
 ok   a host block that throws cannot empty the message — host blocks render inside their own boundary, with the source text as the floor
 ok   a factory that cannot build never throws at the host — module-level throw contained, empty module returned
 ok   nothing in the package asks you to edit an instruction file — 17 shipped text files, no instruction-file ask
 ok   the host half registers exactly one capability section — ui:dsh-dyslexia, order 9000, 85 words
 ok   the host half stays silent when the host changed shape — five silent hosts, one throwing section
 ok   the fixtures assert what the fixes promise, and can fail — 7 assertions present
-
-check-bundle: @jiezhengj/dsh-dyslexia@0.1.9 | client.js 769386 bytes | sources sha256:17eb5c7a6fb8339a904cfa56c6540d3b | all 36 checks passed
-
-# stderr（刻意）：若干条 "dsh-dyslexia: …" 是敌意宿主探针的告警，判定只看上面 stdout 的报告行
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.10 | client.js 767298 bytes | sources sha256:336ea7199fb90a0c8202c03e0c14bbe7 | all 36 checks passed
 ```
 
 ## E-HARN 浏览器行为校验
@@ -152,31 +149,28 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.9 | client.js 769386 bytes | sources s
 [ok] a source past the size limit keeps the host block
 [ok] the picture appears when the stream ends
 [ok] a falsy children is not mistaken for content — 图里的语法有误，已改为显示源码。flowchart TD
-  A-->
 [ok] a refused children cannot empty the message — object — children=1 text=flowchart LR
-  A[Tex
 [ok] no React error 31 escapes — object
 [ok] a refused children cannot empty the message — function — children=1 text=flowchart LR
-  A[Tex
 [ok] no React error 31 escapes — function
 [ok] a refused children cannot empty the message — object in a failed picture — children=3 text=图里的语法有误，已改为显示源码。flow
 [ok] no React error 31 escapes — object in a failed picture
 [ok] a refused children cannot empty the message — array with an object — children=3 text=图里的语法有误，已改为显示源码。flow
 [ok] no React error 31 escapes — array with an object
 [ok] a streaming block with no host children still shows its source — flowchart LR
-  A[Text] --> B[P
 [ok] a fresh t does not redraw the picture
 [ok] the drawing is named when it is first laid out — img|图
 [ok] the fixture really replaced the drawing node — new node
 [ok] a swapped drawing is named again — img|图|roledesc=null
-[ok] a resized drawing stays named — img|图|roledesc=null
+[ok] the fixture replaced the drawing again after the column narrowed — new node
+[ok] a drawing swapped after a width change is named again — img|图|roledesc=null
 [ok] a hostile host block still leaves the message — an iterable of plain objects — text=图里的语法有误，已改为显示源码。flowchar
 [ok] a hostile host block still leaves the message — a host block that throws while rendering — text=图里的语法有误，已改为显示源码。flowchar
 [ok] the zoom buttons speak the language they were mounted in — 放大 | 缩小 | 重置缩放
 [ok] the zoom buttons follow the interface language — labels=[Zoom in | Zoom out | Reset zoom] nodes=DIV.pele pele-zoom: ~ BUTTON.pele-zoom-in:Zoom in ~ svg.[object SVGAnimatedString]: ~ path.[object SVGAnimatedString]: ~ BUTTON.pele-zoom-out:Zoom out ~ svg.[object SVGAnimatedString]: ~ path.[object SVGAnimatedString]: ~ BUTTON.pele-zoom-reset:Reset zoom ~ svg.[object SVGAnimatedString]: ~ path.[ob
 [ok] the copy answer is announced, not only coloured — 已复制
 [ok] the box around the picture is a group
-[ok] the group carries the localised name — 图
+[ok] the box around the picture carries no name of its own — null
 [ok] the drawing itself is the image
 [ok] a picture that fits offers no zoom buttons — 0
 [ok] the image carries the localised name — 图
@@ -186,30 +180,31 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.9 | client.js 769386 bytes | sources s
 [ok] the zoom buttons sit outside the image — 0
 [ok] the zoom buttons speak the interface language — 放大 | 缩小 | 重置缩放
 [ok] every enabled zoom button can take the keyboard — 2/2 enabled of 3
-run-harness: @jiezhengj/dsh-dyslexia@0.1.9 | client.js 769386 bytes | all 118 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+run-harness: @jiezhengj/dsh-dyslexia@0.1.10 | client.js 767298 bytes | all 119 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
 ## E-A11Y 图像的读屏取舍（`role="img"` 的代价与补偿）
 
 `role="img"` 让一张图对读屏是一个**有名字的图形**，而不是一堆散落的 `<text>`，代价是：**一旦容器声明为 `img`，辅助技术不再念其中的文字**，图里的节点文字对读屏用户不可达。这是有意的取舍，补偿有三条：
 
-1. 名字可本地化：`svg` 上的 `aria-label` 来自 8 种界面语言的 `figureLabel`（纯名词，不拼引擎类型），并删掉引擎塞进来的英文 `aria-roledescription="flowchart"`；夹具逐语言断言 `the image carries the localised name` 与 `the image carries no english role description`。
+1. 名字可本地化：`svg` 上的 `aria-label` 来自 8 种界面语言的 `figureLabel`（纯名词，不拼引擎类型），并删掉引擎塞进来的英文 `aria-roledescription="flowchart"`；外面那层盒子只声明 `role="group"`，**不带自己的名字**，避免读屏把同一个名字念两遍；夹具逐语言断言 `the image carries the localised name` 与 `the image carries no english role description`。
 2. 可读文本始终可得：图下"查看源码"按钮展开同一段 Mermaid 源码（`dsh-dyslexia-source`），源码本身就是信息本体；夹具 `the source toggle flips its word` 与 `a broken diagram without host children still shows its source`，还有"内部 key 不外泄"覆盖。
 3. 引擎自己的缩放控件留在图像**之外**并可聚焦：夹具 `the zoom buttons speak the interface language`、`the zoom buttons sit outside the image`、`every enabled zoom button can take the keyboard`，且"小图不渲染缩放控件"（`a picture that fits offers no zoom buttons`）。
 
 因此"读屏用户听不到图内文字"是登记在案的已知取舍，而不是缺陷；可读文本走源码面板，这也是"文本即信息本体"在无障碍上的同一条原则。
 
-## E-PROBE 夹具能失败吗：三次探针运行
+## E-PROBE 夹具能失败吗：用破坏性探针验证
 
-第六轮实现评审抓到过一类特殊缺陷——**断言写了但恒真**（夹具没有真的制造它声称的场景），因此"套件全绿"本身不构成证据。下面三次探针是 0.1.9 发布前在同一个工作树上真实做过的：故意破坏被断言保护的代码，再跑 `node verify/run-harness.mjs`，确认对应断言**变红**，然后 `git checkout -- .` 还原。
+如果一个断言恒真，"套件全绿"就不构成证据。0.1.10 发布前在同一工作树上做了四次探针：故意破坏被断言保护的代码、重建 `client.js`、跑两套检查、确认目标断言**变红**，再还原。
 
-| 探针 | 破坏方式 | 跑出来变红的断言 | 观察到值 | 说明 |
-|---|---|---|---|---|
-| P1 只删 MutationObserver 的赋值 | `src/client/view.js` 里 `watcherRef.current = watcher` → `void watcher` | 无（仍然全绿） | — | 节点替换同时会触发 `ResizeObserver`，两条路径互相兜底；所以"单删一条"不构成证明，这也是评审 P0 的由来 |
-| P2 删掉重标注的两处调用 | `labelFigure(host, translateRef.current)` ×2 → `void 0` | `a swapped drawing is named again`、`a resized drawing stays named` | `graphics-document document\|null\|roledesc=flowchart` | 引擎换掉 `<svg>` 后角色与名字都没回来——用户听到的正是英文 `flowchart` |
-| P3 不释放样式表 | `entry.js` 的 `ctx.effect(() => drop, 'dsh-dyslexia: figure styles')` → `void drop` | `styles and strings are claimed as effects`、`disabling the plugin takes its stylesheet away` | `1` / `true` | 正常值分别是 `2` / `false`；`true` 表示停用后 `<style>` 仍留在文档里 |
+| 探针 | 破坏方式 | 变红的断言（含报告行） | 说明 |
+|---|---|---|---|
+| P1 | 删掉 `src/client/view.js` 里整个 `MutationObserver` 块 | 夹具 `a swapped drawing is named again` → `graphics-document document\|null\|roledesc=flowchart`；`a drawing swapped after a width change is named again` → 同上；静态 `every drawing the engine swaps in is named again` → `a swapped drawing node is not watched for` | 报告行 `run-harness: 2 failed, 117 passed`（exit 1）。这是本插件对"引擎换掉 `<svg>`"的**唯一**路径，也是 FR-018 的实际机制 |
+| P2 | `entry.js` 的 `ctx.effect(() => drop, 'dsh-dyslexia: figure styles')` → `void drop` | 夹具 `styles and strings are claimed as effects` → `1`（应 2）、`disabling the plugin takes its stylesheet away` → `true`（应 `false`） | 停用后 `<style>` 留在宿主文档里 |
+| P3 | 0.1.8 时：两处 `labelFigure(host, translateRef.current)` → `void 0` | 同上两条命名断言 | 那一版还自带 ResizeObserver 驱动的重排版路径，已被 0.1.10 删除（见 D22） |
+| P4 | `src/client/figure.js` 把字号改成 200 | 夹具 `a picture that fits offers no zoom buttons` → `3`（应 0） | 条件渲染缩放按钮的断言确实在执行 |
 
-`check-bundle` 里另有一条静态守护 `the fixtures assert what the fixes promise, and can fail`：它要求 P2/P3 里那几个"能变红的断言名"继续存在，否则说明有人把夹具删了而代码检查仍绿。
+静态检查里另有一条守护 `the fixtures assert what the fixes promise, and can fail`：它要求 P1/P2/P4 里那几个"能变红的断言名"继续存在于夹具中，否则说明有人把夹具删了而代码检查仍绿。
 
 ## E-COMP 兼容性断言与要求逐条对应
 
@@ -232,7 +227,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.9 | client.js 769386 bytes | all 118 ch
 | FR-015 产物自身可编译、加载失败不连累同批 | `client.js compiles on its own`、`a broken host loader cannot make the chunk throw`、`a failing factory still yields a silent module`、`a factory that cannot build never throws at the host` |
 | FR-016 宿主数据畸形时交回原代码块 | `a hostile host block still leaves the message — an iterable of plain objects`、`a throwing code getter leaves the host block`、`a throwing children getter does not reach the host`、`a falsy children is not mistaken for content`、`a refused children cannot empty the message — object`、`a refused children cannot empty the message — function`、`a refused children cannot empty the message — object in a failed picture`、`a refused children cannot empty the message — array with an object`、`no React error 31 escapes — object`、`a streaming block with no host children still shows its source` |
 | FR-017 每条加固都有可重复证据 | 本节所有断言都在仓库里，`node verify/*.mjs` 可复跑；`npm test` 一次跑完两套 |
-| FR-018 无障碍结构与播报 | 静态：`the picture is the image, and the copy answer is announced`、`a re-laid-out drawing is named again, not just at mount`、`a host block that throws cannot empty the message`。浏览器：`the box around the picture is a group`、`the group carries the localised name`、`the drawing itself is the image`、`the image carries the localised name`、`the image carries no english role description`、`exactly one image in the picture`、`a picture that fits offers no zoom buttons`、`a scaled picture offers the engine zoom buttons`、`the zoom buttons sit outside the image`、`the zoom buttons speak the interface language`、`the zoom buttons follow the interface language`、`a swapped drawing is named again — img|图|roledesc=null`、`a resized drawing stays named`、`the fixture really replaced the drawing node`、`every enabled zoom button can take the keyboard`、`the copy answer is announced, not only coloured`、`a fresh t does not redraw the picture` |
+| FR-018 无障碍结构与播报（每次排版之后） | 静态：`the picture is the image, and the copy answer is announced`、`every drawing the engine swaps in is named again`；浏览器：`the drawing is named when it is first laid out`、`the drawing itself is the image`、`the image carries the localised name`、`the image carries no english role description`、`exactly one image in the picture`、`the box around the picture carries no name of its own`、`the fixture really replaced the drawing node`、`a swapped drawing is named again`、`the fixture replaced the drawing again after the column narrowed`、`a drawing swapped after a width change is named again`、`the zoom buttons speak the interface language`、`the zoom buttons sit outside the image`、`every enabled zoom button can take the keyboard` |
 
 夹具里这几条"证明修复真的在起作用"的断言名，由静态检查 `the fixtures assert what the fixes promise, and can fail` 逐一要求存在——有人删掉夹具时 `check-bundle` 会先变红（评审曾指出：把修复代码换成 `void 0` 而套件仍全绿，等于没有证据）。
 
@@ -343,7 +338,7 @@ Done in 2.6s using pnpm v11.28.5
 | 卸载插件后，同一条消息变回纯文本代码块，无报错无占位 | `remove_bundle` 后 `flowchart LR … A[代码块] --> B[就地成图]` 原样显示，`role="img"`（`agent-desktop` 报告为 image）与按钮计数为 0 | US2/FR-009（不含 SC-002 的会话检索命中） |
 | 重新安装后图与按钮立刻回来，历史消息不用改 | `install_bundle` 后同一屏立刻渲染 | FR-010 |
 
-## E-GAPS 没有取证的部分（共 13 项）
+## E-GAPS 没有取证的部分（共 14 项）
 
 真机、设备与离线条件（都要求动手换条件，不能在 CI 里做）：
 
@@ -365,8 +360,9 @@ Done in 2.6s using pnpm v11.28.5
 
 - **G11 FR-011 的后半（停用插件后提示词段消失）**：只有 `apply` 注册段的静态证据与宿主半边契约，没有"停用后模型侧看不到"的实测（T027）。
 - **G12 FR-002 的真机面（不打开侧栏、不生成文件、不新增会话条目）**：插件在结构上不写文件、不碰宿主布局（静态可读），但没有一次真机上"看完这张图，磁盘与会话条目都没变"的核对。
+- **G14 真实窗口缩放时的引擎重绘（FR-018 的端到端面）**：0.1.10 把重排版交给引擎自己的 `ResizeObserver`（pele 内部），插件只负责"节点被换回来就重新命名"。夹具能证明"节点被换 → 立刻重新命名"，但**无法让引擎在无头浏览器里真的因窗口缩放而重绘**（无头环境第一帧之后不再派发帧与 ResizeObserver 通知）。真实窗口里"拖窄窗口 → 引擎重绘 → 名字回来"这条链只有机制级证据。
 - **G13 当前版本的重启后真机核对（T079）**：`E-LIVE` 的观察取自 **0.1.2**——插件页的 8 语言说明、图名的语言、两个按钮的文案、复制播报、卸载回退与重装恢复都是那时看的；0.1.3–0.1.9 改过 `view.js`、`i18n.js`、`entry.js`、`styles.js`，这些观察不能自动转移（见 `E-LIVE` 自己的版本注记）。0.1.9 已发布并装进 `desktop` profile，但**没有在重启后的宿主里逐项复核过**，所以算未取证。
 
 ---
 
-**本文件与 tasks.md 的关系**：`tasks.md` 末尾的状态表逐行对应上面 13 项，两处若不一致，以本文件为准（本文件是证据的归属地，`tasks.md` 是工作项的记录）。
+**本文件与 tasks.md 的关系**：`tasks.md` 末尾的状态表逐行对应上面 14 项，两处若不一致，以本文件为准（本文件是证据的归属地，`tasks.md` 是工作项的记录）。

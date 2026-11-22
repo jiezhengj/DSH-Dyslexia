@@ -447,22 +447,28 @@ check('host children react would refuse fall back to the source', () => {
   return 'objects, functions and mixed arrays fall back to the source text'
 })
 
-check('a re-laid-out drawing is named again, not just at mount', () => {
+check('every drawing the engine swaps in is named again', () => {
   const view = read('src/client/view.js')
-  // The engine replaces the whole <svg> node when it re-lays out, so a name set
-  // once at mount disappears on the first resize — the reader then hears the
-  // engine's English role description about an unnamed picture.
+  // The engine owns re-layout: it re-draws by assigning innerHTML, which replaces
+  // the whole <svg> with a node that carries role="graphics-document document",
+  // an English aria-roledescription and no name. The plugin therefore must watch
+  // the subtree and re-label, rather than driving its own refresh — a second
+  // re-layout path would duplicate the engine's and could not be exercised in a
+  // headless fixture (the browser never delivers those frames there).
   assert(view.includes('function labelFigure(host, translate)'), 'no shared labelling routine exists')
   assert(view.includes("svg.removeAttribute('aria-roledescription')"), 'the engine role description is not removed')
-  assert(/labelFigure\(host, translateRef\.current\)/.test(view), 'a re-layout does not re-name the drawing')
   assert(view.includes('MutationObserver'), 'a swapped drawing node is not watched for')
+  assert(/watcher\.observe\(host, \{ childList: true \}\)/.test(view), 'the watcher does not watch the drawing subtree')
+  assert(/labelFigure\(host, translateRef\.current\)/.test(view), 'a swapped drawing is not re-named')
+  assert(!/new ResizeObserver/.test(view), 'the plugin still drives its own re-layout instead of leaving it to the engine')
+  assert(!/requestAnimationFrame/.test(view), 'the plugin still schedules frames for a re-layout it does not own')
   assert(view.includes('const ZOOM_BUTTONS'), 'the engine zoom controls are never renamed')
   const labels = read('src/client/i18n.js')
   assert(
     labels.includes('const table = DICTIONARY[fallbackLanguage(doc)] || DICTIONARY.en'),
     'the bundled strings are captured once, so a language switch keeps the old words',
   )
-  return 'labelling runs at mount, after re-layout and on a swapped node; strings follow the language'
+  return 'the engine owns re-layout; every swapped drawing node and its zoom buttons are renamed, strings follow the language'
 })
 
 check('a host block that throws cannot empty the message', () => {
@@ -572,7 +578,7 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
   const needed = [
     'the fixture really replaced the drawing node',
     'a swapped drawing is named again',
-    'a resized drawing stays named',
+    'a drawing swapped after a width change is named again',
     'a picture that fits offers no zoom buttons',
     'disabling the plugin takes its stylesheet away',
     'the locale registration is dropped',

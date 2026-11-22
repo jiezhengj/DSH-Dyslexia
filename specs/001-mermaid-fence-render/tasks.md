@@ -219,7 +219,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T076 `verify/check-bundle.mjs` 新增"图是图像、复制被播报"一项，并让报告行自带 `包名@版本 | 字节数 | 源码指纹`，让任何粘贴的输出自证来自哪棵树
 - [x] T077 夹具新增五类用例（超限源码、流式→完成、falsy children、`t` 换身份不重绘、复制播报），无障碍结构另加三项（组名、缩放按钮在图像外、可聚焦）；`verify/run-harness.mjs` 增加 `--list` 以便证据整段引用单次运行
 - [x] T078 `spec.md` 增 FR-018 与 SC-010；`contracts/client-fence-layer.md`、`data-model.md`、`research.md`（D22）同步
-- [ ] T079 重启 DSH 后做真机核对（图名/按钮/播报/插件页说明/卸载回退）。**0.1.9 的发布与安装已完成，但重启核对未做**：运行中的界面仍加载旧 chunk；E-LIVE 里能查到的真机观察仍是 **0.1.2**，0.1.7 与 0.1.8 从未在真实宿主里跑过，0.1.9 同样如此。
+- [ ] T079 重启 DSH 后做真机核对（图名/按钮/播报/插件页说明/卸载回退）。**0.1.10 的发布与安装完成后仍未重启核对**：运行中的界面仍加载旧 chunk；E-LIVE 里能查到的真机观察仍是 **0.1.2**，0.1.7 与 0.1.8 从未在真实宿主里跑过，0.1.9 同样如此。
 - [ ] T080 再次请两位评审复核（目标 PASS），通过后把 feature 001 标记完成
 
 ## Phase 14: 第三轮独立评审后的修复（2026-11-23 追加，版本 0.1.6）
@@ -277,6 +277,21 @@ description: "Task list for 会话内图形渲染"
 - [x] T116 `check-bundle` +1 项 `the fixtures assert what the fixes promise, and can fail`：把评审证明"恒真"的那几条断言名（换节点、重命名、缩放条件渲染、卸载清理）逐一要求存在于夹具里，防止有人删掉夹具而代码检查仍绿 → 36 项
 - [x] T117 卸载清理的证据：夹具的假 `ctx` 按 cordis 语义执行 disposer，断言卸载后样式表消失、locale 注销与层注销各被调用一次；探针验证——把 `entry.js` 的 `ctx.effect(() => drop, …)` 换成 `void drop` 后这两条变红
 - [x] T111 打 `v0.1.9`（提交 `eddad24`）、发布并从 registry 装回 —— GitHub Actions run `45059529254` success（provenance logIndex `4047793870`、tarball shasum `71feabc22885e097974a35668e4717837fefd226`、`total files: 33`）；`remove_bundle` 卸 0.1.8 → `install_bundle @jiezhengj/dsh-dyslexia@0.1.9` applied，profile 依赖 `"0.1.9"`，安装副本 `client.js` 769,386 字节 / SHA256 `DAD0A3334BB557C77E8B0C9E1183C654980F86A5B3A783134F888C422A3067A8` 与仓库根一致；第七轮双评审进行中（T118）
+
+## Phase 19: 第七轮独立评审后的修复（2026-11-23 追加，版本 0.1.10）
+
+**目的**：第七轮实现评审给出一个 P1——`a resized drawing stays named` 在无头夹具里**恒真**（首帧后无头 Chrome 不再派发帧与 ResizeObserver 通知，舞台改宽 220px 后 `svg` 仍是 695px；断言真正看到的是夹具自己造的替身节点），而 `evidence`、`spec.md` 的 FR-018/SC-010 都把它当成"重排版后仍成立"的证据。文档评审同时指出 G13 与敌意 `ctx` 数量口径不一致。
+
+- [x] T119 删掉插件自带的重排版路径：`src/client/view.js` 移除 `scheduleFrame`/`frameRef`/`observerRef`/整段 `ResizeObserver` 与 `requestAnimationFrame`，重排版交给引擎自己的尺寸观察（D22）
+- [x] T120 外层 `div.dsh-dyslexia-group` 去掉 `aria-label`（名字只由 `svg` 提供，避免读屏念两遍）；`labelFigure()` 仍负责 `role="img"`、本地化名称、删 `aria-roledescription`、重写缩放按钮文案
+- [x] T121 夹具删掉恒真的 `a resized drawing stays named`，改为"收窄舞台后再按引擎方式换节点"：`the fixture replaced the drawing again after the column narrowed` + `a drawing swapped after a width change is named again`；`the group carries the localised name` → `the box around the picture carries no name of its own`（118 → 119 项）
+- [x] T122 静态断言 `a re-laid-out drawing is named again, not just at mount` 重写为 `every drawing the engine swaps in is named again`：要求 `MutationObserver`/`watcher.observe(host, { childList: true })`/`labelFigure(host, translateRef.current)` 存在，且**禁止** `new ResizeObserver` 与 `requestAnimationFrame` 出现
+- [x] T123 探针复验：删掉整块 `MutationObserver` → `run-harness: 2 failed, 117 passed`（两条命名断言报 `graphics-document document|null|roledesc=flowchart`）、静态 `a swapped drawing node is not watched for`；还原后 36/119 全绿
+- [x] T124 `evidence/verification.md`：E-BLD/E-CHK/E-HARN 用 0.1.10 单次运行快照整段重写；新增 **E-PROBE**（四次真跑探针：删观察器、`void drop`、0.1.8 的 `void 0`、字号 200）；E-GAPS 扩到 14 项并新增 **G14**（真实窗口缩放时引擎重绘只有机制级证据）
+- [x] T125 `spec.md`：Status 改 `0.1.10`；FR-018 改为"重排版归引擎，插件的保证是不论谁换掉图名字都会回来"；SC-010 改为"首挂之后与节点被换掉之后各断言一次；容器自身不带名字"
+- [x] T126 `contracts/client-fence-layer.md` 第 5 条改为"断开自己的 `MutationObserver`，不另建 `ResizeObserver`、不 `requestAnimationFrame`"；`data-model.md` 的可访问性字段改为"名字只落在 `svg` 上"
+- [x] T127 `plan.md`/`research.md`/`quickstart.md`/`contracts/plugin-manifest.md` 的计数与行数改 36/119、0.1.10、D22 修订
+- [ ] T128 打 `v0.1.10` → GitHub Actions 发布 → 从 registry 装回 `desktop` → E-PUB/E-INS 补 0.1.10 行 → 第八轮双评审
 
 ## Dependencies & Execution Order
 
@@ -355,7 +370,7 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 **当前自动化证据**（命令即证据，任何人 clone 后可复跑）：
 
 - `node verify/check-bundle.mjs` → **36 项全过**
-- `node verify/run-harness.mjs --list` → 真实 Chromium 里 **118 项全过**（夹具 `verify/harness/index.html`，已提交）
+- `node verify/run-harness.mjs --list` → 真实 Chromium 里 **119 项全过**（夹具 `verify/harness/index.html`，已提交）
 
 **真机证据**（`evidence/verification.md` 的 E-LIVE）：会话内就地成图、卸载回退、重装恢复、插件页说明；取证的版本是 0.1.2。
 
@@ -375,11 +390,12 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 | G10 | SC-005 主题切换 | 部分 | 只验证了换 CSS 变量后变色，没做明→暗→明切换 |
 | G11 | FR-011 停用后提示词消失（T027） | 未做 | 宿主半边只有静态断言；本机 PATH 无 `dsh` CLI，改用 vm 断言，但不证明真实会话里停用后消失 |
 | G12 | FR-002 真机"无侧栏/无新文件" | 未做 | 结构上不写文件、不碰宿主布局，但没有一次真机核对磁盘与会话条目未变 |
-| G13 | T079 当前版本的重启后真机核对 | 未做 | 0.1.9 已发布并装进 profile `desktop`，但运行中的界面仍加载旧 chunk；`E-LIVE` 的观察取自 **0.1.2**，不能自动转移 |
+| G13 | T079 当前版本的重启后真机核对 | 未做 | 0.1.10 已发布并装进 profile `desktop`，但运行中的界面仍加载旧 chunk；`E-LIVE` 的观察取自 **0.1.2**，不能自动转移 |
+| G14 | 真实窗口缩放时引擎重绘（FR-018 端到端） | 未做 | 无头环境首帧后不再派发帧与 ResizeObserver 通知，只能证明"节点被换 → 立刻重新命名"；拖窄真实窗口这条链只有机制级证据 |
 
 **已完成但需重启复核的项**：
 
 | 项 | 状态 | 说明 |
 |---|---|---|
 | T070 0.1.3 重启核对 | 已作废 | 由 T079 取代 |
-| T079 重启后真机核对（0.1.9） | 未做 | 0.1.9 已发布并装进 profile `desktop`，运行中的界面仍加载旧 chunk；重启后才换新，届时核对图名/按钮/播报/插件页说明/卸载回退，并把 E-LIVE 改写成 0.1.9 的记录。E-LIVE 里现有的观察是 0.1.2 的 |
+| T079 重启后真机核对（0.1.10） | 未做 | 0.1.9 已发布并装进 profile `desktop`，运行中的界面仍加载旧 chunk；重启后才换新，届时核对图名/按钮/播报/插件页说明/卸载回退，并把 E-LIVE 改写成 0.1.9 的记录。E-LIVE 里现有的观察是 0.1.2 的 |

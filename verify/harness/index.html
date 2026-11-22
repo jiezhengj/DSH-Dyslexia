@@ -666,22 +666,44 @@
               : 'no drawing',
           )
 
-          // A real resize keeps whatever the engine left in place named as well.
+          // After the column narrows the engine redraws again — same node swap as
+          // above, so the same guarantee has to hold a second time, now that the
+          // picture's width has changed. (The fixture cannot make the engine
+          // re-layout by itself in headless Chrome; it reproduces the swap the
+          // engine performs, which is exactly what the watcher has to survive.)
           resizeStage.style.width = '220px'
-          await tick(400)
-          const wideAfter = resizeStage.querySelector('svg')
+          await tick(200)
+          const narrowHost = resizeStage.querySelector('.dsh-dyslexia-figure')
+          const engineShapedAgain = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+          engineShapedAgain.setAttribute('role', 'graphics-document document')
+          engineShapedAgain.setAttribute('aria-roledescription', 'flowchart')
+          engineShapedAgain.setAttribute('viewBox', '0 0 220 60')
+          engineShapedAgain.setAttribute('width', '220')
+          engineShapedAgain.setAttribute('height', '60')
+          const narrowBefore = narrowHost ? narrowHost.querySelector('svg') : null
+          if (narrowHost) {
+            narrowHost.textContent = ''
+            narrowHost.appendChild(engineShapedAgain)
+          }
+          await tick(120)
+          const narrowAfter = narrowHost ? narrowHost.querySelector('svg') : null
           expect(
-            !!wideAfter &&
-              wideAfter.getAttribute('role') === 'img' &&
-              wideAfter.getAttribute('aria-label') === '图' &&
-              wideAfter.getAttribute('aria-roledescription') === null,
-            'a resized drawing stays named',
-            wideAfter
-              ? wideAfter.getAttribute('role') +
+            !!narrowAfter && narrowAfter !== narrowBefore,
+            'the fixture replaced the drawing again after the column narrowed',
+            narrowAfter ? (narrowAfter === narrowBefore ? 'same node' : 'new node') : 'no drawing',
+          )
+          expect(
+            !!narrowAfter &&
+              narrowAfter.getAttribute('role') === 'img' &&
+              narrowAfter.getAttribute('aria-label') === '图' &&
+              narrowAfter.getAttribute('aria-roledescription') === null,
+            'a drawing swapped after a width change is named again',
+            narrowAfter
+              ? narrowAfter.getAttribute('role') +
                 '|' +
-                wideAfter.getAttribute('aria-label') +
+                narrowAfter.getAttribute('aria-label') +
                 '|roledesc=' +
-                String(wideAfter.getAttribute('aria-roledescription'))
+                String(narrowAfter.getAttribute('aria-roledescription'))
               : 'none',
           )
           resizeRoot.unmount()
@@ -772,7 +794,11 @@
           const group = shaped.stage.querySelector('[role="group"]')
           const image = shaped.stage.querySelector('svg[role="img"]')
           expect(!!group, 'the box around the picture is a group')
-          expect(!!group && group.getAttribute('aria-label') === '图', 'the group carries the localised name', group ? group.getAttribute('aria-label') : 'no group')
+          expect(
+            !!group && group.getAttribute('aria-label') === null,
+            'the box around the picture carries no name of its own',
+            group ? String(group.getAttribute('aria-label')) : 'no group',
+          )
           expect(!!image, 'the drawing itself is the image')
           // A picture that already fits its column gets no zoom controls: the
           // engine only offers them when the drawing has to be scaled down.

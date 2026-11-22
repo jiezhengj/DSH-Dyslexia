@@ -99,16 +99,6 @@ function labelFigure(host, translate) {
 }
 
 /**
- * Run `task` on the next animation frame, or straight away where there is none
- * (a host without requestAnimationFrame still gets its re-layout).
- */
-function scheduleFrame(task) {
-  if (typeof requestAnimationFrame === 'function') return requestAnimationFrame(task)
-  task()
-  return null
-}
-
-/**
  * The host's own block, rendered where the drawing would have been.
  *
  * It sits inside its own boundary because the host block is not ours: if it
@@ -176,20 +166,10 @@ function MermaidFenceLayer(props) {
   const [copyState, setCopyState] = React.useState('idle')
   const hostRef = React.useRef(null)
   const mountedRef = React.useRef(null)
-  const observerRef = React.useRef(null)
   const watcherRef = React.useRef(null)
   const copiedTimerRef = React.useRef(null)
-  const frameRef = React.useRef(null)
 
   const teardown = React.useCallback(() => {
-    if (frameRef.current !== null && typeof cancelAnimationFrame === 'function') {
-      cancelAnimationFrame(frameRef.current)
-      frameRef.current = null
-    }
-    if (observerRef.current !== null) {
-      observerRef.current.disconnect()
-      observerRef.current = null
-    }
     if (watcherRef.current !== null) {
       try {
         watcherRef.current.disconnect()
@@ -260,38 +240,6 @@ function MermaidFenceLayer(props) {
     // role="img". Otherwise a screen reader would treat the zoom controls as
     // part of an image, which makes them unreachable.
     labelFigure(host, t)
-    if (typeof ResizeObserver === 'function') {
-      try {
-        const observer = new ResizeObserver(() => {
-          if (frameRef.current !== null) return
-          // Re-laying-out inside the observer callback changes the observed box
-          // while the notifications are still being delivered, which the browser
-          // reports as "ResizeObserver loop completed with undelivered
-          // notifications". Deferring to the next frame avoids that error in the
-          // host's console without losing the re-layout.
-          frameRef.current = scheduleFrame(() => {
-            frameRef.current = null
-            const current = mountedRef.current
-            if (!current) return
-            try {
-              current.refresh()
-            } catch (error) {
-              void error
-            }
-            // A re-layout swaps the drawing node for a fresh one, which comes back
-            // unnamed and with the engine's English role description. Name it again
-            // right here, while the new node is in place.
-            labelFigure(host, translateRef.current)
-          })
-        })
-        observer.observe(host)
-        observerRef.current = observer
-      } catch (error) {
-        // No observer: the picture still draws, it just will not re-layout on
-        // resize. Losing that is better than losing the render.
-        void error
-      }
-    }
     // Belt and braces: whichever path swaps the drawing — a re-layout we did not
     // cause, a future engine version drawing asynchronously — the name goes back
     // on as soon as the new node is in the document.
@@ -382,7 +330,6 @@ function MermaidFenceLayer(props) {
     {
       className: FIGURE_GROUP_CLASS,
       role: 'group',
-      'aria-label': figureLabel,
       style: failed ? { display: 'none' } : undefined,
     },
     React.createElement('div', { className: FIGURE_CLASS, ref: hostRef }),

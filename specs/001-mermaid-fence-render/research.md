@@ -189,9 +189,9 @@ renderSlot('conversation.chat.markdown.fence', fence, {
 
 **问题**：初版把 `role="img"` 与 `aria-label` 放在挂载容器上。pele 会把自己生成的缩放按钮追加进同一个容器，于是读屏把"放大/缩小/复位"当成图像的一部分——图像节点内的可交互子元素既不能单独聚焦，也不会被读出来。另外 `aria-label` 里拼了引擎类型（`图：flowchart`），把英文技术标记塞进了各语言的替代文本；复制反馈只把按钮文案改成"已复制"，没有非视觉通道。
 
-**决定**：
+**决定**（0.1.10 再修订：重排版归引擎，插件只负责"节点被换回来就重新命名"）：
 
-- `role="img"` + `aria-label` 只给引擎画出的 `svg`；外层 `div.dsh-dyslexia-group` 用 `role="group"` 承担命名，内层挂载点 `role="presentation"`。缩放按钮因此留在图像之外，可独立 Tab 聚焦。
+- `role="img"` + `aria-label` 只给引擎画出的 `svg`；外层 `div.dsh-dyslexia-group` 只声明 `role="group"`、**自带名字一律不写**（名字已由图像提供，两处都写会让读屏念两遍），内层挂载点 `role="presentation"`。缩放按钮因此留在图像之外，可独立 Tab 聚焦。
 - `aria-label` 只用本地化纯名词（`图`/`Diagram`/`図`/…），不拼 `{{type}}`；引擎类型只进代码块与源码面板。
 - 复制按钮文案固定为"复制源码"；结果写入 `role="status" aria-live="polite"` 的视觉隐藏区域。一只按钮、一句话，避免读屏重复朗读同一个控件。
 - 宿主每次渲染新建 `t` 时不得重建图：`t` 经 `useRef` 读取，layout effect 依赖里只有 `code`、`streaming`、`document`。
