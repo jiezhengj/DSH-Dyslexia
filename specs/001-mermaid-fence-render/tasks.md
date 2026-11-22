@@ -291,7 +291,8 @@ description: "Task list for 会话内图形渲染"
 - [x] T125 `spec.md`：Status 改 `0.1.10`；FR-018 改为"重排版归引擎，插件的保证是不论谁换掉图名字都会回来"；SC-010 改为"首挂之后与节点被换掉之后各断言一次；容器自身不带名字"
 - [x] T126 `contracts/client-fence-layer.md` 第 5 条改为"断开自己的 `MutationObserver`，不另建 `ResizeObserver`、不 `requestAnimationFrame`"；`data-model.md` 的可访问性字段改为"名字只落在 `svg` 上"
 - [x] T127 `plan.md`/`research.md`/`quickstart.md`/`contracts/plugin-manifest.md` 的计数与行数改 36/119、0.1.10、D22 修订
-- [ ] T128 打 `v0.1.10` → GitHub Actions 发布 → 从 registry 装回 `desktop` → E-PUB/E-INS 补 0.1.10 行 → 第八轮双评审
+- [x] T128 打 `v0.1.10`（提交 `926d072`）、GitHub Actions run `45062588313` success（CI 36 项静态 + 119 项浏览器、shasum `cff93a6b81b34057d733797834b4549afbd92816`、logIndex `4047938866`、33 文件）→ 从 registry 装回 profile `desktop`（依赖 `"0.1.10"`，安装副本 767,298 字节、SHA256 `3D860D24…D0E9` 与仓库一致）→ E-PUB/E-INS 已补 0.1.10 行
+- [ ] T129 第八轮双评审（文档 + 实现），目标 PASS
 
 ## Dependencies & Execution Order
 

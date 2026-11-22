@@ -241,41 +241,51 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.10 | client.js 767298 bytes | all 119 c
 
 ## E-PUB 发布（tag 触发，不在网页上点确认）
 
-| 版本 | workflow run | 结果 | tarball shasum |
-|---|---|---|---|
-| 0.1.1 | `45031254012` | success | `6f730efa33a453c8f8b2ed08155e2dc85325d5be` |
-| 0.1.2 | `45036311606` | success | `c27a63156485cb908ede76fce6f4759a8b4eb37b` |
-| 0.1.3 | `45043233136` | success | `101688f9e27af38436bc12a8898a1a3f56bf361b` |
-| 0.1.4 | `45044972866` | success | `a14b910f0e76647f289211fdedef6f15f19c1b4f` |
-| 0.1.5 第一次 | `45046044274` | **failure**（见 E-CI） | — |
-| 0.1.5 | `45046178925` | success，provenance logIndex `4046928419` | `e2a4b81bc0d6b45916cf5739a566e89469274cfd` |
-| 0.1.6 | `45050133828` | success，provenance logIndex `4047226918` | `8a0a2425c87d7b864b6d6089500bae6a12fe9637` |
-| 0.1.7 | `45052680467` | success，provenance logIndex `4047274153` | `935b05b457e8756ab8b45593252ab44594def0e1` |
-| 0.1.8 | `45055683813` | success，provenance logIndex `4047584418` | `30408a56f8e3d3054e7ace7feafa0fbde8e676b6` |
-| 0.1.9 | `45059529254` | success，provenance logIndex `4047793870` | `71feabc22885e097974a35668e4717837fefd226` |
+工作流 `.github/workflows/publish.yml` 由 `v*` tag 触发，用 npm trusted publisher（OIDC）发布，不需要在网页上点确认。下表是每一次发布的实况：
 
-0.1.5 发布提交（`eeb4a05`，tag `v0.1.5`）的 CI 日志如下——**当时夹具是 82 项**：
+| 版本 | Actions run | 结果 | tarball shasum | provenance logIndex | 打包文件数 |
+|---|---|---|---|---|---|
+| 0.1.0 | 2026-11-22 手动 `npm publish`（浏览器安全密钥） | success | `ad9374f351616c6ded13cc5e3a48115dd0140cad` | — | 10 |
+| 0.1.1 | `45031254012` | success | `6f730efa33a453c8f8b2ed08155e2dc85325d5be` | `4045962187` | 33 |
+| 0.1.2 | `45036311606` | success | `c27a63156485cb908ede76fce6f4759a8b4eb37b` | `4046319715` | 33 |
+| 0.1.3 | `45043233136` | success | `101688f9e27af38436bc12a8898a1a3f56bf361b` | — | 33 |
+| 0.1.4 | `45044972866` | success | `a14b910f0e76647f289211fdedef6f15f19c1b4f` | — | 33 |
+| 0.1.5（第一次） | `45046044274` | **failure**（陈旧产物闸门开火，见 E-CI） | — | — | — |
+| 0.1.5 | `45046178925` | success | `e2a4b81bc0d6b45916cf5739a566e89469274cfd` | `4046928419` | 33 |
+| 0.1.6 | `45050133828` | success | `8a0a2425c87d7b864b6d6089500bae6a12fe9637` | `4047226918` | 33 |
+| 0.1.7 | `45052680467` | success | `935b05b457e8756ab8b45593252ab44594def0e1` | `4047274153` | 33 |
+| 0.1.8 | `45055683813` | success | `30408a56f8e3d3054e7ace7feafa0fbde8e676b6` | `4047584418` | 33 |
+| 0.1.9 | `45059529254` | success | `71feabc22885e097974a35668e4717837fefd226` | `4047793870` | 33 |
+| 0.1.10 | `45062588313` | success | `cff93a6b81b34057d733797834b4549afbd92816` | `4047938866` | 33 |
+
+### E-PUB-LOG 每次发布 CI 日志里的检查报告行（原文照抄）
+
+这些行由工作流在**发布前**跑出来，所以它们证明"发出去的那个 tarball 对应的是通过检查的那棵树"，而不是本地某次运行。
+
+0.1.5（run `45046178925`，当时 31 项静态 / 82 项浏览器）：
 
 ```text
 check-bundle: @jiezhengj/dsh-dyslexia@0.1.5 | client.js 761974 bytes | sources sha256:5f89ee58c00607c98d5356575e6be451 | all 31 checks passed
 run-harness: all 82 checks passed (/usr/bin/google-chrome)
 ```
 
-0.1.6 发布提交（tag `v0.1.6`，run `45050133828`）的 CI 日志——**当时的规模是 32 项静态与 92 项浏览器**，除浏览器路径外与本机逐字一致：
+0.1.6（run `45050133828`，32 / 92）：
 
 ```text
 check-bundle: @jiezhengj/dsh-dyslexia@0.1.6 | client.js 762625 bytes | sources sha256:737f61ee187d1956e13917922a931cf0 | all 32 checks passed
 run-harness: @jiezhengj/dsh-dyslexia@0.1.6 | client.js 762625 bytes | all 92 checks passed (/usr/bin/google-chrome)
 ```
 
-0.1.7 发布提交（tag `v0.1.7`，run `45052680467`）的 CI 日志——除 `run-harness` 行末尾的浏览器路径（CI 是 `/usr/bin/google-chrome`，本机是 Windows 路径）外与本机逐字一致，`total files: 33`：
+0.1.7（run `45052680467`，32 / 101）：
 
 ```text
 check-bundle: @jiezhengj/dsh-dyslexia@0.1.7 | client.js 765002 bytes | sources sha256:e10fbd04aa7812fdbc9adbc0b1d2e95b | all 32 checks passed
 run-harness: @jiezhengj/dsh-dyslexia@0.1.7 | client.js 765002 bytes | all 101 checks passed (/usr/bin/google-chrome)
+npm notice shasum: 935b05b457e8756ab8b45593252ab44594def0e1
+npm notice total files: 33
 ```
 
-0.1.8 发布提交（tag `v0.1.8`，run `45055683813`）的 CI 日志——与本次单机运行的 `check-bundle` 行逐字相同，`run-harness` 行只有浏览器路径不同；`total files: 33`：
+0.1.8（run `45055683813`，34 / 108）：
 
 ```text
 check-bundle: @jiezhengj/dsh-dyslexia@0.1.8 | client.js 768340 bytes | sources sha256:19c9e9146858e7820cb0aa5d8ae7c92a | all 34 checks passed
@@ -284,15 +294,24 @@ npm notice shasum: 30408a56f8e3d3054e7ace7feafa0fbde8e676b6
 npm notice total files: 33
 ```
 
-| `0.1.9` | `45059529254` | success | `71feabc22885e097974a35668e4717837fefd226` | `4047793870` | 33 | 36 项静态 + 118 项浏览器，与本机逐字一致 |
-
-0.1.9 发布提交（tag `v0.1.9`，run `45059529254`）的 CI 日志——两套检查的规模与本机一致（36 静态 + 118 浏览器），只有 `run-harness` 行末尾的浏览器路径不同（CI 是 `/usr/bin/google-chrome`，本机是 `C:/Program Files/Google/Chrome/Application/chrome.exe`）：
+0.1.9（run `45059529254`，36 / 118）：
 
 ```text
 check-bundle: @jiezhengj/dsh-dyslexia@0.1.9 | client.js 769386 bytes | sources sha256:17eb5c7a6fb8339a904cfa56c6540d3b | all 36 checks passed
 run-harness: @jiezhengj/dsh-dyslexia@0.1.9 | client.js 769386 bytes | all 118 checks passed (/usr/bin/google-chrome)
 npm notice shasum: 71feabc22885e097974a35668e4717837fefd226
 npm notice total files: 33
+```
+
+0.1.10（run `45062588313`，36 / 119）——与本次单机运行的两条报告行逐字相同，只有 `run-harness` 行末尾的浏览器路径不同：
+
+```text
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.10 | client.js 767298 bytes | sources sha256:336ea7199fb90a0c8202c03e0c14bbe7 | all 36 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.1.10 | client.js 767298 bytes | all 119 checks passed (/usr/bin/google-chrome)
+npm notice 📦  @jiezhengj/dsh-dyslexia@0.1.10
+npm notice shasum: cff93a6b81b34057d733797834b4549afbd92816
+npm notice total files: 33
+npm notice publish Provenance statement published to transparency log: https://search.sigstore.dev/?logIndex=4047938866
 ```
 
 ## E-CI 发布前检查抓到一个真实缺陷（0.1.5 第一次运行）
@@ -308,28 +327,31 @@ npm notice total files: 33
 
 ## E-INS 从 registry 安装
 
-`plugin_manager remove_bundle @jiezhengj/dsh-dyslexia`（卸 0.1.8，pnpm 输出 `- @jiezhengj/dsh-dyslexia 0.1.8`）→ `install_bundle` 目标 `@jiezhengj/dsh-dyslexia@0.1.9`，结果 `application: "applied"`、`version: "0.1.9"`，pnpm 输出：
+`plugin_manager remove_bundle @jiezhengj/dsh-dyslexia`（卸 0.1.9，pnpm 输出 `- @jiezhengj/dsh-dyslexia 0.1.9`）→ `install_bundle` 目标 `@jiezhengj/dsh-dyslexia@0.1.10`，结果 `application: "applied"`、`version: "0.1.10"`，pnpm 输出：
 
 ```text
 dependencies:
-+ @jiezhengj/dsh-dyslexia 0.1.9
++ @jiezhengj/dsh-dyslexia 0.1.10
 
-Done in 2.6s using pnpm v11.28.5
+Done in 2.9s using pnpm v11.28.5
 ```
+
+第一次尝试失败过一次，原因是镜像落后（`ERR_PNPM_NO_MATCHING_VERSION … while fetching it from https://registry.npmmirror.com/`，当时 npmjs 的版本文件已 200 但 tarball 仍 404）；等 npmjs 的 tarball 复制完成后再按包名安装即成功。这个滞后每次发版都会出现（约 2–10 分钟），不是包的问题。
 
 安装后实测（`C:\Users\jiezhengj\.dsh\profiles\desktop`）：
 
 | 检查 | 实测 |
 |---|---|
-| profile 依赖 | `"@jiezhengj/dsh-dyslexia": "0.1.9"`（版本号，不是 `link:`） |
-| `node_modules/@jiezhengj/dsh-dyslexia/client.js` | 769,386 字节，SHA256 `DAD0A3334BB557C77E8B0C9E1183C654980F86A5B3A783134F888C422A3067A8` |
-| 仓库里的 `client.js` | 769,386 字节，SHA256 同上（逐字节相同） |
+| profile 依赖 | `"@jiezhengj/dsh-dyslexia": "0.1.10"`（版本号，不是 `link:`） |
+| `node_modules/@jiezhengj/dsh-dyslexia/client.js` | 767,298 字节，SHA256 `3D860D243FFF5012CBD7D29D54737F3064206DEEED20F45752692093B060D0E9` |
+| 仓库里的 `client.js` | 767,298 字节，SHA256 同上（逐字节相同） |
 | `locale/` | 8 个 json |
 | `docs/` | 9 个文件（8 篇 `DETAIL*.md` + `preview.svg`） |
+| 包内 `version` | `0.1.10` |
 
 ## E-LIVE 真机（DSH 桌面窗口内）
 
-**以下记录来自 0.1.2**，`0.1.8` 的重启核对是 T079（**尚未取证**）。之所以保留，是因为它们证明了链路本身可用；从 0.1.2 到 0.1.8 渲染层改过多次（`role` 结构、`aria-roledescription` 的移除与重排版后重标、可见的复制反馈、空/非法 `children` 的处理），所以这些观察**不能**自动转移到 `0.1.8`。
+**以下记录来自 0.1.2**，当前版本（0.1.10）的重启核对是 T079（**尚未取证**，见 G13）。之所以保留，是因为它们证明了链路本身可用；从 0.1.2 到 0.1.8 渲染层改过多次（`role` 结构、`aria-roledescription` 的移除与重排版后重标、可见的复制反馈、空/非法 `children` 的处理），所以这些观察**不能**自动转移到 `0.1.8`。
 
 | 观察 | 当时的证据 | 归属 |
 |---|---|---|
