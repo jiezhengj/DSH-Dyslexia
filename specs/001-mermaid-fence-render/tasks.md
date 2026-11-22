@@ -371,7 +371,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T180 措辞统一（"偏好"不是使用前提，FR-012）：`spec.md`、`plan.md`、`research.md`（D19 ⑦ 的七组枚举与 `quickstart.md` 的 E-COMP-1 对齐）、`contracts/host-prompt.md` 四处；`quickstart.md` 的 E-COMP 标题补 SC-009、E-COMP-5 的"真机装/重启"改"真机装卸"
 - [x] T181 `verify/check-bundle.mjs` 的报告串改 `five silent hosts, two throwing sections`（实际跑 5 次静默 + 2 次抛错），并同步证据里的 E-CHK 行
 - [x] T182 重建与复跑：`node verify/check-bundle.mjs` = `@0.1.16 | 769391 bytes | sources sha256:f837913297259c0f99bc780f154d287a | all 37 checks passed`；`node verify/run-harness.mjs --list` = 213 项全过；`evidence/verification.md` 的 E-BLD/E-CHK/E-HARN 用同一次运行重写
-- [ ] T183 发布 `v0.1.16`、从 registry 装回 profile `desktop`、补 E-PUB/E-INS 的 0.1.16 行
+- [x] T183 发布 `v0.1.16`（run `45079253651`，shasum `4a559a0cd107e2dd2175b2d2ff10e3075a53e309`，logIndex `4048629730`，33 文件）、从 registry 装回 profile `desktop`（依赖 `0.1.16`、安装副本 769,391 字节 / `9A5ADC5B…BB3D`）、补 E-PUB/E-INS 的 0.1.16 行
 - [ ] T184 第十四轮双评审（文档 + 实现）；两份都 PASS 才把 feature 001 标记完成
 
 ## Dependencies & Execution Order
