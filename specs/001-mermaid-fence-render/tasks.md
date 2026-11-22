@@ -331,7 +331,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T151 窄屏段加可证伪对照（临时插入 4000px 的 `data-probe="overflow"` 元素让测量必须看到溢出，再移除），证明"宽度测量"本身有效（SC-003）
 - [x] T152 多栅栏与正文共存的夹具（`two fences draw two pictures`、`the second fence draws its own picture`、`the prose around a picture is left alone`、`the picture and the prose keep their order`）→ 承接 FR-001，并补上 G5 里 E2 的缺口
 - [x] T153 0.1.13 文档逐条：E-LIVE 去掉不存在的 `E-LIVE-2/5/6` 编号、CI 日志比较改成逐版本口径、G13 只保留 0.1.2 真看到的四件事、E-PROBE 补 P6/P7 与十次探针口径、`contracts/client-fence-layer.md` 的 `the fence layer is gone once the host disposes`、`checklists` 的 SC-006 四类夹具名、`plan.md`/`quickstart.md`/`research.md`/`contracts/plugin-manifest.md` 的 37/197 与行数
-- [ ] T154 打 `v0.1.13` → GitHub Actions 发布 → 从 registry 装回 profile `desktop` → E-PUB/E-INS 补 0.1.13 行
+- [x] T154 打 `v0.1.13`（提交 `e757f92`）→ GitHub Actions run `45071920218` success（CI 37 项静态 + 197 项浏览器、shasum `37da6a6b834f178aca04f91884c7f7f779e91417`、logIndex `4048415674`、33 文件）→ 从 registry 装回 profile `desktop`（依赖 `"0.1.13"`，安装副本 767,639 字节、SHA256 `0FF12628…D333` 与仓库一致、`locale/` 8、`docs/` 9）→ E-PUB/E-INS 已补 0.1.13 行
 - [ ] T155 第十一轮独立评审（文档 + 实现），两份都 PASS 才把 feature 001 标记完成
 
 ## Dependencies & Execution Order
