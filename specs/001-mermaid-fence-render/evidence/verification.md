@@ -202,6 +202,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.8 | client.js 768340 bytes | all 108 ch
 | 0.1.5 | `45046178925` | success，provenance logIndex `4046928419` | `e2a4b81bc0d6b45916cf5739a566e89469274cfd` |
 | 0.1.6 | `45050133828` | success，provenance logIndex `4047226918` | `8a0a2425c87d7b864b6d6089500bae6a12fe9637` |
 | 0.1.7 | `45052680467` | success，provenance logIndex `4047274153` | `935b05b457e8756ab8b45593252ab44594def0e1` |
+| 0.1.8 | `45055683813` | success，provenance logIndex `4047584418` | `30408a56f8e3d3054e7ace7feafa0fbde8e676b6` |
 
 0.1.5 发布提交（`eeb4a05`，tag `v0.1.5`）的 CI 日志如下——**当时夹具是 82 项**：
 
@@ -224,6 +225,15 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.7 | client.js 765002 bytes | sources s
 run-harness: @jiezhengj/dsh-dyslexia@0.1.7 | client.js 765002 bytes | all 101 checks passed (/usr/bin/google-chrome)
 ```
 
+0.1.8 发布提交（tag `v0.1.8`，run `45055683813`）的 CI 日志——与本次单机运行的 `check-bundle` 行逐字相同，`run-harness` 行只有浏览器路径不同；`total files: 33`：
+
+```text
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.8 | client.js 768340 bytes | sources sha256:19c9e9146858e7820cb0aa5d8ae7c92a | all 34 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.1.8 | client.js 768340 bytes | all 108 checks passed (/usr/bin/google-chrome)
+npm notice shasum: 30408a56f8e3d3054e7ace7feafa0fbde8e676b6
+npm notice total files: 33
+```
+
 ## E-CI 发布前检查抓到一个真实缺陷（0.1.5 第一次运行）
 
 `45046044274` 在 "Refuse to publish if the committed chunk is stale" 这一步失败：
@@ -237,21 +247,21 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.7 | client.js 765002 bytes | all 101 ch
 
 ## E-INS 从 registry 安装
 
-`plugin_manager remove_bundle`（卸 0.1.6）→ `install_bundle` 目标 `@jiezhengj/dsh-dyslexia@0.1.7`，结果 `application: "applied"`、`version: "0.1.7"`，pnpm 输出：
+`plugin_manager remove_bundle @jiezhengj/dsh-dyslexia`（卸 0.1.7，pnpm 输出 `- @jiezhengj/dsh-dyslexia 0.1.7`）→ `install_bundle` 目标 `@jiezhengj/dsh-dyslexia@0.1.8`，结果 `application: "applied"`、`version: "0.1.8"`，pnpm 输出：
 
 ```text
 dependencies:
-+ @jiezhengj/dsh-dyslexia 0.1.7
++ @jiezhengj/dsh-dyslexia 0.1.8
 
-Done in 2.6s using pnpm v11.28.5
+Done in 3.8s using pnpm v11.28.5
 ```
 
 安装后实测：
 
-- `C:\Users\jiezhengj\.dsh\profiles\desktop\package.json` 的依赖为 `"@jiezhengj/dsh-dyslexia": "0.1.7"`（不是 `link:`），`dsh.profile.bundles` 末尾含该包名。
-- `node_modules/@jiezhengj/dsh-dyslexia/client.js` = **765002 字节**，SHA256 `4DD2F68573DD7943CC1130488477A9B88F5045EE32BB8739C1AA8A6CFA3972B6`，与仓库根 `client.js` 逐字节相同。
-- `locale/` 8 个 json（de,en,es,fr,ja,pt,ru,zh）、`docs/` 9 个文件（8 篇 DETAIL + `preview.svg`）、`package.json` 的 `version` 为 `0.1.7`。
-- registry 读取滞后：0.1.7 的版本文档与 tarball 在发布后约 4 分钟可用（轮询 `https://registry.npmjs.org/@jiezhengj/dsh-dyslexia/0.1.7` 拿到 200 后再装）；npm 镜像（`registry.npmmirror.com`）更慢，0.1.5 时约 12 分钟。
+- `C:\Users\jiezhengj\.dsh\profiles\desktop\package.json` 的依赖为 `"@jiezhengj/dsh-dyslexia": "0.1.8"`（不是 `link:`），`dsh.profile.bundles` 末尾含该包名。
+- `node_modules/@jiezhengj/dsh-dyslexia/client.js` = **768340 字节**，SHA256 `E632EA8E7E5ECC1DA705B69298859D6E35BBE6E863BA0E00D2F6824ACC481755`，与仓库根 `client.js` 逐字节相同。
+- `locale/` 8 个 json（de,en,es,fr,ja,pt,ru,zh）、`docs/` 9 个文件（8 篇 DETAIL + `preview.svg`）、`package.json` 的 `version` 为 `0.1.8`。
+- registry 读取滞后：0.1.8 的版本文档在发布后约 2 分钟可用（本次轮询 6 次、每次间隔 20 秒），tarball 随即 200；npm 镜像（`registry.npmmirror.com`）更慢，0.1.5 时约 12 分钟。
 
 ## E-LIVE 真机（DSH 桌面窗口内）
 

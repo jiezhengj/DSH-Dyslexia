@@ -256,7 +256,11 @@ description: "Task list for 会话内图形渲染"
 - [x] T102 夹具 +7 项：重排版后仍命名（800px→220px）、iterable `children`、自身抛错的宿主块、注入抛错的 `inject` 宿主、缩放按钮随语言切换等 → 108 项全过
 - [x] T103 `check-bundle` +2 项：`a re-laid-out drawing is named again, not just at mount`、`a host block that throws cannot empty the message` → 34 项全过
 - [x] T104 文档更正（第五轮评审逐条）：`inject` 抛错确有夹具、92/101 → 108 项、行数、畸形宿主"5 种静默 + 2 次异常"不再混用、G5 的 E15 定义、T052 的观察条数、`data-model` 的断言指向、`Mounted.result.type` 不进入 `aria-label` → 见 Phase 16 本条
-- [ ] T105 打 `v0.1.8`、GitHub Actions 发布、从 registry 装回 `desktop` profile，并请第六轮双评审复核
+- [x] T105 打 `v0.1.8`（提交 `603a75d`）、GitHub Actions run `45055683813` success（provenance logIndex `4047584418`、tarball shasum `30408a56f8e3d3054e7ace7feafa0fbde8e676b6`、`total files: 33`）、CI 与本机同为 34 项静态 + 108 项浏览器；`remove_bundle` 卸 0.1.7 → `install_bundle @jiezhengj/dsh-dyslexia@0.1.8` applied，profile 依赖 `"0.1.8"`，安装副本 `client.js` 768340 字节 / SHA256 `E632EA8E7E5ECC1DA705B69298859D6E35BBE6E863BA0E00D2F6824ACC481755` 与仓库根一致
+
+## Phase 17: 第六轮独立评审（2026-11-23）
+
+- [ ] T106 第六轮双评审（文档 + 实现）复核 0.1.8；通过后把 feature 001 标记完成并回写 `spec.md` 的 Status
 
 ## Dependencies & Execution Order
 
