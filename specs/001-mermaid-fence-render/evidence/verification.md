@@ -139,3 +139,28 @@ THIRD-PARTY-NOTICES.md
 - 已发布 tarball 内容核对（`npm pack @jiezhengj/dsh-dyslexia@0.1.0` + `tar -tzf`）：正好 10 个文件，与 `pnpm pack --dry-run` 一致，不含 `src/`、`vendor/`、`scripts/`、`verify/`、`specs/`、`.specify/`、`.tmp/`。
 - 安装：先 `remove_bundle`（去掉 `link:`），再 `install_bundle` 目标 `@jiezhengj/dsh-dyslexia` → `{"stage":"enable","changed":true,"application":"applied"}`，pnpm 输出 `+ @jiezhengj/dsh-dyslexia 0.1.0`。
 - profile `desktop` 的 `package.json` 现在是 `"@jiezhengj/dsh-dyslexia": "^0.1.0"`（不再是 `link:`），`dsh.profile.bundles` 末尾为其包名；`node_modules/@jiezhengj/dsh-dyslexia/client.js` 751,335 字节，与本地产物一致。
+
+
+## E-PUB2 0.1.1 发布：改由 GitHub Actions 走 OIDC，不再点网页
+
+- 起因：`npm publish` 每次都要在浏览器里碰一次安全密钥，且那次会话过期后 registry 直接回 `404 GET /-/v1/done?authId=***`（0.1.1 没发出去）。
+- 采用 npm 的 trusted publisher（OIDC）：包设置页 → Trusted Publisher → GitHub Actions，`jiezhengj/DSH-Dyslexia`、workflow `publish.yml`、允许 `npm publish` 与 `npm stage publish`；创建后状态为 "Pending validation"，要求首次发布后才生效。
+- `.github/workflows/publish.yml`：`on: push: tags: v*`，`permissions: contents: read` + `id-token: write`，步骤 = checkout → setup-node 22 → `npm install -g npm@latest` → `node verify/check-bundle.mjs` → `npm publish --access public --provenance`。
+- 第一次运行失败于 `E422`：provenance 校验要求 `package.json` 的 `repository.url` 与 workflow 所在仓库一致，而清单里没有 `repository` 字段。补上 `repository.url = git+https://github.com/jiezhengj/DSH-Dyslexia.git`、`homepage`、`bugs` 后，`verify/check-bundle.mjs` 增加第 24 项 "package.json points at the repository npm trusts"，让这类失败在打 tag 之前就暴露。
+- 第二次运行成功：`+ @jiezhengj/dsh-dyslexia@0.1.1`，provenance 写入 transparency log（`https://search.sigstore.dev/?logIndex=4045962187`），`dist.attestations.provenance.predicateType = https://slsa.dev/provenance/v1`。
+- registry 侧可见：`dist-tags.latest = 0.1.1`、`versions` 含 `0.0.0-stage, 0.1.0, 0.1.1`，tarball `https://registry.npmjs.org/@jiezhengj/dsh-dyslexia/-/dsh-dyslexia-0.1.1.tgz`、shasum `6f730efa33a453c8f8b2ed08155e2dc85325d5be`；npm 会提示"正在处理，可能几分钟后才可用"，实际约两分钟后 `dist-tags` 才切到 0.1.1。
+- 仓库：`https://github.com/jiezhengj/DSH-Dyslexia`（public，main），首次 `git push` 遇到 `HTTP 408`，`git config http.postBuffer 524288000` + `http.version HTTP/1.1` 后成功。
+
+## E-INS2 从 registry 安装 0.1.1
+
+- `plugin_manager remove_bundle` → `changed: true, application: applied`（pnpm 移除 0.1.0）。
+- `plugin_manager install_bundle` 目标 `@jiezhengj/dsh-dyslexia@0.1.1` → `{"stage":"enable","changed":true,"application":"applied"}`，pnpm 输出 `+ @jiezhengj/dsh-dyslexia 0.1.1`。
+- profile `desktop`：`dependencies["@jiezhengj/dsh-dyslexia"] = "0.1.1"`（registry 版本，非 `link:`），`dsh.profile.bundles` 含该包；`node_modules/@jiezhengj/dsh-dyslexia` 内 `version 0.1.1`、`locale/` 8 个文件、`docs/` 8 个 `DETAIL*.md` + `preview.svg`、`icon.svg` 625 字节。
+- 运行中的界面仍是 0.1.0 的 chunk（客户端每次启动加载），因此"插件页 8 语言说明 + 新图标 + 会话里画图"的肉眼确认需要在重启 DSH 之后进行。
+
+## E-LANG 八种界面语言
+
+- DSH 自带界面语言 8 种：`zh, en, ja, es, fr, de, ru, pt`（`dsh-client-locale` 的 `addLanguage` 注册 ja/es/fr/de/ru/pt，加内建 zh/en；`desktop-runtime.json` 只收录这 8 个 locale）。
+- `locale/<lang>.json` 各带 `meta.title`、`meta.description`、`meta.detail`；`docs/DETAIL{,.zh,.ja,.es,.fr,.de,.ru,.pt}.md` 各自是"一行图片 + 该语言 alt"，指向同目录 `preview.svg`。
+- `verify/check-bundle.mjs` 第 6 项 "every interface language has its own plugin page" 校验：8 个 locale 都能解析、title 互不相同、description 长度 ≥ 80、detail 以 `.md` 结尾、对应文档恰好一行且形如 `![alt](preview.svg)`。
+- `README.md` 是索引（中英双语简介 + 8 语言链接），`README.en.md` + `README.zh.md` + 6 份其他语言 README 结构一致（它做什么 / 为什么这样设计 / 你会得到什么 / 安装 / 示例 / 卸载与兼容性 / 许可）。

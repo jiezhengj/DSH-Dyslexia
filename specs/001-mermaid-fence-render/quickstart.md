@@ -92,3 +92,24 @@ npm pack --dry-run   # 或 pnpm pack --dry-run
 | E-COMP-6 | 宿主升级演练（记版本号，下次升级后复跑） | 升级后应用能打开、历史图回退为文本、重装后图恢复 | US5 |
 
 **写法要求**：E-COMP-5 与 E-COMP-6 未做时不得写"应该没问题"，只能写"未验证"并说明原因（与 T031 同一口径）。
+
+# 八、发布（tag 触发，不点网页）
+
+发布不走本地 `npm publish`：npm 端为该包建了 trusted publisher（OIDC），只认 `jiezhengj/DSH-Dyslexia` 仓库的 `.github/workflows/publish.yml`。
+
+```powershell
+$node -v                                  # 只为跑校验脚本
+git push origin main                      # 先确认工作区干净
+# 改 package.json 的 version，然后：
+git commit -am "0.1.2: …"
+git tag -a v0.1.2 -m "0.1.2: …"
+git push origin main; git push origin v0.1.2
+gh run watch                              # 观察 publish 工作流
+```
+
+工作流依次做三件事：`node verify/check-bundle.mjs`（24 项，含"发布包指向可信仓库"）→ `npm publish --access public --provenance` → 把 provenance 写到 transparency log。
+
+- 版本号必须先改：tag 与 `package.json` 不一致时 npm 会拒绝。
+- `repository.url` 必须与 workflow 所在仓库一致，否则 `npm publish` 报 `E422 … Failed to validate repository information`。
+- 发布后需要等一两分钟 `dist-tags.latest` 才会切换；`npm stage publish` 权限也在连接里，需要"先暂存、后人工批准"时把 workflow 的 `npm publish` 换成 `npm stage publish`。
+- 本地验证安装：`plugin_manager install_bundle` 目标写 `@jiezhengj/dsh-dyslexia@<version>`，装完重启 DSH；profile 里应看到版本号而不是 `link:`。
