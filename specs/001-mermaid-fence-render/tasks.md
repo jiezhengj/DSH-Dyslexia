@@ -205,7 +205,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T067 `package.json` 加 `scripts`（build/verify/harness/test/prepack），版本升 0.1.3
 - [x] T068 文档与证据全量同步（spec/plan/research/data-model/contracts/quickstart/tasks/checklist/evidence）
 - [x] T069 打 `v0.1.3` 经 GitHub Actions 发布（run `45043233136`），从 registry 装回 `desktop` profile
-- [ ] T070 重启后真机核对 0.1.3：新 chunk 生效、图名/按钮、插件页 0.1.3 说明、卸载回退（E-LIVE 目前是 0.1.2 的记录）
+- [ ] T070（已由 T079 取代，不再单独核对 0.1.3）新 chunk 生效、图名/按钮、插件页 0.1.3 说明、卸载回退（E-LIVE 目前是 0.1.2 的记录）
 
 ## Phase 13: 第二轮独立评审后的修复（2026-11-23 追加，版本 0.1.5）
 
