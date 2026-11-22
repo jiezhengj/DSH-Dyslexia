@@ -30,7 +30,7 @@ window.__ModuleLoader__.load({id:`@deepseek-ai/dsh-client-ui-chat`,factory:requi
 
 **依据**：`pele` 支持 Mermaid 12.1 全部内置图类型（flowchart/sequence/class/state/ER/gantt/timeline/mindmap/kanban/xychart/C4/architecture…），零运行期依赖、同步渲染、CSS 变量配色、`mount()` 读 CSS 字体并按容器宽度自适配、自动转义图内文字并限制源码与输出规模，MIT 许可。宿主客户端模块表是冻结的（`PLATFORM_MODULES`），`dsh.client.external` 只能引用**已安装的客户端包**，而 pele 不是 DSH 客户端包，所以无法以外部依赖形式引入——必须内联。
 
-**代价**：`client.js` 体积 ~735 KB（pele global 构建 733,670 B + 自家代码）。宿主现有 `ui-chat` 单块即 509 KB，同一量级，可接受。
+**代价**：`client.js` 体积约 743 KB（0.1.3 实测 760,611 字节；其中 pele global 构建 733,670 B，其余是自家代码）。宿主现有 `ui-chat` 单块即 509 KB，同一量级，可接受。
 
 **被否方案**：① 运行期从 CDN 载入 mermaid/pele——违反原则 III 与 SC-004（外部请求数 0）；② 把 mermaid 源码存成文件、由宿主渲染——违反 FR-002（不生成文件）与用户"内容要留在会话里"的诉求。
 
@@ -155,13 +155,13 @@ renderSlot('conversation.chat.markdown.fence', fence, {
 
 ## D19 兼容性也要有证据，且必须逐条对应要求
 
-**结论**：`verify/check-bundle.mjs` 用 6 组兼容性断言（无版本门 / 可独立编译 / 畸形加载器下不抛 / 工厂抛错仍可用 / 含边界与守卫 / 畸形宿主 ctx 下 `apply` 不抛），Chromium 夹具再用故障注入覆盖渲染期。断言名与 FR 编号在 `contracts/client-fence-layer.md` 与 `evidence/verification.md` 里对应。
+**结论**：`verify/check-bundle.mjs` 用 7 组兼容性断言（无版本门 / 可独立编译 / 畸形加载器下不抛 / 工厂抛错仍可用 / 含边界与守卫 / 畸形宿主 ctx 下 `apply` 不抛），Chromium 夹具再用故障注入覆盖渲染期。断言名与 FR 编号在 `contracts/client-fence-layer.md` 与 `evidence/verification.md` 里对应。
 
 **依据**：spec FR-017（加固必须有可重复的自动化证据）与 SC-006/SC-007/SC-008；宪法"开发与验证流程"要求未验证项必须标注。
 
 ## D20 标签只采信"真实译文"，回显的 key 一律当未解析
 
-**结论**：`translateFor` 对宿主 `t` 的返回值加三道判定——非空字符串、不等于请求的 key、不含未替换的 `{{占位符}}`；任何一条不满足就改用包内 8 语言字典。语言按 `document.documentElement.lang` → `navigator.language` → `en` 的顺序确定。断言名：静态检查 `host key echo falls back to bundled strings`、夹具 `host-t-echoes-key`。
+**结论**：`translateFor` 对宿主 `t` 的返回值加三道判定——非空字符串、不等于请求的 key、不含未替换的 `{{占位符}}`；任何一条不满足就改用包内 8 语言字典。语言按 `document.documentElement.lang` → `navigator.language` → `en` 的顺序确定。断言名：静态检查 `host key echo falls back to bundled strings`、夹具 `a host t that echoes the key still shows words` 与 `no internal key reaches the eye`。
 
 **依据**：真机实测（2026-11-22）宿主 `t` 在命名空间未注册时返回 key 本身，且**不抛错、不为空**，旧判定 `typeof value === 'string' && value.length > 0` 因此放行，界面上出现 `copySource`、`figureLabel` 这类内部 key；同类"看起来成功其实没生效"的签名变化也会这样伪装，故判定必须比"有返回值"更强。spec FR-008（8 语言 + 不得显示内部 key）、SC-009；宪法 IV（降级不得降低可读性）。
 
@@ -184,3 +184,5 @@ renderSlot('conversation.chat.markdown.fence', fence, {
 - `.tmp/` 仍然忽略：它只是我本机的一次性实验区，不再承担任何证据职责。
 
 **代价**：仓库多了 React UMD 两个文件和约 900 行夹具；换来的是任何人 clone 后能自己重算每一个"已验证"。
+
+

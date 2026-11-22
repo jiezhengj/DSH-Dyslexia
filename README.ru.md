@@ -51,7 +51,7 @@ DeepSeek Harness и так отображает Markdown в чате. Этот �
 
 ## Установка
 
-Установите пакет `@jiezhengj/dsh-dyslexia` в профиль DeepSeek Harness (страница плагинов) и перезапустите приложение. В npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
+Установите пакет `@jiezhengj/dsh-dyslexia` в профиль DeepSeek Harness (страница плагинов) и перезапустите приложение при смене версии. Включение, отключение и удаление применяются сразу; при смене версии нужен перезапуск, чтобы загрузился новый клиентский код. В npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
 
 ## Пример
 

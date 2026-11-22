@@ -18,7 +18,7 @@ $node = "C:\Users\jiezhengj\.dsh\dsh-runtimes\dsh-primary-runtime\dependencies\n
 & $node scripts/build-client.mjs
 ```
 
-产物 `client.js` = 头部 `window.__ModuleLoader__.load({ id, factory })` + `require('react')` + 内联的 pele + `src/client/{styles,figure,view,entry}.js` + 尾部导出。构建脚本必须：
+产物 `client.js` = 头部 `window.__ModuleLoader__.load({ id, factory })` + `require('react')` + 内联的 pele + `src/client/{styles,i18n,figure,view,entry}.js`（按此顺序，共 5 段）+ 尾部导出。构建脚本必须：
 
 - 只读仓库内文件，不联网、不装依赖；
 - 幂等（同输入同输出）；
@@ -113,3 +113,4 @@ gh run watch                              # 观察 publish 工作流
 - `repository.url` 必须与 workflow 所在仓库一致，否则 `npm publish` 报 `E422 … Failed to validate repository information`。
 - 发布后需要等一两分钟 `dist-tags.latest` 才会切换；`npm stage publish` 权限也在连接里，需要"先暂存、后人工批准"时把 workflow 的 `npm publish` 换成 `npm stage publish`。
 - 本地验证安装：`plugin_manager install_bundle` 目标写 `@jiezhengj/dsh-dyslexia@<version>`，装完重启 DSH；profile 里应看到版本号而不是 `link:`。
+

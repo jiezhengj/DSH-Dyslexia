@@ -40,7 +40,7 @@ ok   every supported sample type draws an svg — flowchart:218x64 sequence:184x
 ok   a broken diagram reports a one-line reason — Parse error on line 2:
 ok   host key echo falls back to bundled strings — key echo, blanks, placeholders rejected
 ok   every language carries the same complete sentences — 13 keys x 8 languages, no engine text in labels
-ok   client.js matches the sources it claims — f1a005057a9181561a78dda65e32f74a
+ok   client.js matches the sources it claims — c44444fb7746ca909d5f4c9e71df4cc4
 ok   a factory that cannot build never throws at the host — module-level throw contained, empty module returned
 ok   the host half registers exactly one capability section — ui:dsh-dyslexia, order 9000, 85 words
 ok   the host half stays silent when the host changed shape — five silent hosts, one throwing section
@@ -76,30 +76,34 @@ ok   the host half stays silent when the host changed shape — five silent host
 
 ## E-PKG 打包内容
 
-`npm pack --dry-run`（0.1.3）：33 个文件 —— `index.js`、`client.js`、`cordis.patch.yml`、`icon.svg`、`locale/` 8 个 json、`docs/` 8 篇 `DETAIL*.md` + `preview.svg`、`README*.md` 9 份、`LICENSE`、`THIRD-PARTY-NOTICES.md`、`package.json`。不含 `src/`、`vendor/`、`scripts/`、`verify/`、`specs/`、`.specify/`、`.tmp/`。
+`npm pack --dry-run`（0.1.4）：33 个文件 —— `index.js`、`client.js`、`cordis.patch.yml`、`icon.svg`、`locale/` 8 个 json、`docs/` 8 篇 `DETAIL*.md` + `preview.svg`、`README*.md` 9 份、`LICENSE`、`THIRD-PARTY-NOTICES.md`、`package.json`。不含 `src/`、`vendor/`、`scripts/`、`verify/`、`specs/`、`.specify/`、`.tmp/`。
 
 ## E-PUB 发布（tag 触发，不在网页上点确认）
 
 - 0.1.1：GitHub Actions run `45031254012` 成功，日志含 `+ @jiezhengj/dsh-dyslexia@0.1.1`，provenance 写入 sigstore transparency log（logIndex 4045962187）。此前 run `45031124935` 失败于 `E422 … "repository.url" is ""`，补 `repository`/`homepage`/`bugs` 后通过。
 - 0.1.2：run `45036311606` 成功，provenance logIndex 4046319715，registry `dist-tags.latest = 0.1.2`，tarball shasum `c27a63156485cb908ede76fce6f4759a8b4eb37b`。
-- registry 版本文件有 CDN 滞后（约 2 分钟后才 200），不是发布失败。
+- 0.1.3：run `45043233136` 成功，日志含 `+ @jiezhengj/dsh-dyslexia@0.1.3`、`check-bundle: all 30 checks passed`、`run-harness: all 76 checks passed (/usr/bin/google-chrome)`；registry `0.1.3` tarball shasum `101688f9e27af38436bc12a8898a1a3f56bf361b`，`dist-tags.latest = 0.1.3`。
+- registry 版本文件有 CDN 滞后（约 2 分钟后才 200），不是发布失败；npm 镜像 npmmirror 同步更慢（发布后 10 分钟仍停在 0.1.2），从包名安装会因镜像 404 失败，改用显式 tarball URL 装上后再用包名重装一次即可落到 `"0.1.3"`。
 
 ## E-INS 从 registry 安装
 
-`plugin_manager remove_bundle` → `install_bundle` target `@jiezhengj/dsh-dyslexia@<version>`，返回 `application: "applied"`。profile `desktop` 的 `package.json` 依赖从 `link:` 变为具体版本号，`dsh.profile.bundles` 末尾含该包名；`node_modules/@jiezhengj/dsh-dyslexia/` 里的 `version`、`locale/`、`docs/`、`icon.svg` 与发布包一致。
+`plugin_manager remove_bundle` → `install_bundle` target `@jiezhengj/dsh-dyslexia@<version>`，返回 `application: "applied"`。profile `desktop` 的 `package.json` 依赖从 `link:` 变为具体版本号，`dsh.profile.bundles` 末尾含该包名；`node_modules/@jiezhengj/dsh-dyslexia/` 里的 `version`、`locale/`(8)、`docs/`(9)、`icon.svg` 与发布包一致。0.1.3 安装后 profile 依赖为 `"0.1.3"`，`client.js` 760,611 字节，SHA256 前缀 `D80A309A99FC5995`，与仓库根 `client.js` 完全一致。
 
 ## E-LIVE 真机（DSH 桌面窗口内）
 
 工具：`agent-desktop`（读无障碍树）。
 
-- 插件页：侧栏「插件」→「已安装插件」→「查看 DSH 图示阅读」，详情页显示中文标题与描述、说明图渲染成功（`docs/DETAIL.zh.md` → `preview.svg`），来源信息 `@jiezhengj/dsh-dyslexia@0.1.2`，状态「运行中」。对应 FR-008/SC-009。
-- 会话内成图：一条真 ```mermaid 代码块渲染成图，无障碍树里出现 `role: image`、`name: "图：flowchart"`；`role: button` 有「查看源码」「复制源码」两个。对应 US1/SC-001/FR-003。
-- 卸载回退：`remove_bundle` 后同一条消息变回代码块原文（`flowchart LR … A[代码块] --> B[就地成图] …`），`role: image` 与「复制源码」按钮消失。对应 US2/SC-002。
-- 重装恢复：再 `install_bundle` 同一版本后，图与按钮立刻回来，纯文本消失，历史消息无需修改。对应 FR-010/SC-002。
+- 插件页：侧栏「插件」→「已安装插件」→「查看 DSH 图示阅读」，详情页显示中文标题与描述、说明图渲染成功（`docs/DETAIL.zh.md` → `preview.svg`），来源信息 `@jiezhengj/dsh-dyslexia@0.1.2`（该次取证安装的版本），状态「运行中」。对应 FR-008（说明页存在且本地化）——对应 SC-009 的只有"8 语言与不出现内部 key"，其证据是 E-HARN，不是这一条。
+- 会话内成图：一条真 ```mermaid 代码块渲染成图，无障碍树里出现 `role: image`、`name: "图：flowchart"`；`role: button` 有「查看源码」「复制源码」两个。对应 US1/FR-003/FR-007 的可见性与可操作性；**不含 SC-001 的"1 秒内出图"，那次取证没有计时**。
+- 卸载回退：`remove_bundle` 后同一条消息变回代码块原文（`flowchart LR … A[代码块] --> B[就地成图] …`），`role: image` 与「复制源码」按钮消失。对应 US2/FR-009 的"卸载后仍可读"；**不含 SC-002 的 `session_search` 命中**（没有在卸载态用会话检索工具查过该块原文）。
+- 重装恢复：再 `install_bundle` 同一版本后，图与按钮立刻回来，纯文本消失，历史消息无需修改。对应 FR-010（重装即恢复）。
 
 ## E-GAPS 没有取证的部分
 
 - **宿主跨小版本/大版本升级演练（T041/T042）**：没有真的把 DSH 升一个版本再打开会话。要求"升级后仍能启动、未渲染的内容仍是代码块"目前只有静态与夹具证据（E-COMP），没有升级后的真机证据。
 - **实体手机/平板**：只验证了 360 px 视口下不横向溢出、图宽贴合栏宽；没有在真机触摸屏上试缩放按钮。
 - **断网裸机安装（E12/E13）**：没有在没有任何构建工具链的机器上断网安装一遍；"运行期零网络"由静态断言（无 fetch/XHR/动态 import/远程 URL）与 `file://` 夹具支撑，不是断网实测。
-- **`dsh --profile desktop --dump-config`（T027）**：本机是 Desktop 发行版，PATH 上没有 `dsh` CLI；能力播报改用 `node verify/check-bundle.mjs` 的两项宿主机断言（注册一段、畸形宿主静默）取证。
+- **FR-011 的两半**：check-bundle 的两项宿主机断言只能证明「apply 时注册了一段、畸形宿主不抛」，**不能证明这段出现在真实会话的系统提示里，也不能证明停用插件后它消失**；后者需要真实会话 + 停用后再看提示词，未做。\n- **SC-001 计时 / SC-002 检索命中 / SC-003 字号下限**：三条都没有断言或测量（夹具只量图宽与横向溢出，不量图内字号；没有秒表；没有 session_search 记录）。\n- **SC-005 主题切换**：只验证了改变一个主题 CSS 变量后图跟着变色；没有真的做「明→暗→明」切换，也没有验证不重绘即变色。\n- **dsh --profile desktop --dump-config（T027）**：本机是 Desktop 发行版，PATH 上没有 `dsh` CLI；能力播报改用 `node verify/check-bundle.mjs` 的两项宿主机断言（注册一段、畸形宿主静默）取证。
+
+
+

@@ -51,7 +51,7 @@ Ambos comandos están en el repositorio, de modo que lo afirmado en este archivo
 
 ## Instalación
 
-Instala el paquete `@jiezhengj/dsh-dyslexia` en tu perfil de DeepSeek Harness (página de complementos) y reinicia la aplicación. En npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
+Instala el paquete `@jiezhengj/dsh-dyslexia` en tu perfil de DeepSeek Harness (página de complementos) y reinicia la aplicación cuando cambies de versión. Activar, desactivar y desinstalar surten efecto de inmediato; cambiar de versión requiere reiniciar para cargar el nuevo código de cliente. En npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
 
 ## Ejemplo
 

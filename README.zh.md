@@ -51,7 +51,7 @@ DeepSeek Harness 本来就在聊天里渲染 Markdown。这个插件只加一件
 
 ## 安装
 
-在 DeepSeek Harness 的插件页安装 `@jiezhengj/dsh-dyslexia`，然后重启应用。npm 上的包：https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia。
+在 DeepSeek Harness 的插件页安装 `@jiezhengj/dsh-dyslexia`。启用、停用与卸载立刻生效；更换版本需要重启应用，才会加载新的客户端代码。npm 上的包：https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia。
 
 ## 示例
 

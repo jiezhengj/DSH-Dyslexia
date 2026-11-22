@@ -1,6 +1,6 @@
 {
   "name": "@jiezhengj/dsh-dyslexia",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Draws mermaid code blocks in DeepSeek Harness conversations as diagrams, in place in the message.",
   "keywords": [
     "dsh",
@@ -59,3 +59,4 @@
     "registry": "https://registry.npmjs.org/"
   }
 }
+

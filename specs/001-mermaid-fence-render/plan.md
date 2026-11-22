@@ -30,7 +30,7 @@
 - 所有宿主服务调用、注册调用、渲染调用都就地降级，绝不把异常抛回宿主；
 - 宿主派发的数据不符合预期时，一律交回宿主原本的代码块。
 
-**Scale/Scope**: 单张图通常 5–20 个节点；上限由 pele 的 `limit`/`outputLimit`/`maxEdges` 约束，超限即回退为文本（FR-004）。代码量预期：宿主半边 ~30 行，浏览器半边 ~500 行（含降级与边界），构建脚本 ~120 行，校验脚本 ~260 行。
+**Scale/Scope**: 单张图通常 5–20 个节点；上限由 pele 的 `limit`/`outputLimit`/`maxEdges` 约束，超限即回退为文本（FR-004）。代码量实况（2026-11-23）：宿主半边 `index.js` 57 行，浏览器半边 `src/client/` 共 788 行（view 312 / i18n 213 / figure 95 / styles 92 / entry 76），构建脚本 137 行，静态校验 496 行，浏览器夹具 `verify/harness/index.html` 453 行 + 驱动 `verify/run-harness.mjs` 110 行。
 
 ## Constitution Check
 
@@ -113,4 +113,6 @@ verify/
 tests/                   # 不放测试框架；verify/ 即验收脚本
 ```
 
-**Structure Decision**: 仓库根目录就是 npm 包根目录（`specs/`、`.specify/`、`verify/`、`vendor/`、`scripts/`、`src/` 不进 `files`）。发布内容 = 9 条 `files` 模式：`index.js`、`client.js`、`cordis.patch.yml`、`locale/*.json`（8 个）、`docs`（8 篇 `DETAIL*.md` + `preview.svg`）、`icon.svg`、`LICENSE`、`THIRD-PARTY-NOTICES.md`、`README*.md`（9 份，含索引），实际 24 个文件（`npm pack` 展开后为 33 个含 package.json 等）。`client.js` 由 `scripts/build-client.mjs` 从 `src/client/*.js` + `vendor/pele/pele.global.js` 拼出：不引入 bundler，因为唯一允许的外部符号是宿主的 `react`，拼接即可满足宿主"已构建单块 chunk"的要求，同时让 vendored 依赖和自家代码在仓库里可读、可审计。`src/client/*.js` 刻意写成不带 `import`/`export` 的脚本片段，构建脚本按固定顺序拼接，避免为拼接引入任何解析器。
+**Structure Decision**: 仓库根目录就是 npm 包根目录（`specs/`、`.specify/`、`verify/`、`vendor/`、`scripts/`、`src/` 不进 `files`）。发布内容 = 9 条 `files` 模式：`index.js`、`client.js`、`cordis.patch.yml`、`locale/*.json`（8 个）、`docs`（8 篇 `DETAIL*.md` + `preview.svg`）、`icon.svg`、`LICENSE`、`THIRD-PARTY-NOTICES.md`、`README*.md`（9 份，含索引），实际 32 个文件（`npm pack` 展开后为 33 个，多出的一个是 `package.json`）。`client.js` 由 `scripts/build-client.mjs` 从 `src/client/*.js` + `vendor/pele/pele.global.js` 拼出：不引入 bundler，因为唯一允许的外部符号是宿主的 `react`，拼接即可满足宿主"已构建单块 chunk"的要求，同时让 vendored 依赖和自家代码在仓库里可读、可审计。`src/client/*.js` 刻意写成不带 `import`/`export` 的脚本片段，构建脚本按固定顺序拼接，避免为拼接引入任何解析器。
+
+

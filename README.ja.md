@@ -51,7 +51,7 @@ DeepSeek Harness はもともとチャットで Markdown を描画します。�
 
 ## インストール
 
-DeepSeek Harness のプロファイル（プラグイン画面）に `@jiezhengj/dsh-dyslexia` をインストールし、アプリを再起動してください。npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
+DeepSeek Harness のプロファイル（プラグイン画面）に `@jiezhengj/dsh-dyslexia` をインストールしてください。有効化・無効化・アンインストールはすぐに反映されます。バージョンを変えた場合は、新しいクライアントコードを読み込むためにアプリの再起動が必要です。npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
 
 ## 例
 

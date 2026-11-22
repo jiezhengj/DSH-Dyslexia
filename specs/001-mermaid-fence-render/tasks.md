@@ -8,7 +8,7 @@ description: "Task list for 会话内图形渲染"
 
 **Prerequisites**: [plan.md](./plan.md), [spec.md](./spec.md), [research.md](./research.md), [data-model.md](./data-model.md), [contracts/](./contracts/), [quickstart.md](./quickstart.md)
 
-**Tests**: 本功能不引入测试框架（宪法原则 III）。验收 = `verify/check-bundle.mjs` 静态断言 + quickstart.md 的 E1–E16 真机证据。
+**Tests**: 本功能不引入测试框架（宪法原则 III）。验收 = `verify/check-bundle.mjs` 的 30 项静态断言 + `verify/run-harness.mjs` 的 76 项浏览器断言 + quickstart.md 的 E1–E16 真机证据表（该表定义"要取什么证据"，本身不是证据）。
 
 **Organization**: 按 spec 的用户故事分阶段；每个故事独立可验收。
 
@@ -47,7 +47,7 @@ description: "Task list for 会话内图形渲染"
 
 - [x] T006 写宿主半边 `index.js`：`export const name`、`export const inject = ['systemPrompt']`、`apply(ctx)` 内一次 `ctx.systemPrompt.section({ name: 'ui:dsh-dyslexia', order: 9000, text: MERMAID_RENDER_PROMPT })`，文本按 [contracts/host-prompt.md](./contracts/host-prompt.md) 的四件必含 / 五条必不包含写
 - [x] T007 [P] 写 `src/client/styles.js`：主题令牌映射（`--dsw-alias-*` → `--pele-*`）与容器样式常量，样式只允许行内或 `dsh-dyslexia-` 前缀，见 [contracts/client-fence-layer.md](./contracts/client-fence-layer.md) 的「样式边界」
-- [x] T008 写 `scripts/build-client.mjs`：按固定顺序拼接 头部 `window.__ModuleLoader__.load({ id })` + `require('react')` + `vendor/pele/pele.global.js` + `src/client/{styles,figure,view,entry}.js` + 尾部导出，产出 `client.js`；只读仓库内文件、不联网、幂等、缺文件时非零退出（依赖 T001、T007）
+- [x] T008 写 `scripts/build-client.mjs`：按固定顺序拼接 头部 `window.__ModuleLoader__.load({ id })` + `require('react')` + `vendor/pele/pele.global.js` + `src/client/{styles,i18n,figure,view,entry}.js` + 尾部导出，产出 `client.js`；只读仓库内文件、不联网、幂等、缺文件时非零退出（依赖 T001、T007）
 - [x] T009 [P] 写 `verify/check-bundle.mjs`：实现 [contracts/plugin-manifest.md](./contracts/plugin-manifest.md#可静态校验项verifycheck-bundlemjs-断言) 的 8 条断言，只用 Node 内置模块
 - [x] T010 跑通第一次构建 + 静态校验（`scripts/build-client.mjs` → `verify/check-bundle.mjs`），修到全绿；构建产物 `client.js` 提交进仓库
 - [x] T011 装进 `desktop` profile 冒烟：`plugin_manager` 的 `install_bundle` 指向仓库根（需 danger-full-access，先向用户报备），确认插件在列表里、标题/描述随界面语言显示、加载日志无报错；随后立即 `remove_bundle` 复原
@@ -100,7 +100,7 @@ description: "Task list for 会话内图形渲染"
 ### Implementation for User Story 3
 
 - [x] T021 [P] [US3] 在 `src/client/figure.js` 加 `ResizeObserver` → `refresh()`，让容器尺寸/字体变化时重排而不重新解析（消费 `RenderArtifact.width`/`height`）
-- [x] T022 [US3] 在 `src/client/styles.js` 落窄屏规则：容器 `max-width: 100%`、溢出在图内滚动、图内文字不小于正文最小字号；缩放控件只在溢出时出现
+- [x] T022 [US3] 落窄屏规则：容器 `max-width: 100%`、溢出在图内滚动（`src/client/styles.js`）；字号下限由绘制选项 `fontSize` 保证（`src/client/figure.js` 的 `figureFontSize`），**不是** CSS；缩放控件只在溢出时出现。（"图内文字不小于正文最小字号"目前无断言，见 E-GAPS）
 - [ ] T023 [US3] 取证 E8（360 px 无横向溢出、图按容器重排）与 E9（触屏/鼠标缩放与复位，不影响其余布局），至少含一张 360 px 截图
 
 **Checkpoint**: US3 独立成立——窄屏不是"挤成一小块"。
@@ -164,6 +164,48 @@ description: "Task list for 会话内图形渲染"
 
 ---
 
+## Phase 10: 八种语言、图标、README 与发布（2026-11-22 追加）
+
+用户四项要求（图标照官方风格重做、说明页对齐官方全部界面语言、README 双语索引 + 分语言简介、GitHub 建仓并本机测试）。复核结论：官方界面语言是 **8 种**（zh/en/ja/es/fr/de/ru/pt），不是 9 种。
+
+- [x] T043 `icon.svg` 按官方风格重做（36×36、`fill="none"`、stroke 3、渐变 `#7CB7FF→#145AF3` + `#679EFE` 折线 + `#41E1AC` 描边节点），Chrome headless 逐版对比定稿
+- [x] T044 客户端文案扩到 8 语言（现为 13 个键 × 8 种语言，`src/client/i18n.js`）
+- [x] T045 `scripts/build-preview.mjs` 生成 `docs/preview.svg`（640×300，含 pele 真实渲染的流程图，可重复生成）
+- [x] T046 8 份 `locale/<lang>.json`（title / description / detail 全部本地化）
+- [x] T047 8 份 `docs/DETAIL{,.zh,.ja,.es,.fr,.de,.ru,.pt}.md`（各自一行图片 + 该语言 alt）
+- [x] T048 `README.md` 索引 + 8 份 `README.<lang>.md`（2026-11-23 由 `readme-writer` 补齐「数据与隐私 / 验证方法 / 已知限制」三节）
+- [x] T049 `verify/check-bundle.mjs` 增加发布文件齐全、每种界面语言都有说明页、清单指向 npm 可信仓库等断言（现共 30 项）
+- [x] T050 `package.json` 补 `repository`/`homepage`/`bugs`（E422 的教训），`files` 收进 `docs` 与 `README*.md`
+- [x] T051 GitHub 建仓 `https://github.com/jiezhengj/DSH-Dyslexia` 并推送；`.github/workflows/publish.yml` 走 npm trusted publisher（OIDC + provenance）
+- [x] T052 重启后的真机取证：插件页 8 语言说明与新图标、会话里就地画图、卸载后旧会话回退（E-LIVE-1～6，取证的版本是 0.1.2）
+
+## Phase 11: 标签回显 key 的修复（2026-11-22 追加，同一 feature 内）
+
+真机发现宿主 `t` 在命名空间未注册时回显 key，界面出现 `copySource`/`figureLabel`。按 SDD 就地补记：FR-008 改写、SC-006 增至 7 类、新增 SC-009、research D20、data-model 增加降级行、contracts 第 8 条改写。
+
+- [x] T053 `translateFor` 加 `isResolved()`：非空、不等于 key、无未替换占位符、非纯空白；不满足一律回落包内 8 语言字典
+- [x] T054 静态断言 `host key echo falls back to bundled strings`
+- [x] T055 夹具 `a host t that echoes the key still shows words` 与 `no internal key reaches the eye`
+- [x] T056 重建、跑全部断言、版本升 0.1.2
+- [x] T057 打 `v0.1.2` 标签经 GitHub Actions 发布，从 registry 装回
+- [x] T058 重启后核对图名/按钮为可读短语（E-LIVE）
+
+## Phase 12: 独立评审后的修复（2026-11-23 追加）
+
+两个独立评审 agent（文档 / 实现）均判 FAIL：文档多处过期与夸大，代码有 2 条 P1（边界在 `try` 外读 `props.children` 与 `previous.code`；证据不在仓库、不可复现）与十余条 P2。
+
+- [x] T059 `src/client/i18n.js` 重写：13 键 × 8 语言，错误句是各语言完整句子，不含英文技术片段、不含未填占位符
+- [x] T060 复制只在 `writeText()` 兑现后显示"已复制"，否则"复制失败"
+- [x] T061 失败且无宿主 `children` 时自己渲染源码；`streaming` 用 `Boolean()`；空图类型用本地化的"图"而不是英文 `diagram`
+- [x] T062 `FigureBoundary` 的读取全部走 `readLayerInput`/`safeRead`，取值器抛错不再逃出边界
+- [x] T063 宿主半边：`section()` 返回 thenable 时兜住 rejection；`warn()` 辅助
+- [x] T064 夹具迁入仓库 `verify/harness/`（含 React 18.3.1 UMD 副本）+ `verify/run-harness.mjs`（headless Chrome，失败非零退出）
+- [x] T065 `verify/check-bundle.mjs` 25 → 30 项（宿主半边恰好一段、畸形宿主静默、8 语言整句、产物指纹、真实工厂抛错）
+- [x] T066 发布 workflow 增加：重建 → `git diff --exit-code -- client.js` → check-bundle → run-harness → publish
+- [x] T067 `package.json` 加 `scripts`（build/verify/harness/test/prepack），版本升 0.1.3
+- [x] T068 文档与证据全量同步（spec/plan/research/data-model/contracts/quickstart/tasks/checklist/evidence）
+- [x] T069 打 `v0.1.3` 经 GitHub Actions 发布（run `45043233136`），从 registry 装回 `desktop` profile
+- [ ] T070 重启后真机核对 0.1.3：新 chunk 生效、图名/按钮、插件页 0.1.3 说明、卸载回退（E-LIVE 目前是 0.1.2 的记录）
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
@@ -237,26 +279,29 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 
 ## 实施状态（2026-11-23 更新）
 
-**已勾选**：Phase 1–2（T001–T011）、US1（T012–T016）、US2 的审计（T018）、US3 的代码与夹具（T021–T022）、US4 的静态证据（T024）、FR-011 能力播报（T026）、打包与清理（T028–T029、T032）、兼容性加固（T033–T040）、八语言/图标/README/发布（T043–T051）、标签回显修复（T053–T058）。
+**当前自动化证据**（命令即证据，任何人 clone 后可复跑）：
 
-**当前自动化证据**（随时可复跑，命令即证据）：
+- `node verify/check-bundle.mjs` → **30 项全过**
+- `node verify/run-harness.mjs` → 真实 Chromium 里 **76 项全过**（夹具 `verify/harness/index.html`，已提交）
 
-- `node verify/check-bundle.mjs` → **30 项全过**（含无版本门、产物可独立编译、畸形加载器不抛、工厂抛错仍可用、8 语言整句、说明页齐全、宿主半边恰好注册一段且畸形宿主静默）。
-- `node verify/run-harness.mjs` → 真实 Chromium 里 **76 项全过**（夹具 `verify/harness/index.html` 已提交，不再依赖 `.tmp`）。
+**真机证据**（`evidence/verification.md` 的 E-LIVE）：会话内就地成图、卸载回退、重装恢复、插件页说明；取证的版本是 0.1.2。
 
-**真机证据**（`evidence/verification.md` 的 E-LIVE）：会话内就地成图、卸载后同一消息回退为代码块、重装后立刻恢复、插件页中文标题与说明图、图名与按钮为可读中文。
+**仍未取证的项**（不写成"已完成"）：
 
-**仍未勾选的，及原因**：
-
-| 任务 | 状态 | 原因 |
+| 项 | 状态 | 说明 |
 |---|---|---|
-| T017 窄屏真机 | 部分 | 360 px 由浏览器夹具覆盖（不是真机窗口缩放） |
-| T019 `session_search` 命中 | 未做 | 未在卸载态用会话检索工具查过该块原文（文本仍在消息里，属旁证） |
-| T020 重装恢复 + 卸载态新会话可读 | 重装部分已做（E-LIVE），新会话部分未单独取证 | — |
-| T023 界面部分 | 已由 E-LIVE 覆盖 | 图、按钮、失败回退在真机上均确认 |
+| T017 US1 取证 | 部分 | E1（图出现）、E3（查看源码）、E4（坏语法回退）、E5（流式不画）已由 E-LIVE 与夹具覆盖；**E2 多图并存、E16 其他代码块不受影响没有专门取证** |
+| T019 `session_search` 命中 | 未做 | 未在卸载态用会话检索工具查过该块原文 |
+| T020 重装 + 卸载态新会话 | 部分 | 重装恢复已做（E-LIVE）；"卸载后新会话里仍可读"未单独取证 |
+| T023 窄屏 + 缩放 | 部分 | 360 px 无横向溢出由图宽夹具覆盖（不是真机窗口缩放）；触屏缩放与复位未在真机试 |
 | T025 断网/裸机 | 未做 | 运行期零网络只有静态断言与 `file://` 夹具支撑 |
-| T027 `--dump-config` | 改口径 | 本机是 Desktop 发行版，PATH 无 `dsh` CLI；能力播报改用 check-bundle 的两项宿主机断言取证 |
+| T027 `--dump-config` | 改口径 | 本机 PATH 无 `dsh` CLI；改用 check-bundle 的两项宿主机断言，**且这两项不证明提示词段出现在真实会话里** |
 | T030 断网 tarball 复跑 | 未做 | 清单已核对，断网复跑未做 |
-| T031 证据表汇总 | 已由 `evidence/verification.md` 承担 | 该文件逐节写命令与判定 |
 | T041 真机验证 US5 | 部分 | 应用正常打开与会话正常已确认；"注入畸形宿主"只在夹具里做 |
-| T042 宿主升级演练 | 未做 | 未真的升级 DSH 一个版本；已写进 E-GAPS |
+| T042 宿主升级演练 | 未做 | 未真的升级 DSH 一个版本 |
+| T070 0.1.3 重启核对 | 未做 | 运行中的界面仍加载 0.1.2 的 chunk |
+| SC-001 计时 | 未做 | 没有"1 秒内出图"的计时 |
+| SC-002 检索命中 | 未做 | 同 T019 |
+| SC-003 字号下限 | 未做 | 没有图内字号与正文最小字号的比较断言 |
+| SC-005 主题切换 | 部分 | 只验证了换 CSS 变量后变色，没做明→暗→明切换 |
+| FR-011 提示词消失 | 未做 | 停用插件后提示词段是否消失未取证 |
