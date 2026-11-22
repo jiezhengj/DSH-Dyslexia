@@ -114,9 +114,18 @@ if (failed > 0) {
 }
 
 // The summary line names the tree it came from, so a pasted run cannot belong to
-// a different commit than the one it claims.
+// a different commit than the one it claims. The fingerprint is the same one the
+// builder stamps into client.js, so a suite run against a stale chunk shows it.
 const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'))
-const chunk = statSync(join(ROOT, 'client.js'))
+const chunk = readFileSync(join(ROOT, 'client.js'), 'utf8')
+const stamped = /sources sha256:([0-9a-f]{32})/.exec(chunk)
+const EXPECTED_CHECKS = 197
+if (EXPECTED_CHECKS > 0 && passed !== EXPECTED_CHECKS) {
+  process.stderr.write(
+    `\nrun-harness: suite reported ${passed} checks, expected ${EXPECTED_CHECKS}: a check was added or removed\n`,
+  )
+  process.exit(1)
+}
 process.stdout.write(
-  `run-harness: ${pkg.name}@${pkg.version} | client.js ${chunk.size} bytes | all ${passed} checks passed (${browser})\n`,
+  `run-harness: ${pkg.name}@${pkg.version} | client.js ${statSync(join(ROOT, 'client.js')).size} bytes | sources sha256:${stamped ? stamped[1] : 'unstamped'} | all ${passed} checks passed (${browser})\n`,
 )

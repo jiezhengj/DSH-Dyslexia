@@ -187,7 +187,19 @@ check('client.js requires react and nothing else', () => {
 
 check('client.js never reaches the network', () => {
   const code = chunk.replace(/\/\*[\s\S]*?\*\//g, '')
-  for (const needle of ['fetch(', 'fetch (', 'XMLHttpRequest', 'importScripts', 'new WebSocket', 'EventSource', 'import(']) {
+  for (const needle of [
+    'fetch(',
+    'fetch (',
+    'XMLHttpRequest',
+    'importScripts',
+    'new WebSocket',
+    'EventSource',
+    'import(',
+    'sendBeacon',
+    'new Image(',
+    'new Worker(',
+    'WebTransport',
+  ]) {
     assert(!code.includes(needle), `client.js contains ${needle}`)
   }
   const withoutNamespaces = code.replace(/https?:\/\/www\.w3\.org\/[^"'\s]*/g, '')
@@ -269,16 +281,27 @@ check('host half declares its package identity and one service', () => {
 })
 
 const captured = []
-const hostModule = await import(pathToFileURL(join(ROOT, 'index.js')).href)
-hostModule.apply({
-  systemPrompt: {
-    section(spec) {
-      captured.push(spec)
+let hostModule = null
+
+// A rejected dynamic import must read as a failure line, not as a stack trace
+// printed outside the report.
+try {
+  hostModule = await import(pathToFileURL(join(ROOT, 'index.js')).href)
+  hostModule.apply({
+    systemPrompt: {
+      section(spec) {
+        captured.push(spec)
+      },
     },
-  },
-})
+  })
+  assert(captured.length === 1, `host half added ${captured.length} sections on load`)
+  notices.push('ok   the host half can be loaded and apply once — one section on a healthy host')
+} catch (error) {
+  failures.push(`FAIL the host half can be loaded and apply once — ${error.message}`)
+}
 
 check('host apply survives a host that changed shape', () => {
+  assert(hostModule !== null, 'the host half never loaded')
   hostModule.apply(undefined)
   hostModule.apply(null)
   hostModule.apply({})
@@ -297,6 +320,7 @@ check('host apply survives a host that changed shape', () => {
 })
 
 check('the prompt section states the capability once', () => {
+  assert(hostModule !== null, 'the host half never loaded')
   assert(hostModule.name === 'dsh-dyslexia', 'module name mismatch')
   assert(Array.isArray(hostModule.inject) && hostModule.inject.includes('systemPrompt'), 'module inject mismatch')
   assert(captured.length === 1, `expected one section, got ${captured.length}`)
@@ -588,6 +612,8 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
     'the source block keeps the language the host sent',
     'the picture box is capped to the column',
     'every zoom button in reach can take the keyboard',
+    'every interface language has expectations',
+    'the column measurement can see an overflow',
   ]
   const missing = needed.filter((name) => harness.indexOf(name) === -1)
   if (missing.length > 0) throw new Error(`missing fixture assertions: ${missing.join(', ')}`)
@@ -605,6 +631,13 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
 })
 
 /* ---------------------------------------------------------------- report */
+
+const EXPECTED_CHECKS = 37
+if (notices.length + failures.length !== EXPECTED_CHECKS) {
+  failures.push(
+    `[FAIL] the suite has ${notices.length + failures.length} checks, expected ${EXPECTED_CHECKS}: a check was added or removed without updating this number`,
+  )
+}
 
 for (const line of notices) process.stdout.write(`${line}\n`)
 for (const line of failures) process.stderr.write(`${line}\n`)

@@ -111,7 +111,7 @@ renderSlot('conversation.chat.markdown.fence', fence, {
 
 **结论**：源码就放在仓库根目录的包形态里，用 `plugin_manager install_bundle`（等价 `dsh plugin --profile desktop add <本地目录>`）装进 `desktop` profile；卸载用 `remove_bundle`。开发期反复验证走 `install_bundle` → 看 HMR 生效 → `remove_bundle`。
 
-**依据**：`docs/user/develop/basic/publish.md` 的 add/remove 语义；本机 profile 为 `desktop`（`C:\Users\jiezhengj\.dsh\profiles\desktop\package.json`，bundles 列表含 `@deepseek-ai/dsh-base`、`@deepseek-ai/dsh-web-app`、`billion-context` 等，另有用户自己的 `cordis.patch.yml`）；`dsh.client` 的启用/停用走 HMR 图增量，所以装完不必重启桌面应用。git 安装需要 `prepare` 脚本与 pnpm `allowBuilds`，故本地目录 / `npm pack` tarball 是首选。
+**依据**：`docs/user/develop/basic/publish.md` 的 add/remove 语义；本机 profile 为 `desktop`（`C:\Users\jiezhengj\.dsh\profiles\desktop\package.json`，bundles 列表含 `@deepseek-ai/dsh-base`、`@deepseek-ai/dsh-web-app`、`billion-context` 等，另有用户自己的 `cordis.patch.yml`）；`dsh.client` 的启用/停用走 HMR 图增量，所以同版本的装/卸/启停不需要重启桌面应用；换成新版本时运行中的界面仍加载旧 chunk，需要重启才换新（与 `quickstart.md` 的 E-COMP-5、`tasks.md` 的 T079 同一口径）。git 安装需要 `prepare` 脚本与 pnpm `allowBuilds`，故本地目录 / `npm pack` tarball 是首选。
 
 # 四、验证策略
 
@@ -183,7 +183,7 @@ renderSlot('conversation.chat.markdown.fence', fence, {
 - 发布 workflow 增加三步：重建 → `git diff --exit-code -- client.js` 拒绝陈旧产物 → 跑 `check-bundle` 与 `run-harness`，之后才 `npm publish`。
 - `.tmp/` 仍然忽略：它只是我本机的一次性实验区，不再承担任何证据职责。
 
-**代价**：仓库多了 React UMD 两个文件和 914 行夹具 + 122 行驱动（合计 1036 行）；换来的是任何人 clone 后能自己重算每一个"已验证"。
+**代价**：仓库多了 React UMD 两个文件和 952 行夹具 + 131 行驱动（合计 1083 行）；换来的是任何人 clone 后能自己重算每一个"已验证"。
 
 ## D22 无障碍：图像角色只给图本身，复制结果用实时区域播报（2026-11-23 修订）
 

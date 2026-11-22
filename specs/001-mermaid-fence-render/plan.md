@@ -16,7 +16,7 @@
 
 **Storage**: 无。不新增会话实体、不写文件、不建索引；图源就是既有会话消息里的代码块文本。
 
-**Testing**: 不引入测试框架（遵守"依赖自包含"）。实现提供三类证据：① `node verify/check-bundle.mjs` 纯 Node 内置模块的静态与行为断言 36 项（bundle 外形、允许的 `require` 白名单、无外部 URL、pele 版本与许可存在、manifest 字段完整、8 语言文案与说明页完整、**无版本否决字段、产物可独立编译、宿主加载器异常下不抛出、工厂抛错时仍返回可用模块、宿主半边恰好注册一段且畸形宿主静默**）；② 提交进仓库的 `verify/harness/index.html` + `node verify/run-harness.mjs`，在真实 Chromium 里跑 156 项（含无障碍结构：图像本身带本地化名字、外层盒子不带名字以免重复播报、引擎缩放按钮位于图像之外且可聚焦）（React + `client.js` + 独立引擎，含**故障注入**：宿主 `t` 抛错/回显 key、`code`/`children` 取值器抛错、引擎抛错、无 slots 服务、坏语法、裁剪板缺失、360 px 窄屏、主题换色）；③ 真实宿主里的装/卸/重装与窄屏人工证据（见 quickstart.md 的证据表与 evidence/verification.md 的 E-LIVE）。
+**Testing**: 不引入测试框架（遵守"依赖自包含"）。实现提供三类证据：① `node verify/check-bundle.mjs` 纯 Node 内置模块的静态与行为断言 37 项（bundle 外形、允许的 `require` 白名单、无外部 URL、pele 版本与许可存在、manifest 字段完整、8 语言文案与说明页完整、**无版本否决字段、产物可独立编译、宿主加载器异常下不抛出、工厂抛错时仍返回可用模块、宿主半边恰好注册一段且畸形宿主静默**）；② 提交进仓库的 `verify/harness/index.html` + `node verify/run-harness.mjs`，在真实 Chromium 里跑 197 项（含无障碍结构：图像本身带本地化名字、外层盒子不带名字以免重复播报、引擎缩放按钮位于图像之外且可聚焦）（React + `client.js` + 独立引擎，含**故障注入**：宿主 `t` 抛错/回显 key、`code`/`children` 取值器抛错、引擎抛错、无 slots 服务、坏语法、裁剪板缺失、360 px 窄屏、主题换色）；③ 真实宿主里的装/卸/重装与窄屏人工证据（见 quickstart.md 的证据表与 evidence/verification.md 的 E-LIVE）。
 
 **Target Platform**: DSH Desktop 0.2.2-rc.5（Web 前端，含内嵌桌面窗口）为唯一实测基线；**但不以任何版本字段声明基线**——清单里没有 `engines`、没有 dsh 的 peerDependencies，也没有对宿主客户端包的版本绑定（见"兼容性策略"）。
 
@@ -30,7 +30,7 @@
 - 所有宿主服务调用、注册调用、渲染调用都就地降级，绝不把异常抛回宿主；
 - 宿主派发的数据不符合预期时，一律交回宿主原本的代码块。
 
-**Scale/Scope**: 单张图通常 5–20 个节点；上限由 pele 的 `limit`/`outputLimit`/`maxEdges` 约束，超限即回退为文本（FR-004）。代码量实况（2026-11-23，0.1.12）：宿主 `index.js` 57 行；`src/client` 共 960 行（view 451 / i18n 209 / styles 122 / figure 91 / entry 87）；`scripts/build-client.mjs` 147 行；`verify/check-bundle.mjs` 620 行；`verify/harness/index.html` 914 行 + 驱动 `verify/run-harness.mjs` 122 行。
+**Scale/Scope**: 单张图通常 5–20 个节点；上限由 pele 的 `limit`/`outputLimit`/`maxEdges` 约束，超限即回退为文本（FR-004）。代码量实况（2026-11-23，0.1.13）：宿主 `index.js` 57 行；`src/client` 共 960 行（view 451 / i18n 209 / styles 122 / figure 91 / entry 87）；`scripts/build-client.mjs` 147 行；`verify/check-bundle.mjs` 653 行；`verify/harness/index.html` 952 行 + 驱动 `verify/run-harness.mjs` 131 行。
 
 ## Constitution Check
 
@@ -42,7 +42,7 @@
 - **IV 降级不丢数据** — PASS（本功能最重的一项）：hoc 层缺省即回退（"with no applicable layer the content renders unchanged"）；异常时渲染 `children`；浏览器半边整体不注册任何持久化实体，卸载即无痕；重装后由图源重画；**并追加启动侧降级**——插件不得把宿主拖到打不开（见"兼容性策略"与 FR-013～FR-016）。
 - **V 窄屏先行** — PASS：`mount()` 按容器宽重排（重排由引擎自己的尺寸观察驱动，插件不另建 `ResizeObserver`）；`autoDirection` + `directionBreakpoint` 处理窄屏流程图；溢出在图内滚动；缩放控件只作用于图自身。
 - **技术约束** — PASS：配色全部走 `--dsw-alias-*` 主题令牌并映射到 pele 的 `--pele-*` 变量；可见文字走包内 8 语言字典（`zh, en, ja, es, fr, de, ru, pt`），并尝试 `ctx.locale.register('dyslexia', DICTIONARY)` 与带 `locale: 'dyslexia'` 的槽注册作为兜底；插件卡片文案用 `locale/<lang>.json` 的 `meta` 段（8 份）；LICENSE 与第三方许可随包发布。
-- **验证流程** — PASS：装、卸、窄屏三类证据在 quickstart.md 里列成表；打包后核对 `npm pack` 文件清单并断网复跑；无法验证的项在交付说明里显式标注。
+- **验证流程** — PASS（附条件）：装、卸、窄屏三类证据在 quickstart.md 里列成表；打包后核对 `npm pack` 文件清单（OP-2/OP-3 验证过）；**断网复跑没有做**，登记在 `evidence/verification.md` 的 G3 与 G9；无法验证的项在交付说明里显式标注。
 
 无违反项，`Complexity Tracking` 留空。
 
@@ -105,10 +105,10 @@ vendor/pele/
 ├── pele.global.js       # pele@1.13.0 的 global build（原样保存）
 └── LICENSE
 verify/
-├── check-bundle.mjs     # 纯 Node 内置模块的静态与行为断言（36 项）
+├── check-bundle.mjs     # 纯 Node 内置模块的静态与行为断言（37 项）
 ├── run-harness.mjs      # 用真实 Chromium 打开夹具并读判定
 └── harness/
-    ├── index.html       # 提交进仓库的浏览器夹具（156 项）
+    ├── index.html       # 提交进仓库的浏览器夹具（197 项）
     └── vendor/          # React 18.3.1 UMD 副本
 tests/                   # 不放测试框架；verify/ 即验收脚本
 ```

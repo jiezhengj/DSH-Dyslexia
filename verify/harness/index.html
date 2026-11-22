@@ -70,9 +70,16 @@
         const results = window.__results
         const LANGS = ['zh', 'en', 'ja', 'es', 'fr', 'de', 'ru', 'pt']
         const EXACT = {
-          zh: { name: '图', show: '查看源码', copy: '复制源码', hidden: '隐藏源码' },
-          en: { name: 'Diagram', show: 'Show source', copy: 'Copy source', hidden: 'Hide source' },
+          zh: { name: '图', show: '查看源码', copy: '复制源码', hidden: '隐藏源码', copied: '已复制', failed: '复制失败' },
+          en: { name: 'Diagram', show: 'Show source', copy: 'Copy source', hidden: 'Hide source', copied: 'Copied', failed: 'Copy failed' },
+          ja: { name: '図', show: 'ソースを表示', copy: 'ソースをコピー', hidden: 'ソースを隠す', copied: 'コピーしました', failed: 'コピーできませんでした' },
+          es: { name: 'Diagrama', show: 'Mostrar el código', copy: 'Copiar el código', hidden: 'Ocultar el código', copied: 'Copiado', failed: 'No se pudo copiar' },
+          fr: { name: 'Schéma', show: 'Afficher la source', copy: 'Copier la source', hidden: 'Masquer la source', copied: 'Copié', failed: 'Impossible de copier' },
+          de: { name: 'Diagramm', show: 'Quelle anzeigen', copy: 'Quelle kopieren', hidden: 'Quelle ausblenden', copied: 'Kopiert', failed: 'Kopieren fehlgeschlagen' },
+          ru: { name: 'Диаграмма', show: 'Показать код', copy: 'Копировать код', hidden: 'Скрыть код', copied: 'Скопировано', failed: 'Не удалось скопировать' },
+          pt: { name: 'Diagrama', show: 'Mostrar o código', copy: 'Copiar o código', hidden: 'Ocultar o código', copied: 'Copiado', failed: 'Não foi possível copiar' },
         }
+        const missingLanguage = LANGS.filter((lang) => !EXACT[lang] || !EXACT[lang].copied)
         const CODE = 'flowchart LR\n  A[Text] --> B[Picture]'
         const BAD = 'flowchart TD\n  A-->'
         const WIDE = 'flowchart LR\n  A[aaaaaaaaaaaaaaaaaaaa] --> B[bbbbbbbbbbbbbbbbbbbb]\n  B --> C[cccccccccccccccccccc]'
@@ -191,6 +198,7 @@
           window.__layer = Layer
 
           /* ------------------------------------------------------ languages */
+          expect(missingLanguage.length === 0, 'every interface language has expectations', missingLanguage.join(','))
           const seen = {}
           for (const lang of LANGS) {
             document.documentElement.lang = lang
@@ -200,10 +208,8 @@
             const labels = buttonsIn(view.stage)
             const token = (figure && figure.getAttribute('aria-label')) || ''
             const exact = EXACT[lang]
-            if (exact) {
-              expect(token === exact.name, `[${lang}] the picture carries a plain name`, token)
-              expect(labels[0] === exact.show && labels[1] === exact.copy, `[${lang}] first render shows the two buttons`, labels.join(' | '))
-            }
+            expect(token === exact.name, `[${lang}] the picture carries a plain name`, token)
+            expect(labels[0] === exact.show && labels[1] === exact.copy, `[${lang}] first render shows the two buttons`, labels.join(' | '))
             expect(!!figure, `[${lang}] a picture is drawn`)
             expect(labels.length === 2, `[${lang}] exactly two buttons`, String(labels.length))
             const bare = labels.concat([token]).filter((text) => /copySource|showSource|hideSource|figureLabel|copied|copyFailed/.test(text))
@@ -214,12 +220,35 @@
               toggle.click()
               await tick(30)
               const hiddenLabels = buttonsIn(view.stage)
-              if (exact) expect(hiddenLabels[0] === exact.hidden, `[${lang}] the source toggle flips its word`, hiddenLabels[0])
+              expect(hiddenLabels[0] === exact.hidden, `[${lang}] the source toggle flips its word`, hiddenLabels[0])
               expect(toggle.getAttribute('aria-expanded') === 'true', `[${lang}] the source toggle announces itself as expanded`)
               const marker = view.stage.querySelector('.dsh-dyslexia-source code')
               expect(!!marker && /(^| )language-mermaid( |$)/.test(marker.className), `[${lang}] the expanded source keeps its fence language`, marker ? marker.className : 'no marker')
               expect(view.stage.querySelector('[role="presentation"]') !== null, `[${lang}] the mount point is presentational`)
             }
+            const languageClipboard = Object.getOwnPropertyDescriptor(navigator, 'clipboard')
+            Object.defineProperty(navigator, 'clipboard', {
+              configurable: true,
+              value: { writeText: () => Promise.resolve() },
+            })
+            const copyNode = view.stage.querySelectorAll('button')[1]
+            if (copyNode) copyNode.click()
+            await tick(40)
+            const spoken = view.stage.querySelector('[role="status"]')
+            expect(
+              spoken !== null && spoken.textContent === exact.copied,
+              `[${lang}] the copy answer is announced in words`,
+              (spoken ? spoken.textContent : 'no status') + ' / expected ' + exact.copied,
+            )
+            const spokenBox = spoken !== null ? getComputedStyle(spoken) : null
+            const spokenVisible = spoken !== null && spokenBox.display !== 'none' && spoken.getClientRects().length > 0
+            expect(
+              spokenVisible && spokenBox !== null && parseFloat(spokenBox.fontSize) >= 10,
+              `[${lang}] the copy answer can be read, not only heard`,
+              (spokenBox ? spokenBox.fontSize + ' / ' + spokenBox.color : 'no status'),
+            )
+            if (languageClipboard) Object.defineProperty(navigator, 'clipboard', languageClipboard)
+            else delete navigator.clipboard
             seen[lang] = token + '|' + labels.join('|')
             view.root.unmount()
             view.stage.remove()
@@ -457,11 +486,60 @@
           withClipboard.stage.remove()
           Object.defineProperty(navigator, 'clipboard', { configurable: true, value: clipboardBackup })
 
+          /* ------------------------------------------- a message with more than one fence */
+          {
+            const message = document.createElement('div')
+            message.setAttribute('data-message', 'keep')
+            const before = document.createElement('p')
+            before.textContent = 'Before the first diagram the message keeps its words.'
+            const between = document.createElement('p')
+            between.textContent = 'Between the two diagrams the message keeps its words.'
+            const after = document.createElement('p')
+            after.textContent = 'After the second diagram the message keeps its words.'
+            const firstHost = document.createElement('div')
+            const secondHost = document.createElement('div')
+            message.appendChild(before)
+            message.appendChild(firstHost)
+            message.appendChild(between)
+            message.appendChild(secondHost)
+            message.appendChild(after)
+            document.getElementById('mount').appendChild(message)
+            const firstRoot = ReactDOM.createRoot(firstHost)
+            const secondRoot = ReactDOM.createRoot(secondHost)
+            firstRoot.render(React.createElement(Layer, { code: 'flowchart LR\n  A --> B', streaming: false, children: hostBlock('first') }))
+            secondRoot.render(React.createElement(Layer, { code: 'sequenceDiagram\n  A->>B: hi', streaming: false, children: hostBlock('second') }))
+            await tick(160)
+            const figures = message.querySelectorAll('[role="img"]')
+            const prose = message.querySelectorAll('p')
+            const secondFigure = secondHost.querySelectorAll('[role="img"]')
+            expect(figures.length === 2, 'two fences draw two pictures', `${figures.length}`)
+            expect(secondFigure.length === 1, 'the second fence draws its own picture', `${secondFigure.length}`)
+            expect(
+              prose.length === 3 && prose[0].textContent.indexOf('Before') === 0 && prose[2].textContent.indexOf('After') === 0,
+              'the prose around a picture is left alone',
+              `${prose.length}`,
+            )
+            const order = Array.from(message.children).map((node) => (node.querySelector && node.querySelector('[role="img"]') ? 'figure' : node.tagName.toLowerCase()))
+            expect(order.join(',') === 'p,figure,p,figure,p', 'the picture and the prose keep their order', order.join(','))
+            firstRoot.unmount()
+            secondRoot.unmount()
+            message.remove()
+          }
+
           /* --------------------------------------------------- narrow screen */
           const narrow = mount(Layer, { code: 'flowchart LR\n' + Array.from({ length: 16 }, (_, index) => `  N${index} --> N${index + 1}`).join('\n'), streaming: false, children: hostBlock('wide') })
           await tick(120)
           const narrowFigure = narrow.stage.querySelector('.dsh-dyslexia-figure')
           const stageWidth = narrow.stage.clientWidth
+          // A control that proves this harness can measure an overflow at all: an
+          // unconstrained box wider than the column must make the stage scroll.
+          const probe = document.createElement('div')
+          probe.setAttribute('data-probe', 'overflow')
+          probe.style.cssText = 'width:4000px;height:2px'
+          narrow.stage.appendChild(probe)
+          expect(narrow.stage.scrollWidth > stageWidth + 100, 'the column measurement can see an overflow', narrow.stage.scrollWidth + '/' + stageWidth)
+          probe.remove()
+          expect(narrow.stage.scrollWidth <= stageWidth + 1, 'the column goes back to fitting once the control is gone', narrow.stage.scrollWidth + '/' + stageWidth)
           expect(!!narrowFigure && Math.abs(narrowFigure.clientWidth - stageWidth) <= 8, 'the picture takes the column width', (narrowFigure ? narrowFigure.clientWidth : 0) + '/' + stageWidth)
           expect(narrow.stage.scrollWidth <= stageWidth + 1, 'a wide picture does not widen the column', narrow.stage.scrollWidth + '/' + stageWidth)
           const pageOverflow = document.documentElement.scrollWidth - document.documentElement.clientWidth

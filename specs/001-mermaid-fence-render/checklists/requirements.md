@@ -26,7 +26,7 @@
 
 - [x] All functional requirements have clear acceptance criteria
 - [x] User scenarios cover primary flows
-- [ ] Feature meets measurable outcomes defined in Success Criteria —— **未满足，2026-11-23 复检降级为未勾**：SC-001（1 秒内出图）无计时证据、SC-002 的 `session_search` 命中未取证、SC-003 的"图内文字不小于正文最小字号"无断言、SC-005 只换了一个 CSS 变量而未真做明→暗→明切换、SC-006 的 7 类畸形宿主里 4 类有浏览器夹具（缺 `slots` 服务 / 接口签名改变 / 翻译函数抛错 / 翻译函数回显 key）、加载器与工厂形状由 vm 夹具覆盖，真机注入仍是 G4；"宿主升级后仍可启动"是 G1/T042，不是 SC-006。可测的有：SC-004（零网络：只有静态断言，没有断网渲染实跑，见 E-GAPS，因此这里也不勾）、SC-007/SC-008、SC-009（8 语言 × 无内部 key）
+- [ ] Feature meets measurable outcomes defined in Success Criteria —— **未满足，2026-11-23 复检降级为未勾**：SC-001（1 秒内出图）无计时证据、SC-002 的 `session_search` 命中未取证、SC-003 的"图内文字不小于正文最小字号"无断言、SC-005 只换了一个 CSS 变量而未真做明→暗→明切换、SC-006 的 7 类畸形宿主里 4 类有浏览器夹具（缺 `slots` 服务 / 接口签名改变 / 翻译函数抛错 / 翻译函数回显 key）、加载器与工厂形状由 vm 夹具覆盖，真机注入仍是 G4；"宿主升级后仍可启动"是 G1/T042，不是 SC-006。其余：SC-007 与 SC-008 有静态断言（其中 SC-007 的"不被拒绝加载"只有清单形状证据，真机装一次仍是 G1）、SC-009 由 8 语言逐语言断言支撑；SC-004（零网络）只有静态断言、没有断网实跑，见 G9，故不勾
 - [x] No implementation details leak into specification
 
 ## Notes
