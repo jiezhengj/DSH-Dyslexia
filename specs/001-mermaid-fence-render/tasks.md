@@ -271,9 +271,9 @@ T027（`--dump-config` 核对）、T031（证据表汇总）。
 - [x] T049 `verify/check-bundle.mjs` 增至 24 项（新增"发布文件齐全""每种界面语言都有自己的说明页""清单指向 npm 可信的仓库"）
 - [x] T050 `package.json` 升 0.1.1，补 `repository`/`homepage`/`bugs`，`files` 收进 `docs` 与 `README*.md`
 - [x] T051 GitHub 建仓（`https://github.com/jiezhengj/DSH-Dyslexia`，public）并推送 `main`；`.github/workflows/publish.yml` 走 npm trusted publisher（OIDC + provenance）发布 0.1.1
-- [ ] T052 重启 DSH 后的真机取证：插件页 8 语言说明与新图标、会话里就地画图、卸载后旧会话回退（对应 E-COMP-5 / E1 / E10 / E11）
+- [x] T052 重启 DSH 后的真机取证：插件页 8 语言说明与新图标、会话里就地画图、卸载后旧会话回退（对应 E-LIVE-1～6）
 
-证据：`evidence/verification.md` 的 E-LANG（语言数与说明页校验）、E-PUB2（Actions 发布与 provenance）、E-INS2（从 registry 安装 0.1.1）。T052 未做，因此仍不写"已在 DSH 界面里确认"。
+证据：`evidence/verification.md` 的 E-LANG（语言数与说明页校验）、E-PUB2（Actions 发布与 provenance）、E-INS2（从 registry 安装 0.1.1）、E-LIVE-1～3（重启 0.1.2 后的插件页、说明页与会话内成图）。T052 已补做，界面层证据齐全。
 
 ### 真机发现：标签回显 key（2026-11-22 追加，同一 feature 内修复，T053–T058）
 
@@ -283,7 +283,7 @@ T027（`--dump-config` 核对）、T031（证据表汇总）。
 - [x] T054 `verify/check-bundle.mjs` 增加断言 `host key echo falls back to bundled strings`（静态检查产物含该判定）
 - [x] T055 Chromium 夹具新增 `host-t-echoes-key`（`t = key => key` 时按钮与图名仍为本语言短语）
 - [x] T056 重建 `client.js`、跑全部静态断言与夹具，版本升 0.1.2
-- [ ] T057 打 `v0.1.2` 标签经 GitHub Actions 发布，从 registry 安装回 `desktop` profile
-- [ ] T058 重启后核对：图名/按钮为可读短语、图标、8 语言说明页、卸载回退（并入 T052）
+- [x] T057 打 `v0.1.2` 标签经 GitHub Actions 发布，从 registry 安装回 `desktop` profile
+- [x] T058 重启后核对：图名/按钮为可读短语、图标、8 语言说明页、卸载回退（并入 T052，结果见 E-LIVE-1～6）
 
 证据要求：T054/T055 的断言名与 FR-008、SC-009 在 `evidence/verification.md` 里逐条对应（FR-017）。

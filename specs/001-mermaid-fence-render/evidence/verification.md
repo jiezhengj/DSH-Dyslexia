@@ -174,3 +174,19 @@ THIRD-PARTY-NOTICES.md
 - E-LABEL-3（行为，同类夹具 `host-t-throws`）：`t` 抛错时同样回落自带文案，图照画。夹具现 27 项全绿（0 失败）。
 - 判定规则（`src/client/i18n.js`）：返回值必须是字符串、非空、**不含请求的 key**、不含未替换的 `{{…}}`；否则回落 8 语言字典，语言按 `document.documentElement.lang` → `navigator.language` → `en`。
 - 未取证：重启 DSH 后在真实会话里确认标签中文正确（并入 T052/T058）。
+
+## E-LIVE 真机取证（2026-11-22 23:11 重启 0.1.2 之后，`agent-desktop` 读窗口无障碍树）
+
+- E-LIVE-1 插件页（FR-012 / SC-008）：侧栏「插件」→「已安装插件」条目读作 **DSH 图示阅读**，描述为中文整段（"把会话里的 mermaid 代码块就地画成图——图就在消息里，不开侧栏、不弹第二个窗口。代码块仍然是消息原文的一部分，可复制、可检索，插件关掉以后也照样能读。每张图下方有「查看源码…"），开关名「启用 DSH 图示阅读」。→ 当前界面语言 `zh` 下取到的是 `locale/zh.json`，不是英文回退。
+- E-LIVE-2 说明页（FR-012）：点「查看 DSH 图示阅读」后读到标题「DSH 图示阅读」、同一段描述，以及一张 `role:"image"`、alt = "一条会话消息里的 mermaid 代码块被就地画成图，图下方是查看源码与复制源码两个按钮"——即 `docs/DETAIL.zh.md` 的单行图片指向 `preview.svg` 且被渲染；来源信息 `@jiezhengj/dsh-dyslexia@0.1.2`、当前版本 `0.1.2`、状态「运行中」。
+- E-LIVE-3 会话里就地成图（FR-001 / SC-001）：本轮回复里贴的真实 ```mermaid 代码块在窗口里对应 `role:"image"`、name = **图：flowchart**，同一条消息下 `role:"button"` name = **复制源码**（不是 `figureLabel` / `copySource`）。→ E-LABEL 的"重启后确认"补齐：标签走自带 8 语言词典。
+- E-LIVE-4 装进去的产物一致：`profiles/desktop/node_modules/@jiezhengj/dsh-dyslexia/client.js` 长度 754,911、SHA256 前缀 `60FC4C3DB244F934`，与仓库根 `client.js` 完全一致；文件含 `isResolved`、中文文案与 `dsh-dyslexia 0.1.2` banner。
+- E-LIVE-5 卸载回退（FR-009 / SC-003，US2）：`plugin_manager remove_bundle` 目标 `@jiezhengj/dsh-dyslexia` → `{"stage":"remove","changed":true,"application":"applied"}`。同一屏刷新后：`role:"image"` 计数 **0**、"复制源码" 按钮 **0**，原先那条消息改由 `role:"statictext"` 承载原文
+  ```
+  flowchart LR
+    A[代码块] --> B[就地成图]
+    B --> C[原文仍可复制]
+  ```
+  → 图消失、文字与结构完整留在会话里，可选中可复制。
+- E-LIVE-6 重装恢复（FR-010 / SC-004）：`plugin_manager install_bundle` 目标 `@jiezhengj/dsh-dyslexia@0.1.2` → `{"stage":"enable","changed":true,"application":"applied","version":"0.1.2"}`；同一条消息再次出现 `role:"image"`、name「图：flowchart」+"复制源码" 按钮，原文 `statictext` 消失。→ 不需要改历史、不需要重新发消息。
+- 工具与口径：`agent-desktop find --role image|button --name <pattern> --app "DeepSeek Harness"`；`role:"image"` 即 `<div role="img">`，`name` 取 `aria-label`；`states:["offscreen"]` 表示该消息在虚拟列表里但未被视口绘制，仍能用 `find` 命中。

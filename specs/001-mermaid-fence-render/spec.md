@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-22
 
-**Status**: Implemented（US1–US4 代码与自动化证据完成；US5 加固完成；真机与升级演练证据待补，见 tasks.md Phase 9 的 T041/T042）
+**Status**: Implemented（US1–US4 代码、自动化与真机证据齐全，见 evidence/verification.md 的 E-LIVE-1～6；US5 加固完成并有静态与夹具证据，升级演练 T042 仍待补）
 
 **Input**: User description: "做一个 DSH 插件（npm 包 `@jiezhengj/dsh-dyslexia`），让 Agent 画的 mermaid 图直接渲染在会话流里；不假设用户机器装了什么，依赖打包进插件；不规定图表类型与文本长短；卸载后历史会话仍要能读；手机平板要能用。"
 
