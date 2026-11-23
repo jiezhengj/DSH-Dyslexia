@@ -1,14 +1,16 @@
 # Evidence — feature 002: the preference switch and the new name
 
-This file records what was actually observed while building feature 002. Each block is one run on one tree; no block mixes trees. E-PUB/E-INS exist for all six published versions — `0.2.0`, `0.2.1`, `0.2.2`, `0.2.3`, `0.2.4` and `0.2.5` — and for no unpublished tree: every version that was cut has both blocks, and `0.2.5` is one of them (commit `0be17fe`, tag `v0.2.5`, run `45240437544`, installed into the live `desktop` profile — see "E-PUB · 0.2.5" and "E-INS · 0.2.5" below). E-BLD, E-CHK and E-HARN quote the `0.2.1` tree only (44 static, 251 browser; the `0.2.5` runs are summary lines in "E-CHK/E-HARN · 0.2.5" below, not transcripts; E-CHK is the complete stdout of that run — 44 `ok` lines plus the summary — while the 52 deliberately triggered `warn`/stack lines went to stderr). The current tree is `0.2.5`, committed, released and installed — the same tree this file's runs measured: 45 static and 274 browser checks, `client.js` 783360 bytes / 781845 characters, sources sha256 `2b5728286c556d8dbaaa349cc9fb8ec5`, file SHA-256 `279c33781ef551e3d3bbb0aabf3d37a681fd5da4f4738c29c724b596667a8766`. The tree `0.2.5` replaced in the profile is `0.2.4` (45 static and 271 browser checks, `client.js` 781963 bytes, sources sha256 `9f13d80f0230257569dd0e525c6eb048`). E-PROBE records F3–F8 on `0.2.1`, F1/F9 on the `0.2.3` tree, and F10–F13 on the `0.2.5` tree; the `0.2.4` tree itself was never probed, and `0.2.5` supersedes it (G10 discharged).
+This file records what was actually observed while building feature 002. Each block is one run on one tree — E-PROBE is the exception, collecting one run per probe and naming each group's tree in its intro; no block mixes trees silently. E-PUB/E-INS exist for all six published versions — `0.2.0`, `0.2.1`, `0.2.2`, `0.2.3`, `0.2.4` and `0.2.5` — and for no unpublished tree: every version that was cut has both blocks, and `0.2.5` is one of them (commit `0be17fe`, tag `v0.2.5`, run `45240437544`, installed into the live `desktop` profile — see "E-PUB · 0.2.5" and "E-INS · 0.2.5" below). E-BLD · 0.2.1, E-CHK and E-HARN quote the `0.2.1` tree only (44 static, 251 browser; the `0.2.5` build line is the one other block, `E-BLD · 0.2.5` below, and the `0.2.5` check runs are summary lines in "E-CHK/E-HARN · 0.2.5" below, not transcripts; E-CHK is the complete stdout of that run — 44 `ok` lines plus the summary — while the 52 deliberately triggered `warn`/stack lines went to stderr). The current tree is `0.2.5`, committed, released and installed — the same tree this file's runs measured: 45 static and 274 browser checks, `client.js` 783360 bytes / 781845 characters, sources sha256 `2b5728286c556d8dbaaa349cc9fb8ec5`, file SHA-256 `279c33781ef551e3d3bbb0aabf3d37a681fd5da4f4738c29c724b596667a8766`. The tree `0.2.5` replaced in the profile is `0.2.4` (45 static and 271 browser checks, `client.js` 781963 bytes, sources sha256 `9f13d80f0230257569dd0e525c6eb048`). E-PROBE records F3–F8 on `0.2.1`, F1/F9 on the `0.2.3` tree, and F10–F13 on the `0.2.5` tree; the `0.2.4` tree itself was never probed, and `0.2.5` supersedes it (G10 discharged).
 
-## E-BLD build
+## E-BLD · 0.2.1 build
 
 The `0.2.1` tree (the tree E-CHK and E-HARN below quote):
 
 ```
 build-client: @jiezhengj/dsh-dyslexia -> client.js (780550 bytes, 779035 characters, engine 1.13.0, sources 6, syntax ok)
 ```
+
+## E-BLD · 0.2.5 build
 
 The current `0.2.5` tree; `client.js` on disk measures 783360 bytes and 781845 characters, the pair this line prints:
 
@@ -327,7 +329,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.2.1 | client.js 780550 bytes | sources sh
 
 ## E-CHK/E-HARN · 0.2.5 (45 static, 274 browser)
 
-Only the summary lines were recorded on this tree; the full stdout above stays the `0.2.1` transcript, and no block mixes trees.
+Only the summary lines were recorded on this tree; the full stdout above stays the `0.2.1` transcript.
 
 ```
 check-bundle: @jiezhengj/dsh-dyslexia@0.2.5 | client.js 783360 bytes | sources sha256:2b5728286c556d8dbaaa349cc9fb8ec5 | all 45 checks passed
@@ -376,7 +378,7 @@ The function-form break (F2) was not caught by the suites before the function ch
 
 After restoring and rebuilding, the `0.2.1` probe session passed again: `build-client` reported `sources 6, syntax ok`, `check-bundle` reported `all 44 checks passed`, `run-harness` reported `all 251 checks passed`. The `0.2.3` re-runs of F1 and F9 reported the untouched copy as `all 44 checks passed` and `all 260 checks passed` before the breaks. The `0.2.5` probes (F10–F13) each started from a fresh copy of the final tree and were restored afterwards; that tree's own suites are green at 45 / 274 (see "E-CHK/E-HARN · 0.2.5"). The `0.2.4` tree itself was never probed (G10, discharged on `0.2.5`).
 
-Two fixture details are worth recording. Headless Chrome's virtual time does not advance the 120 ms CSS transition on the switch, so the paint assertion sets `style.transition = 'none'` on the switch before reading the computed colour (`verify/harness/index.html:1596`). React 18 routes an event-handler throw to `window`'s `error` event rather than rethrowing it from `.click()`, so F13's fixture watches that event instead of expecting a throw at the call site (`verify/harness/index.html:1655-1667`).
+Two fixture details are worth recording. Headless Chrome's virtual time does not advance the 120 ms CSS transition on the switch, so the paint assertion sets `style.transition = 'none'` on the switch before reading the computed colour (`verify/harness/index.html:1599`). React 18 routes an event-handler throw to `window`'s `error` event rather than rethrowing it from `.click()`, so F13's fixture watches that event instead of expecting a throw at the call site (`verify/harness/index.html:1655-1667`).
 
 ## E-GAPS — not proven here
 
@@ -392,6 +394,7 @@ Two fixture details are worth recording. Headless Chrome's virtual time does not
 | G8 | `@deepseek-ai/schemastery` is a static import in `index.js`; if the package cannot resolve, the plugin fails to load at import time. There is no graceful degradation, and this failure path was not exercised. |
 | G9 | **Discharged in `0.2.5`**: `the capability briefing is what it was before the switch` (`verify/check-bundle.mjs:401-429`) parses the four `MERMAID_RENDER_PROMPT` sentences read-only out of `specs/001-mermaid-fence-render/contracts/host-prompt.md` and asserts exact equality (`text === recorded.join(' ')`) as well as one `includes` per sentence, so one changed word in `index.js` goes red (F12). Still unproven: a comparison with a running feature 001 build — the reference is 001's recorded contract, and no 001 binary was kept. |
 | G10 | **Discharged in `0.2.5`**: four probes (F10–F13) ran on the `0.2.5` tree, each in a fresh `%TEMP%` copy, one per round-5 fix. The `0.2.4` tree itself was never probed — `0.2.5` carries its code plus the fixes, so it supersedes it. F1 and F9 have still not been re-run since `0.2.3`: F1's target (`index.js`) is unchanged since then, while F9's target line in `src/client/settings.js` still exists but that file changed twice after `0.2.3`; neither is a re-run. |
+| G11 | A write whose promise never settles is not covered: `src/client/settings.js:86-87` puts the requested value into the store before `injected.setValue` is awaited, so from the click until the host answers the row shows a value the host has not accepted; the fixtures only drive promises that resolve `true`, resolve `false`, reject, or throw out of `then`. A promise that never settles leaves the row on the requested value with no failure sentence, and no assertion covers that state. |
 
 ## E-PUB publish
 
@@ -418,7 +421,7 @@ The first two tag pushes (`45194558416`, `45194732082`) failed and published not
 | installed `client.js` | unverified — the 0.2.0 tarball hash was not recorded |
 | repository `client.js` | unverified — the 0.2.0 tarball hash was not recorded |
 
-Both `client.js` rows are unverified because that hash was never recorded for 0.2.0: `client.js` embeds the version, so the fingerprint hashes it; the 780550 bytes and SHA256 that stood here before are the 0.2.1 artifact's, not 0.2.0's.
+Both `client.js` rows are unverified because that hash was never recorded for 0.2.0: `client.js` embeds the version, so the fingerprint hashes it. The 780550 bytes are not 0.2.1's alone: the `0.2.0` CI lines above also measured `client.js 780550 bytes` (only its `sources sha256` differed, `db71eb3381be5f8bbd6a8701f8f9ea06`), the size being shared because `0.2.0` and `0.2.1` are the same length. What was wrong here was the SHA256: it belongs to the `0.2.1` artifact, not to `0.2.0`'s.
 
 The 0.2.0 rows above stay as history. 0.2.1 followed the feature-002 review and was not documentation-only: besides the wording corrections it added the function-form check to `verify/check-bundle.mjs` (#22) and rebuilt `client.js` with it. It was published (run `45204279829`, shasum `b5c03c272b89f53f2416a5140c29b212b5f55b7a`, logIndex `4053240981`) and installed (E-PUB/E-INS 0.2.1 below); E-CHK and E-HARN in this file are that tree. 0.2.2 is the later code change recorded in E-PUB · 0.2.2 and E-INS · 0.2.2 above (the E-PUB · 0.2.2 and E-INS · 0.2.2 sections above); the counts near the top of this file belong to the `0.2.1` and `0.2.4` trees, not to `0.2.2`.
 

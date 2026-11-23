@@ -37,6 +37,7 @@
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
 - **I 能力与偏好分离** — PASS：插件只说"这里会渲染 mermaid"，不规定何时画、画什么类型、文字多长；阅读偏好是可选的视觉优先设置，不是使用前提（FR-012：装好即生效，不需要改指令文件）。
+- **I 原则的取代说明（2026-11-24）** — 本节 I 项按 Constitution 1.0.0 写成"能力与偏好分离"；`specs/001-mermaid-fence-render/contracts/host-prompt.md:112-114` 的"必须不包含"清单与 `specs/001-mermaid-fence-render/spec.md:120`（FR-012）同属 1.0.0 的规则。Constitution v2.0.0（2026-11-23）已把原则 I 改为"默认带偏好，但界面上可见可关"（即能力默认、偏好可见且可关），feature 002 据此默认携带一段视觉优先偏好——偏好段只在读者自己打开开关时追加，从不使用无条件措辞，关掉开关后输出的文本与 001 逐字相同（`specs/002-visual-first-preference/contracts/host-prompt.md`；`the capability briefing is what it was before the switch`，`verify/check-bundle.mjs:401`）。因此 001 的合规复查 MUST NOT 以删除该偏好段为通过条件。
 - **II 零环境假设** — PASS：无 Node/Python/包管理器/字体/网络前提；渲染器随包内联；也不对宿主版本设前提（不写任何版本门字段）。
 - **III 依赖自包含** — PASS：`pele` 以 vendored 文件形式随包发布并打进 `client.js`；不引入 CDN、不引入 npm 安装步骤、不用打包器；`client.js` 是已构建单块 chunk，符合宿主"entry 不能同步 require 相邻 client*.js"的限制。
 - **IV 降级不丢数据** — PASS（本功能最重的一项）：hoc 层缺省即回退（"with no applicable layer the content renders unchanged"）；异常时渲染 `children`；浏览器半边整体不注册任何持久化实体，卸载即无痕；重装后由图源重画；**并追加启动侧降级**——插件不得把宿主拖到打不开（见"兼容性策略"与 FR-013～FR-016）。

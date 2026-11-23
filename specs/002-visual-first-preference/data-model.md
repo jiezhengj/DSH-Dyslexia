@@ -49,4 +49,4 @@
 | 状态 | `on` / `off` | 与 `visualFirst` 对应；没有 `disabled` |
 | 反馈 | `idle` / `saved` / `failed` | 失败时回到宿主当前值并可见提示；提示留到下一次点击，没有计时器 |
 
-**不变量**：显示的状态永远等于实际生效值；不存在"显示已开但未生效"的中间态，也不存在"不可用"占位。
+**不变量**：宿主给出答案之后，显示的状态等于实际生效值；一次写入从点击到落定之间，行先显示读者请求的值（`src/client/settings.js:86-87` 在 `injected.setValue` 被等待之前就写进 store，此时宿主尚未接受），落定后按宿主答案显示——被拒、reject 或 thenable 抛错时回到宿主当前值（经 `inject.readHostValue()` → `readPreference(face)` 重读，读不到才退回点击前的捕获值，见 `src/client/settings.js:72-83`）。所以规则是"宿主答过之后等价"，不是"永远等价"；宿主始终不回答（promise 永不 settle）的情形未覆盖，登记为 `evidence.md` G11。不存在"不可用"占位。
