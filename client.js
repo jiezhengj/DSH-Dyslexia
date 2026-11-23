@@ -1,4 +1,4 @@
-/*! @jiezhengj/dsh-dyslexia 0.1.31 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:3a2eb142f544e0bb377851af8c92eeb5 */
+/*! @jiezhengj/dsh-dyslexia 0.1.32 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:95fc767705cdfe6833716071797b209c */
 ;(function () {
   function reportLoadFailure(scope, error) {
     try { console.error('dsh-dyslexia: ' + scope, error) } catch (_error) {}
@@ -477,6 +477,19 @@ function isResolved(value, key) {
 }
 
 /**
+ * The key the host is asked for. The host keeps one dictionary for the whole
+ * window, and its own copy buttons already own `copied` — asking for the bare
+ * key made the reader see the host's wording ("复制成功") instead of this
+ * plugin's ("已复制"), a collision a 2026-11-23 live check found. Asking under
+ * the plugin's namespace keeps the two dictionaries apart: a host that does not
+ * know `dyslexia.copied` echoes it back, `isResolved` rejects that, and the
+ * bundled table answers.
+ */
+function hostKey(key) {
+  return LOCALE_NAMESPACE + '.' + key
+}
+
+/**
  * A host `t` is used when it answers with a real translation and its signature
  * still matches; anything else — a changed signature, a throw, a blank answer,
  * the key echoed back, an unfilled placeholder — falls back to the strings
@@ -495,7 +508,9 @@ function translateFor(props, doc) {
   if (!hostTranslate) return fallback
   return function translate(key, values) {
     try {
-      const value = hostTranslate(key, values)
+      const value = hostTranslate(hostKey(key), values)
+      // The namespaced key contains the bare key, so an echo is still caught by
+      // the "does the answer quote the key" rule in `isResolved`.
       if (isResolved(value, key)) return value
     } catch (error) {
       void error

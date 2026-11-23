@@ -163,6 +163,8 @@ renderSlot('conversation.chat.markdown.fence', fence, {
 
 **结论**：`translateFor` 对宿主 `t` 的返回值加三道判定——非空字符串、不等于请求的 key、不含未替换的 `{{占位符}}`；任何一条不满足就改用包内 8 语言字典。语言按 `document.documentElement.lang` → `navigator.language` → `en` 的顺序确定。断言名：静态检查 `host key echo falls back to bundled strings`、夹具 `a host t that echoes the key still shows words` 与 `no internal key reaches the eye`。
 
+**补充（2026-11-23 真机，0.1.32 落实）**：宿主的字典是**全窗口一本**，它自己的复制按钮占着 `copied`（DSH 的 `zh` 词条是"复制成功"）。上面三道判定拦不住"一个真实但属于别的功能"的译文，所以问宿主时改成带命名空间（`dyslexia.<key>`）：宿主不认这个前缀就原样回显 → 判为未解析 → 用包内字典；宿主真按命名空间给了译文仍采用。夹具 `a host dictionary that already owns a word does not put it on our button`、`a host that translates the namespaced key is used`，探针 PS28。
+
 **依据**：真机实测（2026-11-22）宿主 `t` 在命名空间未注册时返回 key 本身，且**不抛错、不为空**，旧判定 `typeof value === 'string' && value.length > 0` 因此放行，界面上出现 `copySource`、`figureLabel` 这类内部 key；同类"看起来成功其实没生效"的签名变化也会这样伪装，故判定必须比"有返回值"更强。spec FR-008（8 语言 + 不得显示内部 key）、SC-009；宪法 IV（降级不得降低可读性）。
 
 # 七、原"未确定项"的实测结论（2026-11-22）

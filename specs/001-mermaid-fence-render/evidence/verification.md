@@ -1,25 +1,25 @@
 # 验证证据
 
-本文件只记录**已经真实跑过**的命令输出。E-BLD、E-CHK、E-HARN 三段各自来自一次运行，其中 E-CHK 与 E-HARN 的报告行自带 `包名@版本 | client.js 字节数 | sources sha256:<指纹>`，所以这两段可被追溯到具体的一棵树；E-BLD 是构建日志本身（它写出 `client.js`，随后由这两段报告行限定）。E-PUB 记录 CI 运行，E-INS 与 E-LIVE 记录真机操作，各自注明版本与 run，不能当成"同一次运行"的输出。当前版本：`0.1.31`。
+本文件只记录**已经真实跑过**的命令输出。E-BLD、E-CHK、E-HARN 三段各自来自一次运行，其中 E-CHK 与 E-HARN 的报告行自带 `包名@版本 | client.js 字节数 | sources sha256:<指纹>`，所以这两段可被追溯到具体的一棵树；E-BLD 是构建日志本身（它写出 `client.js`，随后由这两段报告行限定）。E-PUB 记录 CI 运行，E-INS 与 E-LIVE 记录真机操作，各自注明版本与 run，不能当成"同一次运行"的输出。当前版本：`0.1.32`。
 
 复跑方式（任何人 clone 后都一样）：
 
 ```bash
 node scripts/build-client.mjs       # 由 src/client/*.js + vendor/pele 生成 client.js
 node verify/check-bundle.mjs        # 40 项静态与行为断言，纯 Node 内置模块
-node verify/run-harness.mjs --list  # 229 项浏览器断言，需要本机 Chrome
+node verify/run-harness.mjs --list  # 231 项浏览器断言，需要本机 Chrome
 ```
 
 ## E-BLD 构建
 
-```
-build-client: @jiezhengj/dsh-dyslexia -> client.js (770108 bytes, 769078 characters, engine 1.13.0, sources 5, syntax ok)
+```text
+build-client: @jiezhengj/dsh-dyslexia -> client.js (770843 bytes, 769797 characters, engine 1.13.0, sources 5, syntax ok)
 ```
 
 ## E-CHK 静态与行为校验
 
-```
-ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.31
+```text
+ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.32
 ok   package.json points at the repository npm trusts — git+https://github.com/jiezhengj/DSH-Dyslexia.git
 ok   package.json declares the bundle patch and the client half — platform web, no package inject
 ok   no dsh version gate can refuse a start — no engines.dsh, no dsh peers
@@ -28,7 +28,7 @@ ok   the required published files exist — 24 required files
 ok   every interface language has its own plugin page — 8 languages
 ok   cordis.patch.yml inserts the plugin by package name — 3 lines
 ok   both locales carry metadata — en, zh
-ok   client.js is one loader chunk keyed by the package name — 770108 bytes
+ok   client.js is one loader chunk keyed by the package name — 770843 bytes
 ok   client.js requires react and nothing else — react
 ok   client.js never reaches the network — no fetch, no XHR, no dynamic import, no remote URL
 ok   client.js carries the vendored engine — Pele 1.13.0 inlined
@@ -44,9 +44,9 @@ ok   the prompt section states the capability once — 85 words, order 9000, nam
 ok   the engine type is exposed the way client.js expects — PeleError, detectType, enableZoom, forgetTextWidths, mount, parse, register, registered, render, supports
 ok   every supported sample type draws an svg — flowchart:218x64 sequence:184x167 class:80x192 state:87x206 er:144x201 mindmap:172x71 timeline:408x133
 ok   a broken diagram reports a one-line reason — Parse error on line 2:
-ok   host key echo falls back to bundled strings — key echo, blanks, placeholders rejected
+ok   host key echo falls back to bundled strings — key echo, blanks, placeholders rejected; the host is asked under the plugin namespace
 ok   every language carries the same complete sentences — 12 keys x 8 languages, no engine text in labels
-ok   client.js matches the sources it claims — 3a2eb142f544e0bb377851af8c92eeb5
+ok   client.js matches the sources it claims — 95fc767705cdfe6833716071797b209c
 ok   the picture is the image, and the copy answer is announced — label is a noun, role="img" on the svg, copy result announced; behaviour is asserted by the fixture
 ok   host children react would refuse fall back to the source — objects, functions and mixed arrays fall back to the source text; behaviour is asserted by the fixture
 ok   every drawing the engine swaps in is named again — the engine owns re-layout; every swapped drawing node and its zoom buttons are renamed, strings follow the language; behaviour is asserted by the fixture
@@ -60,7 +60,7 @@ ok   the contract's colour variables are the ones that are wired — 10 engine v
 ok   both size limits reach the engine, each proven on its own — three limits passed to mount, two fixtures that cross one each
 ok   the fixtures assert what the fixes promise, and can fail — 26 assertions present, each with a condition that reads something
 
-check-bundle: @jiezhengj/dsh-dyslexia@0.1.31 | client.js 770108 bytes | sources sha256:3a2eb142f544e0bb377851af8c92eeb5 | all 40 checks passed
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.32 | client.js 770843 bytes | sources sha256:95fc767705cdfe6833716071797b209c | all 40 checks passed
 ```
 
 同一次 `node verify/check-bundle.mjs` 运行的 stderr 另有 6 段被**刻意捕获**的异常堆栈（loader ×3、prompt section ×2、module ×1，例如 `dsh-dyslexia: loader Error: host changed the loader`、`dsh-dyslexia: prompt section skipped Error: the host refused the first attempt`）：它们来自敌意宿主用例，属正常输出，不是失败；浏览器夹具的 stderr 是空的。
@@ -69,7 +69,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.31 | client.js 770108 bytes | sources 
 
 下面是本机单次运行的原样输出（报告行末尾的浏览器路径是本机的 `C:/Program Files/Google/Chrome/Application/chrome.exe`；在 CI 上跑同一套时会换成 `/usr/bin/google-chrome`，断言与条目数不变，见 E-PUB-LOG 的 CI 行）。
 
-```
+```text
 [ok] loading client.js registers one factory
 [ok] the module exposes apply
 [ok] the module asks for slots only — slots
@@ -220,6 +220,8 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.31 | client.js 770108 bytes | sources 
 [ok] a missing clipboard is reported, not faked — 复制失败 / 查看源码 | 复制源码
 [ok] the copy button writes once — 1
 [ok] a real copy is reported as copied — 已复制 / 查看源码 | 复制源码
+[ok] a host dictionary that already owns a word does not put it on our button — 已复制
+[ok] a host that translates the namespaced key is used — HOST COPIED
 [ok] two fences draw two pictures — 2
 [ok] the second fence draws its own picture — 1
 [ok] the prose around a picture is left alone — 3
@@ -303,7 +305,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.31 | client.js 770108 bytes | sources 
 [ok] the zoom button titles say the same as their names — 放大 | 缩小 | 重置缩放
 [ok] every zoom button in reach can take the keyboard — 1/1 reachable of 3
 [ok] every zoom button is reachable once the picture is zoomed — 3/3 after zoom
-run-harness: @jiezhengj/dsh-dyslexia@0.1.31 | client.js 770108 bytes | sources sha256:3a2eb142f544e0bb377851af8c92eeb5 | all 229 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+run-harness: @jiezhengj/dsh-dyslexia@0.1.32 | client.js 770843 bytes | sources sha256:95fc767705cdfe6833716071797b209c | all 231 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
 ## E-A11Y 图像的读屏取舍（`role="img"` 的代价与补偿）
@@ -318,7 +320,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.31 | client.js 770108 bytes | sources s
 
 ## E-PROBE 夹具能失败吗：用破坏性探针验证
 
-如果一个断言恒真，"套件全绿"就不构成证据。注意静态侧的恒真守护只覆盖 `check-bundle.mjs` 的 `needed` 名单（26 个名字，PS21 用它验证过：名单外的断言把条件改成 `&& true` 不会变红），不是全部夹具。0.1.8 至 0.1.31 期间共做了四十一次探针（PS12 在 0.1.22 发布后、PS13 在 0.1.23 发布后、PS14 与 PS17 在 0.1.24 发布后、第二十三轮的两条在 0.1.25 发布前）：每次都是故意破坏被断言保护的代码（`src/` 或 `verify/`）、重建 `client.js`、跑两套检查、确认目标断言**变红**，再 `git checkout` 还原；**破坏是临时的，落地后留下的改动只在从不随包的 `verify/` 与 `specs/` 里**（0.1.10 起的几次在 `%TEMP%` 的仓库副本里做，不动工作树）。报告行里的项数属于**当时的套件**：0.1.10 = 119 项、0.1.11 = 152 项、0.1.12 = 156 项、0.1.13 = 197 项、0.1.14 = 205 项、0.1.15 起 = 213 项、0.1.17 起 = 216 项、0.1.19 起 = 220 项（静态 0.1.19 起 = 39 项）、0.1.24 之后的核验提交 = 222 项、0.1.25 起 = 223 项、0.1.26 起 = 228 项、0.1.31 起 = 229 项（静态 0.1.29 起 = 40 项）。此前各行的项数属当时的套件，今天复跑会多出 0.1.24 之后新增的九条断言（两条同步渲染结果检查、一条敌意 `children` 挂载检查、四个 `a refused children falls back to the source` 场景、一条 `the zoom button titles say the same as their names`、0.1.31 的 `a second apply does not add a second fence layer`）。
+如果一个断言恒真，"套件全绿"就不构成证据。注意静态侧的恒真守护只覆盖 `check-bundle.mjs` 的 `needed` 名单（26 个名字，PS21 用它验证过：名单外的断言把条件改成 `&& true` 不会变红），不是全部夹具。0.1.8 至 0.1.32 期间共做了四十二次探针（PS12 在 0.1.22 发布后、PS13 在 0.1.23 发布后、PS14 与 PS17 在 0.1.24 发布后、第二十三轮的两条在 0.1.25 发布前）：每次都是故意破坏被断言保护的代码（`src/` 或 `verify/`）、重建 `client.js`、跑两套检查、确认目标断言**变红**，再 `git checkout` 还原；**破坏是临时的，落地后留下的改动只在从不随包的 `verify/` 与 `specs/` 里**（0.1.10 起的几次在 `%TEMP%` 的仓库副本里做，不动工作树）。报告行里的项数属于**当时的套件**：0.1.10 = 119 项、0.1.11 = 152 项、0.1.12 = 156 项、0.1.13 = 197 项、0.1.14 = 205 项、0.1.15 起 = 213 项、0.1.17 起 = 216 项、0.1.19 起 = 220 项（静态 0.1.19 起 = 39 项）、0.1.24 之后的核验提交 = 222 项、0.1.25 起 = 223 项、0.1.26 起 = 228 项、0.1.31 起 = 229 项（静态 0.1.29 起 = 40 项）。此前各行的项数属当时的套件，今天复跑会多出 0.1.24 之后新增的九条断言（两条同步渲染结果检查、一条敌意 `children` 挂载检查、四个 `a refused children falls back to the source` 场景、一条 `the zoom button titles say the same as their names`、0.1.31 的 `a second apply does not add a second fence layer`）。
 
 | 探针 | 破坏方式 | 变红的断言（含报告行） | 说明 |
 |---|---|---|---|
@@ -363,6 +365,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.31 | client.js 770108 bytes | sources s
 | PS25 | 把 `index.js` 异步拒绝分支里的 `release(ctx)` 删掉（0.1.31） | `FAIL the host half adds one section per context, not one per call — an async refusal burned the context (1 attempts)`；`check-bundle: 1 failed, 39 passed`，exit 1 | 异步拒绝也释放上下文，重试能注册 |
 | PS26 | 把 `src/client/entry.js` 的 `claimed` 守卫换成 `void claimed` 并重建（0.1.31） | `[bad] a second apply does not add a second fence layer — 2`；`run-harness: 1 failed, 228 passed`，exit 1 | 浏览器半边也不会因二次 `apply` 叠层 |
 | PS27 | 把 `index.js` 的 `warn('prompt section skipped', error)` 换成 `void error`（0.1.31） | `FAIL the host half stays silent when the host changed shape — two refused sections produced 1 warnings: …`；`check-bundle: 1 failed, 39 passed`，exit 1 | 「每段被拒的简报都报一次」不是空话 |
+| PS28 | 把 `i18n.js` 的 `hostKey(key)` 返回值从 `LOCALE_NAMESPACE + '.' + key` 改回裸 `key`（0.1.32，`%TEMP%\probe-r33` 副本） | 两条新夹具同时变红：`[bad] a host dictionary that already owns a word does not put it on our button — 复制成功`、`[bad] a host that translates the namespaced key is used — 已复制`；`run-harness: 2 failed, 229 passed`，exit 1 | G24③ 的修法真的被断言保护；把裸 key 发回宿主时，真机看到的那句"复制成功"原样重现 |
 静态检查里另有一条守护 `the fixtures assert what the fixes promise, and can fail`：它要求 P1/P2/P4/P5/PA/PB/PC/PS13 以及 PS14 那四条同步渲染断言的断言名一个不少、每条都落在真正读值的条件里、条件里不得出现恒真分支；并且每条名字必须落在一个**真正读值**的 `expect(` 条件里——条件为空、只是 `true`/`false`/`0` 这类字面量（PS9）、或是 `1 === 1` 这种读不到任何东西的自我比较（PS11）、`|| true` 这种非字面量的恒真分支（PS13）都会让它变红，名字只出现在注释里也算缺失（PS10），名单内某条被换成字面量也会红（PS17）；否则说明有人把夹具掏空或删掉而代码检查仍绿。同一道守护的兄弟条款：读源码的文本断言一律先剥注释再比对，所以把代码换成同名注释也会红（PS12）。P6/P7 是另一道：两套检查各自的条目数被钉死，删一条也会红。
 
 ## E-COMP 兼容性断言与要求逐条对应
@@ -486,7 +489,7 @@ npm notice shasum: 71feabc22885e097974a35668e4717837fefd226
 npm notice total files: 33
 ```
 
-0.1.10（run `45062588313`，36 / 119）——这是**当时**那棵树的两条报告行；版本、字节数、指纹与项数都与当前不同（0.1.24 发布时是 769,453 字节、`5bc072d1…`、39 / 220；之后的核验提交先加到 222 项、0.1.25 起 223 项、0.1.26 起 228 项、0.1.31 起 229 项，见 E-HARN），共同点只有命令与工作流：
+0.1.10（run `45062588313`，36 / 119）——这是**当时**那棵树的两条报告行；版本、字节数、指纹与项数都与当前不同（0.1.24 发布时是 769,453 字节、`5bc072d1…`、39 / 220；之后的核验提交先加到 222 项、0.1.25 起 223 项、0.1.26 起 228 项、0.1.31 起 229 项、0.1.32 起 231 项，见 E-HARN），共同点只有命令与工作流：
 
 ```text
 check-bundle: @jiezhengj/dsh-dyslexia@0.1.10 | client.js 767298 bytes | sources sha256:336ea7199fb90a0c8202c03e0c14bbe7 | all 36 checks passed
@@ -991,9 +994,9 @@ Done in 4.5s using pnpm v11.28.5
 
 - **G23 三处「证据能证明到哪一步」的位置（第二十六轮实现评审 P2 记录，不是缺陷）**：①`client.js` banner 的 `sources sha256` 把 `name` 与 `version` 并进了哈希，所以只改版本号的发版（如 0.1.27、0.1.28）看起来也像"源码变了"——`verify/check-bundle.mjs` 用同一组输入重算，陈旧产物照样被挡住，受影响的是人拿 banner 做来源比对；②`check-bundle` 40 项全绿**不代表行为正确**：恒真守护只覆盖 `needed` 名单里的 26 个断言名（PS21 证明名单外的断言改成 `&& true` 不会红，见 G19），行为证据只来自 `run-harness` 的 229 项；③`children` getter 抛错有**双保险**——`view.js` 的 `safeRead` 守卫与 `FigureBoundary.render` 的 `catch` 任缺一条都不变红，但用户可见结果始终是"源码照常显示、消息不空"（探针 3 与探针 9 的对照），属覆盖精度而非缺陷。其中②在 0.1.27 起把四条源码检查的细节串补上「behaviour is asserted by the fixture」，避免被误读成行为担保；三条都不改产品行为。
 
-- **G24 0.1.31 真机核对暴露的三件事（2026-11-23，未修，先按事实记录；①已实测闭环、②由用户手点确认，③仍开）**：
+- **G24 0.1.31 真机核对暴露的三件事（2026-11-23，未修，先按事实记录；①已实测闭环、②由用户手点确认、③0.1.32 已修）**：
   ①**卸载要重启才从界面消失（已实测，2026-11-23 21 时）**：`remove_bundle` 返回 `applied`、profile 依赖与 `node_modules` 都清理干净，但打开着的窗口继续显示图与两个按钮，`Ctrl+R`/`F5` 之后画面也没变化；**用户重启 DSH 后**，同一条消息立刻变回纯代码块（`role=image` 与两个按钮计数都为 0，原文完整，见 E-LIVE）。所以 `FR-009` 的「卸载后回退」成立，但时机是**重启之后**，不是「同一屏立刻」。`quickstart.md` 与九份 README 的措辞已按这个事实改过。
   ②**「查看源码」只能靠人点，自动化点不动**（这已是取舍，不是缺陷）：`aria-expanded` 让宿主把它映射成 `menubutton`，`agent-desktop` 的 `click`/`expand` 对它返回 `ACTION_FAILED ... DoDefaultAction` 与 `STALE_REF`（节点在读取活状态时失效），按 UIA bounds 换算的真实鼠标点击也没有让标签翻转。**2026-11-23 21 时由用户本人在窗口里点击确认：面板展开、按钮变成「隐藏源码」**，所以这条用户可见行为有真机证据，缺的只是「自动化能否复核它」。开合本身另有夹具（`[lang] the source toggle flips its word`、`the source toggle starts collapsed`、`the source toggle expands`）。
-  ③**复制回执的文案来自宿主词条**：`translateFor` 先问宿主的 `t`，宿主的全局字典里有 `copied: 复制成功`，所以界面显示的是"复制成功"而不是我们 `i18n.js` 里的"已复制"。含义与语言都对，但说明**键名与宿主全局词条撞车时以宿主为准**；这一点从未在文档里写过。
+  ③**复制回执的文案来自宿主词条（0.1.32 已修，2026-11-23）**：宿主用的是**全窗口一本字典**，它自己的复制按钮就占着 `copied` 这个词条（DSH 的 `zh` 里是"复制成功"），而 `translateFor` 当初直接问宿主的 `t`，于是我们的按钮右侧显示的是宿主的措辞。0.1.32 起改成**按本插件命名空间发问**（`hostKey(key)` 返回 `dyslexia.<key>`）：宿主不认这个带前缀的键就会把它原样回显，`isResolved` 判为"不是译文"而回退到包内字典（zh「已复制」）；宿主若真的按命名空间给了译文，仍会被采用。夹具 `a host dictionary that already owns a word does not put it on our button`（宿主字典里 `copied` 是"复制成功"）与 `a host that translates the namespaced key is used`（证明不是把宿主译文一律丢掉）覆盖两个方向，探针 PS28 证明这两条能变红；静态检查同步要求 `i18n.js` 里存在 `return LOCALE_NAMESPACE + '.' + key` 与 `hostTranslate(hostKey(key), values)`。
 
 **本文件与 tasks.md 的关系**：`tasks.md` 末尾的状态表逐行对应上面 24 项，两处若不一致，以本文件为准（本文件是证据的归属地，`tasks.md` 是工作项的记录）。

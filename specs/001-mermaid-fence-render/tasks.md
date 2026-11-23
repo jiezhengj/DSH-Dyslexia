@@ -8,7 +8,7 @@ description: "Task list for 会话内图形渲染"
 
 **Prerequisites**: [plan.md](./plan.md), [spec.md](./spec.md), [research.md](./research.md), [data-model.md](./data-model.md), [contracts/](./contracts/), [quickstart.md](./quickstart.md)
 
-**Tests**（历史任务行里的断言名是当时的名字，改名记录见 Phase 24 的 T168）：本功能不引入测试框架（宪法原则 III）。验收 = `verify/check-bundle.mjs` 的 40 项静态断言 + `verify/run-harness.mjs --list` 的 229 项浏览器断言（0.1.9 起 118 项、0.1.10 起 119 项、0.1.11 起 152 项、0.1.12 起 156 项、0.1.13 起 197 项、0.1.14 起 205 项、0.1.15 与 0.1.16 是 213 项、0.1.17 与 0.1.18 是 216 项、0.1.19–0.1.24 是 220 项、0.1.24 之后的核验提交是 222 项、0.1.25 是 223 项、0.1.26–0.1.30 是 228 项、0.1.31 起 229 项），外加 `quickstart.md` 证据表里的真机项（见 E-GAPS）。
+**Tests**（历史任务行里的断言名是当时的名字，改名记录见 Phase 24 的 T168）：本功能不引入测试框架（宪法原则 III）。验收 = `verify/check-bundle.mjs` 的 40 项静态断言 + `verify/run-harness.mjs --list` 的 231 项浏览器断言（0.1.9 起 118 项、0.1.10 起 119 项、0.1.11 起 152 项、0.1.12 起 156 项、0.1.13 起 197 项、0.1.14 起 205 项、0.1.15 与 0.1.16 是 213 项、0.1.17 与 0.1.18 是 216 项、0.1.19–0.1.24 是 220 项、0.1.24 之后的核验提交是 222 项、0.1.25 是 223 项、0.1.26–0.1.30 是 228 项、0.1.31 起 229 项），外加 `quickstart.md` 证据表里的真机项（见 E-GAPS）。
 
 **Organization**: 按 spec 的用户故事分阶段；每个故事独立可验收。
 
@@ -585,6 +585,16 @@ description: "Task list for 会话内图形渲染"
 - [x] T323 卸载回合：`remove_bundle` 返回 `applied`、profile 依赖与 `node_modules` 清空，但运行中的窗口仍显示图（`Ctrl+R`/`F5` 无效）；用户重启后同一条消息变回纯代码块 —— 三处计数为 0、第 21 轮截图可见 `flowchart LR …` 原文 —— `FR-009` 成立，时机是**重启之后**。
 - [x] T324 装回回合：`install_bundle @0.1.31` → `applied`，启动时间早于/晚于安装的两次分别核到「没回来」与「回来了」；最终「对话」标签上 `role=image` = 1、`name`=「图」、`复制源码` = 1，历史消息一个字未改 —— `FR-010` 成立，时机同样是**重启之后**。误判记录：第一次数到 0 是因为界面停在「轨迹」标签，计数必须在「对话」标签上做。
 
+## Phase 45: G24③ 宿主词条撞名（2026-11-23 21 时，0.1.32）
+
+- [x] T325 修 `src/client/i18n.js`：新增 `hostKey(key)` 返回 `LOCALE_NAMESPACE + '.' + key`，`translateFor` 改为 `hostTranslate(hostKey(key), values)`——宿主不认带前缀的键就回显，`isResolved` 判为未解析后回退包内字典；注释写明这是 2026-11-23 真机发现的 `copied` 撞名。
+- [x] T326 夹具两条：`a host dictionary that already owns a word does not put it on our button`（宿主字典里 `copied` 是"复制成功"，点复制后状态区必须是「已复制」）与 `a host that translates the namespaced key is used`（宿主对 `dyslexia.copied` 返回 `HOST COPIED` 时必须采用）→ 229 → **231** 项，`EXPECTED_CHECKS` 同步。
+- [x] T327 静态检查：`host key echo falls back to bundled strings` 增加三条断言（`function hostKey(key)` 存在、`return LOCALE_NAMESPACE + '.' + key`、`hostTranslate(hostKey(key), values)`），返回串改为"the host is asked under the plugin namespace"；项数仍 40。
+- [x] T328 探针 PS28（`%TEMP%\probe-r33` 副本，把 `hostKey` 改回裸 `key`）：`[bad] a host dictionary that already owns a word does not put it on our button — 复制成功`、`[bad] a host that translates the namespaced key is used — 已复制`、`run-harness: 2 failed, 229 passed`、exit 1 —— 真机那句"复制成功"被原样重现。
+- [x] T329 文档：`research.md` D20 补"全窗口一本字典 + 按命名空间发问"的补充结论；`contracts/client-fence-layer.md` 第 8 条补同一条契约与两个夹具名；`evidence/verification.md` 的 E-PROBE 加 PS28、G24③ 改为已修（含夹具、探针与静态检查三处依据）、头注版本与项数、E-BLD/E-CHK/E-HARN 用 0.1.32 单次运行重写；`spec.md` Status、`plan.md`（231、1013→1028 行、901/1298）、`quickstart.md`、`contracts/plugin-manifest.md`（0.1.32、231）、`tasks.md` 状态表与 Tests 行同步。
+- [x] T330 发版准备：版本 0.1.32、`client.js` 770,843 字节 / 769,797 字符、指纹 `95fc767705cdfe6833716071797b209c`、SHA256 `76FB10977FE0631FBBE80CDBBEC59CD59DAB54888D5C48C814B4898E9AB9D87D`；40 静态 / 231 浏览器全绿。
+- [ ] T331 发版与真机复核：tag `v0.1.32` → CI 发布 → 装回 `desktop` → 用户重启后在窗口里点「复制源码」，回执应是**「已复制」**（不再是宿主的「复制成功」）。
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
@@ -662,7 +672,7 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 **当前自动化证据**（命令即证据，任何人 clone 后可复跑）：
 
 - `node verify/check-bundle.mjs` → **40 项全过**
-- `node verify/run-harness.mjs --list` → 真实 Chromium 里 **229 项全过**（夹具 `verify/harness/index.html`，已提交）
+- `node verify/run-harness.mjs --list` → 真实 Chromium 里 **231 项全过**（夹具 `verify/harness/index.html`，已提交）
 
 **真机证据**（`evidence/verification.md` 的 E-LIVE）：会话内就地成图、卸载回退、重装恢复、插件页说明；取证的版本是 0.1.2。
 
@@ -693,7 +703,7 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 | G21 | 引擎支持的其它图种与"Mermaid 12.1"版本说法 | 未做 | 静态检查采样七种（flowchart/sequence/class/state/er/mindmap/timeline，见 `every supported sample type draws an svg`），浏览器夹具只画了 flowchart 与一条 `sequenceDiagram`；gantt、kanban、xychart、C4、architecture 无任何用例；"Mermaid 12.1" 只来自上游 pele 的说明。索引页与八份本地化 README 按"静态采样七种、夹具只画前两种（见 G21）"措辞，"Mermaid 12.1"那句已在 T243 移除 |
 | G22 | `check-bundle` 需要 `specs/` 才完整（合同文件不在 `files` 里） | 未修（登记为局限） | 合同文件不在包里；正常 clone 与 CI 都通过，缺 `specs/` 的副本里 `npm pack` 会以 ENOENT 变红 |
 | G23 | 三处证据强度（banner 指纹含版本、静态全绿≠行为正确、children getter 双保险） | 记录（不改代码） | 第二十六轮实现评审 P2 的原文见 `evidence/verification.md` 的 G23；三条都不影响已发布行为 |
-| G24 | 0.1.31 真机核对暴露的三件事 | 记录（未修代码） | ①卸载要重启才从界面消失（已实测）：`remove_bundle` 已 `applied`、profile 与 `node_modules` 都清理干净，但打开着的窗口继续显示图与按钮；用户重启后同一条消息立刻变回纯代码块（`role=image` 与按钮计数全为 0）→ FR-009 成立，时机是重启之后；②「查看源码」带 `aria-expanded`，被宿主映射成 `menubutton`，`agent-desktop click`/`expand` 返回 `ACTION_FAILED ... DoDefaultAction` 与 `STALE_REF`；**用户本人点击确认面板会展开、按钮变「隐藏源码」**，所以行为有真机证据，缺的只是自动化复核；③复制回执文案来自宿主全局词条（`t` 优先），宿主字典里 `copied` 是「复制成功」，覆盖了我们自己的「已复制」 |
+| G24 | 0.1.31 真机核对暴露的三件事 | **已全部落实（0.1.32）** | ①卸载要重启才从界面消失（已实测）：`remove_bundle` 已 `applied`、profile 与 `node_modules` 都清理干净，但打开着的窗口继续显示图与按钮；用户重启后同一条消息立刻变回纯代码块（`role=image` 与按钮计数全为 0）→ FR-009 成立，时机是重启之后；③宿主词条撞名已在 0.1.32 修：按 `dyslexia.<key>` 发问 + 两条夹具 + 探针 PS28；②「查看源码」带 `aria-expanded`，被宿主映射成 `menubutton`，`agent-desktop click`/`expand` 返回 `ACTION_FAILED ... DoDefaultAction` 与 `STALE_REF`；**用户本人点击确认面板会展开、按钮变「隐藏源码」**，所以行为有真机证据，缺的只是自动化复核；③复制回执文案来自宿主全局词条（`t` 优先），宿主字典里 `copied` 是「复制成功」，覆盖了我们自己的「已复制」 |
 
 **待重启复核的项**：
 

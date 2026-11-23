@@ -405,10 +405,16 @@ check('host key echo falls back to bundled strings', () => {
   assert(source.indexOf("indexOf('{{')") !== -1, 'i18n.js accepts an unfilled placeholder')
   assert(source.indexOf('trimmed.length === 0') !== -1, 'i18n.js accepts a blank translation')
   assert(/LANGUAGE_CODES/.test(source), 'i18n.js has no language list')
+  // The host keeps one dictionary for the whole window and its own copy buttons
+  // own `copied`; asking for the bare key put the host's wording on our button
+  // (found live on 2026-11-23). The ask must carry this plugin's namespace.
+  assert(/function hostKey\(key\)/.test(source), 'i18n.js asks the host for a bare key')
+  assert(source.indexOf("return LOCALE_NAMESPACE + '.' + key") !== -1, 'i18n.js does not namespace the host key')
+  assert(source.indexOf('hostTranslate(hostKey(key), values)') !== -1, 'i18n.js does not ask the host under its namespace')
   for (const lang of ['en', 'zh', 'ja', 'es', 'fr', 'de', 'ru', 'pt']) {
     assert(source.indexOf('\n  ' + lang + ': {') !== -1, 'i18n.js is missing the ' + lang + ' strings')
   }
-  return 'key echo, blanks, placeholders rejected'
+  return 'key echo, blanks, placeholders rejected; the host is asked under the plugin namespace'
 })
 
 check('every language carries the same complete sentences', () => {

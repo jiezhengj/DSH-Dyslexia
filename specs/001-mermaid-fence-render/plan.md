@@ -30,7 +30,7 @@
 - 所有宿主服务调用、注册调用、渲染调用都就地降级，绝不把异常抛回宿主；
 - 宿主派发的数据不符合预期时，一律交回宿主原本的代码块。
 
-**Scale/Scope**: 单张图通常 5–20 个节点；上限由 pele 的 `limit`/`outputLimit`/`maxEdges` 约束，超限即回退为文本（FR-004）。代码量实况（2026-11-23 实测）：宿主 `index.js` 81 行；`src/client` 共 1013 行（view 486 / i18n 209 / styles 123 / figure 91 / entry 104）；`scripts/build-client.mjs` 147 行。校验侧分两套：`v0.1.24` 发布时 `verify/check-bundle.mjs` 776 行、`verify/harness/index.html` 1177 行；`v0.1.25` 是 804 行与 1216 行、`v0.1.26` 是 815 行与 1237 行（0.1.27 与 0.1.28 未改动这两套）、`v0.1.29` 是 842 行与 1237 行、`v0.1.30` 是 857 行与 1237 行、`v0.1.31` 是 895 行与 1238 行（第二十二轮的核验提交只改这两套与 `specs/`、不发版；第二十三轮的文档修复改了随包的 `README.md` 与 `README.zh.md`，因此随 `0.1.25` 发布）；驱动 `verify/run-harness.mjs` 131 行各版相同。
+**Scale/Scope**: 单张图通常 5–20 个节点；上限由 pele 的 `limit`/`outputLimit`/`maxEdges` 约束，超限即回退为文本（FR-004）。代码量实况（2026-11-23 实测）：宿主 `index.js` 81 行；`src/client` 共 1028 行（view 486 / i18n 224 / styles 123 / figure 91 / entry 104）；`scripts/build-client.mjs` 147 行。校验侧分两套：`v0.1.24` 发布时 `verify/check-bundle.mjs` 776 行、`verify/harness/index.html` 1177 行；`v0.1.25` 是 804 行与 1216 行、`v0.1.26` 是 815 行与 1237 行（0.1.27 与 0.1.28 未改动这两套）、`v0.1.29` 是 842 行与 1237 行、`v0.1.30` 是 857 行与 1237 行、`v0.1.31` 是 895 行与 1238 行、`v0.1.32` 是 901 行与 1298 行（第二十二轮的核验提交只改这两套与 `specs/`、不发版；第二十三轮的文档修复改了随包的 `README.md` 与 `README.zh.md`，因此随 `0.1.25` 发布）；驱动 `verify/run-harness.mjs` 131 行各版相同。
 
 ## Constitution Check
 
@@ -109,7 +109,7 @@ verify/
 ├── check-bundle.mjs     # 纯 Node 内置模块的静态与行为断言（40 项）
 ├── run-harness.mjs      # 用真实 Chromium 打开夹具并读判定
 └── harness/
-    ├── index.html       # 提交进仓库的浏览器夹具（229 项）
+    ├── index.html       # 提交进仓库的浏览器夹具（231 项）
     └── vendor/          # React 18.3.1 UMD 副本
 tests/                   # 不放测试框架；verify/ 即验收脚本
 ```

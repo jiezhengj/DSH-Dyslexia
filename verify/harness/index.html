@@ -664,6 +664,66 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           withClipboard.stage.remove()
           Object.defineProperty(navigator, 'clipboard', { configurable: true, value: clipboardBackup })
 
+          /* ------------- a host dictionary that already owns the word `copied` */
+          {
+            // The 2026-11-23 live check found this: the host keeps one dictionary
+            // for the whole window and its own copy buttons own `copied`, so a
+            // bare-key lookup showed the host's wording on this plugin's button.
+            const collidedClipboard = navigator.clipboard
+            Object.defineProperty(navigator, 'clipboard', {
+              configurable: true,
+              value: { writeText() { return Promise.resolve() } },
+            })
+            const hostDictionary = (key) => (key === 'copied' ? '复制成功' : key)
+            const collided = mount(Layer, {
+              code: CODE,
+              streaming: false,
+              children: hostBlock(CODE),
+              t: hostDictionary,
+            })
+            await tick(60)
+            const collidedButtons = collided.stage.querySelectorAll('button')
+            if (collidedButtons[1]) collidedButtons[1].click()
+            await tick(60)
+            const collidedStatus = collided.stage.querySelector('[role="status"]')
+            expect(
+              collidedStatus !== null && collidedStatus.textContent === '已复制',
+              'a host dictionary that already owns a word does not put it on our button',
+              collidedStatus ? collidedStatus.textContent : 'none',
+            )
+            collided.root.unmount()
+            collided.stage.remove()
+            Object.defineProperty(navigator, 'clipboard', { configurable: true, value: collidedClipboard })
+          }
+
+          /* --------- a host that really translates the namespaced key is used */
+          {
+            const namespacedClipboard = navigator.clipboard
+            Object.defineProperty(navigator, 'clipboard', {
+              configurable: true,
+              value: { writeText() { return Promise.resolve() } },
+            })
+            const namespaced = mount(Layer, {
+              code: CODE,
+              streaming: false,
+              children: hostBlock(CODE),
+              t: (key) => (key === 'dyslexia.copied' ? 'HOST COPIED' : key),
+            })
+            await tick(60)
+            const namespacedButtons = namespaced.stage.querySelectorAll('button')
+            if (namespacedButtons[1]) namespacedButtons[1].click()
+            await tick(60)
+            const namespacedStatus = namespaced.stage.querySelector('[role="status"]')
+            expect(
+              namespacedStatus !== null && namespacedStatus.textContent === 'HOST COPIED',
+              'a host that translates the namespaced key is used',
+              namespacedStatus ? namespacedStatus.textContent : 'none',
+            )
+            namespaced.root.unmount()
+            namespaced.stage.remove()
+            Object.defineProperty(navigator, 'clipboard', { configurable: true, value: namespacedClipboard })
+          }
+
           /* ------------------------------------------- a message with more than one fence */
           {
             const message = document.createElement('div')
@@ -929,11 +989,11 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           stableStage.className = 'stage'
           document.getElementById('mount').appendChild(stableStage)
           const stableRoot = ReactDOM.createRoot(stableStage)
-          stableRoot.render(React.createElement(Layer, { code: CODE, streaming: false, children: hostBlock(CODE), t: (key) => (key === 'figureLabel' ? '图' : key) }))
+          stableRoot.render(React.createElement(Layer, { code: CODE, streaming: false, children: hostBlock(CODE), t: (key) => (key === 'dyslexia.figureLabel' ? '图' : key) }))
           await tick(120)
           const firstSvg = stableStage.querySelector('svg[role="img"]')
           if (firstSvg) firstSvg.setAttribute('data-stamp', 'first')
-          stableRoot.render(React.createElement(Layer, { code: CODE, streaming: false, children: hostBlock(CODE), t: (key) => (key === 'figureLabel' ? '图' : key) }))
+          stableRoot.render(React.createElement(Layer, { code: CODE, streaming: false, children: hostBlock(CODE), t: (key) => (key === 'dyslexia.figureLabel' ? '图' : key) }))
           await tick(120)
           const secondSvg = stableStage.querySelector('svg[role="img"]')
           expect(!!firstSvg && !!secondSvg && secondSvg.getAttribute('data-stamp') === 'first', 'a fresh t does not redraw the picture')
