@@ -401,6 +401,8 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.23 | client.js 769453 bytes | sources s
 | 0.1.19 | `45086312392` | success | `9bcbc948d917b04df6f8a93639a4d6437ac5a74c` | `4049111154` | 33 |
 | 0.1.20 | `45088530926` | success | `43a5602197d04d37211db3c5c225d5b9b3ffe059` | `4049292002` | 33 |
 | 0.1.21 | `45091169265` | success | `75589577bf6a3e8ac8258485c7d85bc441e93cc4` | `4049694107` | 33 |
+| 0.1.22 | `45095997704` | success | `a685404c92d404f54c1a9a35ba87ccc729f2b49d` | `4049818582` | 33 |
+| 0.1.23 | `45097568628` | success | `36154060cc710492abd04fe7037d0e2fc9b3cd16` | `4049860584` | 33 |
 
 > `—` 表示该次发布没有对应记录：0.1.0 是手动 `npm publish`，没有 provenance；0.1.5 的第一次是失败的运行，没有产物。0.1.3 与 0.1.4 当时没有记下 logIndex，这里写"未记录"而不是补造一个。
 
@@ -726,6 +728,28 @@ npm notice publish Provenance statement published to transparency log: https://s
 + @jiezhengj/dsh-dyslexia@0.1.21
 ```
 
+0.1.22（run `45095997704`，39 项静态 / 220 项浏览器）：
+
+```text
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.22 | client.js 769453 bytes | sources sha256:d6ff7c407663af2c2f3ebb81f2ae2327 | all 39 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.1.22 | client.js 769453 bytes | sources sha256:d6ff7c407663af2c2f3ebb81f2ae2327 | all 220 checks passed (/usr/bin/google-chrome)
+npm notice shasum: a685404c92d404f54c1a9a35ba87ccc729f2b49d
+npm notice total files: 33
+npm notice publish Provenance statement published to transparency log: https://search.sigstore.dev/?logIndex=4049818582
++ @jiezhengj/dsh-dyslexia@0.1.22
+```
+
+0.1.23（run `45097568628`，39 项静态 / 220 项浏览器）：
+
+```text
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.23 | client.js 769453 bytes | sources sha256:00fe7860f20f5178fcd5e5a0073883e8 | all 39 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.1.23 | client.js 769453 bytes | sources sha256:00fe7860f20f5178fcd5e5a0073883e8 | all 220 checks passed (/usr/bin/google-chrome)
+npm notice shasum: 36154060cc710492abd04fe7037d0e2fc9b3cd16
+npm notice total files: 33
+npm notice publish Provenance statement published to transparency log: https://search.sigstore.dev/?logIndex=4049860584
++ @jiezhengj/dsh-dyslexia@0.1.23
+```
+
 ## E-CI 发布前检查抓到一个真实缺陷（0.1.5 第一次运行）
 
 `45046044274` 在 "Refuse to publish if the committed chunk is stale" 这一步失败：
@@ -741,13 +765,13 @@ npm notice publish Provenance statement published to transparency log: https://s
 
 ## E-INS 从 registry 安装
 
-`plugin_manager remove_bundle @jiezhengj/dsh-dyslexia`（卸 0.1.20，pnpm 输出 `- @jiezhengj/dsh-dyslexia 0.1.20`）→ `install_bundle` 目标 `@jiezhengj/dsh-dyslexia@0.1.21`，结果 `application: "applied"`、`version: "0.1.21"`，pnpm 输出：
+`install_bundle` 目标 `@jiezhengj/dsh-dyslexia@0.1.23`，结果 `application: "applied"`、`version: "0.1.23"`，pnpm 输出：
 
 ```text
 dependencies:
-+ @jiezhengj/dsh-dyslexia 0.1.21
++ @jiezhengj/dsh-dyslexia 0.1.23
 
-Done in 3.4s using pnpm v11.28.5
+Done in 3.5s using pnpm v11.28.5
 ```
 
 第一次尝试失败过一次，原因是镜像落后（`ERR_PNPM_NO_MATCHING_VERSION … while fetching it from https://registry.npmmirror.com/`，当时 npmjs 的版本文件已 200 但 tarball 仍 404）；等 npmjs 的 tarball 复制完成后再按包名安装即成功。这个滞后每次发版都会出现（约 2–10 分钟），不是包的问题。
@@ -756,11 +780,13 @@ Done in 3.4s using pnpm v11.28.5
 
 | 检查 | 实测 |
 |---|---|
-| profile 依赖 | `"@jiezhengj/dsh-dyslexia": "0.1.21"`（版本号，不是 `link:`） |
-| `node_modules/@jiezhengj/dsh-dyslexia/client.js` | 769,453 字节，SHA256 `C65A95A2E754BFEF9F64043C496EF976EF66352E915B976E005F2C82D4FF7C03`（与仓库根逐字节相同） |
+| profile 依赖 | `"@jiezhengj/dsh-dyslexia": "0.1.23"`（版本号，不是 `link:`） |
+| `node_modules/@jiezhengj/dsh-dyslexia/client.js` | 769,453 字节，SHA256 `B8389139F5223D6034C8CEC6FB90AB8613736AED17BAF930D4A4A7572510448B`（与仓库根逐字节相同） |
 | `locale/` | 8 个 json |
 | `docs/` | 9 个文件（8 篇 `DETAIL*.md` + `preview.svg`） |
-| 包内 `version` | `0.1.21` |
+| 包内 `version` | `0.1.23` |
+
+这一轮的 `remove_bundle` 返回 `{"code":"not-removable"}`，所以只做了安装（`install_bundle` 直接 applied）。安装本身不需要重启：新 chunk 写进 profile 后即刻生效；但**已经在跑的会话仍持旧 chunk**，重启后才换成 0.1.23——这与 G13 记的"重启后逐项复核"是两件事。
 
 ## E-LIVE 真机（DSH 桌面窗口内）
 
@@ -795,7 +821,7 @@ Done in 3.4s using pnpm v11.28.5
 
 - **G11 FR-011 的后半（停用插件后提示词段消失）**：只有 `apply` 注册段的静态证据与宿主半边契约，没有"停用后模型侧看不到"的实测（T027）。
 - **G12 FR-002 的真机面（不打开侧栏、不生成文件、不新增会话条目）**：插件在结构上不写文件、不碰宿主布局（静态可读），但没有一次真机上"看完这张图，磁盘与会话条目都没变"的核对。
-- **G13 当前版本的重启后真机核对（T079）**：`E-LIVE` 的观察取自 **0.1.2**，且只有四件事——插件页的**中文**说明与插图、会话里就地成图（图名 `图：flowchart`、两个按钮）、卸载后同一条消息回退为代码块、重装后图与按钮立刻回来。**复制播报**（0.1.5 起才有）与**其余 7 种语言的插件页**从未在真机上看过，不能算已观察。0.1.3–0.1.21 改过 `view.js`、`i18n.js`、`entry.js`、`styles.js`（0.1.18 只改了文档与 README；0.1.19 改了 `styles.js` 的变量块；0.1.20 与 0.1.21 只改了测试与文档），这些观察不能自动转移。0.1.11 至 0.1.21 都已发布并装进 `desktop` profile，但**没有在重启后的宿主里逐项复核过**，所以算未取证。
+- **G13 当前版本的重启后真机核对（T079）**：`E-LIVE` 的观察取自 **0.1.2**，且只有四件事——插件页的**中文**说明与插图、会话里就地成图（图名 `图：flowchart`、两个按钮）、卸载后同一条消息回退为代码块、重装后图与按钮立刻回来。**复制播报**（0.1.5 起才有）与**其余 7 种语言的插件页**从未在真机上看过，不能算已观察。0.1.3–0.1.23 改过 `view.js`、`i18n.js`、`entry.js`、`styles.js`（0.1.18 只改了文档与 README；0.1.19 改了 `styles.js` 的变量块；0.1.20 与 0.1.21 只改了测试与文档），这些观察不能自动转移。0.1.11 至 0.1.23 都已发布并装进 `desktop` profile，但**没有在重启后的宿主里逐项复核过**，所以算未取证。
 - **G14 真实窗口缩放时的引擎重绘（FR-018 的端到端面）**：0.1.10 把重排版交给引擎自己的 `ResizeObserver`（pele 内部），插件只负责"节点被换回来就重新命名"。夹具能证明"节点被换 → 立刻重新命名"，但**无法让引擎在无头浏览器里真的因窗口缩放而重绘**（无头环境第一帧之后不再派发帧与 ResizeObserver 通知）。真实窗口里"拖窄窗口 → 引擎重绘 → 名字回来"这条链只有机制级证据。
 - **G15 尚未覆盖的加固面（第十轮实现评审记录，第十七、十八轮复核后收窄）**：下面按五项编号（编号⑤是 `spec.md` SC-007 与两份契约引用的「G15 第五条」，别删）；其中③已查明有断言、撤回，仍算缺口的只有①、②、④、⑤，都不影响已发布行为——① `src/client/figure.js` 的 `outputLimit`（2 MiB 绘制输出上限）没有用例（字符上限 `limit: 24 * 1024` 与边数上限 `maxEdges: 400` 自 0.1.19 起各有单独夹具，见 E-HARN 的 `a source over the size limit *` 与 `a picture with too many edges *` 六条，以及 E-PROBE 的 PS2、PS3）；② `index.js` 的 `apply` 每次都用 `prompt.section({ name: 'ui:dsh-dyslexia', … })` 注册提示词段、没有幂等守卫，所以在**同一个正常 `ctx`** 上再 `apply` 一次会得到两段同名提示词；没有断言守着这件事——`a host without effects keeps one stylesheet, not one per apply` 只覆盖「没有 `effect` 服务」那一种宿主的样式表；③ `src/client/entry.js` 里 `slots.inject(...)` 回调返回的 disposer 被丢掉这半句**不成立**：`the fence layer is gone once the host disposes` 正守着它（把 `entry.js` 的回调改成不返回 disposer，该断言就会变红），不再算缺口；④ `package.json` 的 `prepack` 只跑构建与 `check-bundle`，不跑夹具（依赖 CI 的五步兜住）；⑤ `package.json` 若加入 `engines.node` 等非 `dsh` 子键，`no dsh version gate can refuse a start` 不会变红（当前清单没有 `engines` 键，属「没有断言的清单形状面」）。
 - **G16 vendor 文本与换节点的无头局限（记录）**：`client.js` 里 vendor 许可注释含 `https://github.com/obsidianmd/pele`，属静态文本、无网络行为；「引擎换掉 `<svg>` 后重新命名」在无头环境里只能靠夹具重放（真实拖窄窗口的端到端见 G14）。绘制输出上限（`outputLimit` 2 MiB）仍按 G15 记；字符上限与边数上限在 0.1.19 起已有夹具，这里同样不重复。

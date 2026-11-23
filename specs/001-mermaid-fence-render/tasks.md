@@ -455,7 +455,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T235 文档评审 P1-3/P2：`verification.md` 头注、`spec.md`、`plan.md` 的版本口径统一到 0.1.23；探针表把 PS8 的说明从 PS12 行挪回 PS8 行；`plan.md:33` 的 `check-bundle.mjs` 767 行 / `harness/index.html` 1178 行 / `run-harness.mjs` 132 行按实测重写；`data-model.md` 的 74–77 行证据列加"静态"前缀；`tasks.md` 的表格标题改"待重启复核的项"；T092/T112/T113 补"本条记录当时的设计"；`README.zh.md` / `README.en.md` 的"宿主升级不会让它开不了机"补"未演练，见 G1"；`contracts/host-prompt.md` 的样例告警补前缀说明
 - [x] T236 重建 `client.js`（README 随包，文档改动必须发版）：`769453 bytes`、`sources sha256:00fe7860f20f5178fcd5e5a0073883e8`、SHA256 `B8389139F5223D6034C8CEC6FB90AB8613736AED17BAF930D4A4A7572510448B`；`check-bundle` 39 项、`run-harness` 220 项全绿
 - [x] T237 E-BLD/E-CHK/E-HARN 三块用本次运行（0.1.23）的完整输出整段重写，`.tmp/verify-evidence.py` 复核 `check doc 40 live 40 same` / `harness doc 225 live 225 same`
-- [ ] T238 发布 `v0.1.23` → 从 registry 装回 profile `desktop` → 补 E-PUB/E-INS 的 0.1.23 行
+- [x] T238 发布 `v0.1.23`（提交 `31b6f24`）→ GitHub Actions run `45097568628` success（CI 39 项静态 / 220 项浏览器，shasum `36154060cc710492abd04fe7037d0e2fc9b3cd16`，logIndex `4049860584`，33 文件）→ 从 registry 装回 profile `desktop`（依赖 `"0.1.23"`，安装副本 769,453 字节 / SHA256 `B8389139F5223D6034C8CEC6FB90AB8613736AED17BAF930D4A4A7572510448B` 与仓库根逐字节相同）→ 补 E-PUB/E-INS 的 0.1.22 与 0.1.23 行
 - [ ] T239 第二十一轮双评审（目标 PASS；两份都 PASS 才把 feature 001 标记完成）
 
 ## Dependencies & Execution Order
