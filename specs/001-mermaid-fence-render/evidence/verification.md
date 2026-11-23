@@ -65,6 +65,8 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.30 | client.js 769629 bytes | sources 
 
 ## E-HARN 浏览器行为校验
 
+下面是本机单次运行的原样输出（报告行末尾的浏览器路径是本机的 `C:/Program Files/Google/Chrome/Application/chrome.exe`；在 CI 上跑同一套时会换成 `/usr/bin/google-chrome`，断言与条目数不变，见 E-PUB-LOG 的 CI 行）。
+
 ```
 [ok] loading client.js registers one factory
 [ok] the module exposes apply
@@ -843,17 +845,21 @@ npm notice publish Provenance statement published to transparency log: https://s
 ```text
 check-bundle: @jiezhengj/dsh-dyslexia@0.1.29 | client.js 769629 bytes | sources sha256:867cfbe0dc16b8ef709ee460312d66b7 | all 40 checks passed
 run-harness: @jiezhengj/dsh-dyslexia@0.1.29 | client.js 769629 bytes | sources sha256:867cfbe0dc16b8ef709ee460312d66b7 | all 228 checks passed (/usr/bin/google-chrome)
-
-### `v0.1.30`（run `45125072898`）
-
-```text
-check-bundle: @jiezhengj/dsh-dyslexia@0.1.30 | client.js 769629 bytes | sources sha256:066598a434771bb4053dcce3e4f499e3 | all 40 checks passed
-run-harness: @jiezhengj/dsh-dyslexia@0.1.30 | client.js 769629 bytes | sources sha256:066598a434771bb4053dcce3e4f499e3 | all 228 checks passed (/usr/bin/google-chrome)
-```
 npm notice shasum: 995896d632c57eab295975730d5d37cf58684218
 npm notice total files: 33
 npm notice publish Provenance statement published to transparency log: https://search.sigstore.dev/?logIndex=4050351420
 + @jiezhengj/dsh-dyslexia@0.1.29
+```
+
+0.1.30（run `45125072898`，40 项静态 / 228 项浏览器；`index.js` 的幂等守卫改成失败可重试，`client.js` 因 banner 含版本号而重算）：
+
+```text
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.30 | client.js 769629 bytes | sources sha256:066598a434771bb4053dcce3e4f499e3 | all 40 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.1.30 | client.js 769629 bytes | sources sha256:066598a434771bb4053dcce3e4f499e3 | all 228 checks passed (/usr/bin/google-chrome)
+npm notice shasum: 856b1909fd050285fb8c9799d6eea880e716556c
+npm notice total files: 33
+npm notice publish Provenance statement published to transparency log: https://search.sigstore.dev/?logIndex=4050408306
++ @jiezhengj/dsh-dyslexia@0.1.30
 ```
 
 ## E-CI 发布前检查抓到一个真实缺陷（0.1.5 第一次运行）
@@ -927,7 +933,7 @@ Done in 6.1s using pnpm v11.28.5
 - **G12 FR-002 的真机面（不打开侧栏、不生成文件、不新增会话条目）**：插件在结构上不写文件、不碰宿主布局（静态可读），但没有一次真机上"看完这张图，磁盘与会话条目都没变"的核对。
 - **G13 当前版本（0.1.30）的重启后真机核对（T079）**：`E-LIVE` 的观察取自 **0.1.2**，且只有四件事——插件页的**中文**说明与插图、会话里就地成图（图名 `图：flowchart`、两个按钮）、卸载后同一条消息回退为代码块、重装后图与按钮立刻回来。**复制播报**（0.1.5 起才有）与**其余 7 种语言的插件页**从未在真机上看过，不能算已观察。0.1.3–0.1.30 改过 `view.js`、`i18n.js`、`entry.js`、`styles.js`、`index.js`（0.1.18 只改了文档与 README；0.1.19 改了 `styles.js` 的变量块；0.1.20 与 0.1.21 只改了测试与文档），这些观察不能自动转移。0.1.11 至 0.1.30 都已发布并装进 `desktop` profile，但**没有在重启后的宿主里逐项复核过**，所以算未取证。
 - **G14 真实窗口缩放时的引擎重绘（FR-018 的端到端面）**：0.1.10 把重排版交给引擎自己的 `ResizeObserver`（pele 内部），插件只负责"节点被换回来就重新命名"。夹具能证明"节点被换 → 立刻重新命名"，但**无法让引擎在无头浏览器里真的因窗口缩放而重绘**（无头环境第一帧之后不再派发帧与 ResizeObserver 通知）。真实窗口里"拖窄窗口 → 引擎重绘 → 名字回来"这条链只有机制级证据。
-- **G15 尚未覆盖的加固面（第十轮实现评审记录，第十七、十八轮复核后收窄）**：下面按五项编号（编号⑤是 `spec.md` SC-007 与两份契约引用的「G15 第五条」，别删）；其中③已查明有断言、撤回，仍算缺口的只有①、②、④、⑤，都不影响已发布行为——① `src/client/figure.js` 的 `outputLimit`（2 MiB 绘制输出上限）**只有静态锚点**（`both size limits reach the engine, each proven on its own` 按数值比较 `limit`/`maxEdges`/`outputLimit` 三项，并把 `FIGURE_LIMITS` 是否铺进 `pele.mount` 也钉住），**没有**任何夹具或真机观察让它真的触发一次（字符上限 `limit: 24 * 1024` 与边数上限 `maxEdges: 400` 自 0.1.19 起各有单独夹具，见 E-HARN 的 `a source over the size limit *` 与 `a picture with too many edges *` 六条，以及 E-PROBE 的 PS2、PS3）；② `index.js` 的 `apply` 幂等**已由断言守护**（0.1.29）：`the host half adds one section per context, not one per call` 在同一 `ctx` 上连调三次只允许一段、换一个 `ctx` 允许再一段；探针 PS23 把 `claimed.has/add` 换成 `void claimed` 后该条变红（`three applies on one context added 3 sections`，`check-bundle: 1 failed, 39 passed`，exit 1）；③ `src/client/entry.js` 里 `slots.inject(...)` 回调返回的 disposer 被丢掉这半句**不成立**：`the fence layer is gone once the host disposes` 正守着它（把 `entry.js` 的回调改成不返回 disposer，该断言就会变红），不再算缺口；④ `package.json` 的 `prepack` 只跑构建与 `check-bundle`，不跑夹具（依赖 CI 的五步兜住）；⑤ `package.json` 若加入 `engines.node` 等非 `dsh` 子键，`no dsh version gate can refuse a start` 不会变红（当前清单没有 `engines` 键，属「没有断言的清单形状面」）。
+- **G15 尚未覆盖的加固面（第十轮实现评审记录，第十七、十八轮复核后收窄）**：下面按五项编号（编号⑤是 `spec.md` SC-007 与两份契约引用的「G15 第五条」，别删）；其中③已查明有断言、撤回，仍算缺口的只有①、④、⑤，都不影响已发布行为——① `src/client/figure.js` 的 `outputLimit`（2 MiB 绘制输出上限）**只有静态锚点**（`both size limits reach the engine, each proven on its own` 按数值比较 `limit`/`maxEdges`/`outputLimit` 三项，并把 `FIGURE_LIMITS` 是否铺进 `pele.mount` 也钉住），**没有**任何夹具或真机观察让它真的触发一次（字符上限 `limit: 24 * 1024` 与边数上限 `maxEdges: 400` 自 0.1.19 起各有单独夹具，见 E-HARN 的 `a source over the size limit *` 与 `a picture with too many edges *` 六条，以及 E-PROBE 的 PS2、PS3）；② `index.js` 的 `apply` 幂等**已由断言守护**（0.1.29）：`the host half adds one section per context, not one per call` 在同一 `ctx` 上连调三次只允许一段、换一个 `ctx` 允许再一段；探针 PS23 把 `claimed.has/add` 换成 `void claimed` 后该条变红（`three applies on one context added 3 sections`，`check-bundle: 1 failed, 39 passed`，exit 1）；③ `src/client/entry.js` 里 `slots.inject(...)` 回调返回的 disposer 被丢掉这半句**不成立**：`the fence layer is gone once the host disposes` 正守着它（把 `entry.js` 的回调改成不返回 disposer，该断言就会变红），不再算缺口；④ `package.json` 的 `prepack` 只跑构建与 `check-bundle`，不跑夹具（依赖 CI 的五步兜住）；⑤ `package.json` 若加入 `engines.node` 等非 `dsh` 子键，`no dsh version gate can refuse a start` 不会变红（当前清单没有 `engines` 键，属「没有断言的清单形状面」）。
 - **G16 vendor 文本与换节点的无头局限（记录）**：`client.js` 里 vendor 许可注释含 `https://github.com/obsidianmd/pele`，属静态文本、无网络行为；「引擎换掉 `<svg>` 后重新命名」在无头环境里只能靠夹具重放（真实拖窄窗口的端到端见 G14）。绘制输出上限（`outputLimit` 2 MiB）仍按 G15 记；字符上限与边数上限在 0.1.19 起已有夹具，这里同样不重复。
 - **G17 视图层的几处行为没有任何断言（第十四轮实现评审 P3 汇总）**：以下保证在代码里存在：①–⑥、⑧ 删掉/改坏不会让任何断言变红；⑦ 有静态字符串守卫（`check-bundle.mjs` 的 `the watcher does not watch the drawing subtree`，把它观察的 `childList` 改成连子级一起观察会变红，但强度受 G19 限制），只是没有夹具或真机观察「嵌套节点重排」——①「画不出来的原因分三种」只有"有一句话"被保护（把 `translate('syntaxError')` 换成 `translate('renderFailed')`、或把 `engineUnavailable` 换成 `renderFailed`，两套检查仍全绿）；②缩放按钮按引擎顺序贴标签（`ZOOM_BUTTONS = ['zoomIn','zoomOut','resetZoom']`），顺序写错不会变红，读屏会把"放大"念成"缩小"；③失败后同一实例的自愈（`FigureBoundary.componentDidUpdate` 里 `code` 变了才复位）无断言；④失败时隐藏那个空画框（`style: failed ? { display: 'none' } : undefined`）无断言；⑤回执的存在与播报有夹具覆盖，但"1.5 秒"这个时长无断言（把 `COPIED_FEEDBACK_MS` 改成 10 会让二十条夹具变红，却没有一条断言它恰好是 1.5 秒）；⑥`children: []`（React 合法、但画不出东西）会退回原文这条分支无断言；⑦`MutationObserver` 只观察直接子节点（无 `subtree`），引擎若在既有 `<svg>` 内部重排则名字不补（有上面说的静态字符串守卫，没有行为观察）；⑧`FigureBoundary` 在 `props` 与 `code` 都读不出来时返回 `null`，这条兜底无断言；⑨`view.js` 在挂载后给缩放按钮补 `title`（`buttons[index].setAttribute('title', text)`），删掉这一行 228 项仍全绿——pele 自己也设标题（PS20），所以它只是引擎不设标题时的兜底；旁边新增的 `the zoom button titles say the same as their names` 保护的是"标题与名字一致"这个结果，不是那一行代码。
   这些都不影响"能力存在"，但它们是这一层最薄的地方；不再往下修的原因是每加一条断言都要连带重算证据与发版，而这一轮的目标是把**说法**收紧到与证据一致。
