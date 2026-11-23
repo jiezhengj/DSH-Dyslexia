@@ -30,7 +30,7 @@
 - 所有宿主服务调用、注册调用、渲染调用都就地降级，绝不把异常抛回宿主；
 - 宿主派发的数据不符合预期时，一律交回宿主原本的代码块。
 
-**Scale/Scope**: 单张图通常 5–20 个节点；上限由 pele 的 `limit`/`outputLimit`/`maxEdges` 约束，超限即回退为文本（FR-004）。代码量实况（2026-11-23，0.1.18）：宿主 `index.js` 57 行；`src/client` 共 1000 行（view 484 / i18n 209 / styles 122 / figure 91 / entry 94）；`scripts/build-client.mjs` 147 行；`verify/check-bundle.mjs` 663 行；`verify/harness/index.html` 1163 行 + 驱动 `verify/run-harness.mjs` 131 行。
+**Scale/Scope**: 单张图通常 5–20 个节点；上限由 pele 的 `limit`/`outputLimit`/`maxEdges` 约束，超限即回退为文本（FR-004）。代码量实况（2026-11-23，0.1.19）：宿主 `index.js` 57 行；`src/client` 共 1001 行（view 484 / i18n 209 / styles 123 / figure 91 / entry 94）；`scripts/build-client.mjs` 147 行；`verify/check-bundle.mjs` 721 行；`verify/harness/index.html` 1177 行 + 驱动 `verify/run-harness.mjs` 131 行。
 
 ## Constitution Check
 
