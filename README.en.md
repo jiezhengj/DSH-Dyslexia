@@ -32,7 +32,7 @@ The code block is never consumed. It stays in the message as text: it can be cop
 - It collects nothing and sends nothing anywhere.
 - It reads only the `mermaid` code block text that is already displayed in your page, and it writes only the diagram into that page.
 - The **Copy source** button uses your browser clipboard; nothing leaves the page.
-- Nothing is added to your session history: the diagram is a rendering, not a stored object.
+- Nothing is added to your session history: the diagram is a rendering, not a stored object (the real-machine side is not checked: see G12).
 
 ## How to verify
 

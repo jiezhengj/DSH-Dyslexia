@@ -32,7 +32,7 @@ Le bloc de code n’est jamais consommé. Il reste le texte du message : on peut
 - Il ne collecte rien et n’envoie rien nulle part.
 - Il lit uniquement le texte du bloc de code `mermaid` déjà affiché dans votre page, et il n’écrit que le schéma dans cette page.
 - Le bouton **Copier la source** utilise le presse-papiers de votre navigateur ; rien ne quitte la page.
-- Rien n’est ajouté à l’historique de votre session : le schéma est un rendu, pas un objet stocké.
+- Rien n’est ajouté à l’historique de votre session : le schéma est un rendu, pas un objet stocké (le côté machine réelle n’est pas vérifié : voir G12).
 
 ## Comment vérifier
 

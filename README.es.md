@@ -32,7 +32,7 @@ El bloque de código no se consume: sigue en el mensaje como texto, de modo que 
 - No recoge nada ni envía nada a ningún sitio.
 - Solo lee el texto del bloque de código `mermaid` que ya se muestra en tu página, y solo escribe el diagrama dentro de esa página.
 - El botón **Copiar el código** usa el portapapeles de tu navegador; nada sale de la página.
-- No se añade nada al historial de la sesión: el diagrama es una representación visual, no un objeto guardado.
+- No se añade nada al historial de la sesión: el diagrama es una representación visual, no un objeto guardado (el lado de máquina real no está verificado: ver G12).
 
 ## Cómo verificarlo
 

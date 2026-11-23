@@ -30,7 +30,7 @@
 - 所有宿主服务调用、注册调用、渲染调用都就地降级，绝不把异常抛回宿主；
 - 宿主派发的数据不符合预期时，一律交回宿主原本的代码块。
 
-**Scale/Scope**: 单张图通常 5–20 个节点；上限由 pele 的 `limit`/`outputLimit`/`maxEdges` 约束，超限即回退为文本（FR-004）。代码量实况（2026-11-23 实测）：宿主 `index.js` 57 行；`src/client` 共 1001 行（view 484 / i18n 209 / styles 123 / figure 91 / entry 94）；`scripts/build-client.mjs` 147 行。校验侧分两套：`v0.1.24` 发布时 `verify/check-bundle.mjs` 776 行、`verify/harness/index.html` 1177 行；`v0.1.25` 是 804 行与 1216 行、`v0.1.26` 是 815 行与 1237 行（第二十二轮的核验提交只改这两套与 `specs/`、不发版；第二十三轮的文档修复改了随包的 `README.md` 与 `README.zh.md`，因此随 `0.1.25` 发布）；驱动 `verify/run-harness.mjs` 131 行各版相同。
+**Scale/Scope**: 单张图通常 5–20 个节点；上限由 pele 的 `limit`/`outputLimit`/`maxEdges` 约束，超限即回退为文本（FR-004）。代码量实况（2026-11-23 实测）：宿主 `index.js` 57 行；`src/client` 共 1001 行（view 484 / i18n 209 / styles 123 / figure 91 / entry 94）；`scripts/build-client.mjs` 147 行。校验侧分两套：`v0.1.24` 发布时 `verify/check-bundle.mjs` 776 行、`verify/harness/index.html` 1177 行；`v0.1.25` 是 804 行与 1216 行、`v0.1.26` 是 815 行与 1237 行（0.1.27 未改动这两套）（第二十二轮的核验提交只改这两套与 `specs/`、不发版；第二十三轮的文档修复改了随包的 `README.md` 与 `README.zh.md`，因此随 `0.1.25` 发布）；驱动 `verify/run-harness.mjs` 131 行各版相同。
 
 ## Constitution Check
 

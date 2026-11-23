@@ -32,7 +32,7 @@ O bloco de código nunca é consumido. Continua sendo o texto da mensagem: pode 
 - Ele não coleta nada e não envia nada para lugar nenhum.
 - Ele lê apenas o texto do bloco de código `mermaid` que já está exibido na sua página, e escreve apenas o diagrama nessa página.
 - O botão **Copiar o código** usa a área de transferência do seu navegador; nada sai da página.
-- Nada é adicionado ao histórico da sua sessão: o diagrama é uma renderização, não um objeto armazenado.
+- Nada é adicionado ao histórico da sua sessão: o diagrama é uma renderização, não um objeto armazenado (o lado da máquina real não está verificado: ver G12).
 
 ## Como verificar
 
