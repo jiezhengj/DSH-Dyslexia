@@ -109,7 +109,7 @@ verify/
 ├── check-bundle.mjs     # 纯 Node 内置模块的静态与行为断言（39 项）
 ├── run-harness.mjs      # 用真实 Chromium 打开夹具并读判定
 └── harness/
-    ├── index.html       # 提交进仓库的浏览器夹具（222 项）
+    ├── index.html       # 提交进仓库的浏览器夹具（223 项）
     └── vendor/          # React 18.3.1 UMD 副本
 tests/                   # 不放测试框架；verify/ 即验收脚本
 ```
