@@ -425,3 +425,16 @@ run-harness: @jiezhengj/dsh-dyslexia@0.2.1 | client.js 780550 bytes | sources sh
 - registry tarball answered HEAD 200 on try 20
 - installed copy `client.js` is 780967 bytes, SHA-256 `8C7E4EE76D95304D738CA44F2E7605B079CD2D64AC54332A52D7B20C70E9E211`, byte-identical to the repository copy; installed `package.json` says `0.2.3`; `locale/` 8 files, `docs/` 9
 - this is a build and verification change, not a logic change: the six sources are unchanged (only the version string and the fingerprint differ); `client.js` is now compared byte for byte with a rebuild of them, while `scripts/build-client.mjs`, the fixtures and the docs carry the work (the no-writer lane is asserted directly, the throwing thenable is covered, all eight settings labels are asserted, and the stale AGENTS.md snippet is gone). A window that was already open keeps the `0.2.2` chunk until DSH restarts.
+
+## E-PUB · 0.2.4
+
+- tag `v0.2.4`, commit `b2ce0a9`, Actions run `45230719544` success
+- CI printed `check-bundle: @jiezhengj/dsh-dyslexia@0.2.4 | client.js 781963 bytes | sources sha256:9f13d80f0230257569dd0e525c6eb048 | all 45 checks passed` and `run-harness: @jiezhengj/dsh-dyslexia@0.2.4 | client.js 781963 bytes | sources sha256:9f13d80f0230257569dd0e525c6eb048 | all 271 checks passed (/usr/bin/google-chrome)`
+- `npm notice shasum: 2a731d8c13067d88859eeec4f918773b1fd9578c`, `npm notice total files: 33`, unpacked 874520 bytes
+- registry tarball answered HEAD 200 on try 1
+
+## E-INS · 0.2.4
+
+- `remove_bundle @jiezhengj/dsh-dyslexia` removed `0.2.3`; `install_bundle @jiezhengj/dsh-dyslexia@0.2.4` returned `application: applied`, `version: 0.2.4`
+- installed copy `client.js` is 781963 bytes, SHA-256 `D74D8083E8E417F578A3E26B10C986CEBDEDBA84C7A7F03114A250D0AB3B6DFB`, byte-identical to the repository copy; installed `package.json` says `0.2.4`; `locale/` 8, `docs/` 9
+- this is a code change (the resolved-write result is now read; the row waits for `configForms`): a window that is already open keeps the `0.2.3` chunk until the app restarts
