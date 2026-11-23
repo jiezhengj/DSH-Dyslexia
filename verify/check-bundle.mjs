@@ -500,6 +500,24 @@ check('host key echo falls back to bundled strings', () => {
   return 'key echo, blanks, placeholders rejected; the host is asked under the plugin namespace'
 })
 
+check('a refused settings write is not reported as saved', () => {
+  const settings = readCode('src/client/settings.js')
+  // `set(field, value)` answers `Promise<boolean>`: true for Host acceptance,
+  // false for a refusal or a skipped write. A handler that only listens for
+  // rejection leaves the switch on a value the host refused and prints "Saved"
+  // over it, which is what the row did before 2026-11-24.
+  assert(
+    settings.includes('result === true') && settings.includes('result === undefined'),
+    'the fulfilment handler does not read the resolved boolean',
+  )
+  assert(
+    !/then\(\s*\(\)\s*=>\s*setState\('saved'\)/.test(settings),
+    'the fulfilment handler ignores what the host answered',
+  )
+  assert(/pending\.then\(/.test(settings), 'the write answer is never awaited')
+  return 'true saves, false reverts, a host that resolves nothing saves; behaviour is asserted by the fixture'
+})
+
 check('every language carries the same complete sentences', () => {
   const source = readCode('src/client/i18n.js')
   const keys = [
@@ -990,9 +1008,12 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
     'a rejected write leaves the switch where the host put it',
     'a host without configForms gets the picture and no settings row',
     'a host whose face has no setter hands the row no writer at all',
+    'a refused write that resolves false puts the switch back and says so',
+    'a host that gains configForms after apply still gets the settings row',
     "[${lang}] the settings row label is that language's own sentence",
+    "[${lang}] the settings row hint is that language's own sentence",
   ]
-  const NEEDED_COUNT = 37
+  const NEEDED_COUNT = 40
   if (needed.length !== NEEDED_COUNT) {
     throw new Error(`the guard list has ${needed.length} names, expected ${NEEDED_COUNT}`)
   }
@@ -1049,7 +1070,7 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
 
 /* ---------------------------------------------------------------- report */
 
-const EXPECTED_CHECKS = 44
+const EXPECTED_CHECKS = 45
 if (notices.length + failures.length !== EXPECTED_CHECKS) {
   failures.push(
     `[FAIL] the suite has ${notices.length + failures.length} checks, expected ${EXPECTED_CHECKS}: a check was added or removed without updating this number`,

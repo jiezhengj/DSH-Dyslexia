@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-23
 
-**Status**: Implemented in `0.2.0` (2026-11-23); `0.2.1` was an intermediate correction, and the published version is `0.2.2` (run `45211420278`, shasum `1f17ac1be4c1ea5c5e97c814cc699a6c910ee03d`, logIndex `4054074805`). `0.2.2` is a code change, not a documentation pass: the settings writer lane hands the row no `setValue` when the host face has no `set` (a click reverts the switch and shows the failure sentence), the liveness check was rewritten to read one registration three times (static check #22), and one browser fixture was added for the no-setter host; that run passed 44 static and 252 browser checks. This review pass adds eight browser assertions to the working tree (seven non-zh settings labels plus a direct check that a setter-less face hands the row no writer), so the current tree reports 44 static and 260 browser checks. Evidence: `evidence.md` in this folder — E-BLD/E-CHK/E-HARN are the `0.2.1` tree (44 static, 251 browser; E-CHK is a filtered excerpt of the 44 `ok` lines), E-PUB/E-INS exist for `0.2.0`, `0.2.1` and `0.2.2`, and E-PROBE records F3–F8 on `0.2.1` with F1 and F9 re-run on the current tree. Eight falsifiability probes F1, F3–F9. Not proven: SC-001 (five sample requests), the E1–E14 end-to-end rows, live-window switch operation and live renamed labels, any 200%/360px layout assertion for the settings row, the host write path (`settings.update`, G2), pixel comparison against host rows, the schemastery import-failure path, a verbatim diff of the switch-off text against feature 001 — see gaps G1–G9.
+**Status**: Implemented in `0.2.0` (2026-11-23); `0.2.1` was an intermediate correction and `0.2.2` an intermediate code change, and the published version is `0.2.3` (run `45219837527`, shasum `60b0136612e52b64e1e3920117ed3f41b9185e05`, 33 files), installed into the live `desktop` profile; four versions are published: `0.2.0`, `0.2.1`, `0.2.2` and `0.2.3`. `0.2.2` is a code change, not a documentation pass: the settings writer lane hands the row no `setValue` when the host face has no `set` (a click reverts the switch and shows the failure sentence), the liveness check was rewritten to read one registration three times (static check #22), and one browser fixture was added for the no-setter host; that run passed 44 static and 252 browser checks. The eight browser assertions this review added (seven non-zh settings labels plus a direct check that a setter-less face hands the row no writer) are released in `0.2.3`, whose published run passed 44 static and 260 browser checks; `0.2.3` is a build and verification change rather than a logic change: the six sources are unchanged (only the version string and the resulting fingerprint differ), while `scripts/build-client.mjs`, the fixtures and the docs carry the work. Evidence: `evidence.md` in this folder — E-BLD/E-CHK/E-HARN are the `0.2.1` tree (44 static, 251 browser; E-CHK is the complete stdout of that run — its 44 `ok` lines plus the summary — while the 52 deliberately triggered `warn`/stack lines went to stderr), E-PUB/E-INS exist for all four published versions, and E-PROBE records F3–F8 on `0.2.1` with F1 and F9 re-run on the `0.2.3` tree. Eight falsifiability probes F1, F3–F9. Not proven: SC-001 (five sample requests), the E1–E14 end-to-end rows, live-window switch operation and live renamed labels, any 200%/360px layout assertion for the settings row, the host write path (`settings.update`, G2), pixel comparison against host rows, the schemastery import-failure path, a verbatim diff of the switch-off text against feature 001 — see gaps G1–G9. **Review round 4 (0.2.4)**: the row's write contract was wrong, not just its docs. DSH resolves `set(...)` with `true` for acceptance and `false` for refusal or a skipped write (`dsh-client-ui-settings/src/client/config-form.ts`); the row reported both as saved. `0.2.4` reads the resolved boolean, reverts the switch and shows the failure sentence on `false`, waits for `configForms` through `ctx.inject` instead of reading it eagerly, and pins both with `a refused settings write is not reported as saved` plus `a refused write that resolves false puts the switch back and says so` and eight per-language hint assertions (45 static / 271 browser).
 
 **Input**: User description: "插件可以有个简单的设置面板，里面有个开关：仅仅是在会话里更好地渲染 mermaid，还是同时更积极地用图形化的方式表达和输出。名称改为 DSH 我有阅读障碍（其他语种按语义翻译）。如果 Agent 并不积极地用图形化的方式输出，渲染再完美也没有意义。"
 
@@ -18,7 +18,7 @@ feature 001 交付的是**渲染能力**：会话里出现 `mermaid` 代码块�
 
 ### User Story 1 - 在设置里选择"只渲染"还是"渲染 + 视觉优先" (Priority: P1)
 
-读者打开设置，在常规区看到一行开关，标题与一句说明；关闭时插件只做渲染（与 feature 001 行为一致），打开时模型还会收到"图更省力时优先用图"的偏好，从下一条回答起生效，重启后保持。
+读者打开设置，在通用设置区看到一行开关，标题与一句说明；关闭时插件只做渲染（与 feature 001 行为一致），打开时模型还会收到"图更省力时优先用图"的偏好，从下一条回答起生效，重启后保持。
 
 **Why this priority**: 这是本 feature 的全部价值所在——没有它，插件仍然是"读者先想到画图才用得上"的工具；同时它必须可关，让不需要的人保持旧行为。
 
@@ -26,7 +26,7 @@ feature 001 交付的是**渲染能力**：会话里出现 `mermaid` 代码块�
 
 **Acceptance Scenarios**:
 
-1. **Given** 插件刚安装或刚从旧版本升级，**When** 读者打开设置，**Then** 常规区出现一行开关，处于"打开"状态，有标题和一句说明，都用界面语言书写。
+1. **Given** 插件刚安装或刚从旧版本升级，**When** 读者打开设置，**Then** 通用设置区出现一行开关，处于"打开"状态，有标题和一句说明，都用界面语言书写。
 2. **Given** 开关处于打开，**When** 读者提出一个用图比用段落更省力的请求，**Then** 模型收到的指令里含"何时该画、何时不必画"的偏好说明。
 3. **Given** 开关处于关闭，**When** 读者提出同样的请求，**Then** 模型收到的指令里只有渲染能力说明，没有偏好；渲染行为与 feature 001 完全一致。
 4. **Given** 读者切换开关，**When** 下一条消息发出，**Then** 新状态已生效，不需要重启应用或重装插件。
@@ -95,7 +95,7 @@ feature 001 交付的是**渲染能力**：会话里出现 `mermaid` 代码块�
 
 ### Functional Requirements
 
-- **FR-001**: 设置面板 MUST 在常规区提供一行开关，包含标题与一句说明；两档分别是"只渲染"和"渲染 + 视觉优先"。
+- **FR-001**: 设置面板 MUST 在通用设置区提供一行开关，包含标题与一句说明；两档分别是"只渲染"和"渲染 + 视觉优先"。
 - **FR-002**: 开关 MUST 默认处于"渲染 + 视觉优先"，对全新安装与从旧版本升级同样成立。
 - **FR-003**: 开关打开时，模型可见的指令 MUST 含偏好段落：说明何时用图更省力（流程、结构、对比、多步骤、状态迁移等），并明确简单问题仍用文字。
 - **FR-004**: 开关关闭时，模型可见的指令 MUST NOT 含该偏好段落，只保留渲染能力说明；渲染行为与 feature 001 一致。

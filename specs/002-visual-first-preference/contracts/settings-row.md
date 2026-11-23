@@ -25,8 +25,8 @@ ctx.slots.inject('settings.general.item', () => ctx.slots.register({
 | --- | --- | --- |
 | `face.getSnapshot()` | `{ value: { visualFirst?: boolean } }` | 宿主已生效值；缺字段按 `true` |
 | `face.subscribe(listener)` | `() => void` | 外部改动回调；`entry.js` 用 `ctx.effect` 注册清理 |
-| `face.set('visualFirst', next)` | `Promise<void>` | 写入；失败时 reject |
-| `row.inject` | `{ hooks: { visualFirst: store }, setValue?: (next) => Promise<void> }` | 传给组件的 inject 面；`setValue` 只在 `typeof face.set === 'function'` 时挂上，否则整个键缺席 |
+| `face.set('visualFirst', next)` | `Promise<boolean>` | 写入；**resolve `true` 表示宿主接受**，resolve `false` 表示拒绝或跳过（DSH 的 `config-form` 在 `!response.ok` 时 `return false`），reject 表示调用本身失败 |
+| `row.inject` | `{ hooks: { visualFirst: store }, setValue?: (next) => Promise<boolean> }` | 传给组件的 inject 面；`setValue` 只在 `typeof face.set === 'function'` 时挂上，否则整个键缺席 |
 | `row.store` | `{ get, set, subscribe }` | 组件用 `useSyncExternalStore` 读取；它也就是 `inject.hooks.visualFirst` |
 
 ## DOM 与可访问性
@@ -59,6 +59,7 @@ ctx.slots.inject('settings.general.item', () => ctx.slots.register({
 | --- | --- |
 | `configForms` 缺失 | 不注册行，渲染层照常 |
 | 快照缺字段 | 行按 `true` 显示，不禁用 |
+| 写入 resolve `false` | 开关回退到实际值 + `settingFailed`（宿主没收下的值不能停留在界面上） |
 | 写入 reject | 开关回退到实际值 + `settingFailed` |
 | 宿主 face 没有 `set` | `inject` 不带 `setValue`；点击回退到点击前的值 + `settingFailed` |
 | 宿主 `t` 回显键名 / 抛错 / 空白 | 回落包内 8 语言字典（复用 001 的 `hostKey` 命名空间发问） |

@@ -11,7 +11,7 @@ A reply often explains a structure in words a diagram would show in a glance. Th
 回复里经常用一段文字去讲一个结构，而一张图一眼就能看清。这个插件让聊天就地画出 `mermaid` 代码块：图留在会话里，代码块仍是消息的文本——可复制，插件卸掉之后也仍可读（检索未取证，见 feature 001 的 E-GAPS 里的 G7）。
 
 The plugin now asks the assistant for a picture when a picture is easier to follow than a paragraph, and keeps the text for what the picture cannot show. Settings → General has the switch; turn it off and the plugin renders only, as before.
-当一张图比一段话更好懂时，插件现在会请助手画图，文字只留图讲不清的部分。设置 → 通用里有这个开关；关掉后插件就只负责渲染，和以前一样。
+当一张图比一段话更好懂时，插件现在会请助手画图，文字只留图讲不清的部分。设置 → 通用设置里有这个开关；关掉后插件就只负责渲染，和以前一样。
 
 ## Data and privacy / 数据与隐私
 

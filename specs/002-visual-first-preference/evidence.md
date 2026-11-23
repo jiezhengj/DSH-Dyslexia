@@ -1,6 +1,6 @@
 # Evidence — feature 002: the preference switch and the new name
 
-This file records what was actually observed while building feature 002. Each block is one run on one tree; no block mixes trees. E-PUB/E-INS exist for all three published versions — `0.2.0`, `0.2.1` and `0.2.2` — with the `0.2.2` pair near the top and the older pairs under "E-PUB publish" below. E-BLD, E-CHK and E-HARN quote the `0.2.1` tree only (44 static, 251 browser; E-CHK is a filtered excerpt of the 44 `ok` lines). The current tree is `0.2.2` plus this review pass's fixture additions: 44 static and 260 browser checks, `client.js` 780967 bytes, sources sha256 `d5830e94c5a81da942a4b0414eead34e`; the published `0.2.2` run passed 44/252 before those additions. E-PROBE records F3–F8 on `0.2.1` and F1/F9 on the current tree.
+This file records what was actually observed while building feature 002. Each block is one run on one tree; no block mixes trees. E-PUB/E-INS exist for all four published versions — `0.2.0`, `0.2.1`, `0.2.2` and `0.2.3`: `0.2.2` at line 320, `0.2.0` under "E-PUB publish" at line 368, `0.2.1` at line 397, `0.2.3` at line 416. E-BLD, E-CHK and E-HARN quote the `0.2.1` tree only (44 static, 251 browser; E-CHK is the complete stdout of that run — 44 `ok` lines plus the summary — while the 52 deliberately triggered `warn`/stack lines went to stderr). The current tree is the released and installed `0.2.3`: 44 static and 260 browser checks, `client.js` 780967 bytes, sources sha256 `72f28eeb68d05c266cb96c689b0dbce6`. E-PROBE records F3–F8 on `0.2.1` and F1/F9 on the `0.2.3` tree.
 
 ## E-BLD build
 
@@ -59,7 +59,7 @@ ok   the fixtures assert what the fixes promise, and can fail — 35 assertions 
 check-bundle: @jiezhengj/dsh-dyslexia@0.2.1 | client.js 780550 bytes | sources sha256:6b5d4e192279b1294304cbed6303e546 | all 44 checks passed
 ```
 
-## E-HARN browser checks (251)
+## E-HARN browser checks (251) — `node verify/run-harness.mjs --list` (a plain run prints only the summary line)
 
 ```
 [ok] loading client.js registers one factory
@@ -247,7 +247,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.2.1 | client.js 780550 bytes | sources s
 [ok] the fence layer is gone once the host disposes — 0
 [ok] a second apply does not add a second fence layer — 1
 [ok] a host without effects keeps one stylesheet, not one per apply — 1
-[ok] no internal key reaches the eye — leaked:
+[ok] no internal key reaches the eye — leaked: 
 [ok] a source over the size limit says why — 这张图无法绘制，已改为显示源码。long
 [ok] a source over the size limit keeps the host block
 [ok] a source over the size limit is not drawn
@@ -333,7 +333,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.2.1 | client.js 780550 bytes | sources sh
 
 ## E-PROBE — the new checks can fail
 
-Each probe below breaks one protected behaviour in a working copy of the sources, rebuilds it, runs the suite that should see it, records the red line, and restores the copy. F1 and F9 were run on the current `0.2.2` tree (44 static, 260 browser); F3–F8 are the earlier runs on the `0.2.1` tree (44 static, 251 browser) and were not re-run. The untouched copy reported `all 44 checks passed` and `all 260 checks passed` before the breaks.
+Each probe below breaks one protected behaviour in a working copy of the sources, rebuilds it, runs the suite that should see it, records the red line, and restores the copy. F1 and F9 were run on the current `0.2.3` tree (44 static, 260 browser); `0.2.2` shipped 44 static and 252 browser checks, and F9's no-writer assertion did not exist there. F3–F8 are the earlier runs on the `0.2.1` tree (44 static, 251 browser) and were not re-run. The untouched copy reported `all 44 checks passed` and `all 260 checks passed` before the breaks.
 
 | probe | change | result |
 |---|---|---|
@@ -424,4 +424,4 @@ run-harness: @jiezhengj/dsh-dyslexia@0.2.1 | client.js 780550 bytes | sources sh
 - `remove_bundle @jiezhengj/dsh-dyslexia` removed `0.2.2`; `install_bundle @jiezhengj/dsh-dyslexia@0.2.3` returned `application: applied`, `version: 0.2.3`
 - registry tarball answered HEAD 200 on try 20
 - installed copy `client.js` is 780967 bytes, SHA-256 `8C7E4EE76D95304D738CA44F2E7605B079CD2D64AC54332A52D7B20C70E9E211`, byte-identical to the repository copy; installed `package.json` says `0.2.3`; `locale/` 8 files, `docs/` 9
-- this is a code change (the chunk is now compared byte for byte with a rebuild of the six sources, the no-writer lane is asserted directly, the throwing thenable is covered, all eight settings labels are asserted, and the stale AGENTS.md snippet is gone), so a window that was already open keeps the `0.2.2` chunk until DSH restarts
+- this is a build and verification change, not a logic change: the six sources are unchanged (only the version string and the fingerprint differ); `client.js` is now compared byte for byte with a rebuild of them, while `scripts/build-client.mjs`, the fixtures and the docs carry the work (the no-writer lane is asserted directly, the throwing thenable is covered, all eight settings labels are asserted, and the stale AGENTS.md snippet is gone). A window that was already open keeps the `0.2.2` chunk until DSH restarts.

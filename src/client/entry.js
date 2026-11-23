@@ -103,45 +103,54 @@ function apply(ctx) {
   }
   try {
     // The preference lives in Settings -> General, in the same row the host
-    // uses for Language and Appearance. The row is registered only when the
-    // host actually offers the two services it needs; a host without them keeps
-    // the default the plugin ships and loses only the switch.
-    const slots = ctx.slots
-    const configForms = ctx.configForms
-    if (
-      slots &&
-      typeof slots.inject === 'function' &&
-      typeof slots.register === 'function' &&
-      configForms &&
-      typeof configForms.get === 'function'
-    ) {
-      const face = configForms.get(SETTINGS_NAMESPACE)
-      if (face) {
-        const row = createVisualFirstRow(face)
-        if (typeof ctx.effect === 'function' && typeof face.subscribe === 'function') {
-          ctx.effect(
-            () =>
-              face.subscribe(() => {
-                row.store.set(readPreference(face))
-              }),
-            'dsh-dyslexia: settings value',
-          )
-        }
-        slots.inject(SETTINGS_SLOT, () =>
-          slots.register(
-            {
-              name: SETTINGS_SLOT,
-              id: SETTINGS_ROW_ID,
-              order: SETTINGS_ROW_ORDER,
-              locale: LOCALE_NAMESPACE,
-              inject: () => row.inject,
-            },
-            row.component,
-          ),
-        )
-      }
+    // uses for Language and Appearance. Client entries apply in parallel, so
+    // `configForms` may arrive after this call: waiting for it on a child
+    // context registers the row whenever that service appears and keeps the
+    // fence layer independent of the settings surface. A host old enough to
+    // have no `inject` is asked directly, as before.
+    if (typeof ctx.inject === 'function') {
+      ctx.inject(['configForms'], (child) => wireSettingsRow(child))
+    } else {
+      wireSettingsRow(ctx)
     }
   } catch (error) {
     report('settings row', error)
   }
+}
+
+/**
+ * Registers the settings row on the context that carries `configForms`, through
+ * that context's own `slots` and `effect` so the row is torn down with it. A
+ * host with no `slots` or no face loses only the switch; a host whose face
+ * cannot write still gets a row, and the row itself treats the click as failed.
+ */
+function wireSettingsRow(ctx) {
+  const slots = ctx.slots
+  if (!slots || typeof slots.inject !== 'function' || typeof slots.register !== 'function') return
+  const configForms = ctx.configForms
+  if (!configForms || typeof configForms.get !== 'function') return
+  const face = configForms.get(SETTINGS_NAMESPACE)
+  if (!face) return
+  const row = createVisualFirstRow(face)
+  if (typeof ctx.effect === 'function' && typeof face.subscribe === 'function') {
+    ctx.effect(
+      () =>
+        face.subscribe(() => {
+          row.store.set(readPreference(face))
+        }),
+      'dsh-dyslexia: settings value',
+    )
+  }
+  slots.inject(SETTINGS_SLOT, () =>
+    slots.register(
+      {
+        name: SETTINGS_SLOT,
+        id: SETTINGS_ROW_ID,
+        order: SETTINGS_ROW_ORDER,
+        locale: LOCALE_NAMESPACE,
+        inject: () => row.inject,
+      },
+      row.component,
+    ),
+  )
 }

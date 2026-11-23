@@ -81,12 +81,22 @@ function VisualFirstRow(props) {
       return
     }
     if (pending && typeof pending.then === 'function') {
+      // `set(field, value)` answers `Promise<boolean>`: true when the host took
+      // the value, false when it refused or skipped the write. A host old
+      // enough to resolve nothing still counts as acceptance; a refusal is a
+      // failed write like any rejection, so the switch goes back and the row
+      // says the value did not change.
+      const settle = (accepted) => {
+        if (accepted) {
+          setState('saved')
+          return
+        }
+        setState('failed')
+        store.set(before)
+      }
       pending.then(
-        () => setState('saved'),
-        () => {
-          setState('failed')
-          store.set(before)
-        },
+        (result) => settle(result === true || result === undefined),
+        () => settle(false),
       )
     }
   }

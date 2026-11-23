@@ -112,6 +112,7 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           const defs = []
           const disposers = []
           const calls = { effects: 0, layersDropped: 0, stringsDropped: 0 }
+          const pendingInjections = []
           const slots = {
             register(def, component) {
               if (options && options.rejectLocale && def && def.locale) throw new Error('host rejects locale')
@@ -133,6 +134,16 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           }
           const ctx = {
             slots,
+            inject(names, callback) {
+              const list = Array.isArray(names) ? names : [names]
+              const ready = list.every((name) => ctx[name] !== undefined && ctx[name] !== null)
+              if (!ready) {
+                pendingInjections.push({ names: list, callback })
+                return () => undefined
+              }
+              callback(Object.create(ctx))
+              return () => undefined
+            },
             effect(fn) {
               calls.effects += 1
               const disposer = fn()
@@ -156,6 +167,16 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             ctx,
             defs,
             calls,
+            provide(name, value) {
+              ctx[name] = value
+              for (let index = pendingInjections.length - 1; index >= 0; index -= 1) {
+                const entry = pendingInjections[index]
+                const ready = entry.names.every((dep) => ctx[dep] !== undefined && ctx[dep] !== null)
+                if (!ready) continue
+                pendingInjections.splice(index, 1)
+                entry.callback(Object.create(ctx))
+              }
+            },
             dispose() {
               while (disposers.length > 0) disposers.pop()()
             },
@@ -1299,6 +1320,7 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           const settingsSets = []
           const settingsListeners = new Set()
           let settingsFailNext = false
+          let settingsRefuseNext = false
           const settingsFace = {
             getSnapshot() {
               return { value: { visualFirst: settingsState.value.visualFirst } }
@@ -1312,6 +1334,10 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
               if (settingsFailNext) {
                 settingsFailNext = false
                 return Promise.reject(new Error('write rejected'))
+              }
+              if (settingsRefuseNext) {
+                settingsRefuseNext = false
+                return Promise.resolve(false)
               }
               settingsState.value[field] = value
               settingsListeners.forEach((listener) => listener())
@@ -1437,14 +1463,38 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             'a rejected write explains itself in the status sentence',
             failedStatus ? failedStatus.textContent : 'no status',
           )
+          // A refusal is a fulfilled `false`, not a rejection: the host answered
+          // and said no. The switch must go back to the value in effect and the
+          // row must say the change was not saved.
+          settingsState.value.visualFirst = true
+          settingsListeners.forEach((listener) => listener())
+          await tick(40)
+          const refusedToggle = rowView.stage.querySelector('button[role="switch"]')
+          settingsRefuseNext = true
+          refusedToggle.click()
+          await tick(60)
+          const refusedStatus = rowView.stage.querySelector('[role="status"]')
+          expect(
+            settingsSets.length === 3 &&
+              settingsSets[2][0] === 'visualFirst' &&
+              settingsSets[2][1] === false &&
+              refusedToggle.getAttribute('aria-checked') === 'true' &&
+              !!refusedStatus &&
+              refusedStatus.textContent === SETTINGS_FAILED,
+            'a refused write that resolves false puts the switch back and says so',
+            `sets=${JSON.stringify(settingsSets)} aria-checked=${refusedToggle.getAttribute('aria-checked')} status=${
+              refusedStatus ? refusedStatus.textContent : 'none'
+            }`,
+          )
           rowView.root.unmount()
           rowView.stage.remove()
           settingsHost.dispose()
 
-          // The label is a bundled sentence chosen by the interface language, not a
-          // host key. English would satisfy every language, so each one is compared
-          // with its own string from src/client/i18n.js.
+          // The label and the hint are bundled sentences chosen by the interface
+          // language, not host keys. English would satisfy every language, so each
+          // one is compared with its own string from src/client/i18n.js.
           const SETTING_LABELS = {
+            zh: '优先用图，而不是成段文字',
             en: 'Prefer pictures to prose',
             ja: '文章より図を優先',
             es: 'Prefiere las imágenes al texto',
@@ -1453,7 +1503,17 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             ru: 'Картинки вместо абзацев',
             pt: 'Preferir imagens ao texto',
           }
-          for (const lang of ['en', 'ja', 'es', 'fr', 'de', 'ru', 'pt']) {
+          const SETTING_HINTS = {
+            zh: '当一张图比一段话更好懂时，模型会画图，文字只留图讲不清的部分。',
+            en: 'When a picture carries the answer better than a paragraph, the model draws one and keeps the text to what the picture cannot show.',
+            ja: '図のほうが伝わりやすいときは図を描き、文章は図で表せない部分だけにします。',
+            es: 'Cuando una imagen explica mejor que un párrafo, el modelo dibuja y deja en texto solo lo que la imagen no puede mostrar.',
+            fr: 'Quand un schéma explique mieux qu\'un paragraphe, le modèle en dessine un et ne garde en texte que ce que le schéma ne peut pas montrer.',
+            de: 'Wenn ein Bild mehr erklärt als ein Absatz, zeichnet das Modell eines und lässt im Text nur, was das Bild nicht zeigen kann.',
+            ru: 'Когда рисунок объясняет лучше абзаца, модель рисует его, а в тексте оставляет только то, чего на рисунке не видно.',
+            pt: 'Quando uma imagem explica melhor que um parágrafo, o modelo desenha e deixa no texto só o que a imagem não mostra.',
+          }
+          for (const lang of LANGS) {
             document.documentElement.lang = lang
             const langHost = makeContext({})
             langHost.ctx.configForms = {
@@ -1466,10 +1526,16 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             const langView = langDef ? mount(langDef.component, langDef.def.inject()) : null
             if (langView) await tick(40)
             const langLabel = langView ? langView.stage.querySelector('.dsh-dyslexia-row-label') : null
+            const langHint = langView ? langView.stage.querySelector('.dsh-dyslexia-row-hint') : null
             expect(
               !!langLabel && langLabel.textContent === SETTING_LABELS[lang],
               `[${lang}] the settings row label is that language's own sentence`,
               langLabel ? langLabel.textContent : 'no label',
+            )
+            expect(
+              !!langHint && langHint.textContent === SETTING_HINTS[lang],
+              `[${lang}] the settings row hint is that language's own sentence`,
+              langHint ? langHint.textContent : 'no hint',
             )
             if (langView) {
               langView.root.unmount()
@@ -1598,6 +1664,26 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           plainView.root.unmount()
           plainView.stage.remove()
           plainHost.dispose()
+
+          // Client entries apply in parallel, so `configForms` can arrive after
+          // `apply` has run; reading it once would skip the row forever.
+          const lateHost = makeContext({})
+          module.apply(lateHost.ctx)
+          const lateBefore = lateHost.defs.filter((entry) => entry.def && entry.def.name === 'settings.general.item')
+          lateHost.provide('configForms', {
+            get(namespace) {
+              return namespace === 'dsh-dyslexia' ? settingsFace : null
+            },
+          })
+          const lateDefs = lateHost.defs.filter((entry) => entry.def && entry.def.name === 'settings.general.item')
+          expect(
+            lateBefore.length === 0 &&
+              lateDefs.length === 1 &&
+              lateDefs[0].def.id === '@jiezhengj/dsh-dyslexia/visual-first',
+            'a host that gains configForms after apply still gets the settings row',
+            `${lateBefore.length} before, ${lateDefs.length} after`,
+          )
+          lateHost.dispose()
 
           // A face that answers null is the same as no face at all.
           const blankHost = makeContext({})
