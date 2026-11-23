@@ -27,13 +27,21 @@ const MERMAID_RENDER_PROMPT = [
 
 const claimed = new WeakSet()
 
+// A failed attempt must not burn the context: the host may retry, and a retry
+// that silently registers nothing would leave the model uninformed.
+function release(target) {
+  if (target !== null && target !== undefined && (typeof target === 'object' || typeof target === 'function')) {
+    claimed.delete(target)
+  }
+}
+
 export function apply(ctx) {
   try {
     const prompt = ctx === null || ctx === undefined ? undefined : ctx.systemPrompt
     if (!prompt || typeof prompt.section !== 'function') return
     // A host that calls `apply` twice on one context would otherwise get two
     // identical sections, which shows up twice in the model's briefing.
-    if (typeof ctx === 'object' || typeof ctx === 'function') {
+    if (ctx !== null && ctx !== undefined && (typeof ctx === 'object' || typeof ctx === 'function')) {
       if (claimed.has(ctx)) return
       claimed.add(ctx)
     }
@@ -46,17 +54,20 @@ export function apply(ctx) {
     // would be noise in the host's console, so it is caught too.
     if (result && typeof result.then === 'function') {
       try {
-        result.then(undefined, (error) => warn('prompt section rejected', error))
+        result.then(undefined, (error) => {
+          // The refusal arrived after `apply` returned, so it has to release the
+          // context here — otherwise the retry the host makes would register
+          // nothing at all.
+          release(ctx)
+          warn('prompt section rejected', error)
+        })
       } catch (error) {
+        release(ctx)
         warn('prompt section promise unusable', error)
       }
     }
   } catch (error) {
-    // A failed attempt must not burn the context: the host may retry, and a
-    // retry that silently registers nothing would leave the model uninformed.
-    if (ctx !== null && ctx !== undefined && (typeof ctx === 'object' || typeof ctx === 'function')) {
-      claimed.delete(ctx)
-    }
+    release(ctx)
     warn('prompt section skipped', error)
   }
 }

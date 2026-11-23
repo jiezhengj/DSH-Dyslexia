@@ -8,7 +8,7 @@ description: "Task list for 会话内图形渲染"
 
 **Prerequisites**: [plan.md](./plan.md), [spec.md](./spec.md), [research.md](./research.md), [data-model.md](./data-model.md), [contracts/](./contracts/), [quickstart.md](./quickstart.md)
 
-**Tests**（历史任务行里的断言名是当时的名字，改名记录见 Phase 24 的 T168）：本功能不引入测试框架（宪法原则 III）。验收 = `verify/check-bundle.mjs` 的 40 项静态断言 + `verify/run-harness.mjs --list` 的 228 项浏览器断言（0.1.9 起 118 项、0.1.10 起 119 项、0.1.11 起 152 项、0.1.12 起 156 项、0.1.13 起 197 项、0.1.14 起 205 项、0.1.15 与 0.1.16 是 213 项、0.1.17 与 0.1.18 是 216 项、0.1.19–0.1.24 是 220 项、0.1.25 是 223 项、0.1.26 是 228 项），外加 `quickstart.md` 证据表里的真机项（见 E-GAPS）。
+**Tests**（历史任务行里的断言名是当时的名字，改名记录见 Phase 24 的 T168）：本功能不引入测试框架（宪法原则 III）。验收 = `verify/check-bundle.mjs` 的 40 项静态断言 + `verify/run-harness.mjs --list` 的 229 项浏览器断言（0.1.9 起 118 项、0.1.10 起 119 项、0.1.11 起 152 项、0.1.12 起 156 项、0.1.13 起 197 项、0.1.14 起 205 项、0.1.15 与 0.1.16 是 213 项、0.1.17 与 0.1.18 是 216 项、0.1.19–0.1.24 是 220 项、0.1.25 是 223 项、0.1.26 是 229 项），外加 `quickstart.md` 证据表里的真机项（见 E-GAPS）。
 
 **Organization**: 按 spec 的用户故事分阶段；每个故事独立可验收。
 
@@ -219,7 +219,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T076 `verify/check-bundle.mjs` 新增"图是图像、复制被播报"一项，并让报告行自带 `包名@版本 | 字节数 | 源码指纹`，让任何粘贴的输出自证来自哪棵树
 - [x] T077 夹具新增五类用例（超限源码、流式→完成、falsy children、`t` 换身份不重绘、复制播报），无障碍结构另加三项（组名、缩放按钮在图像外、可聚焦）；`verify/run-harness.mjs` 增加 `--list` 以便证据整段引用单次运行
 - [x] T078 `spec.md` 增 FR-018 与 SC-010；`contracts/client-fence-layer.md`、`data-model.md`、`research.md`（D22）同步
-- [ ] T079 重启 DSH 后做真机核对（图名/按钮/播报/插件页说明/卸载回退）。**0.1.11 至 0.1.30 的发布与安装完成后仍未重启核对**：运行中的界面仍加载旧 chunk；E-LIVE 里能查到的真机观察仍是 **0.1.2**，0.1.7 与 0.1.8 从未在真实宿主里跑过，0.1.9、0.1.10、0.1.11、0.1.12 与 0.1.13 同样如此。
+- [ ] T079 重启 DSH 后做真机核对（图名/按钮/播报/插件页说明/卸载回退）。**0.1.11 至 0.1.31 的发布与安装完成后仍未重启核对**：运行中的界面仍加载旧 chunk；E-LIVE 里能查到的真机观察仍是 **0.1.2**，0.1.7 与 0.1.8 从未在真实宿主里跑过，0.1.9、0.1.10、0.1.11、0.1.12 与 0.1.13 同样如此。
 - [ ] T080 再次请两位评审复核（目标 PASS），通过后把 feature 001 标记完成
 
 ## Phase 14: 第三轮独立评审后的修复（2026-11-23 追加，版本 0.1.6）
@@ -561,6 +561,17 @@ description: "Task list for 会话内图形渲染"
 - [ ] T309 第二十九轮双评审（`review-docs-29` / `review-impl-29`）：两份都 PASS 才把 feature 001 标记完成并回写 `spec.md` Status。
 - [ ] T302 第二十八轮双评审（`review-docs-28` / `review-impl-28`，目标：两份都 PASS）
 
+## Phase 42: 第二十九轮评审的修复与 0.1.31（2026-11-23 追加）
+
+- [x] T310 `index.js` 的异步拒绝分支也释放上下文（新增 `release(target)` 辅助，拒绝与"promise 不可用"两条路都调用），否则宿主稍后拒绝一次后重试永远注册不到提示词。
+- [x] T311 `src/client/entry.js` 加与宿主半边同样的每 `ctx` 幂等守卫（`claimed` WeakSet，`null`/`undefined`/原始值不入集），二次 `apply` 不再叠第二层。
+- [x] T312 `check-bundle` 的 `the host half adds one section per context, not one per call` 增加"稍后拒绝也能重试"（同步 `then` 的 thenable 在第一次调用 `reject`），并断言这次拒绝只被报告一次、且写明原因。
+- [x] T313 `check-bundle` 的 `the host half stays silent when the host changed shape` 把"两段被拒的简报各报一次"变成真断言（捕获 `console.warn`，断言 2 条且各自含原始错误文本）——此前报告行这么写，但没有任何断言支撑。
+- [x] T314 夹具新增 `a second apply does not add a second fence layer`（同一 `ctx` 二次 `apply` 后 `defs.length === 1`），228 → 229 项。
+- [x] T315 三条探针：PS25 删异步 `release` → `… an async refusal burned the context (1 attempts)`、`1 failed, 39 passed`；PS26 删客户端守卫并重建 → `[bad] a second apply does not add a second fence layer — 2`、`1 failed, 228 passed`；PS27 把 `warn('prompt section skipped', …)` 换成 `void error` → `… two refused sections produced 1 warnings`、`1 failed, 39 passed`。
+- [x] T316 版本 0.1.31：`client.js` 770,108 字节 / 769,078 字符、指纹 `3a2eb142f544e0bb377851af8c92eeb5`；40 静态 / 229 浏览器全绿；E-BLD/E-CHK/E-HARN 用单次运行输出重写；stderr 的刻意堆栈说明从 7 段改 6 段（`prompt section` 两段被新断言捕获）。
+- [ ] T317 发版 0.1.31 → 装回 `desktop` → 补 E-PUB/E-INS → 第三十轮双评审。
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
@@ -638,7 +649,7 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 **当前自动化证据**（命令即证据，任何人 clone 后可复跑）：
 
 - `node verify/check-bundle.mjs` → **40 项全过**
-- `node verify/run-harness.mjs --list` → 真实 Chromium 里 **228 项全过**（夹具 `verify/harness/index.html`，已提交）
+- `node verify/run-harness.mjs --list` → 真实 Chromium 里 **229 项全过**（夹具 `verify/harness/index.html`，已提交）
 
 **真机证据**（`evidence/verification.md` 的 E-LIVE）：会话内就地成图、卸载回退、重装恢复、插件页说明；取证的版本是 0.1.2。
 
@@ -658,7 +669,7 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 | G10 | SC-005 主题切换 | 部分 | 只验证了换 CSS 变量后变色，没做明→暗→明切换 |
 | G11 | FR-011 停用后提示词消失（T027） | 未做 | 宿主半边只有静态断言；本机 PATH 无 `dsh` CLI，改用 vm 断言，但不证明真实会话里停用后消失 |
 | G12 | FR-002 真机"无侧栏/无新文件" | 未做 | 结构上不写文件、不碰宿主布局，但没有一次真机核对磁盘与会话条目未变 |
-| G13 | T079 当前版本的重启后真机核对 | 未做 | 0.1.11 至 0.1.30 都已发布并装进 profile `desktop`，运行中的界面仍加载旧 chunk；`E-LIVE` 的观察取自 **0.1.2**（只有中文说明页、就地成图、卸载回退、重装恢复四件事），不能自动转移 |
+| G13 | T079 当前版本的重启后真机核对 | 未做 | 0.1.11 至 0.1.31 都已发布并装进 profile `desktop`，运行中的界面仍加载旧 chunk；`E-LIVE` 的观察取自 **0.1.2**（只有中文说明页、就地成图、卸载回退、重装恢复四件事），不能自动转移 |
 | G14 | 真实窗口缩放时引擎重绘（FR-018 端到端） | 未做 | 无头环境首帧后不再派发帧与 ResizeObserver 通知，只能证明"节点被换 → 立刻重新命名"；拖窄真实窗口这条链只有机制级证据 |
 | G15 | 尚未覆盖的加固面 | 未做 | ①`outputLimit`（2 MiB 绘制输出上限）无用例（字符上限与边数上限自 0.1.19 起已有单独夹具与 PS2/PS3 探针）；②原先 `apply` 没有幂等守卫（同一 `ctx` 上多次 `apply` 会注册多段同名提示词）；**0.1.29 起已有断言**（`the host half adds one section per context, not one per call`，PS23 会让它变红），0.1.30 又补了"首次失败后重试仍能注册"（PS24），因此不再算缺口；③`slots.inject` 回调丢 disposer 这半句**不成立**（`the fence layer is gone once the host disposes` 就守着它，回调不返回 disposer 即变红），不算缺口；④`prepack` 不跑夹具；⑤`package.json` 若加入 `engines.node` 等非 `dsh` 子键，`no dsh version gate can refuse a start` 不会变红 |
 | G16 | vendor 文本与无头环境的换节点 | 未做 | 绘制输出上限（`outputLimit` 2 MiB）仍按 G15 记，字符上限与边数上限已有夹具，不再重复；这里只记两件小事：`client.js` 里 vendor 许可注释含 `https://github.com/obsidianmd/pele`（静态文本、无网络行为），以及「引擎换掉 `<svg>` 后重新命名」在无头环境只能夹具重放（真实拖窄窗口的端到端见 G14） |
@@ -675,4 +686,4 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 | 项 | 状态 | 说明 |
 |---|---|---|
 | T070 0.1.3 重启核对 | 已作废 | 由 T079 取代 |
-| T079 重启后真机核对（0.1.30） | 未做 | 0.1.11 至 0.1.30 已发布并装进 profile `desktop`，运行中的界面仍加载旧 chunk；重启后才换新，届时核对图名/按钮/播报/插件页说明/卸载回退，并把 E-LIVE 改写成 0.1.30 的记录。E-LIVE 里现有的观察是 0.1.2 的 |
+| T079 重启后真机核对（0.1.31） | 未做 | 0.1.11 至 0.1.31 已发布并装进 profile `desktop`，运行中的界面仍加载旧 chunk；重启后才换新，届时核对图名/按钮/播报/插件页说明/卸载回退，并把 E-LIVE 改写成 0.1.30 的记录。E-LIVE 里现有的观察是 0.1.2 的 |

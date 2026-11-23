@@ -20,6 +20,10 @@ const LAYER_ORDER = 100
 
 const inject = ['slots']
 
+// One registration per context, as in the host half: a host that calls `apply`
+// twice would otherwise stack a second identical layer on the slot.
+const claimed = new WeakSet()
+
 /**
  * The stylesheet this module put in the document when the host offered no
  * `ctx.effect`. `ensureFigureStyles` reuses the element by id, so repeated
@@ -53,6 +57,12 @@ function registerLayer(slots) {
 }
 
 function apply(ctx) {
+  // A second call on the same context must not stack a second layer; the host
+  // may call `apply` again after an upgrade or a re-enable.
+  if (ctx !== null && ctx !== undefined && (typeof ctx === 'object' || typeof ctx === 'function')) {
+    if (claimed.has(ctx)) return
+    claimed.add(ctx)
+  }
   try {
     const doc = typeof document === 'undefined' ? null : document
     const styleElement = ensureFigureStyles(doc)

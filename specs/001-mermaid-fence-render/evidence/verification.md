@@ -1,25 +1,25 @@
 # 验证证据
 
-本文件只记录**已经真实跑过**的命令输出。E-BLD、E-CHK、E-HARN 三段各自来自一次运行，其中 E-CHK 与 E-HARN 的报告行自带 `包名@版本 | client.js 字节数 | sources sha256:<指纹>`，所以这两段可被追溯到具体的一棵树；E-BLD 是构建日志本身（它写出 `client.js`，随后由这两段报告行限定）。E-PUB 记录 CI 运行，E-INS 与 E-LIVE 记录真机操作，各自注明版本与 run，不能当成"同一次运行"的输出。当前版本：`0.1.30`。
+本文件只记录**已经真实跑过**的命令输出。E-BLD、E-CHK、E-HARN 三段各自来自一次运行，其中 E-CHK 与 E-HARN 的报告行自带 `包名@版本 | client.js 字节数 | sources sha256:<指纹>`，所以这两段可被追溯到具体的一棵树；E-BLD 是构建日志本身（它写出 `client.js`，随后由这两段报告行限定）。E-PUB 记录 CI 运行，E-INS 与 E-LIVE 记录真机操作，各自注明版本与 run，不能当成"同一次运行"的输出。当前版本：`0.1.31`。
 
 复跑方式（任何人 clone 后都一样）：
 
 ```bash
 node scripts/build-client.mjs       # 由 src/client/*.js + vendor/pele 生成 client.js
 node verify/check-bundle.mjs        # 40 项静态与行为断言，纯 Node 内置模块
-node verify/run-harness.mjs --list  # 228 项浏览器断言，需要本机 Chrome
+node verify/run-harness.mjs --list  # 229 项浏览器断言，需要本机 Chrome
 ```
 
 ## E-BLD 构建
 
 ```
-build-client: @jiezhengj/dsh-dyslexia -> client.js (769629 bytes, 768599 characters, engine 1.13.0, sources 5, syntax ok)
+build-client: @jiezhengj/dsh-dyslexia -> client.js (770108 bytes, 769078 characters, engine 1.13.0, sources 5, syntax ok)
 ```
 
 ## E-CHK 静态与行为校验
 
 ```
-ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.30
+ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.31
 ok   package.json points at the repository npm trusts — git+https://github.com/jiezhengj/DSH-Dyslexia.git
 ok   package.json declares the bundle patch and the client half — platform web, no package inject
 ok   no dsh version gate can refuse a start — no engines.dsh, no dsh peers
@@ -28,7 +28,7 @@ ok   the required published files exist — 24 required files
 ok   every interface language has its own plugin page — 8 languages
 ok   cordis.patch.yml inserts the plugin by package name — 3 lines
 ok   both locales carry metadata — en, zh
-ok   client.js is one loader chunk keyed by the package name — 769629 bytes
+ok   client.js is one loader chunk keyed by the package name — 770108 bytes
 ok   client.js requires react and nothing else — react
 ok   client.js never reaches the network — no fetch, no XHR, no dynamic import, no remote URL
 ok   client.js carries the vendored engine — Pele 1.13.0 inlined
@@ -46,7 +46,7 @@ ok   every supported sample type draws an svg — flowchart:218x64 sequence:184x
 ok   a broken diagram reports a one-line reason — Parse error on line 2:
 ok   host key echo falls back to bundled strings — key echo, blanks, placeholders rejected
 ok   every language carries the same complete sentences — 12 keys x 8 languages, no engine text in labels
-ok   client.js matches the sources it claims — 066598a434771bb4053dcce3e4f499e3
+ok   client.js matches the sources it claims — 3a2eb142f544e0bb377851af8c92eeb5
 ok   the picture is the image, and the copy answer is announced — label is a noun, role="img" on the svg, copy result announced; behaviour is asserted by the fixture
 ok   host children react would refuse fall back to the source — objects, functions and mixed arrays fall back to the source text; behaviour is asserted by the fixture
 ok   every drawing the engine swaps in is named again — the engine owns re-layout; every swapped drawing node and its zoom buttons are renamed, strings follow the language; behaviour is asserted by the fixture
@@ -54,13 +54,13 @@ ok   a host block that throws cannot empty the message — host blocks render in
 ok   a factory that cannot build never throws at the host — module-level throw contained, empty module returned
 ok   nothing in the package asks you to edit an instruction file — 17 shipped text files, no instruction-file ask
 ok   the host half registers exactly one capability section — ui:dsh-dyslexia, order 9000, 85 words
-ok   the host half adds one section per context, not one per call — three calls on one context, one section; a second context gets its own; a failed attempt still allows a retry
-ok   the host half stays silent when the host changed shape — five silent hosts (no warning), two throwing sections (one warning each)
+ok   the host half adds one section per context, not one per call — three calls on one context, one section; a second context gets its own; a failed attempt still allows a retry, whether the host refused at once or later
+ok   the host half stays silent when the host changed shape — five silent hosts (no warning), two refused sections (one warning each, naming the error)
 ok   the contract's colour variables are the ones that are wired — 10 engine variables, owned by engine and contract alike
 ok   both size limits reach the engine, each proven on its own — three limits passed to mount, two fixtures that cross one each
 ok   the fixtures assert what the fixes promise, and can fail — 26 assertions present, each with a condition that reads something
 
-check-bundle: @jiezhengj/dsh-dyslexia@0.1.30 | client.js 769629 bytes | sources sha256:066598a434771bb4053dcce3e4f499e3 | all 40 checks passed
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.31 | client.js 770108 bytes | sources sha256:3a2eb142f544e0bb377851af8c92eeb5 | all 40 checks passed
 ```
 
 ## E-HARN 浏览器行为校验
@@ -249,6 +249,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.30 | client.js 769629 bytes | sources 
 [ok] disabling the plugin takes its stylesheet away — false
 [ok] the locale registration is dropped — 1
 [ok] the fence layer is gone once the host disposes — 0
+[ok] a second apply does not add a second fence layer — 1
 [ok] a host without effects keeps one stylesheet, not one per apply — 1
 [ok] no internal key reaches the eye — leaked: 
 [ok] a source over the size limit says why — 这张图无法绘制，已改为显示源码。long
@@ -300,10 +301,10 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.30 | client.js 769629 bytes | sources 
 [ok] the zoom button titles say the same as their names — 放大 | 缩小 | 重置缩放
 [ok] every zoom button in reach can take the keyboard — 1/1 reachable of 3
 [ok] every zoom button is reachable once the picture is zoomed — 3/3 after zoom
-run-harness: @jiezhengj/dsh-dyslexia@0.1.30 | client.js 769629 bytes | sources sha256:066598a434771bb4053dcce3e4f499e3 | all 228 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+run-harness: @jiezhengj/dsh-dyslexia@0.1.31 | client.js 770108 bytes | sources sha256:3a2eb142f544e0bb377851af8c92eeb5 | all 229 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
-同一次运行的 stderr 另有 7 段被**刻意捕获**的异常堆栈（loader ×3、prompt section ×3、module ×1，例如 `dsh-dyslexia: loader Error: host changed the loader`、`dsh-dyslexia: prompt section rejected Error: asynchronous failure`）：它们来自敌意宿主用例，属正常输出，不是失败。
+同一次运行的 stderr 另有 6 段被**刻意捕获**的异常堆栈（loader ×3、prompt section ×2、module ×1，例如 `dsh-dyslexia: loader Error: host changed the loader`、`dsh-dyslexia: prompt section skipped Error: the host refused the first attempt`）：它们来自敌意宿主用例，属正常输出，不是失败。
 
 ## E-A11Y 图像的读屏取舍（`role="img"` 的代价与补偿）
 
@@ -317,7 +318,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.30 | client.js 769629 bytes | sources s
 
 ## E-PROBE 夹具能失败吗：用破坏性探针验证
 
-如果一个断言恒真，"套件全绿"就不构成证据。注意静态侧的恒真守护只覆盖 `check-bundle.mjs` 的 `needed` 名单（26 个名字，PS21 用它验证过：名单外的断言把条件改成 `&& true` 不会变红），不是全部夹具。0.1.8 至 0.1.30 期间共做了三十八次探针（PS12 在 0.1.22 发布后、PS13 在 0.1.23 发布后、PS14 与 PS17 在 0.1.24 发布后、第二十三轮的两条在 0.1.25 发布前）：每次都是故意破坏被断言保护的代码（`src/` 或 `verify/`）、重建 `client.js`、跑两套检查、确认目标断言**变红**，再 `git checkout` 还原；**破坏是临时的，落地后留下的改动只在从不随包的 `verify/` 与 `specs/` 里**（0.1.10 起的几次在 `%TEMP%` 的仓库副本里做，不动工作树）。报告行里的项数属于**当时的套件**：0.1.10 = 119 项、0.1.11 = 152 项、0.1.12 = 156 项、0.1.13 = 197 项、0.1.14 = 205 项、0.1.15 起 = 213 项、0.1.17 起 = 216 项、0.1.19 起 = 220 项（静态 0.1.19 起 = 39 项）、0.1.24 之后的核验提交 = 222 项、0.1.25 起 = 223 项、0.1.26 起 = 228 项（静态 0.1.29 起 = 40 项）。此前各行的项数属当时的套件，今天复跑会多出 0.1.24 之后新增的八条断言（两条同步渲染结果检查、一条敌意 `children` 挂载检查、四个 `a refused children falls back to the source` 场景、一条 `the zoom button titles say the same as their names`）。
+如果一个断言恒真，"套件全绿"就不构成证据。注意静态侧的恒真守护只覆盖 `check-bundle.mjs` 的 `needed` 名单（26 个名字，PS21 用它验证过：名单外的断言把条件改成 `&& true` 不会变红），不是全部夹具。0.1.8 至 0.1.31 期间共做了四十一次探针（PS12 在 0.1.22 发布后、PS13 在 0.1.23 发布后、PS14 与 PS17 在 0.1.24 发布后、第二十三轮的两条在 0.1.25 发布前）：每次都是故意破坏被断言保护的代码（`src/` 或 `verify/`）、重建 `client.js`、跑两套检查、确认目标断言**变红**，再 `git checkout` 还原；**破坏是临时的，落地后留下的改动只在从不随包的 `verify/` 与 `specs/` 里**（0.1.10 起的几次在 `%TEMP%` 的仓库副本里做，不动工作树）。报告行里的项数属于**当时的套件**：0.1.10 = 119 项、0.1.11 = 152 项、0.1.12 = 156 项、0.1.13 = 197 项、0.1.14 = 205 项、0.1.15 起 = 213 项、0.1.17 起 = 216 项、0.1.19 起 = 220 项（静态 0.1.19 起 = 39 项）、0.1.24 之后的核验提交 = 222 项、0.1.25 起 = 223 项、0.1.26 起 = 228 项（静态 0.1.29 起 = 40 项）。此前各行的项数属当时的套件，今天复跑会多出 0.1.24 之后新增的八条断言（两条同步渲染结果检查、一条敌意 `children` 挂载检查、四个 `a refused children falls back to the source` 场景、一条 `the zoom button titles say the same as their names`）。
 
 | 探针 | 破坏方式 | 变红的断言（含报告行） | 说明 |
 |---|---|---|---|
@@ -360,6 +361,9 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.30 | client.js 769629 bytes | sources s
 | PS23 | 把 `index.js` 的 `claimed.has(ctx)`/`claimed.add(ctx)` 换成 `void claimed`（0.1.29） | `FAIL the host half adds one section per context, not one per call — three applies on one context added 3 sections`；`check-bundle: 1 failed, 39 passed`，exit 1 | 新的幂等断言不是恒真 |
 | PS24 | 把 `index.js` 的 `claimed.delete(ctx)` 换成 `void ctx`（0.1.30） | `FAIL the host half adds one section per context, not one per call — a retry after a failure did not reach the host (1 attempts)`；`check-bundle: 1 failed, 39 passed`，exit 1 | 首次失败不会烧掉上下文 |
 
+| PS25 | 把 `index.js` 异步拒绝分支里的 `release(ctx)` 删掉（0.1.31） | `FAIL the host half adds one section per context, not one per call — an async refusal burned the context (1 attempts)`；`check-bundle: 1 failed, 39 passed`，exit 1 | 异步拒绝也释放上下文，重试能注册 |
+| PS26 | 把 `src/client/entry.js` 的 `claimed` 守卫换成 `void claimed` 并重建（0.1.31） | `[bad] a second apply does not add a second fence layer — 2`；`run-harness: 1 failed, 228 passed`，exit 1 | 浏览器半边也不会因二次 `apply` 叠层 |
+| PS27 | 把 `index.js` 的 `warn('prompt section skipped', error)` 换成 `void error`（0.1.31） | `FAIL the host half stays silent when the host changed shape — two refused sections produced 1 warnings: …`；`check-bundle: 1 failed, 39 passed`，exit 1 | 「每段被拒的简报都报一次」不是空话 |
 静态检查里另有一条守护 `the fixtures assert what the fixes promise, and can fail`：它要求 P1/P2/P4/P5/PA/PB/PC/PS13 以及 PS14 那四条同步渲染断言的断言名一个不少、每条都落在真正读值的条件里、条件里不得出现恒真分支；并且每条名字必须落在一个**真正读值**的 `expect(` 条件里——条件为空、只是 `true`/`false`/`0` 这类字面量（PS9）、或是 `1 === 1` 这种读不到任何东西的自我比较（PS11）、`|| true` 这种非字面量的恒真分支（PS13）都会让它变红，名字只出现在注释里也算缺失（PS10），名单内某条被换成字面量也会红（PS17）；否则说明有人把夹具掏空或删掉而代码检查仍绿。同一道守护的兄弟条款：读源码的文本断言一律先剥注释再比对，所以把代码换成同名注释也会红（PS12）。P6/P7 是另一道：两套检查各自的条目数被钉死，删一条也会红。
 
 ## E-COMP 兼容性断言与要求逐条对应
@@ -376,7 +380,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.30 | client.js 769629 bytes | sources s
 | FR-008 8 种界面语言可读、畸形翻译服务回退 | 静态：`every language carries the same complete sentences`、`host key echo falls back to bundled strings`；浏览器：`[ja] a picture is drawn`（8 语言各一轮）、`a host t that echoes the key still shows words`、`a host t that throws still shows words`、`no internal key reaches the eye` |
 | FR-009 卸载/禁用/出错时回退文本 | 浏览器：`disabling the plugin takes its stylesheet away`、`the layer survives a throwing children getter`、`styles and strings are claimed as effects`；真机卸载回退见 E-LIVE 的「卸载插件后，同一条消息变回纯文本代码块」一行（0.1.2，见 G13） |
 | FR-010 重装后图恢复、无需迁移 | 真机：E-LIVE 的「重新安装后图与按钮立刻回来」一行（0.1.2，见 G13）；数据层面由 `data-model.md` 的"图源只在消息文本里"保证 |
-| FR-011 启用时让模型知情、停用后消失 | 静态：`the host half registers exactly one capability section`、`the host half stays silent when the host changed shape`；"停用后模型侧看不到"未实测（G11） |
+| FR-011 启用时让模型知情、停用后消失 | 静态：`the host half registers exactly one capability section`、`the host half adds one section per context, not one per call`（同一 `ctx` 三次 `apply` 仍只一段；另一个 `ctx` 各一段；宿主当场拒绝或稍后拒绝都能重试成功）、`the host half stays silent when the host changed shape`（五类畸形宿主零告警，两段被拒的简报各报一次且写明原因）；浏览器侧同一 `ctx` 二次 `apply` 只注册一层（`a second apply does not add a second fence layer`）；"停用后模型侧看不到"未实测（G11） |
 | FR-012 不需要改任何指令文件就生效 | 静态：`nothing in the package asks you to edit an instruction file`（17 个随包文本文件里不出现 `AGENTS.md`/`CLAUDE.md`/`.cursorrules`，`client.js` 与 `index.js` 也不读写它们） |
 | FR-013 不声明版本否决字段 | `no dsh version gate can refuse a start` |
 | FR-014 启动/运行失败就地降级 | 宿主半边（静态）：`host apply survives a host that changed shape`、`the host half stays silent when the host changed shape`；客户端（夹具）：`apply stays silent on a changed host`、`a host that rejects the locale option does not break apply`、`a throwing engine leaves a sentence` （第二类，同样只有静态证据）`an engine that fails to load leaves the picture to the host`——引擎在构建期置空，产物里不可达，见 G18 |
@@ -900,7 +904,7 @@ Done in 6.1s using pnpm v11.28.5
 
 ## E-LIVE 真机（DSH 桌面窗口内）
 
-**以下记录来自 0.1.2**，当前版本（0.1.30）的重启核对是 T079（**尚未取证**，见 G13）。之所以保留，是因为它们证明了链路本身可用；从 0.1.2 到 0.1.30 渲染层改过多次（`role` 结构、`aria-roledescription` 的移除与重排版后重标、可见的复制反馈、空/非法 `children` 的处理、源码块的 `language-mermaid` 标记、外层盒子去掉名字），所以这些观察**不能**自动转移到 `0.1.30`。
+**以下记录来自 0.1.2**，当前版本（0.1.31）的重启核对是 T079（**尚未取证**，见 G13）。之所以保留，是因为它们证明了链路本身可用；从 0.1.2 到 0.1.31 渲染层改过多次（`role` 结构、`aria-roledescription` 的移除与重排版后重标、可见的复制反馈、空/非法 `children` 的处理、源码块的 `language-mermaid` 标记、外层盒子去掉名字），所以这些观察**不能**自动转移到 `0.1.31`。
 
 | 观察 | 当时的证据 | 归属 |
 |---|---|---|
@@ -931,7 +935,7 @@ Done in 6.1s using pnpm v11.28.5
 
 - **G11 FR-011 的后半（停用插件后提示词段消失）**：只有 `apply` 注册段的静态证据与宿主半边契约，没有"停用后模型侧看不到"的实测（T027）。
 - **G12 FR-002 的真机面（不打开侧栏、不生成文件、不新增会话条目）**：插件在结构上不写文件、不碰宿主布局（静态可读），但没有一次真机上"看完这张图，磁盘与会话条目都没变"的核对。
-- **G13 当前版本（0.1.30）的重启后真机核对（T079）**：`E-LIVE` 的观察取自 **0.1.2**，且只有四件事——插件页的**中文**说明与插图、会话里就地成图（图名 `图：flowchart`、两个按钮）、卸载后同一条消息回退为代码块、重装后图与按钮立刻回来。**复制播报**（0.1.5 起才有）与**其余 7 种语言的插件页**从未在真机上看过，不能算已观察。0.1.3–0.1.30 改过 `view.js`、`i18n.js`、`entry.js`、`styles.js`、`index.js`（0.1.18 只改了文档与 README；0.1.19 改了 `styles.js` 的变量块；0.1.20 与 0.1.21 只改了测试与文档），这些观察不能自动转移。0.1.11 至 0.1.30 都已发布并装进 `desktop` profile，但**没有在重启后的宿主里逐项复核过**，所以算未取证。
+- **G13 当前版本（0.1.31）的重启后真机核对（T079）**：`E-LIVE` 的观察取自 **0.1.2**，且只有四件事——插件页的**中文**说明与插图、会话里就地成图（图名 `图：flowchart`、两个按钮）、卸载后同一条消息回退为代码块、重装后图与按钮立刻回来。**复制播报**（0.1.5 起才有）与**其余 7 种语言的插件页**从未在真机上看过，不能算已观察。0.1.3–0.1.31 改过 `view.js`、`i18n.js`、`entry.js`、`styles.js`、`index.js`（0.1.18 只改了文档与 README；0.1.19 改了 `styles.js` 的变量块；0.1.20 与 0.1.21 只改了测试与文档），这些观察不能自动转移。0.1.11 至 0.1.31 都已发布并装进 `desktop` profile，但**没有在重启后的宿主里逐项复核过**，所以算未取证。
 - **G14 真实窗口缩放时的引擎重绘（FR-018 的端到端面）**：0.1.10 把重排版交给引擎自己的 `ResizeObserver`（pele 内部），插件只负责"节点被换回来就重新命名"。夹具能证明"节点被换 → 立刻重新命名"，但**无法让引擎在无头浏览器里真的因窗口缩放而重绘**（无头环境第一帧之后不再派发帧与 ResizeObserver 通知）。真实窗口里"拖窄窗口 → 引擎重绘 → 名字回来"这条链只有机制级证据。
 - **G15 尚未覆盖的加固面（第十轮实现评审记录，第十七、十八轮复核后收窄）**：下面按五项编号（编号⑤是 `spec.md` SC-007 与两份契约引用的「G15 第五条」，别删）；其中③已查明有断言、撤回，仍算缺口的只有①、④、⑤，都不影响已发布行为——① `src/client/figure.js` 的 `outputLimit`（2 MiB 绘制输出上限）**只有静态锚点**（`both size limits reach the engine, each proven on its own` 按数值比较 `limit`/`maxEdges`/`outputLimit` 三项，并把 `FIGURE_LIMITS` 是否铺进 `pele.mount` 也钉住），**没有**任何夹具或真机观察让它真的触发一次（字符上限 `limit: 24 * 1024` 与边数上限 `maxEdges: 400` 自 0.1.19 起各有单独夹具，见 E-HARN 的 `a source over the size limit *` 与 `a picture with too many edges *` 六条，以及 E-PROBE 的 PS2、PS3）；② `index.js` 的 `apply` 幂等**已由断言守护**（0.1.29）：`the host half adds one section per context, not one per call` 在同一 `ctx` 上连调三次只允许一段、换一个 `ctx` 允许再一段；探针 PS23 把 `claimed.has/add` 换成 `void claimed` 后该条变红（`three applies on one context added 3 sections`，`check-bundle: 1 failed, 39 passed`，exit 1）；③ `src/client/entry.js` 里 `slots.inject(...)` 回调返回的 disposer 被丢掉这半句**不成立**：`the fence layer is gone once the host disposes` 正守着它（把 `entry.js` 的回调改成不返回 disposer，该断言就会变红），不再算缺口；④ `package.json` 的 `prepack` 只跑构建与 `check-bundle`，不跑夹具（依赖 CI 的五步兜住）；⑤ `package.json` 若加入 `engines.node` 等非 `dsh` 子键，`no dsh version gate can refuse a start` 不会变红（当前清单没有 `engines` 键，属「没有断言的清单形状面」）。
 - **G16 vendor 文本与换节点的无头局限（记录）**：`client.js` 里 vendor 许可注释含 `https://github.com/obsidianmd/pele`，属静态文本、无网络行为；「引擎换掉 `<svg>` 后重新命名」在无头环境里只能靠夹具重放（真实拖窄窗口的端到端见 G14）。绘制输出上限（`outputLimit` 2 MiB）仍按 G15 记；字符上限与边数上限在 0.1.19 起已有夹具，这里同样不重复。

@@ -628,7 +628,33 @@ check('the host half adds one section per context, not one per call', () => {
   assert(attempts === 1, `a failing section was called ${attempts} times`)
   hostHalf.apply(flaky)
   assert(attempts === 2, `a retry after a failure did not reach the host (${attempts} attempts)`)
-  return 'three calls on one context, one section; a second context gets its own; a failed attempt still allows a retry'
+  // A host may refuse asynchronously. The refusal arrives after `apply` returned,
+  // so the branch that catches it has to release the context itself.
+  let lateAttempts = 0
+  const late = {
+    systemPrompt: {
+      section() {
+        lateAttempts += 1
+        if (lateAttempts === 1) {
+          return { then(ok, no) { no(new Error('the host refused the first attempt later')) } }
+        }
+        return { then() {} }
+      },
+    },
+  }
+  const heard = []
+  const originalWarn = console.warn
+  console.warn = (...args) => heard.push(args.join(' '))
+  try {
+    hostHalf.apply(late)
+    assert(lateAttempts === 1, `a refusing section was called ${lateAttempts} times`)
+    hostHalf.apply(late)
+  } finally {
+    console.warn = originalWarn
+  }
+  assert(lateAttempts === 2, `an async refusal burned the context (${lateAttempts} attempts)`)
+  assert(heard.length === 1 && /refused the first attempt later/.test(heard[0]), `the async refusal was reported ${heard.length} times: ${heard.join(' | ')}`)
+  return 'three calls on one context, one section; a second context gets its own; a failed attempt still allows a retry, whether the host refused at once or later'
 })
 
 check('the host half stays silent when the host changed shape', () => {
@@ -643,21 +669,33 @@ check('the host half stays silent when the host changed shape', () => {
     console.warn = original
   }
   assert(warnings.length === 0, `the host half warned on ${warnings.length} unchanged hosts: ${warnings.join(' | ')}`)
-  hostHalf.apply({
-    systemPrompt: {
-      section() {
-        throw new Error('system prompt service changed')
+  // Two refused sections must each be reported once, naming the failure — a
+  // silent skip would leave the model uninformed with nothing in the log.
+  const refused = []
+  const originalWarn = console.warn
+  console.warn = (...args) => refused.push(args.join(' '))
+  try {
+    hostHalf.apply({
+      systemPrompt: {
+        section() {
+          throw new Error('system prompt service changed')
+        },
       },
-    },
-  })
-  hostHalf.apply({
-    systemPrompt: {
-      section() {
-        return Promise.reject(new Error('asynchronous failure'))
+    })
+    hostHalf.apply({
+      systemPrompt: {
+        section() {
+          return { then(ok, no) { no(new Error('asynchronous failure')) } }
+        },
       },
-    },
-  })
-  return 'five silent hosts (no warning), two throwing sections (one warning each)'
+    })
+  } finally {
+    console.warn = originalWarn
+  }
+  assert(refused.length === 2, `two refused sections produced ${refused.length} warnings: ${refused.join(' | ')}`)
+  assert(/system prompt service changed/.test(refused[0]), `the first warning does not name the failure: ${refused[0]}`)
+  assert(/asynchronous failure/.test(refused[1]), `the second warning does not name the failure: ${refused[1]}`)
+  return 'five silent hosts (no warning), two refused sections (one warning each, naming the error)'
 })
 
 /* ------------------------------------------- the fixtures can fail at all */

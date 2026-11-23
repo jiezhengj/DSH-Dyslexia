@@ -1,4 +1,4 @@
-/*! @jiezhengj/dsh-dyslexia 0.1.30 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:066598a434771bb4053dcce3e4f499e3 */
+/*! @jiezhengj/dsh-dyslexia 0.1.31 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:3a2eb142f544e0bb377851af8c92eeb5 */
 ;(function () {
   function reportLoadFailure(scope, error) {
     try { console.error('dsh-dyslexia: ' + scope, error) } catch (_error) {}
@@ -1106,6 +1106,10 @@ const LAYER_ORDER = 100
 
 const inject = ['slots']
 
+// One registration per context, as in the host half: a host that calls `apply`
+// twice would otherwise stack a second identical layer on the slot.
+const claimed = new WeakSet()
+
 /**
  * The stylesheet this module put in the document when the host offered no
  * `ctx.effect`. `ensureFigureStyles` reuses the element by id, so repeated
@@ -1139,6 +1143,12 @@ function registerLayer(slots) {
 }
 
 function apply(ctx) {
+  // A second call on the same context must not stack a second layer; the host
+  // may call `apply` again after an upgrade or a re-enable.
+  if (ctx !== null && ctx !== undefined && (typeof ctx === 'object' || typeof ctx === 'function')) {
+    if (claimed.has(ctx)) return
+    claimed.add(ctx)
+  }
   try {
     const doc = typeof document === 'undefined' ? null : document
     const styleElement = ensureFigureStyles(doc)

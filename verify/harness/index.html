@@ -796,6 +796,7 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           delete noEffect.ctx.effect
           window.__module.apply(noEffect.ctx)
           window.__module.apply(noEffect.ctx)
+          expect(noEffect.defs.length === 1, 'a second apply does not add a second fence layer', String(noEffect.defs.length))
           const strayStyles = document.querySelectorAll('style[id="dsh-dyslexia-figure-style"]')
           expect(
             strayStyles.length === 1,
