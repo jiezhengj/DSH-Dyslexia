@@ -51,7 +51,7 @@ specs/002-visual-first-preference/
 ├── research.md
 ├── data-model.md
 ├── quickstart.md
-├── evidence.md                 # 构建/检查/探针输出与未取证项（G1–G8、G11、G12 未取证，G9/G10 已由 0.2.5 关闭）
+├── evidence.md                 # 构建/检查/探针输出与未取证项（G1–G8、G11–G13 未取证，G9/G10 已由 0.2.5 关闭）
 ├── contracts/
 │   ├── plugin-config.md        # 配置项与宿主侧读取契约
 │   ├── settings-row.md         # 设置行的槽契约、DOM/可访问性契约

@@ -17,9 +17,9 @@ ctx.slots.inject('settings.general.item', () => ctx.slots.register({
 - 注册条件：`ctx.slots.inject`/`ctx.slots.register` 都是函数，且 `ctx.configForms.get('dsh-dyslexia')` 返回 face；否则整行不注册（不抛错、不占位，没有"不可用"状态）。
 - 组件 MUST NOT 依赖 owner 传入的任何 props；值从 `inject.hooks.visualFirst`（store）读取，写入路径从 `inject.setValue` 取得。
 - `createVisualFirstRow(face)` MUST 返回 `{ store, component, inject }`；`inject` MUST 始终带 `hooks.visualFirst`，MUST 带 `readHostValue`（= 再读一次 `readPreference(face)` 的快照），`setValue` MUST 仅在 host face 的 `set` 是函数时存在，否则整个键缺席。
-- 读者点击而 `inject.setValue` 缺席时，行 MUST 把开关放回宿主当前值（`readHostValue()` 重读快照；读不到才退回点击前的值）并显示 `settingFailed` 句，MUST NOT 静默停在读者点出的新值上。
+- 读者点击而 `inject.setValue` 缺席时，行 MUST 把开关放回宿主当前值（`readHostValue()` 重读快照）并显示 `settingFailed` 句，MUST NOT 静默停在读者点出的新值上。`readHostValue` 在有 face 时总会挂上（`src/client/settings.js:182-184`），而设置行只在有 face 时注册（`src/client/entry.js:133-134`），所以任何已挂载的行都有它；它缺席意味着没有 face、因而没有已挂载行，此时才用点击前捕获的值兜底。face 存在但快照不可读（缺 `getSnapshot`、抛错或缺字段）时，`readPreference`（`settings.js:41-51`）返回默认 `true`，恢复目标是 `true`，不是捕获值（见 `evidence.md` G12）。
 
-**回退目标**：写入被拒、reject 或 thenable 抛错时，行 MUST 把开关放回**宿主当前值**，而不是点击前捕获的值。DSH 的 `config-form` 在拒绝时会先重载自己的镜像并通知订阅者，然后才 resolve `false`（`dsh-client-ui-settings/src/client/config-form.ts` 的 `recover()`），所以点击前捕获的值可能比宿主的旧；两个窗口同时改值时，放回旧捕获值会覆盖别处写入的新值。`inject.readHostValue` 缺席（没有可读的 face）时才用捕获值兜底。
+**回退目标**：写入被拒、reject 或 thenable 抛错时，行 MUST 把开关放回**宿主当前值**，而不是点击前捕获的值。DSH 的 `config-form` 在拒绝时会先重载自己的镜像并通知订阅者，然后才 resolve `false`（`dsh-client-ui-settings/src/client/config-form.ts` 的 `recover()`），所以点击前捕获的值可能比宿主的旧；两个窗口同时改值时，放回旧捕获值会覆盖别处写入的新值。`inject.readHostValue` 缺席不代表「有 face 但读不到」：它只要有 face 就挂上（`src/client/settings.js:182-184`），而设置行只在有 face 时注册（`src/client/entry.js:133-134`），所以任何已挂载的行都有它；缺席只意味着没有 face、没有已挂载行，只有那时才用捕获值兜底。face 存在但 `getSnapshot` 缺失或抛错时，`readPreference`（`settings.js:41-51`）返回默认 `true`（G12），不表示「读不到」，所以恢复目标是 `true` 而不是捕获值。
 
 ## 数据面
 
@@ -61,9 +61,9 @@ ctx.slots.inject('settings.general.item', () => ctx.slots.register({
 | --- | --- |
 | `configForms` 缺失 | 不注册行，渲染层照常 |
 | 快照缺字段 | 行按 `true` 显示，不禁用 |
-| 写入 resolve `false` | 开关回到宿主当前值（`readHostValue` 重读；读不到才用点击前捕获的值）+ `settingFailed` |
+| 写入 resolve `false` | 开关回到宿主当前值（`readHostValue` 重读；快照不可读时按默认 `true`，见 G12；只有没有已挂载行、`readHostValue` 缺席时才用点击前捕获的值）+ `settingFailed` |
 | 写入 reject | 开关回到宿主当前值（同上）+ `settingFailed` |
 | 写入返回的 thenable 的 `then` 抛错 | 当作失败写入：不报错到点击处理器，开关回到宿主当前值 + `settingFailed` |
-| 宿主 face 没有 `set` | `inject` 不带 `setValue`；点击回到宿主当前值（读不到才用捕获值）+ `settingFailed` |
+| 宿主 face 没有 `set` | `inject` 不带 `setValue`；点击经 `readHostValue` 回到宿主当前值（该 face 存在时总会挂上；快照不可读时按默认 `true`；只有没有已挂载行时才用捕获值）+ `settingFailed` |
 | 宿主 `t` 回显键名 / 抛错 / 空白 | 回落包内 8 语言字典（复用 001 的 `hostKey` 命名空间发问） |
 | 宿主已在别处注册同 id | 宿主去重，不重复 |
