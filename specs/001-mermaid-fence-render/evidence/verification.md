@@ -396,6 +396,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.21 | client.js 769453 bytes | sources s
 | 0.1.18 | `45082937620` | success | `a84c639452632014ea9fbde9063b7b4f06d236d5` | `4048815195` | 33 |
 | 0.1.19 | `45086312392` | success | `9bcbc948d917b04df6f8a93639a4d6437ac5a74c` | `4049111154` | 33 |
 | 0.1.20 | `45088530926` | success | `43a5602197d04d37211db3c5c225d5b9b3ffe059` | `4049292002` | 33 |
+| 0.1.21 | `45091169265` | success | `75589577bf6a3e8ac8258485c7d85bc441e93cc4` | `4049694107` | 33 |
 
 > `—` 表示该次发布没有对应记录：0.1.0 是手动 `npm publish`，没有 provenance；0.1.5 的第一次是失败的运行，没有产物。0.1.3 与 0.1.4 当时没有记下 logIndex，这里写"未记录"而不是补造一个。
 
@@ -712,6 +713,15 @@ npm notice publish Provenance statement published to transparency log: https://s
 + @jiezhengj/dsh-dyslexia@0.1.20
 ```
 
+```text
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.21 | client.js 769453 bytes | sources sha256:44d73fcd045111f9b2c7dd5f3a8a4da7 | all 39 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.1.21 | client.js 769453 bytes | sources sha256:44d73fcd045111f9b2c7dd5f3a8a4da7 | all 220 checks passed (/usr/bin/google-chrome)
+npm notice shasum: 75589577bf6a3e8ac8258485c7d85bc441e93cc4
+npm notice total files: 33
+npm notice publish Provenance statement published to transparency log: https://search.sigstore.dev/?logIndex=4049694107
++ @jiezhengj/dsh-dyslexia@0.1.21
+```
+
 ## E-CI 发布前检查抓到一个真实缺陷（0.1.5 第一次运行）
 
 `45046044274` 在 "Refuse to publish if the committed chunk is stale" 这一步失败：
@@ -727,13 +737,13 @@ npm notice publish Provenance statement published to transparency log: https://s
 
 ## E-INS 从 registry 安装
 
-`plugin_manager remove_bundle @jiezhengj/dsh-dyslexia`（卸 0.1.19，pnpm 输出 `- @jiezhengj/dsh-dyslexia 0.1.19`）→ `install_bundle` 目标 `@jiezhengj/dsh-dyslexia@0.1.20`，结果 `application: "applied"`、`version: "0.1.20"`，pnpm 输出：
+`plugin_manager remove_bundle @jiezhengj/dsh-dyslexia`（卸 0.1.20，pnpm 输出 `- @jiezhengj/dsh-dyslexia 0.1.20`）→ `install_bundle` 目标 `@jiezhengj/dsh-dyslexia@0.1.21`，结果 `application: "applied"`、`version: "0.1.21"`，pnpm 输出：
 
 ```text
 dependencies:
-+ @jiezhengj/dsh-dyslexia 0.1.20
++ @jiezhengj/dsh-dyslexia 0.1.21
 
-Done in 2.8s using pnpm v11.28.5
+Done in 3.4s using pnpm v11.28.5
 ```
 
 第一次尝试失败过一次，原因是镜像落后（`ERR_PNPM_NO_MATCHING_VERSION … while fetching it from https://registry.npmmirror.com/`，当时 npmjs 的版本文件已 200 但 tarball 仍 404）；等 npmjs 的 tarball 复制完成后再按包名安装即成功。这个滞后每次发版都会出现（约 2–10 分钟），不是包的问题。
@@ -742,11 +752,11 @@ Done in 2.8s using pnpm v11.28.5
 
 | 检查 | 实测 |
 |---|---|
-| profile 依赖 | `"@jiezhengj/dsh-dyslexia": "0.1.20"`（版本号，不是 `link:`） |
-| `node_modules/@jiezhengj/dsh-dyslexia/client.js` | 769,453 字节，SHA256 `910E7E465228102851AC14228B994FBA418FA215C17C90140C1C2410650DA7DE`（与仓库根逐字节相同） |
+| profile 依赖 | `"@jiezhengj/dsh-dyslexia": "0.1.21"`（版本号，不是 `link:`） |
+| `node_modules/@jiezhengj/dsh-dyslexia/client.js` | 769,453 字节，SHA256 `C65A95A2E754BFEF9F64043C496EF976EF66352E915B976E005F2C82D4FF7C03`（与仓库根逐字节相同） |
 | `locale/` | 8 个 json |
 | `docs/` | 9 个文件（8 篇 `DETAIL*.md` + `preview.svg`） |
-| 包内 `version` | `0.1.20` |
+| 包内 `version` | `0.1.21` |
 
 ## E-LIVE 真机（DSH 桌面窗口内）
 

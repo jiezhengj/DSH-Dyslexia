@@ -442,7 +442,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T227 文档评审 P0：按 0.1.21 重跑两套检查，把 E-BLD/E-CHK/E-HARN 三块用**同一次运行**的完整输出整段重写（E-CHK 的第 37 行随着报告串改成 `owned by engine and contract alike` 而更新）
 - [x] T228 文档评审 P1-1/P1-2/P1-3：E-LIVE 引言的“当前版本（0.1.21）”“从 0.1.2 到 0.1.21”“不能自动转移到 `0.1.21`”；G5 改成“0.1.17 与 0.1.18 是 216 项，0.1.19 起 220 项”；T079 状态行的标题与正文都写 0.1.21
 - [x] T229 文档评审 P2-1/P2-2/P2-3：`plan.md:33` 的行数按 0.1.21 实测重写；E-PROBE 的 PS2/PS3 两行补上“静态 `both size limits reach the engine, each proven on its own` 也会变红（`check-bundle: 1 failed, 38 passed`）”；`quickstart.md`、`README.md`、`README.zh.md` 的“启用/停用立刻生效”改成“卸载已观察、启用与停用走宿主插件机制（未单独取证）”
-- [ ] T230 发布 `v0.1.21`（提交 → tag → Actions → 从 registry 装回 profile `desktop`）→ 补 E-PUB/E-INS 的 0.1.21 行
+- [x] T230 发布 `v0.1.21`（提交 `577bbe0`）→ GitHub Actions run `45091169265` success（CI 39 项静态 / 220 项浏览器，shasum `75589577bf6a3e8ac8258485c7d85bc441e93cc4`，logIndex `4049694107`，33 文件）→ 从 registry 装回 profile `desktop`（依赖 `"0.1.21"`，安装副本 769,453 字节 / SHA256 `C65A95A2E754BFEF9F64043C496EF976EF66352E915B976E005F2C82D4FF7C03` 与仓库根逐字节相同）→ 补 E-PUB/E-INS 的 0.1.21 行
 - [ ] T231 第十九轮双评审（目标 PASS；两份都 PASS 才把 feature 001 标记完成）
 
 ## Dependencies & Execution Order
