@@ -6,7 +6,7 @@
 
 DeepSeek Harness ya dibuja Markdown en el chat. Este complemento añade una sola cosa: cuando una respuesta trae un bloque de código `mermaid`, el chat lo dibuja como diagrama ahí mismo, dentro del mensaje y en el hilo de la conversación. No se abre una ventana al lado ni se cambia a un panel lateral.
 
-El bloque de código no se consume: sigue en el mensaje como texto, de modo que se puede copiar, buscar, reenviar y leer cuando este complemento ya no esté.
+El bloque de código no se consume: sigue en el mensaje como texto, de modo que se puede copiar, reenviar y leer cuando este complemento ya no esté (la búsqueda no está verificada: ver G7).
 
 ## Por qué está construido así
 

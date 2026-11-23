@@ -226,6 +226,8 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
               const marker = view.stage.querySelector('.dsh-dyslexia-source code')
               expect(!!marker && /(^| )language-mermaid( |$)/.test(marker.className), `[${lang}] the expanded source keeps its fence language`, marker ? marker.className : 'no marker')
               expect(view.stage.querySelector('[role="presentation"]') !== null, `[${lang}] the mount point is presentational`)
+            } else {
+              bad(`[${lang}] the actions bar is missing`)
             }
             const languageClipboard = Object.getOwnPropertyDescriptor(navigator, 'clipboard')
             Object.defineProperty(navigator, 'clipboard', {
@@ -244,7 +246,7 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             const spokenBox = spoken !== null ? getComputedStyle(spoken) : null
             const spokenVisible = spoken !== null && spokenBox.display !== 'none' && spoken.getClientRects().length > 0
             expect(
-              spokenVisible && spokenBox !== null && parseFloat(spokenBox.fontSize) >= 10,
+              spokenVisible && spokenBox !== null && parseFloat(spokenBox.fontSize) === 12,
               `[${lang}] the copy answer can be read, not only heard`,
               (spokenBox ? spokenBox.fontSize + ' / ' + spokenBox.color : 'no status'),
             )
@@ -417,7 +419,11 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           } catch (error) {
             childrenGetterCaught = error
           }
-          expect(childrenSetupError === null, 'the hostile children bag mounted without a setup error', childrenSetupError ? String(childrenSetupError.message) : '')
+          expect(
+            childrenSetupError === null && !!childrenView && childrenView.stage.childNodes.length > 0,
+            'the hostile children bag mounted without a setup error',
+            childrenSetupError ? String(childrenSetupError.message) : childrenView ? `nodes=${childrenView.stage.childNodes.length}` : 'no view',
+          )
           expect(!childrenGetterCaught, 'the layer survives a throwing children getter', childrenGetterCaught ? String(childrenGetterCaught.message) : '')
           expect(!!childrenGetterRendered, 'a throwing children getter still yields an element')
           expect(
@@ -856,10 +862,10 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           // #31 while rendering, and if that happened inside this layer's own
           // boundary the boundary could not catch it — the message would vanish.
           const refused = [
-            { label: 'object', value: { nope: true }, streaming: true },
-            { label: 'function', value: () => null, streaming: true },
-            { label: 'object in a failed picture', value: { nope: true }, streaming: false },
-            { label: 'array with an object', value: [hostBlock(BAD), { nope: true }], streaming: false },
+            { label: 'object', value: { nope: true }, code: CODE, streaming: true },
+            { label: 'function', value: () => null, code: CODE, streaming: true },
+            { label: 'object in a failed picture', value: { nope: true }, code: BAD, streaming: false },
+            { label: 'array with an object', value: [hostBlock(BAD), { nope: true }], code: BAD, streaming: false },
           ]
           for (const scenario of refused) {
             const stage = document.createElement('div')
@@ -875,7 +881,7 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             try {
               root.render(
                 React.createElement(Layer, {
-                  code: scenario.streaming ? CODE : BAD,
+                  code: scenario.code,
                   streaming: scenario.streaming,
                   children: scenario.value,
                 }),
@@ -891,6 +897,11 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
               !threw && stage.childNodes.length > 0 && text.length > 0,
               `a refused children cannot empty the message — ${scenario.label}`,
               threw ? String(threw).slice(0, 60) : `children=${stage.childNodes.length} text=${text.slice(0, 20)}`,
+            )
+            expect(
+              stage.textContent.indexOf(scenario.code) !== -1,
+              `a refused children falls back to the source — ${scenario.label}`,
+              JSON.stringify(stage.textContent.slice(0, 40)),
             )
             expect(
               consoleErrors.every((line) => line.indexOf('#31') === -1),
@@ -1167,12 +1178,22 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           const zoomButtons = Array.prototype.slice
             .call(wideStage.querySelectorAll('button'))
             .filter((node) => !node.closest('.dsh-dyslexia-bar'))
-          expect(zoomButtons.length > 0, 'a scaled picture offers the engine zoom buttons', String(zoomButtons.length))
+          expect(
+            zoomButtons.length > 0 && quietZoom.length === 0,
+            'a scaled picture offers the engine zoom buttons',
+            `scaled=${zoomButtons.length} fitting=${quietZoom.length}`,
+          )
           const zoomInsideImage = zoomButtons.filter((node) => wideImage && wideImage.contains(node))
           expect(zoomInsideImage.length === 0, 'the zoom buttons sit outside the image', String(zoomInsideImage.length))
           const zoomNames = zoomButtons.map((node) => node.getAttribute('aria-label') || node.textContent || '')
           const untranslatedZoom = zoomNames.filter((name) => /Zoom|Reset/i.test(name))
           expect(zoomNames.length > 0 && untranslatedZoom.length === 0, 'the zoom buttons speak the interface language', zoomNames.join(' | '))
+          const zoomTitles = zoomButtons.map((node) => node.getAttribute('title') || '')
+          expect(
+            zoomTitles.length === zoomNames.length && zoomTitles.every((title, index) => title === zoomNames[index]),
+            'the zoom button titles say the same as their names',
+            zoomTitles.join(' | '),
+          )
           const reachable = zoomButtons.filter(
             (node) => node.disabled !== true && node.offsetParent !== null && node.getClientRects().length > 0,
           )

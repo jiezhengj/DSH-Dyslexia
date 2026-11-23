@@ -6,7 +6,7 @@
 
 ## Summary
 
-做一个 DSH 插件包 `@jiezhengj/dsh-dyslexia`，一个包两个半边：宿主半边（`index.js`）向系统提示词注册一段静态能力播报，只用一句话说明"标记为 `mermaid` 的代码块会被就地渲染成图，图的文字就是它的全部信息"；浏览器半边（`client.js`）向 `conversation.chat.markdown.fence` 槽注册一层 `key: 'mermaid'` 的 hoc 层，把该代码块原位替换为矢量图，并提供源码查看、图内缩放、深色浅色跟随与窄屏重排。渲染引擎 pele（Mermaid 12.1 语法，零依赖，MIT）以内联形式打进 `client.js`，运行期零网络请求、零额外运行时。层在卸载、禁用或渲染失败时一律回退到宿主原本的代码块（`children`），因此历史会话里的图源文本永远可读、可检索。
+做一个 DSH 插件包 `@jiezhengj/dsh-dyslexia`，一个包两个半边：宿主半边（`index.js`）向系统提示词注册一段静态能力播报，只用一句话说明"标记为 `mermaid` 的代码块会被就地渲染成图，图的文字就是它的全部信息"；浏览器半边（`client.js`）向 `conversation.chat.markdown.fence` 槽注册一层 `key: 'mermaid'` 的 hoc 层，把该代码块原位替换为矢量图，并提供源码查看、图内缩放、深色浅色跟随与窄屏重排。渲染引擎 pele（Mermaid 12.1 语法，零依赖，MIT）以内联形式打进 `client.js`，运行期零网络请求、零额外运行时。层在卸载、禁用或渲染失败时一律回退到宿主原本的代码块（`children`），因此历史会话里的图源文本永远可读（检索未经取证，见 G7）。
 
 ## Technical Context
 
@@ -30,7 +30,7 @@
 - 所有宿主服务调用、注册调用、渲染调用都就地降级，绝不把异常抛回宿主；
 - 宿主派发的数据不符合预期时，一律交回宿主原本的代码块。
 
-**Scale/Scope**: 单张图通常 5–20 个节点；上限由 pele 的 `limit`/`outputLimit`/`maxEdges` 约束，超限即回退为文本（FR-004）。代码量实况（2026-11-23 实测）：宿主 `index.js` 57 行；`src/client` 共 1001 行（view 484 / i18n 209 / styles 123 / figure 91 / entry 94）；`scripts/build-client.mjs` 147 行。校验侧分两套：`v0.1.24` 发布时 `verify/check-bundle.mjs` 776 行、`verify/harness/index.html` 1177 行；`v0.1.25` 是 804 行与 1216 行（第二十二、二十三轮的核验提交都只改这两套与 `specs/`，不发版）；驱动 `verify/run-harness.mjs` 131 行各版相同。
+**Scale/Scope**: 单张图通常 5–20 个节点；上限由 pele 的 `limit`/`outputLimit`/`maxEdges` 约束，超限即回退为文本（FR-004）。代码量实况（2026-11-23 实测）：宿主 `index.js` 57 行；`src/client` 共 1001 行（view 484 / i18n 209 / styles 123 / figure 91 / entry 94）；`scripts/build-client.mjs` 147 行。校验侧分两套：`v0.1.24` 发布时 `verify/check-bundle.mjs` 776 行、`verify/harness/index.html` 1177 行；`v0.1.25` 是 804 行与 1216 行（第二十二轮的核验提交只改这两套与 `specs/`、不发版；第二十三轮的文档修复改了随包的 `README.md` 与 `README.zh.md`，因此随 `0.1.25` 发布）；驱动 `verify/run-harness.mjs` 131 行各版相同。
 
 ## Constitution Check
 
@@ -109,7 +109,7 @@ verify/
 ├── check-bundle.mjs     # 纯 Node 内置模块的静态与行为断言（39 项）
 ├── run-harness.mjs      # 用真实 Chromium 打开夹具并读判定
 └── harness/
-    ├── index.html       # 提交进仓库的浏览器夹具（223 项）
+    ├── index.html       # 提交进仓库的浏览器夹具（228 项）
     └── vendor/          # React 18.3.1 UMD 副本
 tests/                   # 不放测试框架；verify/ 即验收脚本
 ```

@@ -6,7 +6,7 @@
 
 DeepSeek Harness affiche déjà le Markdown dans la discussion. Ce greffon n’ajoute qu’une chose : quand une réponse contient un bloc de code `mermaid`, la discussion le dessine en schéma à cet endroit, dans le message et dans le fil de la conversation. Aucune fenêtre ne s’ouvre à côté, aucun panneau latéral ne s’affiche.
 
-Le bloc de code n’est jamais consommé. Il reste le texte du message : on peut le copier, le rechercher, le transmettre et le lire une fois ce greffon retiré.
+Le bloc de code n’est jamais consommé. Il reste le texte du message : on peut le copier, le transmettre et le lire une fois ce greffon retiré (la recherche n’est pas vérifiée : voir G7).
 
 ## Pourquoi cette construction
 

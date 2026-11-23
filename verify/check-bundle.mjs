@@ -760,8 +760,18 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
   // Mentioning a fixture name is still not enough: `!!drawn || true` reads the
   // name and is true whatever it holds. A condition whose value can be decided
   // by a constant in a short-circuit or ternary branch is treated as hollow.
-  const constantBranch =
-    /\|\|\s*(?:true|1|!0|"")|&&\s*(?:false|0|null|undefined|"")|\?\s*[^:]*:\s*(?:true|false)\b/
+  // A comparison of a name with itself (`x === x`, `x !== x`) is true whatever
+  // the name holds, so it joins the constant branches below.
+  const selfComparison = (head) => /^([\w$.()'"\[\] ]+?)\s*(===|!==)\s*\1$/.test(head)
+  const constantBranch = new RegExp(
+    [
+      '\\|\\|\\s*(?:true|1|!0|"")',
+      '&&\\s*(?:true|1|!0|"")',
+      '\\|\\|\\s*(?:false|0|null|undefined|"")',
+      '&&\\s*(?:false|0|null|undefined|"")',
+      '\\?\\s*[^:]*:\\s*(?:true|false)\\b',
+    ].join('|'),
+  )
   const hollow = needed.filter((name) => {
     const at = harness.indexOf(name)
     const open = harness.lastIndexOf('expect(', at)
@@ -774,6 +784,7 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
       head.length === 0 ||
       literals.test(head) ||
       !mentionsFixtureName(head) ||
+      selfComparison(head) ||
       constantBranch.test(head)
     )
   })

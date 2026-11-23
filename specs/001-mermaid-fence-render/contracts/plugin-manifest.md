@@ -7,7 +7,7 @@
 ```json
 {
   "name": "@jiezhengj/dsh-dyslexia",
-  "version": "0.1.25",
+  "version": "0.1.26",
   "description": "Draws mermaid code blocks in DeepSeek Harness conversations as diagrams, in place in the message.",
   "type": "module",
   "main": "index.js",
@@ -116,7 +116,7 @@
 15. **文案完整**：12 个键 × 8 语言齐全，失败整句里不含 `{{reason}}`、不含引擎英文。
 16. **key 回显防线**：`i18n.js` 的 `isResolved` 拒绝回显 key、纯空白、未替换占位符。
 
-# 浏览器行为校验（`node verify/run-harness.mjs --list`，216 项 → 0.1.19 起 220 项 → 0.1.24 之后的核验提交起 223 项）
+# 浏览器行为校验（`node verify/run-harness.mjs --list`，216 项 → 0.1.19 起 220 项 → 0.1.24 之后的核验提交起 223 项 → 0.1.26 起 228 项（中间一度 222 项））
 
 夹具 `verify/harness/index.html` 提交进仓库，用真实 Chromium 打开 `file://`，覆盖：槽注册形状、8 语言逐个驱动、5 类敌意 `t`、绘制/坏图/引擎抛错/getter 抛错、复制成功与失败、360 px 窄屏、主题换色、locale 重试、7 种畸形 `ctx`、内部 key 不外泄。
 

@@ -6,7 +6,7 @@
 
 DeepSeek Harness stellt Markdown im Chat bereits dar. Dieses Plugin fügt genau eines hinzu: Enthält eine Antwort einen `mermaid`-Codeblock, zeichnet der Chat ihn an genau dieser Stelle als Diagramm – in der Nachricht, im Lauf der Unterhaltung. Daneben öffnet sich kein Fenster, nichts wechselt in eine Seitenleiste.
 
-Der Codeblock wird nie verbraucht. Er bleibt der Text der Nachricht: kopierbar, durchsuchbar, weitergebbar und auch dann noch lesbar, wenn dieses Plugin entfernt ist.
+Der Codeblock wird nie verbraucht. Er bleibt der Text der Nachricht: kopierbar, weitergebbar und auch dann noch lesbar, wenn dieses Plugin entfernt ist (Suchen ist nicht verifiziert: siehe G7).
 
 ## Warum es so gebaut ist
 

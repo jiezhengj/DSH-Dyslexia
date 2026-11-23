@@ -6,7 +6,7 @@
 
 DeepSeek Harness already renders Markdown in a chat. This plugin adds one thing: when a reply contains a `mermaid` code block, the chat draws it as a diagram right there — inside the message, in the flow of the conversation. No window opens beside it, nothing switches to a side panel.
 
-The code block is never consumed. It stays in the message as text: it can be copied, searched, sent on, and read after this plugin is gone.
+The code block is never consumed. It stays in the message as text: it can be copied, sent on, and read after this plugin is gone (searching is not verified: see G7).
 
 ## Why it is built this way
 
