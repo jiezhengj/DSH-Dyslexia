@@ -353,7 +353,26 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             codeGetterThrew = error
           }
           await tick(60)
-          expect(!codeGetterThrew, 'a throwing code getter does not reach the host')
+          // React 18 renders in the background, so nothing thrown inside work
+          // reaches the call site: an assertion on `codeGetterThrew` would be
+          // tautological. The falsifiable version calls the layer's own render,
+          // which is synchronous, with the same hostile props bag.
+          let codeGetterRendered = null
+          let codeGetterCaught = null
+          try {
+            const hostileCode = { streaming: false, children: hostBlock(CODE) }
+            Object.defineProperty(hostileCode, 'code', {
+              enumerable: true,
+              get() {
+                throw new Error('code getter exploded')
+              },
+            })
+            codeGetterRendered = new Layer(hostileCode).render()
+          } catch (error) {
+            codeGetterCaught = error
+          }
+          expect(!codeGetterCaught, 'the layer survives a throwing code getter', codeGetterCaught ? String(codeGetterCaught.message) : '')
+          expect(!!codeGetterRendered, 'a throwing code getter still yields an element')
           expect(!!codeGetterView && codeGetterView.stage.textContent.indexOf(CODE) !== -1, 'a throwing code getter leaves the host block', codeGetterView ? JSON.stringify(codeGetterView.stage.textContent.slice(0, 40)) : 'no view')
           if (codeGetterView) {
             codeGetterView.root.unmount()
@@ -361,7 +380,6 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           }
 
           const childrenGetter = { code: CODE, streaming: false }
-          let childrenThrew = null
           let childrenView = null
           try {
             const stage = document.createElement('div')
@@ -385,7 +403,22 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           // this try block: what must be asserted is the visible outcome, not the
           // absence of an exception here. A host block we cannot even read must
           // still leave the reader its source text.
-          expect(!childrenThrew, 'a throwing children getter does not reach the host')
+          let childrenGetterRendered = null
+          let childrenGetterCaught = null
+          try {
+            const hostileChildren = { code: CODE, streaming: false }
+            Object.defineProperty(hostileChildren, 'children', {
+              enumerable: true,
+              get() {
+                throw new Error('children getter exploded')
+              },
+            })
+            childrenGetterRendered = new Layer(hostileChildren).render()
+          } catch (error) {
+            childrenGetterCaught = error
+          }
+          expect(!childrenGetterCaught, 'the layer survives a throwing children getter', childrenGetterCaught ? String(childrenGetterCaught.message) : '')
+          expect(!!childrenGetterRendered, 'a throwing children getter still yields an element')
           expect(
             !!childrenView && childrenView.stage.textContent.indexOf(CODE) !== -1,
             'a throwing children getter leaves the source',

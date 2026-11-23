@@ -8,7 +8,7 @@ description: "Task list for 会话内图形渲染"
 
 **Prerequisites**: [plan.md](./plan.md), [spec.md](./spec.md), [research.md](./research.md), [data-model.md](./data-model.md), [contracts/](./contracts/), [quickstart.md](./quickstart.md)
 
-**Tests**: 本功能不引入测试框架（宪法原则 III）。验收 = `verify/check-bundle.mjs` 的 39 项静态断言 + `verify/run-harness.mjs --list` 的 220 项浏览器断言（0.1.9 起 118 项、0.1.10 起 119 项、0.1.11 起 152 项、0.1.12 起 156 项、0.1.13 起 197 项、0.1.14 起 205 项、0.1.15 与 0.1.16 是 213 项、0.1.17 起 216 项、0.1.19 起 220 项），外加 `quickstart.md` 证据表里的真机项（见 E-GAPS）。
+**Tests**: 本功能不引入测试框架（宪法原则 III）。验收 = `verify/check-bundle.mjs` 的 39 项静态断言 + `verify/run-harness.mjs --list` 的 222 项浏览器断言（0.1.9 起 118 项、0.1.10 起 119 项、0.1.11 起 152 项、0.1.12 起 156 项、0.1.13 起 197 项、0.1.14 起 205 项、0.1.15 与 0.1.16 是 213 项、0.1.17 起 216 项、0.1.19 起 220 项），外加 `quickstart.md` 证据表里的真机项（见 E-GAPS）。
 
 **Organization**: 按 spec 的用户故事分阶段；每个故事独立可验收。
 
@@ -549,7 +549,7 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 **当前自动化证据**（命令即证据，任何人 clone 后可复跑）：
 
 - `node verify/check-bundle.mjs` → **39 项全过**
-- `node verify/run-harness.mjs --list` → 真实 Chromium 里 **220 项全过**（夹具 `verify/harness/index.html`，已提交）
+- `node verify/run-harness.mjs --list` → 真实 Chromium 里 **222 项全过**（夹具 `verify/harness/index.html`，已提交）
 
 **真机证据**（`evidence/verification.md` 的 E-LIVE）：会话内就地成图、卸载回退、重装恢复、插件页说明；取证的版本是 0.1.2。
 

@@ -188,9 +188,11 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.24 | client.js 769453 bytes | sources 
 [ok] a host t that leaves a placeholder still shows words — 查看源码 | 复制源码 / 图
 [ok] a streaming fence shows only the host block
 [ok] a truthy streaming flag is honoured
-[ok] a throwing code getter does not reach the host
+[ok] the layer survives a throwing code getter
+[ok] a throwing code getter still yields an element
 [ok] a throwing code getter leaves the host block — "flowchart LR\n  A[Text] --> B[Picture]"
-[ok] a throwing children getter does not reach the host
+[ok] the layer survives a throwing children getter
+[ok] a throwing children getter still yields an element
 [ok] a throwing children getter leaves the source — "flowchart LR\n  A[Text] --> B[Picture]"
 [ok] a fence whose props read throws is left to the host, not the message — "flowchart LR\n  A[Text] --> B[Picture]"
 [ok] a non-string fence is left to the host
@@ -289,7 +291,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.24 | client.js 769453 bytes | sources 
 [ok] the zoom buttons speak the interface language — 放大 | 缩小 | 重置缩放
 [ok] every zoom button in reach can take the keyboard — 1/1 reachable of 3
 [ok] every zoom button is reachable once the picture is zoomed — 3/3 after zoom
-run-harness: @jiezhengj/dsh-dyslexia@0.1.24 | client.js 769453 bytes | sources sha256:5bc072d12a6078b7cb49ecba54131ae8 | all 220 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+run-harness: @jiezhengj/dsh-dyslexia@0.1.24 | client.js 769453 bytes | sources sha256:5bc072d12a6078b7cb49ecba54131ae8 | all 222 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
 同一次运行的 stderr 另有 7 段被**刻意捕获**的异常堆栈（loader ×3、prompt section ×3、module ×1，例如 `dsh-dyslexia: loader Error: host changed the loader`、`dsh-dyslexia: prompt section rejected Error: asynchronous failure`）：它们来自敌意宿主用例，属正常输出，不是失败。
@@ -306,7 +308,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.24 | client.js 769453 bytes | sources s
 
 ## E-PROBE 夹具能失败吗：用破坏性探针验证
 
-如果一个断言恒真，"套件全绿"就不构成证据。0.1.8 至 0.1.24 期间共做了二十七次探针（最后三次在 0.1.22、0.1.23 发布之后的核验提交里做，改动都只在从不随包的 `verify/` 与 `specs/` 里）：故意破坏被断言保护的代码、重建 `client.js`、跑两套检查、确认目标断言**变红**，再还原（0.1.10 起的几次在 `%TEMP%` 的仓库副本里做，不动工作树）。报告行里的项数属于**当时的套件**：0.1.10 = 119 项、0.1.11 = 152 项、0.1.12 = 156 项、0.1.13 = 197 项、0.1.14 = 205 项、0.1.15 起 = 213 项、0.1.17 起 = 216 项、0.1.19 起 = 220 项（静态 0.1.19 起 = 39 项）。
+如果一个断言恒真，"套件全绿"就不构成证据。0.1.8 至 0.1.24 期间共做了二十八次探针（最后三次在 0.1.22、0.1.23 发布之后的核验提交里做，改动都只在从不随包的 `verify/` 与 `specs/` 里）：故意破坏被断言保护的代码、重建 `client.js`、跑两套检查、确认目标断言**变红**，再还原（0.1.10 起的几次在 `%TEMP%` 的仓库副本里做，不动工作树）。报告行里的项数属于**当时的套件**：0.1.10 = 119 项、0.1.11 = 152 项、0.1.12 = 156 项、0.1.13 = 197 项、0.1.14 = 205 项、0.1.15 起 = 213 项、0.1.17 起 = 216 项、0.1.19 起 = 220 项（静态 0.1.19 起 = 39 项）。
 
 | 探针 | 破坏方式 | 变红的断言（含报告行） | 说明 |
 |---|---|---|---|
@@ -337,8 +339,9 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.24 | client.js 769453 bytes | sources s
 | PS11 | 把同一条 `expect(...)` 的条件换成 `1 === 1`（比较两个字面量，读不到任何东西） | 静态同上 → `fixture assertions without a condition: the fixture really replaced the drawing node`；`check-bundle: 1 failed, 38 passed`（exit 1）。这是第二十轮实现评审报出的 P3：旧守护只拒裸字面量，`1 === 1` 能骗过它 |
 |  PS12 | 整块删掉 `MutationObserver`，但在原位留一行 `// probe: MutationObserver deleted` 注释 | 静态 `every drawing the engine swaps in is named again` → `the watcher does not watch the drawing subtree`；`check-bundle: 1 failed, 38 passed`（exit 1）。夹具 `a swapped drawing is named again` 与 `a drawing swapped after a width change is named again` → `[bad] … graphics-document document|null|roledesc=flowchart`，`run-harness` 以 1 退出。同一轮 P3：文本断言原先直接读未剥注释的源码，注释里的名字能顶替真代码 |
 |  PS13 | 把夹具 `a swapped drawing is named again` 的条件从 `!!renamed && …` 换成 `!!renamed || true`（仍提到同名变量，不是字面量） | 静态 `the fixtures assert what the fixes promise, and can fail` → `fixture assertions without a condition: a swapped drawing is named again`；`check-bundle: 1 failed, 38 passed`（exit 1）。加固前两套全绿 |
+| PS14 | 删掉 `src/client/view.js` 的 `safeRead` 里的 `try`/`catch`（让读取宿主 props 真的能抛） | `node verify/run-harness.mjs` | `[bad] a throwing code getter still yields an element`、`[bad] a throwing code getter leaves the host block — ""`、`run-harness: 2 failed, 220 passed`、exit 1 | 变红 | 这两条结果断言真的依赖那道读取守卫：去掉后消息会变空 |
 
-静态检查里另有一条守护 `the fixtures assert what the fixes promise, and can fail`：它要求 P1/P2/P4/P5/PA/PB/PC 里那几个"能变红的断言名"继续存在于夹具中，并且每条名字必须落在一个**真正读值**的 `expect(` 条件里——条件为空、只是 `true`/`false`/`0` 这类字面量（PS9）、或是 `1 === 1` 这种读不到任何东西的自我比较（PS11）、`|| true` 这种非字面量的恒真分支（PS13）都会让它变红，名字只出现在注释里也算缺失（PS10）；否则说明有人把夹具掏空或删掉而代码检查仍绿。同一道守护的兄弟条款：读源码的文本断言一律先剥注释再比对，所以把代码换成同名注释也会红（PS12）。P6/P7 是另一道：两套检查各自的条目数被钉死，删一条也会红。
+静态检查里另有一条守护 `the fixtures assert what the fixes promise, and can fail`：它要求 P1/P2/P4/P5/PA/PB/PC/PS13 的断言名一个不少、每条都落在真正读值的条件里、条件里不得出现恒真分支。/P4/P5/PA/PB/PC 里那几个"能变红的断言名"继续存在于夹具中，并且每条名字必须落在一个**真正读值**的 `expect(` 条件里——条件为空、只是 `true`/`false`/`0` 这类字面量（PS9）、或是 `1 === 1` 这种读不到任何东西的自我比较（PS11）、`|| true` 这种非字面量的恒真分支（PS13）都会让它变红，名字只出现在注释里也算缺失（PS10）；否则说明有人把夹具掏空或删掉而代码检查仍绿。同一道守护的兄弟条款：读源码的文本断言一律先剥注释再比对，所以把代码换成同名注释也会红（PS12）。P6/P7 是另一道：两套检查各自的条目数被钉死，删一条也会红。
 
 ## E-COMP 兼容性断言与要求逐条对应
 

@@ -86,7 +86,7 @@ npm pack --dry-run   # 或 pnpm pack --dry-run
 |---|---|---|---|
 | E-COMP-1 | `node verify/check-bundle.mjs` | 39 项全过，其中"无版本门""可独立编译""畸形加载器不抛""工厂抛错仍可用""含边界与守卫""畸形宿主 ctx 不抛""宿主半边只注册一段、畸形宿主静默"与"停用后不留残留（该条实际证据是夹具，见 `contracts/client-fence-layer.md` 第 11 条）"合为第 ⑦ 组（前六项依次为 ①–⑥，见 `research.md` 的 D19），共七组必须全绿（这七组与 SC-006 的七类畸形宿主不是同一件事） | FR-013～FR-017 |
 | E-COMP-2 | `node scripts/build-client.mjs` | 末尾 `new Script(chunk)` 语法检查通过（故意插入语法错误时必须失败） | FR-015 / SC-008 |
-| E-COMP-3 | `node verify/run-harness.mjs --list`（夹具 `verify/harness/index.html` 已提交） | 220 项全绿，含故障注入（宿主 `t` 抛错/回显 key、围栏 `code`/`children` 取值器抛错、宿主交出 React 不收的 `children`、引擎抛错、无 slots 服务、坏语法、裁剪板缺失），宿主侧无未捕获异常 | FR-014～FR-016 / SC-006 / SC-009 |
+| E-COMP-3 | `node verify/run-harness.mjs --list`（夹具 `verify/harness/index.html` 已提交） | 222 项全绿，含故障注入（宿主 `t` 抛错/回显 key、围栏 `code`/`children` 取值器抛错、宿主交出 React 不收的 `children`、引擎抛错、无 slots 服务、坏语法、裁剪板缺失），宿主侧无未捕获异常 | FR-014～FR-016 / SC-006 / SC-009 |
 | E-COMP-4 | 发布包清单核对 | `npm pack` 后的 `package.json` 无 `engines`、无 dsh peer、无 `dsh.client.inject` | FR-013 / SC-007 |
 | E-COMP-5 | 真机装卸 | DSH 正常打开、会话正常、图照常显示；随后 `remove_bundle` 后旧会话立刻回退为代码块，重装后立刻恢复（已取证，但**取证的版本是 0.1.2**，见 evidence/verification.md 的 E-LIVE；当前版本的复核是 T079/G13） | FR-009 / FR-010（+ G13 的当前版本复核）|
 | E-COMP-6 | 宿主升级演练（记版本号，下次升级后复跑） | 升级后应用能打开、历史图回退为文本、重装后图恢复 | US5（**未取证**） |
