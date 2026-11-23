@@ -417,6 +417,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.25 | client.js 769453 bytes | sources s
 | 0.1.22 | `45095997704` | success | `a685404c92d404f54c1a9a35ba87ccc729f2b49d` | `4049818582` | 33 |
 | 0.1.23 | `45097568628` | success | `36154060cc710492abd04fe7037d0e2fc9b3cd16` | `4049860584` | 33 |
 | 0.1.24 | `45101933555` | success | `2f46c409eb78b648d2b31dafe4d921c8ede66fee` | `4049949251` | 33 |
+| 0.1.25 | `45109072637` | success | `04f750a1bce2cd320e4dc9f67c03dca211bd09a6` | `4050087976` | 33 |
 
 > `—` 表示该次发布没有对应记录：0.1.0 是手动 `npm publish`，没有 provenance；0.1.5 的第一次是失败的运行，没有产物。0.1.3 与 0.1.4 当时没有记下 logIndex，这里写"未记录"而不是补造一个。
 
@@ -779,6 +780,17 @@ npm notice publish Provenance statement published to transparency log: https://s
 + @jiezhengj/dsh-dyslexia@0.1.24
 ```
 
+0.1.25（run `45109072637`，39 项静态 / 223 项浏览器）：
+
+```text
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.25 | client.js 769453 bytes | sources sha256:960427d5930809854a2e662f81a520f0 | all 39 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.1.25 | client.js 769453 bytes | sources sha256:960427d5930809854a2e662f81a520f0 | all 223 checks passed (/usr/bin/google-chrome)
+npm notice shasum: 04f750a1bce2cd320e4dc9f67c03dca211bd09a6
+npm notice total files: 33
+npm notice publish Provenance statement published to transparency log: https://search.sigstore.dev/?logIndex=4050087976
++ @jiezhengj/dsh-dyslexia@0.1.25
+```
+
 ## E-CI 发布前检查抓到一个真实缺陷（0.1.5 第一次运行）
 
 `45046044274` 在 "Refuse to publish if the committed chunk is stale" 这一步失败：
@@ -794,26 +806,26 @@ npm notice publish Provenance statement published to transparency log: https://s
 
 ## E-INS 从 registry 安装
 
-`install_bundle @jiezhengj/dsh-dyslexia@0.1.24` 第一次返回 `{"stage":"install","error":{"code":"already-installed"},"nextStep":"… call remove_bundle first"}`——因为 profile 里装着 0.1.23，同一包名不允许直接换版本。先 `remove_bundle @jiezhengj/dsh-dyslexia`（输出 `- @jiezhengj/dsh-dyslexia 0.1.23`），再安装即 `{"stage":"enable","changed":true,"application":"applied","version":"0.1.24"}`，pnpm 输出：
+先 `remove_bundle @jiezhengj/dsh-dyslexia`（输出 `- @jiezhengj/dsh-dyslexia 0.1.24`；同一包名不允许直接换版本，直接装会返回 `{"stage":"install","error":{"code":"already-installed"},…}`），再 `install_bundle @jiezhengj/dsh-dyslexia@0.1.25` 即 `{"stage":"enable","changed":true,"application":"applied","version":"0.1.25"}`，pnpm 输出：
 
 ```text
 dependencies:
-+ @jiezhengj/dsh-dyslexia 0.1.24
++ @jiezhengj/dsh-dyslexia 0.1.25
 
-Done in 3.2s using pnpm v11.28.5
+Done in 3.6s using pnpm v11.28.5
 ```
 
-装之前先按 registry 等 tarball 可下载（第 20 次轮询返回 200）；npmjs 的版本文件先 200、tarball 后到，这个滞后每次发版都会出现（约 2–10 分钟），不是包的问题。
+装之前先按 registry 等 tarball 可下载（第 21 次轮询返回 200）；npmjs 的版本文件先 200、tarball 后到，这个滞后每次发版都会出现（约 2–10 分钟），不是包的问题。
 
 安装后实测（`C:\Users\jiezhengj\.dsh\profiles\desktop`）：
 
 | 检查 | 实测 |
 |---|---|
-| profile 依赖 | `"@jiezhengj/dsh-dyslexia": "0.1.24"`（版本号，不是 `link:`） |
-| `node_modules/@jiezhengj/dsh-dyslexia/client.js` | 769,453 字节，SHA256 `79C3EC794FC712FD88CF2AC1FBA6A5DE770F6BA4BC895687EA7B4ABE6BA82B07`（与仓库根逐字节相同） |
+| profile 依赖 | `"@jiezhengj/dsh-dyslexia": "0.1.25"`（版本号，不是 `link:`） |
+| `node_modules/@jiezhengj/dsh-dyslexia/client.js` | 769,453 字节，SHA256 `D4742D446C8BC21BA7EDC415490FBC2AB64A3FF6744242194D7272047CFC9219`（与仓库根逐字节相同） |
 | `locale/` | 8 个 json |
 | `docs/` | 9 个文件（8 篇 `DETAIL*.md` + `preview.svg`） |
-| 包内 `version` | `0.1.24` |
+| 包内 `version` | `0.1.25` |
 
 新 chunk 写进 profile 磁盘后，**已经在跑的会话仍持旧 chunk**；要让它换成新版本，必须重启 DSH——这与 G13 记的"重启后逐项复核"是两步，先重启、再核对。
 

@@ -498,7 +498,8 @@ description: "Task list for 会话内图形渲染"
 - [x] T263 实现评审 P2-4：防掏空名单自身加守护（`const NEEDED_COUNT = 26`，`needed.length !== NEEDED_COUNT` 直接失败），并补上本轮新增的 `the hostile children bag mounted without a setup error`
 - [x] T264 实现评审 P3：夹具的复制播报段在结束时还原 `navigator.clipboard`；`childrenView` 的空 `catch` 改为记录 `childrenSetupError` 并由断言检查为 `null`；`harness` 由 222 项增至 223 项，`EXPECTED_CHECKS` 同步 223
 - [x] T265 契约样例与计数：`contracts/host-prompt.md` 的 `apply` 样例按 `index.js` 真实实现整块重写（含 `ctx` 空值守卫、thenable 兜底、`warn` 前缀），`plugin-manifest.md` 的浏览器项数改"0.1.24 之后的核验提交起 223 项"，`spec/plan/quickstart` 的 222 → 223
-- [ ] T266 重建 `client.js` 并发版 0.1.25：`check-bundle` 39 项、`run-harness` 223 项全绿 → 提交 → tag `v0.1.25` → Actions 发布 → 装回 `desktop` → 补 E-PUB/E-INS → 第二十四轮双评审
+- [x] T266 重建 `client.js` 并发版 0.1.25：`check-bundle` 39 项、`run-harness` 223 项全绿 → 提交 `aafabb7` → tag `v0.1.25` → Actions run `45109072637` success（shasum `04f750a1…`、logIndex `4050087976`、33 文件）→ 先 remove 0.1.24 再装回 `desktop`（`version 0.1.25`、安装副本 SHA256 `D4742D44…FC9219`）→ 补 E-PUB/E-INS
+- [ ] T267 第二十四轮双评审：两个只读评审分别审文档一致性与实现证据；两份都 PASS 后把 feature 001 标为完成并回写 `spec.md` Status
 
 ## Dependencies & Execution Order
 
