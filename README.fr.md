@@ -17,7 +17,7 @@ Le bloc de code n’est jamais consommé. Il reste le texte du message : on peut
 
 ## Ce que vous obtenez
 
-- Des schémas à leur place pour les blocs `mermaid` : organigramme, séquence, classes, états, ER, carte mentale, chronologie et d’autres types que le moteur prend en charge ; le harnais n’exerce que ces sept (les autres ne sont pas testés, voir G21).
+- Des schémas à leur place pour les blocs `mermaid` : organigramme, séquence, classes, états, ER, carte mentale, chronologie et d’autres types que le moteur prend en charge ; le contrôle statique échantillonne ces sept types, le harnais de navigateur n’en dessine que les deux premiers (les autres ne sont pas testés, voir G21).
 - **Afficher la source** et **Copier la source** sous chaque schéma : le texte derrière l’image est à un clic.
 - Pendant la génération d’une réponse, le bloc reste un bloc ; le schéma apparaît quand le bloc est complet.
 - Un bloc illisible affiche le code d’origine et une ligne indiquant la raison, jamais un cadre vide.

@@ -17,7 +17,7 @@ O bloco de código nunca é consumido. Continua sendo o texto da mensagem: pode 
 
 ## O que você recebe
 
-- Diagramas no lugar para blocos `mermaid`: fluxo, sequência, classes, estados, ER, mapa mental, linha do tempo e outros tipos que o motor suporta; o harness testa apenas estes sete (os demais não foram testados, ver G21).
+- Diagramas no lugar para blocos `mermaid`: fluxo, sequência, classes, estados, ER, mapa mental, linha do tempo e outros tipos que o motor suporta; a verificação estática amostra estes sete e o harness de navegador desenha apenas os dois primeiros (os demais não foram testados, ver G21).
 - **Mostrar o código** e **Copiar o código** sob cada desenho: o texto por trás da imagem a um clique.
 - Enquanto uma resposta é gerada, o bloco continua bloco; o desenho aparece quando o bloco está completo.
 - Um bloco que não pode ser interpretado mostra o código original e uma linha com o motivo — nunca um quadro vazio.

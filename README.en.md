@@ -17,7 +17,7 @@ The code block is never consumed. It stays in the message as text: it can be cop
 
 ## What you get
 
-- Diagrams in place for `mermaid` code blocks: flowcharts, sequence, class, state, ER, mind map, timeline, and other diagram types the vendored engine supports; the harness exercises these seven only (see G21).
+- Diagrams in place for `mermaid` code blocks: flowcharts, sequence, class, state, ER, mind map, timeline, and other diagram types the vendored engine supports; the static check samples these seven and the browser fixture draws the first two only (see G21).
 - **Show source** and **Copy source** under every drawing, so the text behind the picture is one click away.
 - While a reply is streaming, the block stays a code block; the drawing appears when the block is complete.
 - A block that cannot be parsed shows the plain code block plus one line saying why — never an empty frame.

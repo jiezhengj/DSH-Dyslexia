@@ -1,6 +1,6 @@
 # 验证证据
 
-本文件只记录**已经真实跑过**的命令输出。E-BLD、E-CHK、E-HARN 三段各自来自一次运行，其中 E-CHK 与 E-HARN 的报告行自带 `包名@版本 | client.js 字节数 | sources sha256:<指纹>`，所以这两段可被追溯到具体的一棵树；E-BLD 是构建日志本身（它写出 `client.js`，随后由这两段报告行限定）。E-PUB 记录 CI 运行，E-INS 与 E-LIVE 记录真机操作，各自注明版本与 run，不能当成"同一次运行"的输出。当前版本：`0.1.26`。
+本文件只记录**已经真实跑过**的命令输出。E-BLD、E-CHK、E-HARN 三段各自来自一次运行，其中 E-CHK 与 E-HARN 的报告行自带 `包名@版本 | client.js 字节数 | sources sha256:<指纹>`，所以这两段可被追溯到具体的一棵树；E-BLD 是构建日志本身（它写出 `client.js`，随后由这两段报告行限定）。E-PUB 记录 CI 运行，E-INS 与 E-LIVE 记录真机操作，各自注明版本与 run，不能当成"同一次运行"的输出。当前版本：`0.1.27`。
 
 复跑方式（任何人 clone 后都一样）：
 
@@ -19,7 +19,7 @@ build-client: @jiezhengj/dsh-dyslexia -> client.js (769453 bytes, 768423 charact
 ## E-CHK 静态与行为校验
 
 ```
-ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.26
+ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.27
 ok   package.json points at the repository npm trusts — git+https://github.com/jiezhengj/DSH-Dyslexia.git
 ok   package.json declares the bundle patch and the client half — platform web, no package inject
 ok   no dsh version gate can refuse a start — no engines.dsh, no dsh peers
@@ -46,7 +46,7 @@ ok   every supported sample type draws an svg — flowchart:218x64 sequence:184x
 ok   a broken diagram reports a one-line reason — Parse error on line 2:
 ok   host key echo falls back to bundled strings — key echo, blanks, placeholders rejected
 ok   every language carries the same complete sentences — 12 keys x 8 languages, no engine text in labels
-ok   client.js matches the sources it claims — fc7b3a66ee6e06f3e803fcf670a5936b
+ok   client.js matches the sources it claims — 8739ee234c1d7e19a76b1e1ec7f6139b
 ok   the picture is the image, and the copy answer is announced — label is a noun, role="img" on the svg, copy result announced
 ok   host children react would refuse fall back to the source — objects, functions and mixed arrays fall back to the source text
 ok   every drawing the engine swaps in is named again — the engine owns re-layout; every swapped drawing node and its zoom buttons are renamed, strings follow the language
@@ -58,7 +58,7 @@ ok   the host half stays silent when the host changed shape — five silent host
 ok   the contract's colour variables are the ones that are wired — 10 engine variables, owned by engine and contract alike
 ok   both size limits reach the engine, each proven on its own — three limits passed to mount, two fixtures that cross one each
 ok   the fixtures assert what the fixes promise, and can fail — 26 assertions present, each with a condition that reads something
-check-bundle: @jiezhengj/dsh-dyslexia@0.1.26 | client.js 769453 bytes | sources sha256:fc7b3a66ee6e06f3e803fcf670a5936b | all 39 checks passed
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.27 | client.js 769453 bytes | sources sha256:8739ee234c1d7e19a76b1e1ec7f6139b | all 39 checks passed
 ```
 
 ## E-HARN 浏览器行为校验
@@ -296,7 +296,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.26 | client.js 769453 bytes | sources 
 [ok] the zoom button titles say the same as their names — 放大 | 缩小 | 重置缩放
 [ok] every zoom button in reach can take the keyboard — 1/1 reachable of 3
 [ok] every zoom button is reachable once the picture is zoomed — 3/3 after zoom
-run-harness: @jiezhengj/dsh-dyslexia@0.1.26 | client.js 769453 bytes | sources sha256:fc7b3a66ee6e06f3e803fcf670a5936b | all 228 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+run-harness: @jiezhengj/dsh-dyslexia@0.1.27 | client.js 769453 bytes | sources sha256:8739ee234c1d7e19a76b1e1ec7f6139b | all 228 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
 同一次运行的 stderr 另有 7 段被**刻意捕获**的异常堆栈（loader ×3、prompt section ×3、module ×1，例如 `dsh-dyslexia: loader Error: host changed the loader`、`dsh-dyslexia: prompt section rejected Error: asynchronous failure`）：它们来自敌意宿主用例，属正常输出，不是失败。
@@ -313,7 +313,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.26 | client.js 769453 bytes | sources s
 
 ## E-PROBE 夹具能失败吗：用破坏性探针验证
 
-如果一个断言恒真，"套件全绿"就不构成证据。注意静态侧的恒真守护只覆盖 `check-bundle.mjs` 的 `needed` 名单（26 个名字，PS21 用它验证过：名单外的断言把条件改成 `&& true` 不会变红），不是全部夹具。0.1.8 至 0.1.26 期间共做了三十六次探针（PS12 在 0.1.22 发布后、PS13 在 0.1.23 发布后、PS14 与 PS17 在 0.1.24 发布后、第二十三轮的两条在 0.1.25 发布前，改动都只在从不随包的 `verify/` 与 `specs/` 里）：故意破坏被断言保护的代码、重建 `client.js`、跑两套检查、确认目标断言**变红**，再还原（0.1.10 起的几次在 `%TEMP%` 的仓库副本里做，不动工作树）。报告行里的项数属于**当时的套件**：0.1.10 = 119 项、0.1.11 = 152 项、0.1.12 = 156 项、0.1.13 = 197 项、0.1.14 = 205 项、0.1.15 起 = 213 项、0.1.17 起 = 216 项、0.1.19 起 = 220 项（静态 0.1.19 起 = 39 项）、0.1.24 发布之后的核验提交起 = 223 项。此前各行的项数属当时的套件，今天复跑会多出 0.1.24 之后新增的三条断言（两条同步渲染结果检查，加一条敌意 `children` 挂载检查）。
+如果一个断言恒真，"套件全绿"就不构成证据。注意静态侧的恒真守护只覆盖 `check-bundle.mjs` 的 `needed` 名单（26 个名字，PS21 用它验证过：名单外的断言把条件改成 `&& true` 不会变红），不是全部夹具。0.1.8 至 0.1.26 期间共做了三十六次探针（PS12 在 0.1.22 发布后、PS13 在 0.1.23 发布后、PS14 与 PS17 在 0.1.24 发布后、第二十三轮的两条在 0.1.25 发布前，改动都只在从不随包的 `verify/` 与 `specs/` 里）：故意破坏被断言保护的代码、重建 `client.js`、跑两套检查、确认目标断言**变红**，再还原（0.1.10 起的几次在 `%TEMP%` 的仓库副本里做，不动工作树）。报告行里的项数属于**当时的套件**：0.1.10 = 119 项、0.1.11 = 152 项、0.1.12 = 156 项、0.1.13 = 197 项、0.1.14 = 205 项、0.1.15 起 = 213 项、0.1.17 起 = 216 项、0.1.19 起 = 220 项（静态 0.1.19 起 = 39 项）、0.1.24 之后的核验提交 = 222 项、0.1.25 起 = 223 项、0.1.26 起 = 228 项。此前各行的项数属当时的套件，今天复跑会多出 0.1.24 之后新增的八条断言（两条同步渲染结果检查、一条敌意 `children` 挂载检查、四个 `a refused children falls back to the source` 场景、一条 `the zoom button titles say the same as their names`）。
 
 | 探针 | 破坏方式 | 变红的断言（含报告行） | 说明 |
 |---|---|---|---|
@@ -472,7 +472,7 @@ npm notice shasum: 71feabc22885e097974a35668e4717837fefd226
 npm notice total files: 33
 ```
 
-0.1.10（run `45062588313`，36 / 119）——这是**当时**那棵树的两条报告行；版本、字节数、指纹与项数都与当前不同（0.1.24 发布时是 769,453 字节、`5bc072d1…`、39 / 220；之后的核验提交把夹具加到 223 项，见 E-HARN），共同点只有命令与工作流：
+0.1.10（run `45062588313`，36 / 119）——这是**当时**那棵树的两条报告行；版本、字节数、指纹与项数都与当前不同（0.1.24 发布时是 769,453 字节、`5bc072d1…`、39 / 220；之后的核验提交先加到 222 项、0.1.25 起 223 项、0.1.26 起 228 项，见 E-HARN），共同点只有命令与工作流：
 
 ```text
 check-bundle: @jiezhengj/dsh-dyslexia@0.1.10 | client.js 767298 bytes | sources sha256:336ea7199fb90a0c8202c03e0c14bbe7 | all 36 checks passed
@@ -848,7 +848,7 @@ Done in 4.2s using pnpm v11.28.5
 
 ## E-LIVE 真机（DSH 桌面窗口内）
 
-**以下记录来自 0.1.2**，当前版本（0.1.26）的重启核对是 T079（**尚未取证**，见 G13）。之所以保留，是因为它们证明了链路本身可用；从 0.1.2 到 0.1.26 渲染层改过多次（`role` 结构、`aria-roledescription` 的移除与重排版后重标、可见的复制反馈、空/非法 `children` 的处理、源码块的 `language-mermaid` 标记、外层盒子去掉名字），所以这些观察**不能**自动转移到 `0.1.26`。
+**以下记录来自 0.1.2**，当前版本（0.1.27）的重启核对是 T079（**尚未取证**，见 G13）。之所以保留，是因为它们证明了链路本身可用；从 0.1.2 到 0.1.27 渲染层改过多次（`role` 结构、`aria-roledescription` 的移除与重排版后重标、可见的复制反馈、空/非法 `children` 的处理、源码块的 `language-mermaid` 标记、外层盒子去掉名字），所以这些观察**不能**自动转移到 `0.1.27`。
 
 | 观察 | 当时的证据 | 归属 |
 |---|---|---|
@@ -865,7 +865,7 @@ Done in 4.2s using pnpm v11.28.5
 - **G2 实体手机/平板触控（T023 的硬件部分）**：窄屏证据来自 headless Chrome 的 360 px 夹具（`the picture takes the column width`、`a wide picture does not widen the column`、`the page itself never overflows`），不是真实设备触控。
 - **G3 断网裸机安装（T025）**：`client.js never reaches the network` 只证明产物没有网络调用；"一台没有任何缓存/CDN 的机器上离线装得上"没有验证。
 - **G4 畸形宿主的真机注入（T041）**：宿主机侧 7 次 `apply`（5 种静默 ctx + 2 次异常调用）与客户端 7 种畸形 `ctx`（`undefined`、`null`、`{}`、`{slots:null}`、`{slots:{}}`、`inject`/`register` 为空函数、`inject` 抛错）只在夹具与 `check-bundle` 的 vm 里复现，没有在一次真实宿主里注入过。
-- **G5 quickstart 的 E1–E16 逐条复跑（T031）**：证据表本身不是证据。其中 E2（同一条消息两块 `mermaid` 并存）自 0.1.13 起有夹具（`two fences draw two pictures`、`the second fence draws its own picture`、`the prose around a picture is left alone`、`the picture and the prose keep their order`），E16（非 `mermaid` 的代码块不受影响）只有**语言透传**这一半的夹具（`the source block keeps the language the host sent`，传 `lang: 'mmd'` 后展开源码仍带 `language-mmd`），**没有**「一条消息里同时有 mermaid 与非 mermaid 代码块」的夹具，也没有真机观察（0.1.13 时是 197 项，0.1.15 与 0.1.16 是 213 项，0.1.17 与 0.1.18 是 216 项，0.1.19 起 220 项，0.1.24 发布之后 223 项）。E10（**卸载后旧会话回退为代码块**）有 0.1.2 的真机观察；E15 按 `quickstart.md` 的定义是"**未装插件的新会话不产生只有插件才看得懂的内容**"，它既没有夹具也没有真机观察（0.1.2 的观察里没有这一条）。
+- **G5 quickstart 的 E1–E16 逐条复跑（T031）**：证据表本身不是证据。其中 E2（同一条消息两块 `mermaid` 并存）自 0.1.13 起有夹具（`two fences draw two pictures`、`the second fence draws its own picture`、`the prose around a picture is left alone`、`the picture and the prose keep their order`），E16（非 `mermaid` 的代码块不受影响）只有**语言透传**这一半的夹具（`the source block keeps the language the host sent`，传 `lang: 'mmd'` 后展开源码仍带 `language-mmd`），**没有**「一条消息里同时有 mermaid 与非 mermaid 代码块」的夹具，也没有真机观察（0.1.13 时是 197 项，0.1.15 与 0.1.16 是 213 项，0.1.17 与 0.1.18 是 216 项，0.1.19–0.1.24 为 220 项，0.1.24 之后的核验提交 222 项，0.1.25 起 223 项，0.1.26 起 228 项）。E10（**卸载后旧会话回退为代码块**）有 0.1.2 的真机观察；E15 按 `quickstart.md` 的定义是"**未装插件的新会话不产生只有插件才看得懂的内容**"，它既没有夹具也没有真机观察（0.1.2 的观察里没有这一条）。
 
 指标类（定义写得出来，但没有一条被真正测量）：
 
@@ -879,7 +879,7 @@ Done in 4.2s using pnpm v11.28.5
 
 - **G11 FR-011 的后半（停用插件后提示词段消失）**：只有 `apply` 注册段的静态证据与宿主半边契约，没有"停用后模型侧看不到"的实测（T027）。
 - **G12 FR-002 的真机面（不打开侧栏、不生成文件、不新增会话条目）**：插件在结构上不写文件、不碰宿主布局（静态可读），但没有一次真机上"看完这张图，磁盘与会话条目都没变"的核对。
-- **G13 当前版本的重启后真机核对（T079）**：`E-LIVE` 的观察取自 **0.1.2**，且只有四件事——插件页的**中文**说明与插图、会话里就地成图（图名 `图：flowchart`、两个按钮）、卸载后同一条消息回退为代码块、重装后图与按钮立刻回来。**复制播报**（0.1.5 起才有）与**其余 7 种语言的插件页**从未在真机上看过，不能算已观察。0.1.3–0.1.23 改过 `view.js`、`i18n.js`、`entry.js`、`styles.js`（0.1.18 只改了文档与 README；0.1.19 改了 `styles.js` 的变量块；0.1.20 与 0.1.21 只改了测试与文档），这些观察不能自动转移。0.1.11 至 0.1.25 都已发布并装进 `desktop` profile，但**没有在重启后的宿主里逐项复核过**，所以算未取证。
+- **G13 当前版本的重启后真机核对（T079）**：`E-LIVE` 的观察取自 **0.1.2**，且只有四件事——插件页的**中文**说明与插图、会话里就地成图（图名 `图：flowchart`、两个按钮）、卸载后同一条消息回退为代码块、重装后图与按钮立刻回来。**复制播报**（0.1.5 起才有）与**其余 7 种语言的插件页**从未在真机上看过，不能算已观察。0.1.3–0.1.23 改过 `view.js`、`i18n.js`、`entry.js`、`styles.js`（0.1.18 只改了文档与 README；0.1.19 改了 `styles.js` 的变量块；0.1.20 与 0.1.21 只改了测试与文档），这些观察不能自动转移。0.1.11 至 0.1.27 都已发布并装进 `desktop` profile，但**没有在重启后的宿主里逐项复核过**，所以算未取证。
 - **G14 真实窗口缩放时的引擎重绘（FR-018 的端到端面）**：0.1.10 把重排版交给引擎自己的 `ResizeObserver`（pele 内部），插件只负责"节点被换回来就重新命名"。夹具能证明"节点被换 → 立刻重新命名"，但**无法让引擎在无头浏览器里真的因窗口缩放而重绘**（无头环境第一帧之后不再派发帧与 ResizeObserver 通知）。真实窗口里"拖窄窗口 → 引擎重绘 → 名字回来"这条链只有机制级证据。
 - **G15 尚未覆盖的加固面（第十轮实现评审记录，第十七、十八轮复核后收窄）**：下面按五项编号（编号⑤是 `spec.md` SC-007 与两份契约引用的「G15 第五条」，别删）；其中③已查明有断言、撤回，仍算缺口的只有①、②、④、⑤，都不影响已发布行为——① `src/client/figure.js` 的 `outputLimit`（2 MiB 绘制输出上限）**只有静态锚点**（`both size limits reach the engine, each proven on its own` 按数值比较 `limit`/`maxEdges`/`outputLimit` 三项，并把 `FIGURE_LIMITS` 是否铺进 `pele.mount` 也钉住），**没有**任何夹具或真机观察让它真的触发一次（字符上限 `limit: 24 * 1024` 与边数上限 `maxEdges: 400` 自 0.1.19 起各有单独夹具，见 E-HARN 的 `a source over the size limit *` 与 `a picture with too many edges *` 六条，以及 E-PROBE 的 PS2、PS3）；② `index.js` 的 `apply` 每次都用 `prompt.section({ name: 'ui:dsh-dyslexia', … })` 注册提示词段、没有幂等守卫，所以在**同一个正常 `ctx`** 上再 `apply` 一次会得到两段同名提示词；没有断言守着这件事——`a host without effects keeps one stylesheet, not one per apply` 只覆盖「没有 `effect` 服务」那一种宿主的样式表；③ `src/client/entry.js` 里 `slots.inject(...)` 回调返回的 disposer 被丢掉这半句**不成立**：`the fence layer is gone once the host disposes` 正守着它（把 `entry.js` 的回调改成不返回 disposer，该断言就会变红），不再算缺口；④ `package.json` 的 `prepack` 只跑构建与 `check-bundle`，不跑夹具（依赖 CI 的五步兜住）；⑤ `package.json` 若加入 `engines.node` 等非 `dsh` 子键，`no dsh version gate can refuse a start` 不会变红（当前清单没有 `engines` 键，属「没有断言的清单形状面」）。
 - **G16 vendor 文本与换节点的无头局限（记录）**：`client.js` 里 vendor 许可注释含 `https://github.com/obsidianmd/pele`，属静态文本、无网络行为；「引擎换掉 `<svg>` 后重新命名」在无头环境里只能靠夹具重放（真实拖窄窗口的端到端见 G14）。绘制输出上限（`outputLimit` 2 MiB）仍按 G15 记；字符上限与边数上限在 0.1.19 起已有夹具，这里同样不重复。
@@ -888,6 +888,6 @@ Done in 4.2s using pnpm v11.28.5
 - **G18 引擎缺失分支只有静态证据（第十六轮实现评审 P3，第十七轮文档评审修正）**：引擎被内联进 `client.js`，正常构建下运行期不会缺失；`an engine that fails to load leaves the picture to the host` 断言的是产物里存在错误边界、`readLayerInput`、`safeRead`、`engineUnavailable` 这句话，以及 `typeof pele.mount !== 'function'` 这个守卫字符串（把守卫改成恒真，这条静态断言会立刻变红），但**没有动态用例**把引擎置空后观察回退——`scripts/build-client.mjs` 的 `catch (error) { pele = null }` 与 `plan.md` 的「引擎 IIFE 失败则置空」就是这条分支的入口。它的价值是「模型知情、宿主换了加载方式时仍给一句话而不是白屏」，不是可演练的行为。
 - **G19 静态套件只钉顶层条目数，不钉条目内部的断言数（第十七轮实现评审 P3）**：`verify/check-bundle.mjs` 的 `EXPECTED_CHECKS = 39` 只保证「有 39 个 `check()`」，某一条 `check()` 内部的某行 `assert()` 被删掉时套件仍报全过；浏览器夹具是逐条 `expect()` 计数（删一条即 `run-harness: suite reported X checks, expected Y`），两侧的看守强度并不相同。
 - **G20 启用/停用没有单独的真机观察**：`E-LIVE` 观察到的是卸载回退与重装恢复；启用与停用依赖宿主的插件机制，文档（`quickstart.md` 与九份 README）按"走宿主机制、未单独取证"措辞，没有把这两步写成已验证。
-- **G21 引擎支持的其它图种与"Mermaid 12.1"版本说法没有断言**：夹具与静态检查只采样七种（flowchart、sequence、class、state、er、mindmap、timeline，见 `every supported sample type draws an svg`）；gantt、kanban、xychart、C4、architecture 等引擎声称支持的图种**没有任何用例**，九份 README 里"Mermaid 12.1"的版本说法也只来自上游 pele 的说明，不是本项目的断言。README 因此改成"夹具目前只覆盖这七种（见 G21）"。
+- **G21 引擎支持的其它图种与"Mermaid 12.1"版本说法没有断言**：**静态检查**采样七种（flowchart、sequence、class、state、er、mindmap、timeline，见 `every supported sample type draws an svg`）；浏览器夹具只画了 flowchart 与一条 `sequenceDiagram`；gantt、kanban、xychart、C4、architecture 等引擎声称支持的图种**没有任何用例**，九份 README 里"Mermaid 12.1"的版本说法也只来自上游 pele 的说明，不是本项目的断言。README 因此改成"夹具目前只覆盖这七种（见 G21）"。
 - **G22 `check-bundle` 需要 `specs/` 才完整**：`the contract's colour variables are the ones that are wired` 读 `specs/001-mermaid-fence-render/contracts/client-fence-layer.md`，而 `specs/` 不在 `files` 里。在正常 clone（含 `specs/`）与 CI 上都跑得通；只有从一份没有 `specs/` 的副本里打包时，这条断言会以 `ENOENT` 变红（`npm pack` 的 `prepack` 会跑静态套件）。已发布产物不受影响，消费方安装时也不跑 `prepack`；这一项目前只登记为局限，没有改成"文件缺失就跳过"，因为跳过会让同一条断言在 CI 之外静默失效。
 **本文件与 tasks.md 的关系**：`tasks.md` 末尾的状态表逐行对应上面 22 项，两处若不一致，以本文件为准（本文件是证据的归属地，`tasks.md` 是工作项的记录）。

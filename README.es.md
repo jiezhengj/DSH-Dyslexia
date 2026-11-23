@@ -17,7 +17,7 @@ El bloque de código no se consume: sigue en el mensaje como texto, de modo que 
 
 ## Qué obtienes
 
-- Diagramas en su sitio para bloques `mermaid`: flujo, secuencia, clases, estados, ER, mapas mentales, líneas de tiempo y otros tipos que admite el motor; el arnés solo ejercita estos siete (los demás no están probados, véase G21).
+- Diagramas en su sitio para bloques `mermaid`: flujo, secuencia, clases, estados, ER, mapas mentales, líneas de tiempo y otros tipos que admite el motor; la comprobación estática muestrea estos siete y el arnés de navegador solo dibuja los dos primeros (los demás no están probados, véase G21).
 - **Mostrar el código** y **Copiar el código** bajo cada dibujo: el texto detrás de la imagen queda a un clic.
 - Mientras una respuesta se está generando, el bloque sigue siendo un bloque; el dibujo aparece cuando el bloque está completo.
 - Un bloque que no se puede analizar muestra el código original y una línea con el motivo; nunca un marco vacío.

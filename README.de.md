@@ -17,7 +17,7 @@ Der Codeblock wird nie verbraucht. Er bleibt der Text der Nachricht: kopierbar, 
 
 ## Was du bekommst
 
-- Diagramme an Ort und Stelle für `mermaid`-Codeblöcke: Flussdiagramm, Sequenz, Klasse, Zustand, ER, Mindmap, Zeitachse und weitere vom Motor unterstützte Diagrammtypen; der Test prüft nur diese sieben (weitere Typen sind ungetestet, siehe G21).
+- Diagramme an Ort und Stelle für `mermaid`-Codeblöcke: Flussdiagramm, Sequenz, Klasse, Zustand, ER, Mindmap, Zeitachse und weitere vom Motor unterstützte Diagrammtypen; die statische Prüfung tastet diese sieben ab, der Browser-Test zeichnet nur die ersten beiden (weitere Typen sind ungetestet, siehe G21).
 - **Quelle anzeigen** und **Quelle kopieren** unter jedem Diagramm – der Text hinter dem Bild ist einen Klick entfernt.
 - Während eine Antwort noch streamt, bleibt der Block ein Codeblock; das Diagramm erscheint, sobald der Block vollständig ist.
 - Ein nicht auswertbarer Block zeigt den ursprünglichen Codeblock plus eine Zeile mit dem Grund – nie einen leeren Rahmen.
