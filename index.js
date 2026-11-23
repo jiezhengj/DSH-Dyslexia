@@ -52,6 +52,11 @@ export function apply(ctx) {
       }
     }
   } catch (error) {
+    // A failed attempt must not burn the context: the host may retry, and a
+    // retry that silently registers nothing would leave the model uninformed.
+    if (ctx !== null && ctx !== undefined && (typeof ctx === 'object' || typeof ctx === 'function')) {
+      claimed.delete(ctx)
+    }
     warn('prompt section skipped', error)
   }
 }

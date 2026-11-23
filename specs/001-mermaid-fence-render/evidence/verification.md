@@ -1,6 +1,6 @@
 # 验证证据
 
-本文件只记录**已经真实跑过**的命令输出。E-BLD、E-CHK、E-HARN 三段各自来自一次运行，其中 E-CHK 与 E-HARN 的报告行自带 `包名@版本 | client.js 字节数 | sources sha256:<指纹>`，所以这两段可被追溯到具体的一棵树；E-BLD 是构建日志本身（它写出 `client.js`，随后由这两段报告行限定）。E-PUB 记录 CI 运行，E-INS 与 E-LIVE 记录真机操作，各自注明版本与 run，不能当成"同一次运行"的输出。当前版本：`0.1.29`。
+本文件只记录**已经真实跑过**的命令输出。E-BLD、E-CHK、E-HARN 三段各自来自一次运行，其中 E-CHK 与 E-HARN 的报告行自带 `包名@版本 | client.js 字节数 | sources sha256:<指纹>`，所以这两段可被追溯到具体的一棵树；E-BLD 是构建日志本身（它写出 `client.js`，随后由这两段报告行限定）。E-PUB 记录 CI 运行，E-INS 与 E-LIVE 记录真机操作，各自注明版本与 run，不能当成"同一次运行"的输出。当前版本：`0.1.30`。
 
 复跑方式（任何人 clone 后都一样）：
 
@@ -19,7 +19,7 @@ build-client: @jiezhengj/dsh-dyslexia -> client.js (769629 bytes, 768599 charact
 ## E-CHK 静态与行为校验
 
 ```
-ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.29
+ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.30
 ok   package.json points at the repository npm trusts — git+https://github.com/jiezhengj/DSH-Dyslexia.git
 ok   package.json declares the bundle patch and the client half — platform web, no package inject
 ok   no dsh version gate can refuse a start — no engines.dsh, no dsh peers
@@ -46,7 +46,7 @@ ok   every supported sample type draws an svg — flowchart:218x64 sequence:184x
 ok   a broken diagram reports a one-line reason — Parse error on line 2:
 ok   host key echo falls back to bundled strings — key echo, blanks, placeholders rejected
 ok   every language carries the same complete sentences — 12 keys x 8 languages, no engine text in labels
-ok   client.js matches the sources it claims — 867cfbe0dc16b8ef709ee460312d66b7
+ok   client.js matches the sources it claims — 066598a434771bb4053dcce3e4f499e3
 ok   the picture is the image, and the copy answer is announced — label is a noun, role="img" on the svg, copy result announced; behaviour is asserted by the fixture
 ok   host children react would refuse fall back to the source — objects, functions and mixed arrays fall back to the source text; behaviour is asserted by the fixture
 ok   every drawing the engine swaps in is named again — the engine owns re-layout; every swapped drawing node and its zoom buttons are renamed, strings follow the language; behaviour is asserted by the fixture
@@ -54,13 +54,13 @@ ok   a host block that throws cannot empty the message — host blocks render in
 ok   a factory that cannot build never throws at the host — module-level throw contained, empty module returned
 ok   nothing in the package asks you to edit an instruction file — 17 shipped text files, no instruction-file ask
 ok   the host half registers exactly one capability section — ui:dsh-dyslexia, order 9000, 85 words
-ok   the host half adds one section per context, not one per call — three calls on one context, one section; a second context gets its own
+ok   the host half adds one section per context, not one per call — three calls on one context, one section; a second context gets its own; a failed attempt still allows a retry
 ok   the host half stays silent when the host changed shape — five silent hosts (no warning), two throwing sections (one warning each)
 ok   the contract's colour variables are the ones that are wired — 10 engine variables, owned by engine and contract alike
 ok   both size limits reach the engine, each proven on its own — three limits passed to mount, two fixtures that cross one each
 ok   the fixtures assert what the fixes promise, and can fail — 26 assertions present, each with a condition that reads something
 
-check-bundle: @jiezhengj/dsh-dyslexia@0.1.29 | client.js 769629 bytes | sources sha256:867cfbe0dc16b8ef709ee460312d66b7 | all 40 checks passed
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.30 | client.js 769629 bytes | sources sha256:066598a434771bb4053dcce3e4f499e3 | all 40 checks passed
 ```
 
 ## E-HARN 浏览器行为校验
@@ -298,7 +298,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.29 | client.js 769629 bytes | sources 
 [ok] the zoom button titles say the same as their names — 放大 | 缩小 | 重置缩放
 [ok] every zoom button in reach can take the keyboard — 1/1 reachable of 3
 [ok] every zoom button is reachable once the picture is zoomed — 3/3 after zoom
-run-harness: @jiezhengj/dsh-dyslexia@0.1.29 | client.js 769629 bytes | sources sha256:867cfbe0dc16b8ef709ee460312d66b7 | all 228 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+run-harness: @jiezhengj/dsh-dyslexia@0.1.30 | client.js 769629 bytes | sources sha256:066598a434771bb4053dcce3e4f499e3 | all 228 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
 同一次运行的 stderr 另有 7 段被**刻意捕获**的异常堆栈（loader ×3、prompt section ×3、module ×1，例如 `dsh-dyslexia: loader Error: host changed the loader`、`dsh-dyslexia: prompt section rejected Error: asynchronous failure`）：它们来自敌意宿主用例，属正常输出，不是失败。
@@ -315,7 +315,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.29 | client.js 769629 bytes | sources s
 
 ## E-PROBE 夹具能失败吗：用破坏性探针验证
 
-如果一个断言恒真，"套件全绿"就不构成证据。注意静态侧的恒真守护只覆盖 `check-bundle.mjs` 的 `needed` 名单（26 个名字，PS21 用它验证过：名单外的断言把条件改成 `&& true` 不会变红），不是全部夹具。0.1.8 至 0.1.29 期间共做了三十七次探针（PS12 在 0.1.22 发布后、PS13 在 0.1.23 发布后、PS14 与 PS17 在 0.1.24 发布后、第二十三轮的两条在 0.1.25 发布前）：每次都是故意破坏被断言保护的代码（`src/` 或 `verify/`）、重建 `client.js`、跑两套检查、确认目标断言**变红**，再 `git checkout` 还原；**破坏是临时的，落地后留下的改动只在从不随包的 `verify/` 与 `specs/` 里**（0.1.10 起的几次在 `%TEMP%` 的仓库副本里做，不动工作树）。报告行里的项数属于**当时的套件**：0.1.10 = 119 项、0.1.11 = 152 项、0.1.12 = 156 项、0.1.13 = 197 项、0.1.14 = 205 项、0.1.15 起 = 213 项、0.1.17 起 = 216 项、0.1.19 起 = 220 项（静态 0.1.19 起 = 39 项）、0.1.24 之后的核验提交 = 222 项、0.1.25 起 = 223 项、0.1.26 起 = 228 项。此前各行的项数属当时的套件，今天复跑会多出 0.1.24 之后新增的八条断言（两条同步渲染结果检查、一条敌意 `children` 挂载检查、四个 `a refused children falls back to the source` 场景、一条 `the zoom button titles say the same as their names`）。
+如果一个断言恒真，"套件全绿"就不构成证据。注意静态侧的恒真守护只覆盖 `check-bundle.mjs` 的 `needed` 名单（26 个名字，PS21 用它验证过：名单外的断言把条件改成 `&& true` 不会变红），不是全部夹具。0.1.8 至 0.1.30 期间共做了三十八次探针（PS12 在 0.1.22 发布后、PS13 在 0.1.23 发布后、PS14 与 PS17 在 0.1.24 发布后、第二十三轮的两条在 0.1.25 发布前）：每次都是故意破坏被断言保护的代码（`src/` 或 `verify/`）、重建 `client.js`、跑两套检查、确认目标断言**变红**，再 `git checkout` 还原；**破坏是临时的，落地后留下的改动只在从不随包的 `verify/` 与 `specs/` 里**（0.1.10 起的几次在 `%TEMP%` 的仓库副本里做，不动工作树）。报告行里的项数属于**当时的套件**：0.1.10 = 119 项、0.1.11 = 152 项、0.1.12 = 156 项、0.1.13 = 197 项、0.1.14 = 205 项、0.1.15 起 = 213 项、0.1.17 起 = 216 项、0.1.19 起 = 220 项（静态 0.1.19 起 = 39 项）、0.1.24 之后的核验提交 = 222 项、0.1.25 起 = 223 项、0.1.26 起 = 228 项（静态 0.1.29 起 = 40 项）。此前各行的项数属当时的套件，今天复跑会多出 0.1.24 之后新增的八条断言（两条同步渲染结果检查、一条敌意 `children` 挂载检查、四个 `a refused children falls back to the source` 场景、一条 `the zoom button titles say the same as their names`）。
 
 | 探针 | 破坏方式 | 变红的断言（含报告行） | 说明 |
 |---|---|---|---|
@@ -356,6 +356,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.29 | client.js 769629 bytes | sources s
 | PS21 | 把 `needed` 名单内 `a swapped drawing is named again` 的条件追加 ` && true` | `FAIL the fixtures assert what the fixes promise, and can fail — fixture assertions without a condition: a swapped drawing is named again`；`check-bundle: 1 failed, 38 passed` | 验证新增的 `constantBranch` 分支；同时也暴露守护只覆盖 `needed` 名单内的名字（把名单外的 `the picture takes the column width` 改成 `&& true` 不会变红） |
 | PS22 | 把 `the fixture really replaced the drawing node` 的条件换成 `renamed === renamed` | 同一条 FAIL；`check-bundle: 1 failed, 38 passed` | 验证 `selfComparison`（`x === x`）分支 |
 | PS23 | 把 `index.js` 的 `claimed.has(ctx)`/`claimed.add(ctx)` 换成 `void claimed`（0.1.29） | `FAIL the host half adds one section per context, not one per call — three applies on one context added 3 sections`；`check-bundle: 1 failed, 39 passed`，exit 1 | 新的幂等断言不是恒真 |
+| PS24 | 把 `index.js` 的 `claimed.delete(ctx)` 换成 `void ctx`（0.1.30） | `FAIL the host half adds one section per context, not one per call — a retry after a failure did not reach the host (1 attempts)`；`check-bundle: 1 failed, 39 passed`，exit 1 | 首次失败不会烧掉上下文 |
 
 静态检查里另有一条守护 `the fixtures assert what the fixes promise, and can fail`：它要求 P1/P2/P4/P5/PA/PB/PC/PS13 以及 PS14 那四条同步渲染断言的断言名一个不少、每条都落在真正读值的条件里、条件里不得出现恒真分支；并且每条名字必须落在一个**真正读值**的 `expect(` 条件里——条件为空、只是 `true`/`false`/`0` 这类字面量（PS9）、或是 `1 === 1` 这种读不到任何东西的自我比较（PS11）、`|| true` 这种非字面量的恒真分支（PS13）都会让它变红，名字只出现在注释里也算缺失（PS10），名单内某条被换成字面量也会红（PS17）；否则说明有人把夹具掏空或删掉而代码检查仍绿。同一道守护的兄弟条款：读源码的文本断言一律先剥注释再比对，所以把代码换成同名注释也会红（PS12）。P6/P7 是另一道：两套检查各自的条目数被钉死，删一条也会红。
 
@@ -871,7 +872,7 @@ dependencies:
 Done in 5.9s using pnpm v11.28.5
 ```
 
-装之前先按 registry 等 tarball 可下载（第 20 次轮询返回 200）；npmjs 的版本文件先 200、tarball 后到，这个滞后每次发版都会出现（约 2–10 分钟），不是包的问题。
+装之前先按 registry 等 tarball 可下载（第 21 次轮询、脚本里的 `try=20` 返回 200；0.1.27 与 0.1.28 都是第 20 次、`try=19`）；npmjs 的版本文件先 200、tarball 后到，这个滞后每次发版都会出现（约 2–10 分钟），不是包的问题。
 
 安装后实测（`C:\Users\jiezhengj\.dsh\profiles\desktop`）：
 
@@ -885,7 +886,7 @@ Done in 5.9s using pnpm v11.28.5
 
 ## E-LIVE 真机（DSH 桌面窗口内）
 
-**以下记录来自 0.1.2**，当前版本（0.1.28）的重启核对是 T079（**尚未取证**，见 G13）。之所以保留，是因为它们证明了链路本身可用；从 0.1.2 到 0.1.28 渲染层改过多次（`role` 结构、`aria-roledescription` 的移除与重排版后重标、可见的复制反馈、空/非法 `children` 的处理、源码块的 `language-mermaid` 标记、外层盒子去掉名字），所以这些观察**不能**自动转移到 `0.1.28`。
+**以下记录来自 0.1.2**，当前版本（0.1.30）的重启核对是 T079（**尚未取证**，见 G13）。之所以保留，是因为它们证明了链路本身可用；从 0.1.2 到 0.1.30 渲染层改过多次（`role` 结构、`aria-roledescription` 的移除与重排版后重标、可见的复制反馈、空/非法 `children` 的处理、源码块的 `language-mermaid` 标记、外层盒子去掉名字），所以这些观察**不能**自动转移到 `0.1.30`。
 
 | 观察 | 当时的证据 | 归属 |
 |---|---|---|
@@ -916,18 +917,18 @@ Done in 5.9s using pnpm v11.28.5
 
 - **G11 FR-011 的后半（停用插件后提示词段消失）**：只有 `apply` 注册段的静态证据与宿主半边契约，没有"停用后模型侧看不到"的实测（T027）。
 - **G12 FR-002 的真机面（不打开侧栏、不生成文件、不新增会话条目）**：插件在结构上不写文件、不碰宿主布局（静态可读），但没有一次真机上"看完这张图，磁盘与会话条目都没变"的核对。
-- **G13 当前版本的重启后真机核对（T079）**：`E-LIVE` 的观察取自 **0.1.2**，且只有四件事——插件页的**中文**说明与插图、会话里就地成图（图名 `图：flowchart`、两个按钮）、卸载后同一条消息回退为代码块、重装后图与按钮立刻回来。**复制播报**（0.1.5 起才有）与**其余 7 种语言的插件页**从未在真机上看过，不能算已观察。0.1.3–0.1.23 改过 `view.js`、`i18n.js`、`entry.js`、`styles.js`（0.1.18 只改了文档与 README；0.1.19 改了 `styles.js` 的变量块；0.1.20 与 0.1.21 只改了测试与文档），这些观察不能自动转移。0.1.11 至 0.1.28 都已发布并装进 `desktop` profile，但**没有在重启后的宿主里逐项复核过**，所以算未取证。
+- **G13 当前版本（0.1.30）的重启后真机核对（T079）**：`E-LIVE` 的观察取自 **0.1.2**，且只有四件事——插件页的**中文**说明与插图、会话里就地成图（图名 `图：flowchart`、两个按钮）、卸载后同一条消息回退为代码块、重装后图与按钮立刻回来。**复制播报**（0.1.5 起才有）与**其余 7 种语言的插件页**从未在真机上看过，不能算已观察。0.1.3–0.1.30 改过 `view.js`、`i18n.js`、`entry.js`、`styles.js`、`index.js`（0.1.18 只改了文档与 README；0.1.19 改了 `styles.js` 的变量块；0.1.20 与 0.1.21 只改了测试与文档），这些观察不能自动转移。0.1.11 至 0.1.30 都已发布并装进 `desktop` profile，但**没有在重启后的宿主里逐项复核过**，所以算未取证。
 - **G14 真实窗口缩放时的引擎重绘（FR-018 的端到端面）**：0.1.10 把重排版交给引擎自己的 `ResizeObserver`（pele 内部），插件只负责"节点被换回来就重新命名"。夹具能证明"节点被换 → 立刻重新命名"，但**无法让引擎在无头浏览器里真的因窗口缩放而重绘**（无头环境第一帧之后不再派发帧与 ResizeObserver 通知）。真实窗口里"拖窄窗口 → 引擎重绘 → 名字回来"这条链只有机制级证据。
 - **G15 尚未覆盖的加固面（第十轮实现评审记录，第十七、十八轮复核后收窄）**：下面按五项编号（编号⑤是 `spec.md` SC-007 与两份契约引用的「G15 第五条」，别删）；其中③已查明有断言、撤回，仍算缺口的只有①、②、④、⑤，都不影响已发布行为——① `src/client/figure.js` 的 `outputLimit`（2 MiB 绘制输出上限）**只有静态锚点**（`both size limits reach the engine, each proven on its own` 按数值比较 `limit`/`maxEdges`/`outputLimit` 三项，并把 `FIGURE_LIMITS` 是否铺进 `pele.mount` 也钉住），**没有**任何夹具或真机观察让它真的触发一次（字符上限 `limit: 24 * 1024` 与边数上限 `maxEdges: 400` 自 0.1.19 起各有单独夹具，见 E-HARN 的 `a source over the size limit *` 与 `a picture with too many edges *` 六条，以及 E-PROBE 的 PS2、PS3）；② `index.js` 的 `apply` 幂等**已由断言守护**（0.1.29）：`the host half adds one section per context, not one per call` 在同一 `ctx` 上连调三次只允许一段、换一个 `ctx` 允许再一段；探针 PS23 把 `claimed.has/add` 换成 `void claimed` 后该条变红（`three applies on one context added 3 sections`，`check-bundle: 1 failed, 39 passed`，exit 1）；③ `src/client/entry.js` 里 `slots.inject(...)` 回调返回的 disposer 被丢掉这半句**不成立**：`the fence layer is gone once the host disposes` 正守着它（把 `entry.js` 的回调改成不返回 disposer，该断言就会变红），不再算缺口；④ `package.json` 的 `prepack` 只跑构建与 `check-bundle`，不跑夹具（依赖 CI 的五步兜住）；⑤ `package.json` 若加入 `engines.node` 等非 `dsh` 子键，`no dsh version gate can refuse a start` 不会变红（当前清单没有 `engines` 键，属「没有断言的清单形状面」）。
 - **G16 vendor 文本与换节点的无头局限（记录）**：`client.js` 里 vendor 许可注释含 `https://github.com/obsidianmd/pele`，属静态文本、无网络行为；「引擎换掉 `<svg>` 后重新命名」在无头环境里只能靠夹具重放（真实拖窄窗口的端到端见 G14）。绘制输出上限（`outputLimit` 2 MiB）仍按 G15 记；字符上限与边数上限在 0.1.19 起已有夹具，这里同样不重复。
 - **G17 视图层的几处行为没有任何断言（第十四轮实现评审 P3 汇总）**：以下保证在代码里存在：①–⑥、⑧ 删掉/改坏不会让任何断言变红；⑦ 有静态字符串守卫（`check-bundle.mjs` 的 `the watcher does not watch the drawing subtree`，把它观察的 `childList` 改成连子级一起观察会变红，但强度受 G19 限制），只是没有夹具或真机观察「嵌套节点重排」——①「画不出来的原因分三种」只有"有一句话"被保护（把 `translate('syntaxError')` 换成 `translate('renderFailed')`、或把 `engineUnavailable` 换成 `renderFailed`，两套检查仍全绿）；②缩放按钮按引擎顺序贴标签（`ZOOM_BUTTONS = ['zoomIn','zoomOut','resetZoom']`），顺序写错不会变红，读屏会把"放大"念成"缩小"；③失败后同一实例的自愈（`FigureBoundary.componentDidUpdate` 里 `code` 变了才复位）无断言；④失败时隐藏那个空画框（`style: failed ? { display: 'none' } : undefined`）无断言；⑤回执的存在与播报有夹具覆盖，但"1.5 秒"这个时长无断言（把 `COPIED_FEEDBACK_MS` 改成 10 会让二十条夹具变红，却没有一条断言它恰好是 1.5 秒）；⑥`children: []`（React 合法、但画不出东西）会退回原文这条分支无断言；⑦`MutationObserver` 只观察直接子节点（无 `subtree`），引擎若在既有 `<svg>` 内部重排则名字不补（有上面说的静态字符串守卫，没有行为观察）；⑧`FigureBoundary` 在 `props` 与 `code` 都读不出来时返回 `null`，这条兜底无断言；⑨`view.js` 在挂载后给缩放按钮补 `title`（`buttons[index].setAttribute('title', text)`），删掉这一行 228 项仍全绿——pele 自己也设标题（PS20），所以它只是引擎不设标题时的兜底；旁边新增的 `the zoom button titles say the same as their names` 保护的是"标题与名字一致"这个结果，不是那一行代码。
   这些都不影响"能力存在"，但它们是这一层最薄的地方；不再往下修的原因是每加一条断言都要连带重算证据与发版，而这一轮的目标是把**说法**收紧到与证据一致。
 - **G18 引擎缺失分支只有静态证据（第十六轮实现评审 P3，第十七轮文档评审修正）**：引擎被内联进 `client.js`，正常构建下运行期不会缺失；`an engine that fails to load leaves the picture to the host` 断言的是产物里存在错误边界、`readLayerInput`、`safeRead`、`engineUnavailable` 这句话，以及 `typeof pele.mount !== 'function'` 这个守卫字符串（把守卫改成恒真，这条静态断言会立刻变红），但**没有动态用例**把引擎置空后观察回退——`scripts/build-client.mjs` 的 `catch (error) { pele = null }` 与 `plan.md` 的「引擎 IIFE 失败则置空」就是这条分支的入口。它的价值是「模型知情、宿主换了加载方式时仍给一句话而不是白屏」，不是可演练的行为。
-- **G19 静态套件只钉顶层条目数，不钉条目内部的断言数（第十七轮实现评审 P3）**：`verify/check-bundle.mjs` 的 `EXPECTED_CHECKS = 39` 只保证「有 39 个 `check()`」，某一条 `check()` 内部的某行 `assert()` 被删掉时套件仍报全过；浏览器夹具是逐条 `expect()` 计数（删一条即 `run-harness: suite reported X checks, expected Y`），两侧的看守强度并不相同。
+- **G19 静态套件只钉顶层条目数，不钉条目内部的断言数（第十七轮实现评审 P3）**：`verify/check-bundle.mjs` 的 `EXPECTED_CHECKS = 40` 只保证「有 40 个 `check()`」，某一条 `check()` 内部的某行 `assert()` 被删掉时套件仍报全过；浏览器夹具是逐条 `expect()` 计数（删一条即 `run-harness: suite reported X checks, expected Y`），两侧的看守强度并不相同。
 - **G20 启用/停用没有单独的真机观察**：`E-LIVE` 观察到的是卸载回退与重装恢复；启用与停用依赖宿主的插件机制，文档（`quickstart.md` 与九份 README）按"走宿主机制、未单独取证"措辞，没有把这两步写成已验证。
 - **G21 引擎支持的其它图种与"Mermaid 12.1"版本说法没有断言**：**静态检查**采样七种（flowchart、sequence、class、state、er、mindmap、timeline，见 `every supported sample type draws an svg`）；浏览器夹具只画了 flowchart 与一条 `sequenceDiagram`；gantt、kanban、xychart、C4、architecture 等引擎声称支持的图种**没有任何用例**，九份 README 里"Mermaid 12.1"的版本说法也只来自上游 pele 的说明，不是本项目的断言。九份 README 因此改成"静态检查采样这七种、浏览器夹具只画了前两种（见 G21）"。
 - **G22 `check-bundle` 需要 `specs/` 才完整**：`the contract's colour variables are the ones that are wired` 读 `specs/001-mermaid-fence-render/contracts/client-fence-layer.md`，而 `specs/` 不在 `files` 里。在正常 clone（含 `specs/`）与 CI 上都跑得通；只有从一份没有 `specs/` 的副本里打包时，这条断言会以 `ENOENT` 变红（`npm pack` 的 `prepack` 会跑静态套件）。已发布产物不受影响，消费方安装时也不跑 `prepack`；这一项目前只登记为局限，没有改成"文件缺失就跳过"，因为跳过会让同一条断言在 CI 之外静默失效。
 
-- **G23 三处「证据能证明到哪一步」的位置（第二十六轮实现评审 P2 记录，不是缺陷）**：①`client.js` banner 的 `sources sha256` 把 `name` 与 `version` 并进了哈希，所以只改版本号的发版（如 0.1.27、0.1.28）看起来也像"源码变了"——`verify/check-bundle.mjs` 用同一组输入重算，陈旧产物照样被挡住，受影响的是人拿 banner 做来源比对；②`check-bundle` 39 项全绿**不代表行为正确**：恒真守护只覆盖 `needed` 名单里的 26 个断言名（PS21 证明名单外的断言改成 `&& true` 不会红，见 G19），行为证据只来自 `run-harness` 的 228 项；③`children` getter 抛错有**双保险**——`view.js` 的 `safeRead` 守卫与 `FigureBoundary.render` 的 `catch` 任缺一条都不变红，但用户可见结果始终是"源码照常显示、消息不空"（探针 3 与探针 9 的对照），属覆盖精度而非缺陷。其中②在 0.1.27 起把四条源码检查的细节串补上「behaviour is asserted by the fixture」，避免被误读成行为担保；三条都不改产品行为。
+- **G23 三处「证据能证明到哪一步」的位置（第二十六轮实现评审 P2 记录，不是缺陷）**：①`client.js` banner 的 `sources sha256` 把 `name` 与 `version` 并进了哈希，所以只改版本号的发版（如 0.1.27、0.1.28）看起来也像"源码变了"——`verify/check-bundle.mjs` 用同一组输入重算，陈旧产物照样被挡住，受影响的是人拿 banner 做来源比对；②`check-bundle` 40 项全绿**不代表行为正确**：恒真守护只覆盖 `needed` 名单里的 26 个断言名（PS21 证明名单外的断言改成 `&& true` 不会红，见 G19），行为证据只来自 `run-harness` 的 228 项；③`children` getter 抛错有**双保险**——`view.js` 的 `safeRead` 守卫与 `FigureBoundary.render` 的 `catch` 任缺一条都不变红，但用户可见结果始终是"源码照常显示、消息不空"（探针 3 与探针 9 的对照），属覆盖精度而非缺陷。其中②在 0.1.27 起把四条源码检查的细节串补上「behaviour is asserted by the fixture」，避免被误读成行为担保；三条都不改产品行为。
 
 **本文件与 tasks.md 的关系**：`tasks.md` 末尾的状态表逐行对应上面 23 项，两处若不一致，以本文件为准（本文件是证据的归属地，`tasks.md` 是工作项的记录）。

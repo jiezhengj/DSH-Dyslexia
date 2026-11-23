@@ -613,7 +613,22 @@ check('the host half adds one section per context, not one per call', () => {
   }
   hostHalf.apply(other)
   assert(sections.length === 2, `a second context added ${sections.length - 1} sections`)
-  return 'three calls on one context, one section; a second context gets its own'
+  // A first attempt that the host rejects must not burn the context: the host may retry.
+  let attempts = 0
+  const flaky = {
+    systemPrompt: {
+      section() {
+        attempts += 1
+        if (attempts === 1) throw new Error('the host refused the first attempt')
+        return () => undefined
+      },
+    },
+  }
+  hostHalf.apply(flaky)
+  assert(attempts === 1, `a failing section was called ${attempts} times`)
+  hostHalf.apply(flaky)
+  assert(attempts === 2, `a retry after a failure did not reach the host (${attempts} attempts)`)
+  return 'three calls on one context, one section; a second context gets its own; a failed attempt still allows a retry'
 })
 
 check('the host half stays silent when the host changed shape', () => {

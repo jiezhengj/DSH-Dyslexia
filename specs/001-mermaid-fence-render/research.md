@@ -117,7 +117,7 @@ renderSlot('conversation.chat.markdown.fence', fence, {
 
 ## D14 证据式验收，不引入测试框架
 
-**结论**：`verify/check-bundle.mjs`（Node 内置模块）做静态断言 + 真机装/卸/窄屏人工证据表；不装 jest/vitest/jsdom。
+**结论**：`verify/check-bundle.mjs`（Node 内置模块）做静态断言 + 真机装/卸证据表（0.1.2）；窄屏只有无头 360 px 夹具（G2）；不装 jest/vitest/jsdom。
 
 **依据**：宪法原则 III（DSH 未自带的依赖必须打包，运行期零网络）与"开发与验证流程"（装、卸、窄屏三项证据；打包后核对文件列表并断网复跑；未验证项必须标注）。静态断言清单见 `contracts/plugin-manifest.md` 的"可静态校验项"。真机证据在 DSH Desktop 会话里做，截图与网络面板结论写进交付说明。
 

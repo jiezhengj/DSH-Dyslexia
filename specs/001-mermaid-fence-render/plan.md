@@ -16,7 +16,7 @@
 
 **Storage**: 无。不新增会话实体、不写文件、不建索引；图源就是既有会话消息里的代码块文本。
 
-**Testing**: 不引入测试框架（遵守"依赖自包含"）。实现提供三类证据：① `node verify/check-bundle.mjs` 纯 Node 内置模块的静态与行为断言 40 项（bundle 外形、允许的 `require` 白名单、无外部 URL、pele 版本与许可存在、manifest 字段完整、8 语言文案与说明页完整、**无版本否决字段、产物可独立编译、宿主加载器异常下不抛出、工厂抛错时仍返回可用模块、宿主半边恰好注册一段且畸形宿主静默**）；② 提交进仓库的 `verify/harness/index.html` + `node verify/run-harness.mjs`，在真实 Chromium 里跑 228 项（含无障碍结构：图像本身带本地化名字、外层盒子不带名字以免重复播报、引擎缩放按钮位于图像之外且可聚焦）（React + `client.js` + 独立引擎，含**故障注入**：宿主 `t` 抛错/回显 key、`code`/`children` 取值器抛错、引擎抛错、无 slots 服务、坏语法、裁剪板缺失、360 px 窄屏、主题换色）；③ 真实宿主里的装/卸/重装与窄屏人工证据（见 quickstart.md 的证据表与 evidence/verification.md 的 E-LIVE）。
+**Testing**: 不引入测试框架（遵守"依赖自包含"）。实现提供三类证据：① `node verify/check-bundle.mjs` 纯 Node 内置模块的静态与行为断言 40 项（bundle 外形、允许的 `require` 白名单、无外部 URL、pele 版本与许可存在、manifest 字段完整、8 语言文案与说明页完整、**无版本否决字段、产物可独立编译、宿主加载器异常下不抛出、工厂抛错时仍返回可用模块、宿主半边恰好注册一段且畸形宿主静默**）；② 提交进仓库的 `verify/harness/index.html` + `node verify/run-harness.mjs`，在真实 Chromium 里跑 228 项（含无障碍结构：图像本身带本地化名字、外层盒子不带名字以免重复播报、引擎缩放按钮位于图像之外且可聚焦）（React + `client.js` + 独立引擎，含**故障注入**：宿主 `t` 抛错/回显 key、`code`/`children` 取值器抛错、引擎抛错、无 slots 服务、坏语法、裁剪板缺失、360 px 窄屏、主题换色）；③ 真实宿主里的装/卸/重装证据（**取自 0.1.2**，见 evidence/verification.md 的 E-LIVE）；窄屏只有无头 Chrome 的 360 px 夹具（G2）。
 
 **Target Platform**: DSH Desktop 0.2.2-rc.5（Web 前端，含内嵌桌面窗口）是本次开发所用的宿主版本（真机观察只到插件 0.1.2，宿主版本覆盖见 G1）；**但不以任何版本字段声明基线**——清单里没有 `engines`、没有 dsh 的 peerDependencies，也没有对宿主客户端包的版本绑定（见"兼容性策略"）。
 
