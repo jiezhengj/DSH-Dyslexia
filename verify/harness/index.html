@@ -330,7 +330,6 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
               throw new Error('code getter exploded')
             },
           })
-          let codeGetterThrew = null
           let codeGetterView = null
           try {
             // The element is built with plain props first, then its frozen props
@@ -350,11 +349,11 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             root.render(element)
             codeGetterView = { stage, root }
           } catch (error) {
-            codeGetterThrew = error
+            codeGetterView = { stage: null, root: null, error }
           }
           await tick(60)
           // React 18 renders in the background, so nothing thrown inside work
-          // reaches the call site: an assertion on `codeGetterThrew` would be
+          // reaches the call site: asserting "did not throw" here would be
           // tautological. The falsifiable version calls the layer's own render,
           // which is synchronous, with the same hostile props bag.
           let codeGetterRendered = null
@@ -396,8 +395,7 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             root.render(element)
             childrenView = { stage, root }
           } catch (error) {
-            childrenThrew = error
-          }
+                }
           await tick(80)
           // React 18 renders asynchronously, so a throw inside work never reaches
           // this try block: what must be asserted is the visible outcome, not the

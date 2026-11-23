@@ -65,6 +65,7 @@ specs/001-mermaid-fence-render/
 ├── research.md          # Phase 0：契约调研与决策（含出处）
 ├── data-model.md        # Phase 1：图源/渲染结果/安装态与状态机
 ├── quickstart.md        # Phase 1：构建、安装、验证与证据表
+├── evidence/verification.md
 ├── contracts/           # Phase 1：三份契约
 │   ├── plugin-manifest.md
 │   ├── client-fence-layer.md

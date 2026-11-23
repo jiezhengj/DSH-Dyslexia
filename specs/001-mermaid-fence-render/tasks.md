@@ -219,7 +219,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T076 `verify/check-bundle.mjs` 新增"图是图像、复制被播报"一项，并让报告行自带 `包名@版本 | 字节数 | 源码指纹`，让任何粘贴的输出自证来自哪棵树
 - [x] T077 夹具新增五类用例（超限源码、流式→完成、falsy children、`t` 换身份不重绘、复制播报），无障碍结构另加三项（组名、缩放按钮在图像外、可聚焦）；`verify/run-harness.mjs` 增加 `--list` 以便证据整段引用单次运行
 - [x] T078 `spec.md` 增 FR-018 与 SC-010；`contracts/client-fence-layer.md`、`data-model.md`、`research.md`（D22）同步
-- [ ] T079 重启 DSH 后做真机核对（图名/按钮/播报/插件页说明/卸载回退）。**0.1.11 至 0.1.23 的发布与安装完成后仍未重启核对**：运行中的界面仍加载旧 chunk；E-LIVE 里能查到的真机观察仍是 **0.1.2**，0.1.7 与 0.1.8 从未在真实宿主里跑过，0.1.9、0.1.10、0.1.11、0.1.12 与 0.1.13 同样如此。
+- [ ] T079 重启 DSH 后做真机核对（图名/按钮/播报/插件页说明/卸载回退）。**0.1.11 至 0.1.24 的发布与安装完成后仍未重启核对**：运行中的界面仍加载旧 chunk；E-LIVE 里能查到的真机观察仍是 **0.1.2**，0.1.7 与 0.1.8 从未在真实宿主里跑过，0.1.9、0.1.10、0.1.11、0.1.12 与 0.1.13 同样如此。
 - [ ] T080 再次请两位评审复核（目标 PASS），通过后把 feature 001 标记完成
 
 ## Phase 14: 第三轮独立评审后的修复（2026-11-23 追加，版本 0.1.6）
@@ -470,7 +470,20 @@ description: "Task list for 会话内图形渲染"
 - [x] T245 文档评审 P1-5/P1-6/P2-9/P2-10/P2-11/P2-14/P2-15/P2-16/P2-17：E-GAPS 计数 20→21 与 `:835` 的 19→21；T079 与 G13 的版本口径改 0.1.23；状态表 G19/G20 归位；`contracts/plugin-manifest.md` 的断言行号 79→91；`plan.md:33` 行数 766/1177/131；`plan.md:45` 的 `OP-2/OP-3` 悬空 ID 换成 E-PKG/E-PUB；`data-model.md` 的"HMR 增量、无需重载"标为未观察；`checklists/requirements.md` 两条"无实现细节"改回未勾；`verification.md:789` 的"即刻生效"改为"磁盘换了、运行中的会话仍持旧 chunk"
 - [x] T246 文档评审 P2-18：E-CHK/E-HARN 的 fence 尾空行去掉（由 `.tmp/regen-evidence.py` 生成时裁掉）
 - [x] T247 重建 `client.js` 并发版：版本 0.1.24；`check-bundle` 39 项、`run-harness` 220 项全绿。发布 `v0.1.24`（提交 `25592a9`）→ GitHub Actions run `45101933555` success（shasum `2f46c409eb78b648d2b31dafe4d921c8ede66fee`，provenance logIndex `4049949251`，33 文件）→ registry tarball 第 20 次轮询可下载 → `remove_bundle`（卸 0.1.23）→ `install_bundle @0.1.24` applied；profile 依赖 `"0.1.24"`、安装副本 769,453 字节 / SHA256 `79C3EC79…2B07` 与仓库根逐字节相同、`locale/` 8、`docs/` 9
-- [ ] T248 第二十二轮双评审（目标两份都 PASS；PASS 后把 feature 001 标记完成）
+- [ ] T248 第二十二轮双评审（实现侧 PASS；文档侧 FAIL，见 Phase 34）
+
+## Phase 34: 第二十二轮双评审的收口（2026-11-23 追加，工作树未发版）
+
+第二十二轮：实现侧 **PASS**（无 P0/P1，1 条 P2 + 6 条 P3），文档侧 **FAIL**（1 条 P0 + 6 条 P1 + 9 条 P2）。本轮只改 `verify/`、`specs/` 与 `README` 之外的随包文件为零，因此**不发新版**，registry 仍是 0.1.24。
+
+- [x] T249 实现评审 P2-1：`check-bundle` 的防掏空守护 `needed` 名单由 21 个名字扩到 25 个（补上 PS14 新增的四条同步渲染断言），PS17 探针（把 `a throwing code getter still yields an element` 的条件换成 `true`）由全绿变为 `fixture assertions without a condition: …`、`check-bundle: 1 failed, 38 passed`
+- [x] T250 实现评审 P3-2：删掉夹具里对已删除变量 `childrenThrew` 的赋值与死变量 `codeGetterThrew`，并把那段注释改成解释为什么"没抛"本身不构成断言
+- [x] T251 实现评审 P3-3/P3-4/P3-5：E-COMP 的 FR-009/FR-016 与契约第 9 条、`data-model.md` 改引现行断言名；PS14 行由 6 格并回 4 格；删掉段落里的残留半句
+- [x] T252 文档评审 P0：E-PUB-LOG 的 0.1.5 块改为真实 stdout（`run-harness: all 82 checks passed (/usr/bin/google-chrome)`，并注明版本前缀是 0.1.6 起、指纹段是 0.1.13 起）
+- [x] T253 文档评审 P1：E-PUB 表补首次 0.1.1 的失败 run `45031124935`（E422）；`:459` 区分"已发布 0.1.24 是 39/220"与"当前工作树 39/222"；`quickstart.md` 与 `:10` 的 220 改 222；`tasks.md` 的 T079/G13 安装版本改到 0.1.24
+- [x] T254 文档评审 P2：G5 的 220→222（并补"0.1.24 发布之后 222 项"）；`plan.md` 的文档树补 `evidence/verification.md`；`contracts/plugin-manifest.md` 去掉"0.1.25 起"，改为"未发版的核验提交起"
+- [x] T255 E-BLD/E-CHK/E-HARN 三块用同一棵树的单次运行重写，`.tmp/verify-evidence-024.py` 复核 `41 == 41` / `227 == 227`；E-PROBE 补 PS17 行、前言改"二十九次"
+- [ ] T256 第二十三轮双评审（目标两份都 PASS；PASS 后把 feature 001 标记完成，并把 `spec.md` 的 Status 改成终态）
 
 ## Dependencies & Execution Order
 
@@ -569,7 +582,7 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 | G10 | SC-005 主题切换 | 部分 | 只验证了换 CSS 变量后变色，没做明→暗→明切换 |
 | G11 | FR-011 停用后提示词消失（T027） | 未做 | 宿主半边只有静态断言；本机 PATH 无 `dsh` CLI，改用 vm 断言，但不证明真实会话里停用后消失 |
 | G12 | FR-002 真机"无侧栏/无新文件" | 未做 | 结构上不写文件、不碰宿主布局，但没有一次真机核对磁盘与会话条目未变 |
-| G13 | T079 当前版本的重启后真机核对 | 未做 | 0.1.11 至 0.1.23 都已发布并装进 profile `desktop`，运行中的界面仍加载旧 chunk；`E-LIVE` 的观察取自 **0.1.2**（只有中文说明页、就地成图、卸载回退、重装恢复四件事），不能自动转移 |
+| G13 | T079 当前版本的重启后真机核对 | 未做 | 0.1.11 至 0.1.24 都已发布并装进 profile `desktop`，运行中的界面仍加载旧 chunk；`E-LIVE` 的观察取自 **0.1.2**（只有中文说明页、就地成图、卸载回退、重装恢复四件事），不能自动转移 |
 | G14 | 真实窗口缩放时引擎重绘（FR-018 端到端） | 未做 | 无头环境首帧后不再派发帧与 ResizeObserver 通知，只能证明"节点被换 → 立刻重新命名"；拖窄真实窗口这条链只有机制级证据 |
 | G15 | 尚未覆盖的加固面 | 未做 | ①`outputLimit`（2 MiB 绘制输出上限）无用例（字符上限与边数上限自 0.1.19 起已有单独夹具与 PS2/PS3 探针）；②`index.js` 的 `apply` 每次都用 `prompt.section({ name: 'ui:dsh-dyslexia', … })` 注册、没有幂等守卫，同一个正常 `ctx` 上再 `apply` 会得到两段同名提示词，无断言守着；③`slots.inject` 回调丢 disposer 这半句**不成立**（`the fence layer is gone once the host disposes` 就守着它，回调不返回 disposer 即变红），不算缺口；④`prepack` 不跑夹具；⑤`package.json` 若加入 `engines.node` 等非 `dsh` 子键，`no dsh version gate can refuse a start` 不会变红 |
 | G16 | vendor 文本与无头环境的换节点 | 未做 | 绘制输出上限（`outputLimit` 2 MiB）仍按 G15 记，字符上限与边数上限已有夹具，不再重复；这里只记两件小事：`client.js` 里 vendor 许可注释含 `https://github.com/obsidianmd/pele`（静态文本、无网络行为），以及「引擎换掉 `<svg>` 后重新命名」在无头环境只能夹具重放（真实拖窄窗口的端到端见 G14） |
@@ -585,4 +598,4 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 | 项 | 状态 | 说明 |
 |---|---|---|
 | T070 0.1.3 重启核对 | 已作废 | 由 T079 取代 |
-| T079 重启后真机核对（0.1.24） | 未做 | 0.1.11 至 0.1.23 已发布并装进 profile `desktop`，运行中的界面仍加载旧 chunk；重启后才换新，届时核对图名/按钮/播报/插件页说明/卸载回退，并把 E-LIVE 改写成 0.1.24 的记录。E-LIVE 里现有的观察是 0.1.2 的 |
+| T079 重启后真机核对（0.1.24） | 未做 | 0.1.11 至 0.1.24 已发布并装进 profile `desktop`，运行中的界面仍加载旧 chunk；重启后才换新，届时核对图名/按钮/播报/插件页说明/卸载回退，并把 E-LIVE 改写成 0.1.24 的记录。E-LIVE 里现有的观察是 0.1.2 的 |

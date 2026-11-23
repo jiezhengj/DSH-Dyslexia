@@ -107,7 +107,7 @@ git push origin main; git push origin v<version>
 gh run watch                              # 观察 publish 工作流
 ```
 
-工作流依次做五件事：`node scripts/build-client.mjs` 重建 chunk → `git diff --exit-code -- client.js` 拒绝发布陈旧产物 → `node verify/check-bundle.mjs`（39 项）→ `node verify/run-harness.mjs`（220 项浏览器检查，与本地 `--list` 同一脚本、同一批断言，只是不逐行打印）→ `npm publish --access public --provenance` 并把 provenance 写到 transparency log。
+工作流依次做五件事：`node scripts/build-client.mjs` 重建 chunk → `git diff --exit-code -- client.js` 拒绝发布陈旧产物 → `node verify/check-bundle.mjs`（39 项）→ `node verify/run-harness.mjs`（222 项浏览器检查，与本地 `--list` 同一脚本、同一批断言，只是不逐行打印）→ `npm publish --access public --provenance` 并把 provenance 写到 transparency log。
 
 - 版本号必须先改：tag 与 `package.json` 不一致时 npm 会拒绝。
 - `repository.url` 必须与 workflow 所在仓库一致，否则 `npm publish` 报 `E422 … Failed to validate repository information`。
