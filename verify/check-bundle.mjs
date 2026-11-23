@@ -357,6 +357,17 @@ function textOf(section) {
   return typeof section.text === 'function' ? section.text() : section.text
 }
 
+check('the section hands the host a function, not a frozen string', () => {
+  const [section] = captureWith(true)
+  assert(typeof section.text === 'function', 'section text is a frozen string: the switch would only apply after a restart')
+  const source = readFileSync(join(ROOT, 'index.js'), 'utf8')
+  assert(source.includes('text: () => briefing(config)'), 'the section text is not a call into briefing()')
+  const open = textOf(section)
+  const closedGap = textOf(captureWith(false)[0])
+  assert(open !== closedGap, 'two captures with different values produced the same text')
+  return 'text is a function, and the value at capture time changes the text'
+})
+
 check('the capability briefing is what it was before the switch', () => {
   assert(hostModule !== null, 'the host half never loaded')
   assert(hostModule.name === 'dsh-dyslexia', 'module name mismatch')
@@ -957,7 +968,7 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
 
 /* ---------------------------------------------------------------- report */
 
-const EXPECTED_CHECKS = 43
+const EXPECTED_CHECKS = 44
 if (notices.length + failures.length !== EXPECTED_CHECKS) {
   failures.push(
     `[FAIL] the suite has ${notices.length + failures.length} checks, expected ${EXPECTED_CHECKS}: a check was added or removed without updating this number`,

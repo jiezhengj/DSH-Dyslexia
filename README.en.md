@@ -6,18 +6,18 @@
 
 DeepSeek Harness already renders Markdown in a chat. This plugin adds one thing: when a reply contains a `mermaid` code block, the chat draws it as a diagram right there — inside the message, in the flow of the conversation. No window opens beside it, nothing switches to a side panel.
 
-The code block is never consumed. It stays in the message as text: it can be copied, sent on, and read after this plugin is gone (searching is not verified: see G7).
+The code block is never consumed. It stays in the message as text: it can be copied, sent on, and read after this plugin is gone (searching is not verified: see feature 001's E-GAPS, G7).
 
 ## Why it is built this way
 
 - **The text is the record.** Every drawing is made from the code block when it is shown, so nothing lives only as pixels. Turn the plugin off and the conversation is still complete.
 - **Inside the message, not beside it.** A preview window breaks the thread of reading: you lose the line you were on.
-- **Capability belongs to the plugin, preference to you.** The plugin only says that drawings appear here. Whether the assistant should draw is your own call, and it takes no instruction file to make it work.
+- **The plugin asks for a picture when a picture is easier.** When a diagram makes a reply easier to follow than a paragraph, the plugin now says so to the assistant and keeps the text for what the picture cannot show. Settings → General has a switch; turn it off and the plugin goes back to rendering only.
 - **Nothing about your machine is assumed.** The drawing engine is bundled, the plugin works offline, and it asks nothing of the host.
 
 ## What you get
 
-- Diagrams in place for `mermaid` code blocks: flowcharts, sequence, class, state, ER, mind map, timeline, and other diagram types the vendored engine supports; the static check samples these seven and the browser fixture draws the first two only (see G21).
+- Diagrams in place for `mermaid` code blocks: flowcharts, sequence, class, state, ER, mind map, timeline, and other diagram types the vendored engine supports; the static check samples these seven and the browser fixture draws the first two only (see feature 001's E-GAPS, G21).
 - **Show source** and **Copy source** under every drawing, so the text behind the picture is one click away.
 - While a reply is streaming, the block stays a code block; the drawing appears when the block is complete.
 - A block that cannot be parsed shows the plain code block plus one line saying why — never an empty frame.
@@ -32,7 +32,7 @@ The code block is never consumed. It stays in the message as text: it can be cop
 - It collects nothing and sends nothing anywhere.
 - It reads only the `mermaid` code block text that is already displayed in your page, and it writes only the diagram into that page.
 - The **Copy source** button uses your browser clipboard; nothing leaves the page.
-- Nothing is added to your session history: the diagram is a rendering, not a stored object (the real-machine side is not checked: see G12).
+- Nothing is added to your session history: the diagram is a rendering, not a stored object (the real-machine side is not checked: see feature 001's E-GAPS, G12).
 
 ## How to verify
 
@@ -45,13 +45,15 @@ Both commands are in the repository, so the claims in this file can be re-checke
 
 ## Known limits
 
-- **Verified here:** on a real machine — in-chat drawing in DSH desktop `0.2.2-rc.5` (plugin `0.1.2`), uninstall fallback and reinstall, and the Chinese plugin page; in the headless harness — label fallback, the eight interface languages, and a 360 px wide column (a layout check, not a phone).
+Gap ids (`G…`) refer to feature 001's E-GAPS in `specs/001-mermaid-fence-render/evidence/verification.md`.
+
+- **Verified here:** the live-window observations are from plugin `0.1.2`; this version's evidence is fixture-level only. Not yet tested: the switch operated in a live window, an eight-language narrow layout, and any pixel comparison with the host's own rows.
 - **Likely, not proven on your machine:** other DSH versions; other Chromium-based browsers; the same checks on mobile devices (the layout is verified in a 360 px viewport in a desktop browser, not on a physical phone); very large diagrams (limits: source 24 KiB, drawing output 2 MiB, 400 edges; beyond that it falls back to the code block).
-- **Not done:** no DSH upgrade has been rehearsed yet (see G1); diagrams are not drawn while a message is still streaming; only ` ```mermaid ` fences are handled (not other fence languages).
+- **Not done:** no DSH upgrade has been rehearsed yet (see feature 001's E-GAPS, G1); diagrams are not drawn while a message is still streaming; only ` ```mermaid ` fences are handled (not other fence languages).
 
 ## Install
 
-Install `@jiezhengj/dsh-dyslexia` in your DeepSeek Harness profile (the Plugins page). It draws figures in the conversation as soon as it is installed (verified on a real machine). Uninstalling was observed on a running interface: the figure and its buttons go, the message turns back into its original code block, and history needs no edit. Enabling and disabling go through the host's plugin mechanism without touching any configuration file, but **those two steps have not been observed separately** (see G20). A version change needs the app restarted before the new client code is loaded. On npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
+Install `@jiezhengj/dsh-dyslexia` in your DeepSeek Harness profile (the Plugins page). It draws figures in the conversation as soon as it is installed (verified on a real machine). Uninstalling was observed on a running interface: the figure and its buttons go, the message turns back into its original code block, and history needs no edit. Enabling and disabling go through the host's plugin mechanism without touching any configuration file, but **those two steps have not been observed separately** (see feature 001's E-GAPS, G20). A version change needs the app restarted before the new client code is loaded. On npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
 
 ## Example
 
@@ -65,7 +67,7 @@ flowchart LR
 ## Uninstalling and compatibility
 
 - Uninstalling keeps every past conversation intact: earlier drawings turn back into the code blocks they came from, still readable.  (this takes effect after restarting the app — a running window keeps the figures it has already loaded)
-- The plugin declares no version gate and no required host package, so no version check refuses a start; a real host upgrade has not been rehearsed yet (see G1). if the host changes shape, the plugin steps aside and the plain code block is shown.
+- The plugin declares no version gate and no required host package, so no version check refuses a start; a real host upgrade has not been rehearsed yet (see feature 001's E-GAPS, G1). if the host changes shape, the plugin steps aside and the plain code block is shown.
 
 ## License
 

@@ -6,18 +6,18 @@
 
 DeepSeek Harness affiche déjà le Markdown dans la discussion. Ce greffon n’ajoute qu’une chose : quand une réponse contient un bloc de code `mermaid`, la discussion le dessine en schéma à cet endroit, dans le message et dans le fil de la conversation. Aucune fenêtre ne s’ouvre à côté, aucun panneau latéral ne s’affiche.
 
-Le bloc de code n’est jamais consommé. Il reste le texte du message : on peut le copier, le transmettre et le lire une fois ce greffon retiré (la recherche n’est pas vérifiée : voir G7).
+Le bloc de code n’est jamais consommé. Il reste le texte du message : on peut le copier, le transmettre et le lire une fois ce greffon retiré (la recherche n’est pas vérifiée : voir les E-GAPS de la feature 001, G7).
 
 ## Pourquoi cette construction
 
 - **Le texte est la trace.** Chaque schéma est refait à partir du bloc de code au moment de l’afficher : rien n’existe uniquement en pixels. Désactivez le greffon, la conversation reste complète.
 - **Dans le message, pas à côté.** Une fenêtre d’aperçu coupe le fil de lecture : on perd la ligne où l’on était.
-- **La capacité au greffon, la préférence à vous.** Le greffon dit seulement que des schémas apparaissent ici. Que l’assistant doive dessiner relève de votre choix, et il fonctionne sans modifier aucun fichier de consignes.
+- **Le greffon demande un schéma quand un schéma est plus facile.** Quand un diagramme rend une réponse plus facile à suivre qu’un paragraphe, il le dit désormais à l’assistant et ne garde le texte que pour ce que l’image ne peut pas montrer. Réglages → Général propose un interrupteur ; désactivez-le et le greffon revient au seul rendu.
 - **Rien n’est supposé de votre machine.** Le moteur de dessin est embarqué, le greffon fonctionne hors ligne et n’exige rien de l’hôte.
 
 ## Ce que vous obtenez
 
-- Des schémas à leur place pour les blocs `mermaid` : organigramme, séquence, classes, états, ER, carte mentale, chronologie et d’autres types que le moteur prend en charge ; le contrôle statique échantillonne ces sept types, le harnais de navigateur n’en dessine que les deux premiers (les autres ne sont pas testés, voir G21).
+- Des schémas à leur place pour les blocs `mermaid` : organigramme, séquence, classes, états, ER, carte mentale, chronologie et d’autres types que le moteur prend en charge ; le contrôle statique échantillonne ces sept types, le harnais de navigateur n’en dessine que les deux premiers (les autres ne sont pas testés, voir les E-GAPS de la feature 001, G21).
 - **Afficher la source** et **Copier la source** sous chaque schéma : le texte derrière l’image est à un clic.
 - Pendant la génération d’une réponse, le bloc reste un bloc ; le schéma apparaît quand le bloc est complet.
 - Un bloc illisible affiche le code d’origine et une ligne indiquant la raison, jamais un cadre vide.
@@ -32,7 +32,7 @@ Le bloc de code n’est jamais consommé. Il reste le texte du message : on peut
 - Il ne collecte rien et n’envoie rien nulle part.
 - Il lit uniquement le texte du bloc de code `mermaid` déjà affiché dans votre page, et il n’écrit que le schéma dans cette page.
 - Le bouton **Copier la source** utilise le presse-papiers de votre navigateur ; rien ne quitte la page.
-- Rien n’est ajouté à l’historique de votre session : le schéma est un rendu, pas un objet stocké (le côté machine réelle n’est pas vérifié : voir G12).
+- Rien n’est ajouté à l’historique de votre session : le schéma est un rendu, pas un objet stocké (le côté machine réelle n’est pas vérifié : voir les E-GAPS de la feature 001, G12).
 
 ## Comment vérifier
 
@@ -45,13 +45,15 @@ Les deux commandes sont dans le dépôt, si bien que ce qui est affirmé dans ce
 
 ## Limites connues
 
-- **Vérifié ici :** dessin dans la discussion vérifié dans DSH bureau `0.2.2-rc.5` (extension `0.1.2`, la vérification sur appareil réel ne couvre que la page de documentation en chinois) ; repli des libellés vérifié ; repli à la désinstallation et réinstallation vérifiés ; huit langues d’interface vérifiées dans le harnais sans interface ; colonne étroite de 360 px vérifiée.  (prend effet après redémarrage de l’application ; une fenêtre ouverte continue d’afficher les figures déjà chargées)
+Les identifiants `G…` renvoient aux E-GAPS de la fonctionnalité 001, dans `specs/001-mermaid-fence-render/evidence/verification.md`.
+
+- **Vérifié ici :** les observations sur machine réelle datent du greffon `0.1.2` ; les preuves de cette version restent au niveau du banc de test. Non testés : l’interrupteur dans une fenêtre réelle, la mise en page étroite en huit langues et toute comparaison de pixels avec les lignes de l’hôte.
 - **Probable, mais non prouvé sur votre machine :** autres versions de DSH ; autres navigateurs basés sur Chromium ; les mêmes vérifications sur appareils mobiles (la mise en page est vérifiée dans une fenêtre d’affichage de 360 px d’un navigateur de bureau, pas sur un téléphone physique) ; très grands schémas (il existe des limites : 24 KiB de source, 2 MiB de sortie dessinée, 400 arêtes ; au-delà, il se replie sur le bloc de code).
-- **Non effectué :** aucune mise à niveau de DSH n’a été répétée à ce jour (voir G1) ; les schémas ne sont pas dessinés tant qu’un message est encore en cours de diffusion ; seuls les blocs ` ```mermaid ` sont pris en charge (pas les autres langages de bloc de code).
+- **Non effectué :** aucune mise à niveau de DSH n’a été répétée à ce jour (voir les E-GAPS de la feature 001, G1) ; les schémas ne sont pas dessinés tant qu’un message est encore en cours de diffusion ; seuls les blocs ` ```mermaid ` sont pris en charge (pas les autres langages de bloc de code).
 
 ## Installation
 
-Installez le paquet `@jiezhengj/dsh-dyslexia` dans votre profil DeepSeek Harness (page des greffons) ; il dessine les figures dans la conversation dès son installation (vérifié sur une machine réelle). La désinstallation a été observée sur une interface en cours d'exécution : la figure et ses boutons disparaissent, le message redevient son bloc de code d'origine et l'historique n'a pas besoin d'être modifié. L'activation et la désactivation passent par le mécanisme de greffons de l'hôte sans toucher à aucun fichier de configuration, mais **ces deux étapes n'ont pas été observées séparément** (voir G20). Changer de version exige un redémarrage pour charger le nouveau code client. Sur npm : https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
+Installez le paquet `@jiezhengj/dsh-dyslexia` dans votre profil DeepSeek Harness (page des greffons) ; il dessine les figures dans la conversation dès son installation (vérifié sur une machine réelle). La désinstallation a été observée sur une interface en cours d'exécution : la figure et ses boutons disparaissent, le message redevient son bloc de code d'origine et l'historique n'a pas besoin d'être modifié. L'activation et la désactivation passent par le mécanisme de greffons de l'hôte sans toucher à aucun fichier de configuration, mais **ces deux étapes n'ont pas été observées séparément** (voir les E-GAPS de la feature 001, G20). Changer de version exige un redémarrage pour charger le nouveau code client. Sur npm : https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
 
 ## Exemple
 
@@ -65,7 +67,7 @@ flowchart LR
 ## Désinstallation et compatibilité
 
 - La désinstallation laisse intactes toutes les conversations passées : les anciens schémas redeviennent les blocs de code dont ils venaient, lisibles.
-- Le greffon ne déclare ni seuil de version ni paquet hôte obligatoire : aucun contrôle de version ne peut donc refuser le démarrage ; une mise à jour réelle de l’hôte n’a pas été répétée (voir G1). si l’hôte change de forme, le greffon s’efface et le bloc de code d’origine est affiché.
+- Le greffon ne déclare ni seuil de version ni paquet hôte obligatoire : aucun contrôle de version ne peut donc refuser le démarrage ; une mise à jour réelle de l’hôte n’a pas été répétée (voir les E-GAPS de la feature 001, G1). si l’hôte change de forme, le greffon s’efface et le bloc de code d’origine est affiché.
 
 ## Licence
 

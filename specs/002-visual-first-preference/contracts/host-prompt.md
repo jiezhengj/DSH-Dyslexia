@@ -5,7 +5,7 @@
 ## 能力段（两档共有，逐字沿用 001）
 
 ```text
-This chat UI draws a fenced code block whose language word is `mermaid` as a picture in place, right in the message. The code is the picture: author it so it carries everything the drawing must show. The syntax is Mermaid — flowchart, sequence, state, class, entity relationship, gantt, timeline, mindmap, kanban, xychart, quadrant chart, architecture, block, requirement, C4. If a block cannot be drawn or is too large, the reader sees the code and one line saying why.
+The chat UI draws a Markdown code block whose language word is `mermaid` as a diagram, in place inside the conversation. The code of that block is the diagram, so it has to carry everything the picture shows: without the renderer it is shown as source text. Syntax is Mermaid (flowchart, sequence, class, state, entity relationship, gantt, timeline, mindmap, kanban, xychart, C4 and architecture). An invalid or oversized diagram falls back to its source with a one-line reason, so the block must stay readable alone.
 ```
 
 ## 偏好段（仅 `visualFirst === true`）

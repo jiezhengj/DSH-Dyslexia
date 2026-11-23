@@ -7,8 +7,11 @@ Draws mermaid blocks right in the conversation and, when it helps, asks for a pi
 
 ## About
 
-A reply often explains a structure in words a diagram would show in a glance. This plugin lets the chat draw `mermaid` blocks where they stand, so the picture sits in the conversation and the code block stays its text: copyable and readable after the plugin is removed. (searching is not verified: see G7).
-回复里经常用一段文字去讲一个结构，而一张图一眼就能看清。这个插件让聊天就地画出 `mermaid` 代码块：图留在会话里，代码块仍是消息的文本——可复制，插件卸掉之后也仍可读（检索未取证，见 G7）。
+A reply often explains a structure in words a diagram would show in a glance. This plugin lets the chat draw `mermaid` blocks where they stand, so the picture sits in the conversation and the code block stays its text: copyable and readable after the plugin is removed. (searching is not verified: see feature 001's E-GAPS, G7).
+回复里经常用一段文字去讲一个结构，而一张图一眼就能看清。这个插件让聊天就地画出 `mermaid` 代码块：图留在会话里，代码块仍是消息的文本——可复制，插件卸掉之后也仍可读（检索未取证，见 feature 001 的 E-GAPS 里的 G7）。
+
+The plugin now asks the assistant for a picture when a picture is easier to follow than a paragraph, and keeps the text for what the picture cannot show. Settings → General has the switch; turn it off and the plugin renders only, as before.
+当一张图比一段话更好懂时，插件现在会请助手画图，文字只留图讲不清的部分。设置 → 通用里有这个开关；关掉后插件就只负责渲染，和以前一样。
 
 ## Data and privacy / 数据与隐私
 
@@ -20,16 +23,16 @@ A reply often explains a structure in words a diagram would show in a glance. Th
   只读取页面上已经显示出来的 `mermaid` 代码块文本，只把生成的图写回该页面。
 - The **Copy source** button uses your browser clipboard; nothing leaves the page.
   **复制源码**（**Copy source**）按钮只使用浏览器剪贴板；没有任何内容离开当前页面。
-- Nothing is added to your session history: the diagram is a rendering, not a stored object (the real-machine side of this is not checked yet: see G12).
-  不会向会话历史写入任何内容：图只是界面渲染结果，不是保存的对象（真机未核对，见 G12）。
+- Nothing is added to your session history: the diagram is a rendering, not a stored object (the real-machine side of this is not checked yet: see feature 001's E-GAPS, G12).
+  不会向会话历史写入任何内容：图只是界面渲染结果，不是保存的对象（真机未核对，见 feature 001 的 E-GAPS 里的 G12）。
 
 ## How to verify / 验证方法
 
 Requirements: Node.js 22 or newer, and Chrome/Chromium for the browser checks.
 环境要求：Node.js 22 或更新版本，以及用于浏览器检查的 Chrome/Chromium。
 
-- `node verify/check-bundle.mjs` — static and engine checks of the shipped bundle (manifest, no network calls, no version gate, the vendored engine, eight interface languages, seven sample diagrams, drawn by the vendored engine; other diagram types are untested, see G21). Prints one line per check and exits non-zero on failure.
-  `node verify/check-bundle.mjs` — 对随包产物执行静态与引擎检查（manifest、无网络调用、无版本门、内联引擎、八种界面语言、七种图形的示例图；其他图种未测，见 G21）。每项检查打印一行，失败时以非零状态码退出。
+- `node verify/check-bundle.mjs` — static and engine checks of the shipped bundle (manifest, no network calls, no version gate, the vendored engine, eight interface languages, seven sample diagrams, drawn by the vendored engine; other diagram types are untested, see feature 001's E-GAPS, G21). Prints one line per check and exits non-zero on failure.
+  `node verify/check-bundle.mjs` — 对随包产物执行静态与引擎检查（manifest、无网络调用、无版本门、内联引擎、八种界面语言、七种图形的示例图；其他图种未测，见 feature 001 的 E-GAPS 里的 G21）。每项检查打印一行，失败时以非零状态码退出。
 - `node verify/run-harness.mjs` — runs the browser checks in headless Chrome against `verify/harness/index.html` (drawing, eight languages, hostile hosts, broken diagrams, copy, narrow 360 px column, theme colours). Set `DSH_DYSLEXIA_CHROME` to point at a specific Chrome executable if auto-detection fails.
   `node verify/run-harness.mjs` — 在无头 Chrome 中针对 `verify/harness/index.html` 运行浏览器检查（成图、八种语言、异常宿主环境、损坏的图形语法、复制、360 px 窄栏、主题颜色）。若自动探测失败，可设置 `DSH_DYSLEXIA_CHROME` 指向指定的 Chrome 可执行文件。
 
@@ -38,19 +41,21 @@ Both commands are in the repository, so the claims in this file can be re-checke
 
 ## Known limits / 已知限制
 
-- **Verified here:** on a real machine — in-chat drawing in DSH desktop `0.2.2-rc.5` (plugin `0.1.2`), uninstall fallback and reinstall, and the Chinese plugin page; in the headless harness — label fallback, the eight interface languages, and a 360 px wide column (a layout check, not a phone).
-  **已在此验证：** 真机——DSH 桌面端 `0.2.2-rc.5`（插件 `0.1.2`）的会话内成图、卸载回退与重新安装、插件说明页（中文）；无头夹具——标签回退、八种界面语言、360 px 窄栏布局（只验证布局，不是手机）。
+Gap ids (`G…`) refer to feature 001's E-GAPS in `specs/001-mermaid-fence-render/evidence/verification.md`.
+文中的 `G…` 编号指 feature 001 的 E-GAPS，原文在 `specs/001-mermaid-fence-render/evidence/verification.md`。
+
+- **Verified here:** the live-window observations are from plugin `0.1.2`; this version's evidence is fixture-level only. Not yet tested: the switch operated in a live window, an eight-language narrow layout, and any pixel comparison with the host's own rows.
+  **已在此验证：** 真机观察来自插件 `0.1.2`；本版本的证据只到夹具级别。尚未测试：在真机窗口里操作开关、八种语言的窄栏布局、与宿主自带行的像素比对。
 - **Likely, not proven on your machine:** other DSH versions; other Chromium-based browsers; the same checks on mobile devices (the layout is verified in a 360 px viewport in a desktop browser, not on a physical phone); very large diagrams (limits: source 24 KiB, drawing output 2 MiB, 400 edges; beyond that it falls back to the code block).
   **大概率可用，但未在你的机器上实证：** 其他 DSH 版本；其他 Chromium 内核浏览器；移动设备上的同类表现（布局仅在桌面浏览器的 360 px 视口中验证，未在实体手机上实测）；超大图形（上限为源码 24 KiB、绘制输出 2 MiB、400 条边；超出后回退显示代码块）。
-- **Not done:** no DSH upgrade has been rehearsed yet (see G1); diagrams are not drawn while a message is still streaming; only `mermaid` fences (` ```mermaid `) are handled (not other fence languages).
-  **尚未覆盖：** 尚未演练任何一次 DSH 升级（见 G1）；消息仍在流式输出时不会成图；只处理 ` ```mermaid ` 代码块（不处理其他语言标记的代码块）。
+- **Not done:** no DSH upgrade has been rehearsed yet (see feature 001's E-GAPS, G1); diagrams are not drawn while a message is still streaming; only `mermaid` fences (` ```mermaid `) are handled (not other fence languages).
+  **尚未覆盖：** 尚未演练任何一次 DSH 升级（见 feature 001 的 E-GAPS 里的 G1）；消息仍在流式输出时不会成图；只处理 ` ```mermaid ` 代码块（不处理其他语言标记的代码块）。
 
 ## Install
 
-Install `@jiezhengj/dsh-dyslexia` in the DeepSeek Harness Plugins page. Uninstalling was watched on a running app (the figure falls back to the code block at once, history untouched); enabling and disabling go through the host's own plugin mechanism and need no config edit, but **those two steps have not been observed separately** (see G20). A version change needs the app restarted before the new client code is loaded.
-在 DeepSeek Harness 的插件页安装 `@jiezhengj/dsh-dyslexia`。卸载已在运行中的界面上观察过（图立刻退回代码块、历史不变）；启用与停用走宿主自己的插件机制、不需要改配置，但**这两步还没有单独的真机观察**（见 G20）。更换版本需要重启应用才会加载新的客户端代码。
+Install `@jiezhengj/dsh-dyslexia` in the DeepSeek Harness Plugins page. Uninstalling was watched on a running app (the figure falls back to the code block at once, history untouched); enabling and disabling go through the host's own plugin mechanism and need no config edit, but **those two steps have not been observed separately** (see feature 001's E-GAPS, G20). A version change needs the app restarted before the new client code is loaded.
+在 DeepSeek Harness 的插件页安装 `@jiezhengj/dsh-dyslexia`。卸载已在运行中的界面上观察过（图立刻退回代码块、历史不变）；启用与停用走宿主自己的插件机制、不需要改配置，但**这两步还没有单独的真机观察**（见 feature 001 的 E-GAPS 里的 G20）。更换版本需要重启应用才会加载新的客户端代码。
 
-- 装好即用：装进 profile 之后会话里直接成图（真机已验证）。卸载在运行中的界面上观察过（图与按钮消失、消息变回原来的代码块，历史消息不用改）；启用与停用同样由宿主的插件机制接管、不需要改任何配置文件，但**这两步还没有单独的真机观察**（见 G20）。换版本需要重启 DSH 才能加载新的客户端 chunk。npm 上的包：https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
 - Source: https://github.com/jiezhengj/DSH-Dyslexia
 
 ## Documentation

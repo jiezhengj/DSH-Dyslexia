@@ -1,6 +1,6 @@
 # Evidence — feature 002: the preference switch and the new name
 
-This file records what was actually observed while building feature 002. Every block below is one run on one tree; nothing is copied from another version.
+This file records what was actually observed while building feature 002. Every block below is one run on one tree; nothing is copied from another version. The E-PUB and E-INS blocks record the last published version, 0.2.0, as history; everything else was re-run on the 0.2.1 tree.
 
 ## E-BLD build
 
@@ -8,10 +8,10 @@ This file records what was actually observed while building feature 002. Every b
 build-client: @jiezhengj/dsh-dyslexia -> client.js (780550 bytes, 779035 characters, engine 1.13.0, sources 6, syntax ok)
 ```
 
-## E-CHK static and behavioural checks (43)
+## E-CHK static and behavioural checks (44)
 
 ```
-ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.2.0
+ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.2.1
 ok   package.json points at the repository npm trusts — git+https://github.com/jiezhengj/DSH-Dyslexia.git
 ok   package.json declares the bundle patch and the client half — platform web, no package inject
 ok   no dsh version gate can refuse a start — no engines.dsh, no dsh peers
@@ -32,6 +32,7 @@ ok   the layer is keyed to mermaid on the fence slot — conversation.chat.markd
 ok   host half declares its package identity and one service — systemPrompt only
 ok   the host half can be loaded and apply once — one section on a healthy host
 ok   host apply survives a host that changed shape — six hostile hosts, no throw, no section
+ok   the section hands the host a function, not a frozen string — text is a function, and the value at capture time changes the text
 ok   the capability briefing is what it was before the switch — 85 words, order 9000, name ui:dsh-dyslexia
 ok   the switch adds the preference on top of the capability, and nothing else — 70 words of preference, 85 of capability
 ok   the switch is on for an empty configuration — visualFirst defaults to true
@@ -41,7 +42,7 @@ ok   every supported sample type draws an svg — flowchart:218x64 sequence:184x
 ok   a broken diagram reports a one-line reason — Parse error on line 2:
 ok   host key echo falls back to bundled strings — key echo, blanks, placeholders rejected; the host is asked under the plugin namespace
 ok   every language carries the same complete sentences — 16 keys x 8 languages, no engine text in labels
-ok   client.js matches the sources it claims — db71eb3381be5f8bbd6a8701f8f9ea06
+ok   client.js matches the sources it claims — 6b5d4e192279b1294304cbed6303e546
 ok   the picture is the image, and the copy answer is announced — label is a noun, role="img" on the svg, copy result announced; behaviour is asserted by the fixture
 ok   host children react would refuse fall back to the source — objects, functions and mixed arrays fall back to the source text; behaviour is asserted by the fixture
 ok   every drawing the engine swaps in is named again — the engine owns re-layout; every swapped drawing node and its zoom buttons are renamed, strings follow the language; behaviour is asserted by the fixture
@@ -55,7 +56,7 @@ ok   the contract's colour variables are the ones that are wired — 10 engine v
 ok   both size limits reach the engine, each proven on its own — three limits passed to mount, two fixtures that cross one each
 ok   the fixtures assert what the fixes promise, and can fail — 35 assertions present, each with a condition that reads something
 
-check-bundle: @jiezhengj/dsh-dyslexia@0.2.0 | client.js 780550 bytes | sources sha256:db71eb3381be5f8bbd6a8701f8f9ea06 | all 43 checks passed
+check-bundle: @jiezhengj/dsh-dyslexia@0.2.1 | client.js 780550 bytes | sources sha256:6b5d4e192279b1294304cbed6303e546 | all 44 checks passed
 ```
 
 ## E-HARN browser checks (251)
@@ -246,7 +247,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.2.0 | client.js 780550 bytes | sources s
 [ok] the fence layer is gone once the host disposes — 0
 [ok] a second apply does not add a second fence layer — 1
 [ok] a host without effects keeps one stylesheet, not one per apply — 1
-[ok] no internal key reaches the eye — leaked: 
+[ok] no internal key reaches the eye — leaked:
 [ok] a source over the size limit says why — 这张图无法绘制，已改为显示源码。long
 [ok] a source over the size limit keeps the host block
 [ok] a source over the size limit is not drawn
@@ -255,13 +256,10 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.2.0 | client.js 780550 bytes | sources s
 [ok] a picture with too many edges is not drawn
 [ok] the picture appears when the stream ends
 [ok] a falsy children is not mistaken for content — 图里的语法有误，已改为显示源码。flowchart TD
-  A-->
 [ok] a refused children cannot empty the message — object — children=1 text=flowchart LR
-  A[Tex
 [ok] a refused children falls back to the source — object — "flowchart LR\n  A[Text] --> B[Picture]"
 [ok] no React error 31 escapes — object
 [ok] a refused children cannot empty the message — function — children=1 text=flowchart LR
-  A[Tex
 [ok] a refused children falls back to the source — function — "flowchart LR\n  A[Text] --> B[Picture]"
 [ok] no React error 31 escapes — function
 [ok] a refused children cannot empty the message — object in a failed picture — children=3 text=图里的语法有误，已改为显示源码。flow
@@ -271,7 +269,6 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.2.0 | client.js 780550 bytes | sources s
 [ok] a refused children falls back to the source — array with an object — "图里的语法有误，已改为显示源码。flowchart TD\n  A-->"
 [ok] no React error 31 escapes — array with an object
 [ok] a streaming block with no host children still shows its source — flowchart LR
-  A[Text] --> B[P
 [ok] a fresh t does not redraw the picture
 [ok] the drawing is named when it is first laid out — img|图
 [ok] the fixture really replaced the drawing node — new node
@@ -316,17 +313,28 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.2.0 | client.js 780550 bytes | sources s
 [ok] a host without configForms gets the picture and no settings row — 1 defs, threw=no
 [ok] the picture still draws when the settings surface is missing
 [ok] a configForms face that answers nothing adds no row — 1 defs
-run-harness: @jiezhengj/dsh-dyslexia@0.2.0 | client.js 780550 bytes | sources sha256:db71eb3381be5f8bbd6a8701f8f9ea06 | all 251 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+
+run-harness: @jiezhengj/dsh-dyslexia@0.2.1 | client.js 780550 bytes | sources sha256:6b5d4e192279b1294304cbed6303e546 | all 251 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
 ## E-PROBE — the new checks can fail
 
-The settings-row checks were shown to be falsifiable by breaking the row on purpose (working copy, then restored):
+Each new check was shown to fail with its own break. The break was applied to a working copy of the sources, rebuilt, run, then restored; the tree ended where it started.
 
 | probe | change | result |
 |---|---|---|
-| P-1 | `src/client/settings.js`: `aria-checked` always `true` | `[bad] the switch turns off after the write — true`, `[bad] a rejected write leaves the switch where the host put it — true`, `run-harness: 2 failed, 248 passed`, exit 1 |
-| P-2 | restore and rebuild | `all 251 checks passed` |
+| F1 | `index.js`: `briefing` ignores the switch and always appends the preference | `FAIL the capability briefing is what it was before the switch — capability text is 155 words, budget is 95`, `FAIL the switch adds the preference on top of the capability, and nothing else — the switch is on and nothing was added`, `FAIL the section hands the host a function, not a frozen string — two captures with different values produced the same text`, `check-bundle: 3 failed, 41 passed`, exit 1 |
+| F2 | `index.js`: `text: briefing(config)` instead of `text: () => briefing(config)` | `FAIL the section hands the host a function, not a frozen string — section text is a frozen string: the switch would only apply after a restart`, `check-bundle: 1 failed, 43 passed`, exit 1 |
+| F3 | `index.js`: `visualFirst` default `false` | `FAIL the switch is on for an empty configuration — the switch does not default to on`, `check-bundle: 1 failed, 43 passed`, exit 1 |
+| F4 | `src/client/entry.js`: locale registration run immediately instead of through `ctx.effect` | `[bad] styles and strings are claimed as effects — 1`, `[bad] the locale registration is dropped — 0`, `run-harness: 2 failed, 249 passed`, exit 1 |
+| F5 | `src/client/settings.js`: a rejected write drops `store.set(before)` | `[bad] a rejected write leaves the switch where the host put it — true`, `run-harness: 1 failed, 250 passed`, exit 1 |
+| F6 | `src/client/settings.js`: `setValue` calls `face.set` twice | `[bad] one click asks the host for the opposite value once — [["visualFirst",false],["visualFirst",false]]`, `[bad] the second click tries the other value once — [["visualFirst",false],["visualFirst",false],["visualFirst",true],["visualFirst",true]]`, `[bad] a rejected write leaves the switch where the host put it — true`, `[bad] a rejected write explains itself in the status sentence — 已保存`, `run-harness: 4 failed, 247 passed`, exit 1 |
+| F7 | `src/client/settings.js`: `aria-checked` always `true` | `[bad] the switch turns off after the write — true`, `[bad] a rejected write leaves the switch where the host put it — true`, `[bad] the switch starts off when the host already says off — true`, `run-harness: 3 failed, 248 passed`, exit 1 |
+| F8 | `src/client/i18n.js`: `hostKey` returns the bare key | `[bad] a host dictionary that already owns a word does not put it on our button — 复制成功`, `[bad] a host that translates the namespaced key is used — 已复制`, `run-harness: 2 failed, 249 passed`, exit 1 |
+
+The function-form break (F2) was not caught by the suites before check 44 existed: a frozen `text` string kept every earlier check green, and only `the section hands the host a function, not a frozen string` sees it. That is why 44 was added.
+
+After restoring and rebuilding, the tree passed again: `build-client` reported `sources 6, syntax ok`, `check-bundle` reported `all 44 checks passed`, `run-harness` reported `all 251 checks passed`.
 
 ## E-GAPS — not proven here
 
@@ -334,9 +342,12 @@ The settings-row checks were shown to be falsifiable by breaking the row on purp
 |---|---|
 | G1 | The switch was not operated in a live DSH window: the row is proven in the browser fixture (fake `configForms`), not against the running host service. |
 | G2 | The write path to the host (`settings.update`) was not exercised end to end; the fixture proves only that our half calls `set` once and honours its answer. |
-| G3 | 8 languages x 200% font x 360px layout is asserted in the fixture for zh/en; the other six languages are proven only by "differs from English" plus the D6 sentence length check. |
+| G3 | Only the zh row text is asserted in the fixture (`the row label is our own sentence, not a host key — 优先用图，而不是成段文字` and its hint). No narrow-layout assertion exists: neither suite renders the row at 360px or at 200% font size. The six non-zh translations are proven only by the 16-keys-x-8-languages completeness check and by differing from English, not by being rendered. |
 | G4 | The renamed names were not seen in a live window (plugin page, settings row); 8 titles are proven in the locale files and by assertion. |
 | G5 | No screenshot comparison against host rows (SC-008); the row uses host tokens and matches the neighbour row structure by construction, not by pixels. |
+| G6 | The E1–E14 end-to-end rows in `quickstart.md` were not run against a live host; no live window was observed for this feature. |
+| G7 | SC-001's five sample requests were not run: no model was asked to answer them with the switch on, so the briefing's effect on real answers is untested. |
+| G8 | `@deepseek-ai/schemastery` is a static import in `index.js`; if the package cannot resolve, the plugin fails to load at import time. There is no graceful degradation, and this failure path was not exercised. |
 
 ## E-PUB publish
 
@@ -362,3 +373,5 @@ The first two tag pushes (`45194558416`, `45194732082`) failed and published not
 | profile dependency | `"@jiezhengj/dsh-dyslexia": "0.2.0"` |
 | installed `client.js` | 780550 bytes, SHA256 `0014F3499121F6C6D8E5973662441E5E5DF3DFA37A5EFF2EB53253935EA29D85` |
 | repository `client.js` | same 780550 bytes and the same SHA256 |
+
+0.2.0 is the last published version. 0.2.1 is the documentation-only correction that follows the feature-002 review: it is not tagged, not published and not installed; the 0.2.0 rows above stay as history, and the checks in this file were re-run on the 0.2.1 tree.

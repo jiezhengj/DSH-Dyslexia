@@ -3,7 +3,7 @@
 ## 导出的形状
 
 ```js
-export const name = '@jiezhengj/dsh-dyslexia'
+export const name = 'dsh-dyslexia'
 export const inject = ['systemPrompt']
 
 export const Config = z.object({
@@ -14,8 +14,8 @@ export function apply(ctx, config) { … }
 ```
 
 - `Config` MUST 用 `@deepseek-ai/schemastery`（`^3.19.0`）声明；字段 MUST 带 `.default(true)` 与 `.volatile()`。
+- `index.js` MUST 在模块顶部静态 import `@deepseek-ai/schemastery`；该包无法解析时插件在 import 阶段失败，不导出 `Config`，也不提供降级（见 `evidence.md` G8）。
 - 命名空间 MUST 与 profile entry id 一致：`dsh-dyslexia`（客户端用同名 `ns` 读写）。
-- 若 `Config` 无法导出（依赖缺失）：插件 MUST 仍注册纯能力提示词段，`apply` MUST NOT 抛错，且必须 `console.warn` 一行说明"偏好开关缺席"。
 
 ## 读取
 
@@ -37,6 +37,6 @@ export function apply(ctx, config) { … }
 
 | 情形 | 期望 |
 | --- | --- |
-| `Config` 无法创建 | `apply` 正常返回；无设置行；渲染不受影响 |
+| `schemastery` 无法解析 | `index.js` 在 import 阶段失败：插件不加载，无设置行、无渲染（G8，不是降级） |
 | 宿主无 `settings` 服务 | 不调用 `configure`；段文本按默认值装配 |
 | `systemPrompt.section` 抛错 | `apply` 捕获并 `warn`，不阻塞启动（沿用 001 的 `claimed`/`release` 幂等） |

@@ -6,18 +6,18 @@
 
 DeepSeek Harness ya dibuja Markdown en el chat. Este complemento añade una sola cosa: cuando una respuesta trae un bloque de código `mermaid`, el chat lo dibuja como diagrama ahí mismo, dentro del mensaje y en el hilo de la conversación. No se abre una ventana al lado ni se cambia a un panel lateral.
 
-El bloque de código no se consume: sigue en el mensaje como texto, de modo que se puede copiar, reenviar y leer cuando este complemento ya no esté (la búsqueda no está verificada: ver G7).
+El bloque de código no se consume: sigue en el mensaje como texto, de modo que se puede copiar, reenviar y leer cuando este complemento ya no esté (la búsqueda no está verificada: ver los E-GAPS de la feature 001, G7).
 
 ## Por qué está construido así
 
 - **El texto es el registro.** Cada dibujo se hace desde el bloque de código al mostrarlo, así que nada vive solo como píxeles. Desactiva el complemento y la conversación sigue completa.
 - **Dentro del mensaje, no al lado.** Una ventana de vista previa corta el hilo de lectura: pierdes la línea en la que estabas.
-- **La capacidad es del complemento, la preferencia es tuya.** El complemento solo dice que aquí aparecen dibujos. Que el asistente dibuje o no es tu decisión, y funciona sin editar ningún archivo de instrucciones.
+- **El complemento pide un dibujo cuando un dibujo es más fácil.** Cuando un diagrama hace que una respuesta se siga mejor que un párrafo, ahora se lo indica al asistente y deja texto solo para lo que la imagen no puede mostrar. En Ajustes → General hay un interruptor; al desactivarlo, el complemento vuelve a limitarse a dibujar.
 - **No se da nada por supuesto de tu equipo.** El motor de dibujo viene incluido, el complemento funciona sin conexión y no exige nada al anfitrión.
 
 ## Qué obtienes
 
-- Diagramas en su sitio para bloques `mermaid`: flujo, secuencia, clases, estados, ER, mapas mentales, líneas de tiempo y otros tipos que admite el motor; la comprobación estática muestrea estos siete y el arnés de navegador solo dibuja los dos primeros (los demás no están probados, véase G21).
+- Diagramas en su sitio para bloques `mermaid`: flujo, secuencia, clases, estados, ER, mapas mentales, líneas de tiempo y otros tipos que admite el motor; la comprobación estática muestrea estos siete y el arnés de navegador solo dibuja los dos primeros (los demás no están probados, véanse los E-GAPS de la feature 001, G21).
 - **Mostrar el código** y **Copiar el código** bajo cada dibujo: el texto detrás de la imagen queda a un clic.
 - Mientras una respuesta se está generando, el bloque sigue siendo un bloque; el dibujo aparece cuando el bloque está completo.
 - Un bloque que no se puede analizar muestra el código original y una línea con el motivo; nunca un marco vacío.
@@ -32,7 +32,7 @@ El bloque de código no se consume: sigue en el mensaje como texto, de modo que 
 - No recoge nada ni envía nada a ningún sitio.
 - Solo lee el texto del bloque de código `mermaid` que ya se muestra en tu página, y solo escribe el diagrama dentro de esa página.
 - El botón **Copiar el código** usa el portapapeles de tu navegador; nada sale de la página.
-- No se añade nada al historial de la sesión: el diagrama es una representación visual, no un objeto guardado (el lado de máquina real no está verificado: ver G12).
+- No se añade nada al historial de la sesión: el diagrama es una representación visual, no un objeto guardado (el lado de máquina real no está verificado: ver los E-GAPS de la feature 001, G12).
 
 ## Cómo verificarlo
 
@@ -45,13 +45,15 @@ Ambos comandos están en el repositorio, de modo que lo afirmado en este archivo
 
 ## Límites conocidos
 
-- **Verificado aquí:** dibujo en el chat verificado en DSH escritorio `0.2.2-rc.5` (plugin `0.1.2`, la verificación en equipo real solo cubre la página de documentación en chino); respaldo de etiquetas verificado; respaldo al desinstalar y reinstalación verificados; ocho idiomas de interfaz verificados en el arnés sin interfaz; columna estrecha de 360 px verificada.
+Los identificadores `G…` remiten a los E-GAPS de la feature 001, en `specs/001-mermaid-fence-render/evidence/verification.md`.
+
+- **Verificado aquí:** las observaciones en máquina real son del plugin `0.1.2`; la evidencia de esta versión solo llega al nivel de fixture. Sin probar: el interruptor en una ventana real, el diseño estrecho en ocho idiomas y cualquier comparación de píxeles con las filas del anfitrión.
 - **Probable, pero no demostrado en tu equipo:** otras versiones de DSH; otros navegadores basados en Chromium; las mismas comprobaciones en dispositivos móviles (la disposición está verificada en un área de visualización de 360 px en un navegador de escritorio, no en un teléfono físico); diagramas muy grandes (hay límites: 24 KiB de código fuente, 2 MiB de salida dibujada y 400 aristas; más allá de eso vuelve al bloque de código).
-- **No realizado:** no se ha ensayado ninguna actualización de DSH (véase G1); los diagramas no se dibujan mientras un mensaje sigue transmitiéndose; solo se tratan bloques ` ```mermaid ` (no otros lenguajes de bloque de código).
+- **No realizado:** no se ha ensayado ninguna actualización de DSH (véanse los E-GAPS de la feature 001, G1); los diagramas no se dibujan mientras un mensaje sigue transmitiéndose; solo se tratan bloques ` ```mermaid ` (no otros lenguajes de bloque de código).
 
 ## Instalación
 
-Instala el paquete `@jiezhengj/dsh-dyslexia` en tu perfil de DeepSeek Harness (página de complementos); dibuja figuras en la conversación en cuanto se instala (verificado en una máquina real). La desinstalación se observó en una interfaz en marcha: la figura y sus botones desaparecen, el mensaje vuelve a mostrar su bloque de código original y el historial no necesita cambios. Activar y desactivar pasan por el mecanismo de complementos del anfitrión sin tocar ningún archivo de configuración, pero **esos dos pasos no se han observado por separado** (véase G20). Al cambiar de versión hay que reiniciar la aplicación para cargar el nuevo código de cliente. En npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
+Instala el paquete `@jiezhengj/dsh-dyslexia` en tu perfil de DeepSeek Harness (página de complementos); dibuja figuras en la conversación en cuanto se instala (verificado en una máquina real). La desinstalación se observó en una interfaz en marcha: la figura y sus botones desaparecen, el mensaje vuelve a mostrar su bloque de código original y el historial no necesita cambios. Activar y desactivar pasan por el mecanismo de complementos del anfitrión sin tocar ningún archivo de configuración, pero **esos dos pasos no se han observado por separado** (véanse los E-GAPS de la feature 001, G20). Al cambiar de versión hay que reiniciar la aplicación para cargar el nuevo código de cliente. En npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
 
 ## Ejemplo
 
@@ -65,7 +67,7 @@ flowchart LR
 ## Desinstalación y compatibilidad
 
 - Desinstalar mantiene intactas las conversaciones anteriores: los dibujos vuelven a ser los bloques de código de los que salieron, legibles.  (surtur efecto tras reiniciar la aplicación; una ventana abierta sigue mostrando las figuras ya cargadas)
-- El complemento no declara puerta de versión ni paquete anfitrión obligatorio, así que ninguna comprobación de versión impide el arranque; una actualización real del anfitrión no se ha ensayado (véase G1). si el anfitrión cambia de forma, el complemento se aparta y se muestra el bloque de código original.
+- El complemento no declara puerta de versión ni paquete anfitrión obligatorio, así que ninguna comprobación de versión impide el arranque; una actualización real del anfitrión no se ha ensayado (véanse los E-GAPS de la feature 001, G1). si el anfitrión cambia de forma, el complemento se aparta y se muestra el bloque de código original.
 
 ## Licencia
 

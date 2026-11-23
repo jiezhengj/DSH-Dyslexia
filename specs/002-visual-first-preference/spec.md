@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-23
 
-**Status**: Implemented in `0.2.0` (2026-11-23). Evidence: `evidence.md` in this folder (build, 43 static checks, 251 browser checks, one falsifiability probe). Not proven: live-window switch operation and live renamed labels, six-language narrow layout, pixel comparison against host rows — see gaps G1-G5.
+**Status**: Implemented in `0.2.0` (2026-11-23); documentation corrected for `0.2.1`. Evidence: `evidence.md` in this folder (build, 44 static checks, 251 browser checks, seven falsifiability probes F1/F3–F8). Not proven: SC-001 (five sample requests), the E1–E14 end-to-end rows, live-window switch operation and live renamed labels, any 200%/360px layout assertion for the settings row, pixel comparison against host rows, the schemastery import-failure path — see gaps G1–G8.
 
 **Input**: User description: "插件可以有个简单的设置面板，里面有个开关：仅仅是在会话里更好地渲染 mermaid，还是同时更积极地用图形化的方式表达和输出。名称改为 DSH 我有阅读障碍（其他语种按语义翻译）。如果 Agent 并不积极地用图形化的方式输出，渲染再完美也没有意义。"
 
@@ -76,10 +76,10 @@ feature 001 交付的是**渲染能力**：会话里出现 `mermaid` 代码块�
 
 **Acceptance Scenarios**:
 
-1. **Given** 读取偏好失败，**When** 读者打开设置，**Then** 这一行显示不可用或当前生效值，不显示崩溃或空白页。
+1. **Given** 读取偏好失败或快照缺字段，**When** 读者打开设置，**Then** 开关按默认值（打开）显示，不显示崩溃或空白页。
 2. **Given** 读者切换开关但写入被拒，**When** 操作结束，**Then** 界面回到实际生效值，并给出可见的失败提示，不谎报已保存。
 3. **Given** 配置在别处（例如配置文件）被改动，**When** 设置面板处于打开状态，**Then** 开关无需刷新就跟随新值。
-4. **Given** 插件的配置能力不可用（宿主版本差异），**When** 应用启动，**Then** 插件仍提供渲染，开关缺席也不影响任何会话内容。
+4. **Given** 宿主没有提供 `configForms`（没有可写的设置面），**When** 应用启动，**Then** 设置行整个缺席（没有禁用态），插件仍提供渲染，会话内容不受影响。
 
 ### Edge Cases
 
@@ -139,5 +139,5 @@ feature 001 交付的是**渲染能力**：会话里出现 `mermaid` 代码块�
 - "视觉优先"只影响模型何时选择用图，不改变图的语法、渲染、缩放、回退与复制行为。
 - 偏好段落用英文书写（模型读的是英文），界面文案走 8 种界面语言。
 - 默认值按读者明确要求设为"渲染 + 视觉优先"；这打破了 feature 001 的"插件不携带偏好"约定，因此 Constitution 原则 I MUST 在本 feature 计划阶段修订（版本升为 2.0.0），并说明迁移与影响。
-- 声明配置项需要一个 schema 能力；若宿主没有可用且稳定的方式，则退化为"配置文件里一个布尔值 + 界面只读"，并记入缺口而不是伪称可切换。
+- 声明配置项需要一个 schema 能力；当前实现直接在 `index.js` 顶部静态 import `@deepseek-ai/schemastery`，拿不到该包时插件在 import 阶段失败（见 `evidence.md` G8），没有可切换的降级。
 - 改名只改展示层名称与文案，不改包名、入口 id 与文件名（分发与升级路径保持稳定）。

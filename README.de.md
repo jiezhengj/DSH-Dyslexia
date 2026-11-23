@@ -6,18 +6,18 @@
 
 DeepSeek Harness stellt Markdown im Chat bereits dar. Dieses Plugin fügt genau eines hinzu: Enthält eine Antwort einen `mermaid`-Codeblock, zeichnet der Chat ihn an genau dieser Stelle als Diagramm – in der Nachricht, im Lauf der Unterhaltung. Daneben öffnet sich kein Fenster, nichts wechselt in eine Seitenleiste.
 
-Der Codeblock wird nie verbraucht. Er bleibt der Text der Nachricht: kopierbar, weitergebbar und auch dann noch lesbar, wenn dieses Plugin entfernt ist (Suchen ist nicht verifiziert: siehe G7).
+Der Codeblock wird nie verbraucht. Er bleibt der Text der Nachricht: kopierbar, weitergebbar und auch dann noch lesbar, wenn dieses Plugin entfernt ist (Suchen ist nicht verifiziert: siehe die E-GAPS von Feature 001, G7).
 
 ## Warum es so gebaut ist
 
 - **Der Text ist die Aufzeichnung.** Jedes Diagramm wird beim Anzeigen aus dem Codeblock neu erzeugt; nichts existiert nur als Pixel. Plugin aus – die Unterhaltung bleibt vollständig.
 - **In der Nachricht, nicht daneben.** Ein Vorschaufenster zerreißt den Lesefaden: Man verliert die Zeile, bei der man war.
-- **Können gehört zum Plugin, Vorliebe zu dir.** Das Plugin sagt nur, dass hier Diagramme erscheinen. Ob der Assistent zeichnen soll, entscheidest du, und es braucht dafür keine geänderte Anweisungsdatei.
+- **Das Plugin bittet um ein Diagramm, wenn ein Diagramm leichter ist.** Wenn ein Schaubild eine Antwort leichter verfolgbar macht als ein Absatz, sagt das Plugin das jetzt dem Assistenten und lässt Text nur für das, was das Bild nicht zeigen kann. Unter Einstellungen → Allgemein gibt es einen Schalter; ausgeschaltet zeichnet das Plugin wieder nur.
 - **Über deinen Rechner wird nichts angenommen.** Die Zeichen-Engine ist mitgeliefert, das Plugin arbeitet offline und verlangt nichts vom Host.
 
 ## Was du bekommst
 
-- Diagramme an Ort und Stelle für `mermaid`-Codeblöcke: Flussdiagramm, Sequenz, Klasse, Zustand, ER, Mindmap, Zeitachse und weitere vom Motor unterstützte Diagrammtypen; die statische Prüfung tastet diese sieben ab, der Browser-Test zeichnet nur die ersten beiden (weitere Typen sind ungetestet, siehe G21).
+- Diagramme an Ort und Stelle für `mermaid`-Codeblöcke: Flussdiagramm, Sequenz, Klasse, Zustand, ER, Mindmap, Zeitachse und weitere vom Motor unterstützte Diagrammtypen; die statische Prüfung tastet diese sieben ab, der Browser-Test zeichnet nur die ersten beiden (weitere Typen sind ungetestet, siehe die E-GAPS von Feature 001, G21).
 - **Quelle anzeigen** und **Quelle kopieren** unter jedem Diagramm – der Text hinter dem Bild ist einen Klick entfernt.
 - Während eine Antwort noch streamt, bleibt der Block ein Codeblock; das Diagramm erscheint, sobald der Block vollständig ist.
 - Ein nicht auswertbarer Block zeigt den ursprünglichen Codeblock plus eine Zeile mit dem Grund – nie einen leeren Rahmen.
@@ -32,7 +32,7 @@ Der Codeblock wird nie verbraucht. Er bleibt der Text der Nachricht: kopierbar, 
 - Es sammelt nichts und sendet nichts irgendwohin.
 - Es liest nur den Text des `mermaid`-Codeblocks, der bereits auf deiner Seite angezeigt wird, und schreibt nur das Diagramm in diese Seite.
 - Die Schaltfläche **Quelle kopieren** nutzt die Zwischenablage deines Browsers; nichts verlässt die Seite.
-- Deinem Sitzungsverlauf wird nichts hinzugefügt: Das Diagramm ist eine Darstellung, kein gespeichertes Objekt (reale Maschine nicht geprüft: siehe G12).
+- Deinem Sitzungsverlauf wird nichts hinzugefügt: Das Diagramm ist eine Darstellung, kein gespeichertes Objekt (reale Maschine nicht geprüft: siehe die E-GAPS von Feature 001, G12).
 
 ## So überprüfst du es
 
@@ -45,13 +45,15 @@ Beide Befehle liegen im Repository, sodass sich die Aussagen in dieser Datei jed
 
 ## Bekannte Grenzen
 
-- **Hier verifiziert:** Zeichnen im Chat in DSH Desktop `0.2.2-rc.5` (Plugin `0.1.2`, echte Geräteprüfung nur für die chinesische Dokumentationsseite) verifiziert; Beschriftungs-Fallback verifiziert; Deinstallations-Fallback und Neuinstallation verifiziert; acht Oberflächensprachen im Headless-Test verifiziert; schmale 360-px-Spalte verifiziert.  (Das greift nach einem Neustart der App; ein laufendes Fenster zeigt die bereits geladenen Figuren weiter.)
+Die Kennungen `G…` verweisen auf die E-GAPS von Feature 001 in `specs/001-mermaid-fence-render/evidence/verification.md`.
+
+- **Hier verifiziert:** Die Beobachtungen auf echter Hardware stammen von Plugin `0.1.2`; die Belege dieser Version sind reine Fixture-Ebene. Nicht getestet: der Schalter in einem echten Fenster, ein schmales Layout in acht Sprachen und ein Pixelvergleich mit den Zeilen des Hosts.
 - **Wahrscheinlich, aber auf deinem Rechner nicht bewiesen:** andere DSH-Versionen; andere Chromium-basierte Browser; dieselben Prüfungen auf Mobilgeräten (das Layout ist in einem 360-px-Viewport eines Desktop-Browsers verifiziert, nicht auf einem physischen Telefon); sehr große Diagramme (es gibt Grenzen: 24 KiB Quelltext, 2 MiB Zeichenausgabe, 400 Kanten; darüber hinaus fällt es auf den Codeblock zurück).
-- **Nicht durchgeführt:** ein DSH-Upgrade wurde noch nie geprobt (siehe G1); Diagramme werden nicht gezeichnet, solange eine Nachricht noch streamt; nur ` ```mermaid `-Blöcke werden behandelt (keine anderen Codeblock-Sprachen).
+- **Nicht durchgeführt:** ein DSH-Upgrade wurde noch nie geprobt (siehe die E-GAPS von Feature 001, G1); Diagramme werden nicht gezeichnet, solange eine Nachricht noch streamt; nur ` ```mermaid `-Blöcke werden behandelt (keine anderen Codeblock-Sprachen).
 
 ## Installation
 
-Installiere das Paket `@jiezhengj/dsh-dyslexia` in deinem DeepSeek-Harness-Profil (Plugin-Seite); es zeichnet Diagramme im Gespräch, sobald es installiert ist (auf einem echten Rechner geprüft). Das Deinstallieren wurde in einer laufenden Oberfläche beobachtet: Abbildung und Schaltflächen verschwinden, die Nachricht zeigt wieder ihren ursprünglichen Codeblock, die Historie bleibt unverändert. Aktivieren und Deaktivieren laufen über den Plugin-Mechanismus des Hosts, ohne dass eine Konfigurationsdatei angefasst wird, **wurden aber nicht getrennt beobachtet** (siehe G20). Bei einem Versionswechsel muss die App neu starten, damit der neue Client-Code geladen wird. Auf npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
+Installiere das Paket `@jiezhengj/dsh-dyslexia` in deinem DeepSeek-Harness-Profil (Plugin-Seite); es zeichnet Diagramme im Gespräch, sobald es installiert ist (auf einem echten Rechner geprüft). Das Deinstallieren wurde in einer laufenden Oberfläche beobachtet: Abbildung und Schaltflächen verschwinden, die Nachricht zeigt wieder ihren ursprünglichen Codeblock, die Historie bleibt unverändert. Aktivieren und Deaktivieren laufen über den Plugin-Mechanismus des Hosts, ohne dass eine Konfigurationsdatei angefasst wird, **wurden aber nicht getrennt beobachtet** (siehe die E-GAPS von Feature 001, G20). Bei einem Versionswechsel muss die App neu starten, damit der neue Client-Code geladen wird. Auf npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
 
 ## Beispiel
 
@@ -65,7 +67,7 @@ flowchart LR
 ## Deinstallation und Kompatibilität
 
 - Eine Deinstallation lässt jede frühere Unterhaltung unversehrt: Frühere Diagramme werden wieder zu den Codeblöcken, aus denen sie entstanden, lesbar.
-- Das Plugin deklariert keine Versionsschwelle und kein erforderliches Host-Paket; eine Versionsprüfung den Start also nicht ablehnen kann; ein echtes Host-Update wurde noch nicht geprobt (siehe G1). Ändert sich die Form des Hosts, tritt das Plugin zurück und der ursprüngliche Codeblock wird gezeigt.
+- Das Plugin deklariert keine Versionsschwelle und kein erforderliches Host-Paket; eine Versionsprüfung den Start also nicht ablehnen kann; ein echtes Host-Update wurde noch nicht geprobt (siehe die E-GAPS von Feature 001, G1). Ändert sich die Form des Hosts, tritt das Plugin zurück und der ursprüngliche Codeblock wird gezeigt.
 
 ## Lizenz
 
