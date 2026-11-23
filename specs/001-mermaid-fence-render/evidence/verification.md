@@ -926,6 +926,7 @@ Done in 4.5s using pnpm v11.28.5
 | 图下是「查看源码」「复制源码」两个中文按钮，点「查看源码」会展开源码面板、按钮变成「隐藏源码」 | `find --role button --name "复制源码"` 命中 1 个 `button`；「查看源码」因带 `aria-expanded` 被宿主映射成 `menubutton`，自动化点不动（G24②），**由人本人在窗口里点了一次确认：面板展开、按钮变「隐藏源码」** | FR-018 的按钮本地化与面板开合 |
 | 点「复制源码」把源码原文写进剪贴板，界面出现可见回执 | `Set-Clipboard 'sentinel-before-copy'` → 点击 → `Get-Clipboard` 得到 `flowchart LR` / `  A[Agent 写出 mermaid 代码块] --> B[同一条消息里就地成图]` / `  B --> C[原文仍是文本，可复制可检索]`；按钮右侧出现「复制成功」（该文案来自宿主词条，见 G24③） | FR-005、FR-018 的"复制诚实" |
 | 卸载不会改写已渲染的消息，但**也不在运行中的窗口里消失** | `remove_bundle` 返回 `applied`、profile 依赖与 `node_modules` 都已移除；随后 8 秒内那条消息仍显示图与两个按钮（`find --role image` 仍为 1、`复制源码` 仍为 1），按 `Ctrl+R` 与 `F5` 之后画面也没有变化（我无法确认窗口是否真的重载过，只能说这两次按键没有让图消失） | FR-009 的后半**改为未取证**（见 G24①） |
+| **重启之后**，同一条消息变回纯代码块：无图、无插件按钮、原文完整 | 重启后同一会话（窗口标题仍是「DeepSeek Harness 可视化插件研究」）里：`find --role image` = **0**、`find --role button --name "复制源码"` = **0**、`find --role menubutton --name "查看源码"` = **0**；跳回第 21 轮截图可见 `代码块` 标题下的 `flowchart LR` / `A[Agent 写出 mermaid 代码块] --> B[同一条消息里就地成图]` / `B --> C[原文仍是文本，可复制可检索]`（`.tmp/livecheck/turn21-codeblock.png`） | **FR-009 / E10 成立，前提是重启**（时机见 G24①） |
 
 **以下四条来自 0.1.2**，保留是因为它们证明链路本身可用；0.1.3–0.1.31 改过渲染层（`role` 结构、`aria-roledescription` 的移除与重排版后重标、可见的复制反馈、空/非法 `children` 的处理、源码块的 `language-mermaid` 标记、外层盒子去掉名字），所以它们**不能**自动转移。
 
@@ -947,7 +948,7 @@ Done in 4.5s using pnpm v11.28.5
 要验的是 `FR-009` 的时机：**卸载要不要重启才从界面消失**。计划与进度：
 
 1. **已做（2026-11-23 21:2x）**：`plugin_manager` 的 `remove_bundle @jiezhengj/dsh-dyslexia` 返回 `{"stage":"remove","changed":true,"application":"applied"}`（pnpm 输出 `- @jiezhengj/dsh-dyslexia 0.1.31`）；随后核对 profile：`package.json` 里 `dsh-dyslexia` 的依赖与 bundles 条目都没有了，`node_modules/@jiezhengj/dsh-dyslexia` 也不存在。运行中的窗口不受影响（G24①），这正是要靠重启来验的地方。
-2. **等用户重启 DSH**（用户已同意："你来卸载，我来重启"）。重启后本会话结束，新会话里要做的核对：那条含 ```mermaid 的消息应显示**纯代码块原文**（`role="image"` 与「复制源码」按钮都不再出现），历史消息内容不变、不报错 —— 这就是 E10 / G24① 的正面证据。
+2. **已完成（2026-11-23 21:19 重启）**：同一条含 ```mermaid 的消息显示为**纯代码块原文**——`role="image"`、`复制源码`、`查看源码` 三处计数都是 0，第 21 轮的截图里是一块带 `代码块` 标题的 `flowchart LR …`（`.tmp/livecheck/turn21-codeblock.png`），历史消息内容不变、无报错 —— E10 / G24① 的正面证据。
 3. 然后把 `install_bundle @jiezhengj/dsh-dyslexia@0.1.31` 装回，请用户再重启一次；重启后同一条消息应重新出现图、图名「图」、两个按钮，且**不需要改历史消息** —— E11 / `FR-010`。
 4. 两段都用 `agent-desktop find --role image` / `find --role button --name 复制源码` 的计数与截图记录，然后回写 E-LIVE（把"卸载后回退"的时机从"未取证"改成实测），同步 `tasks.md` 的 T079 与 G24①，并把 `quickstart.md` 与九份 README 里"卸载要重启"的措辞与实测对齐（若实测与现在写的一致，就不必再改）。
 
@@ -988,7 +989,7 @@ Done in 4.5s using pnpm v11.28.5
 - **G23 三处「证据能证明到哪一步」的位置（第二十六轮实现评审 P2 记录，不是缺陷）**：①`client.js` banner 的 `sources sha256` 把 `name` 与 `version` 并进了哈希，所以只改版本号的发版（如 0.1.27、0.1.28）看起来也像"源码变了"——`verify/check-bundle.mjs` 用同一组输入重算，陈旧产物照样被挡住，受影响的是人拿 banner 做来源比对；②`check-bundle` 40 项全绿**不代表行为正确**：恒真守护只覆盖 `needed` 名单里的 26 个断言名（PS21 证明名单外的断言改成 `&& true` 不会红，见 G19），行为证据只来自 `run-harness` 的 229 项；③`children` getter 抛错有**双保险**——`view.js` 的 `safeRead` 守卫与 `FigureBoundary.render` 的 `catch` 任缺一条都不变红，但用户可见结果始终是"源码照常显示、消息不空"（探针 3 与探针 9 的对照），属覆盖精度而非缺陷。其中②在 0.1.27 起把四条源码检查的细节串补上「behaviour is asserted by the fixture」，避免被误读成行为担保；三条都不改产品行为。
 
 - **G24 0.1.31 真机核对暴露的三件事（2026-11-23，未修，先按事实记录）**：
-  ①**卸载在运行中的窗口里不生效**：`remove_bundle` 已经 `applied`（profile 依赖与 `node_modules` 都清理干净），但已打开的窗口继续显示图与两个按钮，`Ctrl+R`/`F5` 也没让窗口重新加载；也就是说客户端 chunk 是随窗口加载的，卸载要等**重启应用**才从界面上消失。`E-LIVE` 在 0.1.2 记过"卸载后同一条消息立刻变回代码块"，那是在另一版宿主上看到的；`FR-009` 的"卸载后回退"因此只能算**重启后**成立，`quickstart.md` 与九份 README 里"卸载立刻生效"的措辞要按这个事实改。
+  ①**卸载要重启才从界面消失（已实测，2026-11-23 21 时）**：`remove_bundle` 返回 `applied`、profile 依赖与 `node_modules` 都清理干净，但打开着的窗口继续显示图与两个按钮，`Ctrl+R`/`F5` 之后画面也没变化；**用户重启 DSH 后**，同一条消息立刻变回纯代码块（`role=image` 与两个按钮计数都为 0，原文完整，见 E-LIVE）。所以 `FR-009` 的「卸载后回退」成立，但时机是**重启之后**，不是「同一屏立刻」。`quickstart.md` 与九份 README 的措辞已按这个事实改过。
   ②**「查看源码」只能靠人点，自动化点不动**（这已是取舍，不是缺陷）：`aria-expanded` 让宿主把它映射成 `menubutton`，`agent-desktop` 的 `click`/`expand` 对它返回 `ACTION_FAILED ... DoDefaultAction` 与 `STALE_REF`（节点在读取活状态时失效），按 UIA bounds 换算的真实鼠标点击也没有让标签翻转。**2026-11-23 21 时由用户本人在窗口里点击确认：面板展开、按钮变成「隐藏源码」**，所以这条用户可见行为有真机证据，缺的只是「自动化能否复核它」。开合本身另有夹具（`[lang] the source toggle flips its word`、`the source toggle starts collapsed`、`the source toggle expands`）。
   ③**复制回执的文案来自宿主词条**：`translateFor` 先问宿主的 `t`，宿主的全局字典里有 `copied: 复制成功`，所以界面显示的是"复制成功"而不是我们 `i18n.js` 里的"已复制"。含义与语言都对，但说明**键名与宿主全局词条撞车时以宿主为准**；这一点从未在文档里写过。
 
