@@ -117,7 +117,7 @@ function warn(scope, error) {
 - 任何工具名、命令名、设置项、文件路径，或"请调用…"的祈使句。
 - 任何"未安装时降级为…"的说明（模型不需要知道插件安装态，安装态由宿主报告）。
 
-> **2026-11-24 · 取代说明（supersession，不改本段历史）**：本节的"必须不包含"清单（标题写明"违反即视为破坏原则 I"）与其中"任何'总是 / 必须 / 尽量使用图'的偏好指令"一条，属于 Constitution 1.0.0 原则 I（能力与偏好分离）下的规则。Constitution v2.0.0（2026-11-23）已把原则 I 改为"默认带偏好，但界面上可见可关"（即能力默认、偏好可见且可关：能力恒在，偏好由读者自己开关），feature 002 据此默认携带一段视觉优先偏好，所以这条不再是"装了插件也不得带偏好"的判据——偏好段只在读者自己打开开关时追加，从不使用无条件措辞（无 `always` / `must use` / `must draw` / `every answer` 这类话），关掉开关后输出的文本与 001 逐字相同（`specs/002-visual-first-preference/contracts/host-prompt.md`；由 `the capability briefing is what it was before the switch` 守护，`verify/check-bundle.mjs:401`）。001 的合规复查 MUST NOT 以删除该偏好段为通过条件。
+> **2026-11-24 · 取代说明（supersession，不改本段历史）**：本节的"必须不包含"清单（标题写明"违反即视为破坏原则 I"）与其中"任何'总是 / 必须 / 尽量使用图'的偏好指令"一条，属于 Constitution 1.0.0 原则 I（能力与偏好分离）下的规则。Constitution v2.0.0（2026-11-23）已把原则 I 改为"默认带偏好，但界面上可见可关"（即能力默认、偏好可见且可关：能力恒在，偏好由读者自己开关），feature 002 据此默认携带一段视觉优先偏好，所以这条不再是"装了插件也不得带偏好"的判据——偏好段默认就在：全新安装与从旧版本升级都一样，`index.js:29` 把 `visualFirst` 默认成 `true`，`index.js:75` 在装配时直接追加，不需要读者做任何动作；该段从不使用无条件措辞（无 `always` / `must use` / `must draw` / `every answer` 这类话）；读者在 设置 → 通用设置 里关掉开关后，输出的文本才与 001 逐字相同（`specs/002-visual-first-preference/contracts/host-prompt.md`；由 `the capability briefing is what it was before the switch` 守护，`verify/check-bundle.mjs:401`）。001 的合规复查 MUST NOT 以删除该偏好段为通过条件。
 
 **文本长度**：一句话事实 + 一句话信息完整性 + 一句语法范围 + 一句失败可见，合计 ≤ 4 句 / ≤ 90 词（中文 ≤ 150 字），与会话里其他段落的篇幅量级相当。
 

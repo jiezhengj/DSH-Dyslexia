@@ -9,7 +9,7 @@
 - [x] 关闭后提示词段与 001 **逐字**相同：`the capability briefing is what it was before the switch` 逐句比对 001 契约里的四句 `MERMAID_RENDER_PROMPT`，并断言整段相等（`0.2.5`，G9 关闭）。
 - [x] 打开后偏好段出现在能力段之后，且仍只有一个 `ui:dsh-dyslexia` 段。
 - [ ] 切换即时生效：不重启、不重装，下一条消息即遵循。未做，见 `evidence.md` G6。
-- [x] 写入失败时界面回到宿主当前值 + 可见提示（`readHostValue` 重读快照），不存在"显示已开但未生效"。
+- [x] 写入失败时界面回到宿主当前值 + 可见提示（`readHostValue` 重读快照）；保证以宿主给出答案为前提——宿主答过后显示值才等于实际生效值，写入始终不落定时行可能停在读者请求的值（`evidence.md` G11）。
 - [ ] 外部改值后面板跟随更新：夹具已断言宿主推送的值到达开关（`a value the host pushes reaches the switch without a write`，`aria-checked` 与计算出的颜色），订阅注销与真机跟随仍未断言，见 `evidence.md` G6/G1。
 
 ## 无障碍与本地化

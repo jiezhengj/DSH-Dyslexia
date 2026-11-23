@@ -51,7 +51,7 @@ specs/002-visual-first-preference/
 ├── research.md
 ├── data-model.md
 ├── quickstart.md
-├── evidence.md                 # 构建/检查/探针输出与未取证项（G1–G8、G11 未取证，G9/G10 已由 0.2.5 关闭）
+├── evidence.md                 # 构建/检查/探针输出与未取证项（G1–G8、G11、G12 未取证，G9/G10 已由 0.2.5 关闭）
 ├── contracts/
 │   ├── plugin-config.md        # 配置项与宿主侧读取契约
 │   ├── settings-row.md         # 设置行的槽契约、DOM/可访问性契约
@@ -106,7 +106,7 @@ verify/
 1. 宿主：`Config` + 两档提示词段 + 降级；静态断言先行。
 2. 客户端：`settings.js` + 文案 + 样式；夹具先行（假 `configForms`、假 `t`、8 语言、写失败）。
 3. 改名：`locale/*.json`、`docs/DETAIL.*.md`、9 份 README、`package.json` description。
-4. 探针：八条（F1、F3–F9）逐条破坏受保护行为，确认断言会红。
+4. 探针：十二条（F1、F3–F13）逐条破坏受保护行为，确认断言会红。
 5. 文档与证据：spec/plan/data-model/contracts/quickstart/evidence 同步；发版、装回、双评审。
 
 ## Complexity Tracking

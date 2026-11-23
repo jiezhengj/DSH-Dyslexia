@@ -338,7 +338,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.2.5 | client.js 783360 bytes | sources sh
 
 CI on run `45240437544` printed the same two lines for the tagged commit (only the browser path differs, `/usr/bin/google-chrome`), so these are the published release's numbers and not a local run alone; the verbatim CI block is under "E-PUB · 0.2.5" below.
 
-The three browser assertions this round added are `a refused write keeps the value the host took while it was pending` (`verify/harness/index.html:1549`), `a value the host pushes reaches the switch without a write` (`:1612`) and `a thenable that throws out of then cannot break the click` (`:1676`); the static side changed inside `the capability briefing is what it was before the switch` (`verify/check-bundle.mjs:401`), so the static count is unchanged at 45.
+The three browser assertions this round added are `a refused write keeps the value the host took while it was pending` (`verify/harness/index.html:1549`), `a value the host pushes reaches the switch without a write` (`:1612`) and `a thenable that throws out of then cannot break the click` (`:1676`); the static side changed in two places: inside `the capability briefing is what it was before the switch` (`verify/check-bundle.mjs:401`), and in check #45's guard list, where `verify/check-bundle.mjs:1047` adds `'a host that gains configForms after apply still gets the settings row'` and `:1051` raises `NEEDED_COUNT` from 40 to 43, so the static count is unchanged at 45.
 
 ## E-PUB · 0.2.2
 
@@ -382,6 +382,8 @@ Two fixture details are worth recording. Headless Chrome's virtual time does not
 
 ## E-GAPS — not proven here
 
+Ten gaps are open here: G1–G8, G11 and G12; G9 and G10 are discharged by `0.2.5`.
+
 | gap | what is missing |
 |---|---|
 | G1 | The switch was not operated in a live DSH window: the row is proven in the browser fixture (fake `configForms`), not against the running host service. |
@@ -395,6 +397,7 @@ Two fixture details are worth recording. Headless Chrome's virtual time does not
 | G9 | **Discharged in `0.2.5`**: `the capability briefing is what it was before the switch` (`verify/check-bundle.mjs:401-429`) parses the four `MERMAID_RENDER_PROMPT` sentences read-only out of `specs/001-mermaid-fence-render/contracts/host-prompt.md` and asserts exact equality (`text === recorded.join(' ')`) as well as one `includes` per sentence, so one changed word in `index.js` goes red (F12). Still unproven: a comparison with a running feature 001 build — the reference is 001's recorded contract, and no 001 binary was kept. |
 | G10 | **Discharged in `0.2.5`**: four probes (F10–F13) ran on the `0.2.5` tree, each in a fresh `%TEMP%` copy, one per round-5 fix. The `0.2.4` tree itself was never probed — `0.2.5` carries its code plus the fixes, so it supersedes it. F1 and F9 have still not been re-run since `0.2.3`: F1's target (`index.js`) is unchanged since then, while F9's target line in `src/client/settings.js` still exists but that file changed twice after `0.2.3`; neither is a re-run. |
 | G11 | A write whose promise never settles is not covered: `src/client/settings.js:86-87` puts the requested value into the store before `injected.setValue` is awaited, so from the click until the host answers the row shows a value the host has not accepted; the fixtures only drive promises that resolve `true`, resolve `false`, reject, or throw out of `then`. A promise that never settles leaves the row on the requested value with no failure sentence, and no assertion covers that state. |
+| G12 | A face whose `getSnapshot` throws or is missing restores the row to the default `true`, not to the captured value: `readPreference(face)` (`src/client/settings.js:41-51`) returns `true` for a missing, unreadable, `getSnapshot`-less or raising face and never signals "unreadable"; `inject.readHostValue` is attached whenever a face exists (`src/client/settings.js:182-184`), and a row is mounted only when a face exists (`src/client/entry.js:133-134`), so `restore()` (`src/client/settings.js:72-83`) always re-reads the host for any mounted row, and the captured value only runs when `readHostValue` is absent — i.e. for no mounted row. On such a degraded face the row can show "on" without a saved write. No assertion covers this because no fixture mounts a face without a readable snapshot. |
 
 ## E-PUB publish
 

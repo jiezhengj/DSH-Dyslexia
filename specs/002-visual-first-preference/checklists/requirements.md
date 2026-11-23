@@ -6,7 +6,7 @@
 
 ## Content Quality
 
-- [x] No implementation details (languages, frameworks, APIs)
+- [ ] No implementation details (languages, frameworks, APIs)
 - [x] Focused on user value and business needs
 - [x] Written for non-technical stakeholders
 - [x] All mandatory sections completed
@@ -27,7 +27,7 @@
 - [x] All functional requirements have clear acceptance criteria
 - [x] User scenarios cover primary flows
 - [ ] Feature meets measurable outcomes defined in Success Criteria
-- [x] No implementation details leak into specification
+- [ ] No implementation details leak into specification
 
 ## Notes
 
@@ -37,3 +37,4 @@
 - SC-005 的"1 秒"沿用 feature 001 对界面反馈的口径（无独立计时装置时以观察与夹具断言为准，缺口须登记）。
 - SC-001（G7）、SC-008（G5）、SC-009（G3）尚无取证，因此 Feature Readiness 的"满足可度量结果"一项保持未勾。
 - 关闭态提示词已与 feature 001 契约逐字比对（静态检查 `the capability briefing is what it was before the switch`），G9 关闭；探针已在 `0.2.5` 上重跑，G10 关闭。
+- `spec.md:104-105`（FR-007/FR-008）刻意引用 `src/client/settings.js:86-87`、`injected.setValue`、`inject.readHostValue()` 与 `readPreference(face)`，把 pending/restore 规则写成可核对的条件；因此「No implementation details」两条不勾。
