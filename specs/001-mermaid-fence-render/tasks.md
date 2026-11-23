@@ -469,7 +469,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T244 文档评审 P2-12/P2-13：`README.md` 的安装段补上门户口径（启用/停用未单独观察，见 G20）；"已在此验证"列表拆成"真机"与"无头夹具"两段
 - [x] T245 文档评审 P1-5/P1-6/P2-9/P2-10/P2-11/P2-14/P2-15/P2-16/P2-17：E-GAPS 计数 20→21 与 `:835` 的 19→21；T079 与 G13 的版本口径改 0.1.23；状态表 G19/G20 归位；`contracts/plugin-manifest.md` 的断言行号 79→91；`plan.md:33` 行数 766/1177/131；`plan.md:45` 的 `OP-2/OP-3` 悬空 ID 换成 E-PKG/E-PUB；`data-model.md` 的"HMR 增量、无需重载"标为未观察；`checklists/requirements.md` 两条"无实现细节"改回未勾；`verification.md:789` 的"即刻生效"改为"磁盘换了、运行中的会话仍持旧 chunk"
 - [x] T246 文档评审 P2-18：E-CHK/E-HARN 的 fence 尾空行去掉（由 `.tmp/regen-evidence.py` 生成时裁掉）
-- [x] T247 重建 `client.js` 并发版：版本 0.1.24；`check-bundle` 39 项、`run-harness` 220 项全绿
+- [x] T247 重建 `client.js` 并发版：版本 0.1.24；`check-bundle` 39 项、`run-harness` 220 项全绿。发布 `v0.1.24`（提交 `25592a9`）→ GitHub Actions run `45101933555` success（shasum `2f46c409eb78b648d2b31dafe4d921c8ede66fee`，provenance logIndex `4049949251`，33 文件）→ registry tarball 第 20 次轮询可下载 → `remove_bundle`（卸 0.1.23）→ `install_bundle @0.1.24` applied；profile 依赖 `"0.1.24"`、安装副本 769,453 字节 / SHA256 `79C3EC79…2B07` 与仓库根逐字节相同、`locale/` 8、`docs/` 9
 - [ ] T248 第二十二轮双评审（目标两份都 PASS；PASS 后把 feature 001 标记完成）
 
 ## Dependencies & Execution Order
