@@ -570,7 +570,8 @@ description: "Task list for 会话内图形渲染"
 - [x] T314 夹具新增 `a second apply does not add a second fence layer`（同一 `ctx` 二次 `apply` 后 `defs.length === 1`），228 → 229 项。
 - [x] T315 三条探针：PS25 删异步 `release` → `… an async refusal burned the context (1 attempts)`、`1 failed, 39 passed`；PS26 删客户端守卫并重建 → `[bad] a second apply does not add a second fence layer — 2`、`1 failed, 228 passed`；PS27 把 `warn('prompt section skipped', …)` 换成 `void error` → `… two refused sections produced 1 warnings`、`1 failed, 39 passed`。
 - [x] T316 版本 0.1.31：`client.js` 770,108 字节 / 769,078 字符、指纹 `3a2eb142f544e0bb377851af8c92eeb5`；40 静态 / 229 浏览器全绿；E-BLD/E-CHK/E-HARN 用单次运行输出重写；stderr 的刻意堆栈说明从 7 段改 6 段（`prompt section` 两段被新断言捕获）。
-- [ ] T317 发版 0.1.31 → 装回 `desktop` → 补 E-PUB/E-INS → 第三十轮双评审。
+- [x] T317 发版 0.1.31（提交 `9792f8a`）→ tag `v0.1.31` → run `45129782309` success（40/229、shasum `a8ea274f5e683dfd16b42443a93b553764b5f452`、logIndex `4050479591`、33 文件）→ registry 第 20 次轮询（`try=19`）200 → `remove_bundle`（卸 0.1.30）→ `install_bundle @0.1.31` applied；profile 依赖 `"0.1.31"`、安装副本 770,108 字节、SHA256 `DFB1E3C57E09C0F21797C14B4B3E61C8C4620787600DC210148DB8B081D8C879` 与仓库根一致、`locale/` 8、`docs/` 9、包内 `version 0.1.31`；E-PUB/E-INS 已补。
+- [ ] T318 第三十轮双评审（`review-docs-30` / `review-impl-30`）：两份都 PASS 才把 feature 001 标记完成并回写 `spec.md` Status。
 
 ## Dependencies & Execution Order
 
