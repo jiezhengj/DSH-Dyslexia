@@ -57,7 +57,7 @@ ok   the host half registers exactly one capability section — ui:dsh-dyslexia,
 ok   the host half stays silent when the host changed shape — five silent hosts, two throwing sections
 ok   the contract's colour variables are the ones that are wired — 10 engine variables, owned by engine and contract alike
 ok   both size limits reach the engine, each proven on its own — three limits passed to mount, two fixtures that cross one each
-ok   the fixtures assert what the fixes promise, and can fail — 21 assertions present and carrying a condition
+ok   the fixtures assert what the fixes promise, and can fail — 21 assertions present, each with a condition that reads something
 
 check-bundle: @jiezhengj/dsh-dyslexia@0.1.21 | client.js 769453 bytes | sources sha256:44d73fcd045111f9b2c7dd5f3a8a4da7 | all 39 checks passed
 ```
@@ -306,7 +306,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.21 | client.js 769453 bytes | sources s
 
 ## E-PROBE 夹具能失败吗：用破坏性探针验证
 
-如果一个断言恒真，"套件全绿"就不构成证据。0.1.8 至 0.1.21 期间共做了二十二次探针：故意破坏被断言保护的代码、重建 `client.js`、跑两套检查、确认目标断言**变红**，再还原（0.1.10 起的几次在 `%TEMP%` 的仓库副本里做，不动工作树）。报告行里的项数属于**当时的套件**：0.1.10 = 119 项、0.1.11 = 152 项、0.1.12 = 156 项、0.1.13 = 197 项、0.1.14 = 205 项、0.1.15 起 = 213 项、0.1.17 起 = 216 项、0.1.19 起 = 220 项（静态 0.1.19 起 = 39 项）。
+如果一个断言恒真，"套件全绿"就不构成证据。0.1.8 至 0.1.21 期间共做了二十四次探针（最后两次在 0.1.21 发布之后、尚未发版的核验提交里做）：故意破坏被断言保护的代码、重建 `client.js`、跑两套检查、确认目标断言**变红**，再还原（0.1.10 起的几次在 `%TEMP%` 的仓库副本里做，不动工作树）。报告行里的项数属于**当时的套件**：0.1.10 = 119 项、0.1.11 = 152 项、0.1.12 = 156 项、0.1.13 = 197 项、0.1.14 = 205 项、0.1.15 起 = 213 项、0.1.17 起 = 216 项、0.1.19 起 = 220 项（静态 0.1.19 起 = 39 项）。
 
 | 探针 | 破坏方式 | 变红的断言（含报告行） | 说明 |
 |---|---|---|---|
@@ -331,9 +331,11 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.21 | client.js 769453 bytes | sources s
 | PS5 | `src/client/styles.js` 把 `--pele-line` 改成 `border-l1`（错值），再在文件末尾追加一行注释 `// --pele-line: var(--dsw-alias-border-l2);` | 静态 `the contract's colour variables are the ones that are wired` → `line: var(--dsw-alias-border-l2) vs var(--dsw-alias-border-l1)` | 报告行 `check-bundle: 1 failed, 38 passed`（exit 1）。注释在读取前被剥掉，诱饵不能把错值洗白（第十七轮实现评审 P3-1） |
 | PS6 | `src/client/figure.js` 删掉 `    ...FIGURE_LIMITS,`（三个上限仍声明，但不再传给 `pele.mount`） | 静态 `both size limits reach the engine, each proven on its own` → `FIGURE_LIMITS is not spread into the mount options`；浏览器侧同改动会让六条上限断言全红（`6 failed, 214 passed`） | 报告行 `check-bundle: 1 failed, 38 passed`（exit 1）。「到达引擎」不只是常量存在（P3-3） |
 | PS7 | 同时删掉 `styles.js` 与契约里的 `--pele-critical` 行 | 静态 `the contract's colour variables are the ones that are wired` → `the contract names only 9 engine variables` | 报告行 `check-bundle: 1 failed, 38 passed`（exit 1）。两侧同时缺变量也会被抓（P3-4） |
-| PS8 | 两侧同时把 `--pele-line` 改名成 `--pele-anything`（`styles.js` 与契约一起改） | 静态 `the contract's colour variables are the ones that are wired` → `the styles wire names the engine does not know: anything` | 报告行 `check-bundle: 1 failed, 38 passed`（exit 1）。两侧一起改名曾全绿（颜色静默退回引擎默认值），现在名字要对得上 `vendor/pele/pele.global.js` 里引擎自己的变量表（第十八轮实现评审 P3-A） |
+| PS8 | 两侧同时把 `--pele-line` 改名成 `--pele-anything`（`styles.js` 与契约一起改） | 静态 `the contract's colour variables are the ones that are wired` → `the styles wire names the engine does not know: anything` |
+| PS9 | 把夹具 `the fixture really replaced the drawing node` 的条件换成字面量 `true` | 静态 `the fixtures assert what the fixes promise, and can fail` → `fixture assertions without a condition: the fixture really replaced the drawing node`；报告行 `check-bundle: 1 failed, 38 passed`（exit 1）。这是第十九轮实现评审报出的 P2：旧守护只拒空条件，`expect(true, '名字')` 能骗过它 |
+| PS10 | 把上面那条 `expect(...)` 整段换成一行 `// the fixture really replaced the drawing node` 注释 | 静态同上 → `missing fixture assertions: the fixture really replaced the drawing node`；`check-bundle: 1 failed, 38 passed`（exit 1）。扫描前先剥注释，注释里的名字不算数 | 报告行 `check-bundle: 1 failed, 38 passed`（exit 1）。两侧一起改名曾全绿（颜色静默退回引擎默认值），现在名字要对得上 `vendor/pele/pele.global.js` 里引擎自己的变量表（第十八轮实现评审 P3-A） |
 
-静态检查里另有一条守护 `the fixtures assert what the fixes promise, and can fail`：它要求 P1/P2/P4/P5/PA/PB/PC 里那几个"能变红的断言名"继续存在于夹具中，并且每条名字必须落在带条件的 `expect(` 调用里（掏空断言体会红），否则说明有人把夹具删了而代码检查仍绿。P6/P7 是另一道：两套检查各自的条目数被钉死，删一条也会红。
+静态检查里另有一条守护 `the fixtures assert what the fixes promise, and can fail`：它要求 P1/P2/P4/P5/PA/PB/PC 里那几个"能变红的断言名"继续存在于夹具中，并且每条名字必须落在一个**真正读值**的 `expect(` 条件里——条件为空、或只是 `true`/`false`/`0` 这类字面量都会让它变红（PS9），名字只出现在注释里也算缺失（PS10）；否则说明有人把夹具掏空或删掉而代码检查仍绿。P6/P7 是另一道：两套检查各自的条目数被钉死，删一条也会红。
 
 ## E-COMP 兼容性断言与要求逐条对应
 
@@ -352,7 +354,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.21 | client.js 769453 bytes | sources s
 | FR-011 启用时让模型知情、停用后消失 | 静态：`the host half registers exactly one capability section`、`the host half stays silent when the host changed shape`；"停用后模型侧看不到"未实测（G11） |
 | FR-012 不需要改任何指令文件就生效 | 静态：`nothing in the package asks you to edit an instruction file`（17 个随包文本文件里不出现 `AGENTS.md`/`CLAUDE.md`/`.cursorrules`，`client.js` 与 `index.js` 也不读写它们） |
 | FR-013 不声明版本否决字段 | `no dsh version gate can refuse a start` |
-| FR-014 启动/运行失败就地降级 | `apply stays silent on a changed host`、`a host that rejects the locale option does not break apply`、`a throwing engine leaves a sentence`、`an engine that fails to load leaves the picture to the host` |
+| FR-014 启动/运行失败就地降级 | 宿主半边（静态）：`host apply survives a host that changed shape`、`the host half stays silent when the host changed shape`；客户端（夹具）：`apply stays silent on a changed host`、`a host that rejects the locale option does not break apply`、`a throwing engine leaves a sentence`、`an engine that fails to load leaves the picture to the host` |
 | FR-015 产物自身可编译、加载失败不连累同批 | `client.js compiles on its own`、`a broken host loader cannot make the chunk throw`、`a failing factory still yields a silent module`、`a factory that cannot build never throws at the host` |
 | FR-016 宿主数据畸形时交回原代码块 | `a hostile host block still leaves the message — an iterable of plain objects`、`a throwing code getter leaves the host block`、`a throwing children getter does not reach the host`、`a falsy children is not mistaken for content`、`a refused children cannot empty the message — object`、`a refused children cannot empty the message — function`、`a refused children cannot empty the message — object in a failed picture`、`a refused children cannot empty the message — array with an object`、`no React error 31 escapes — object`、`a streaming block with no host children still shows its source` |
 | FR-017 每条加固都有可重复证据 | 本节所有断言都在仓库里，`node verify/*.mjs` 可复跑；`npm test` 一次跑完两套 |

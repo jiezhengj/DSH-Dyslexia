@@ -673,7 +673,11 @@ check('both size limits reach the engine, each proven on its own', () => {
 })
 
 check('the fixtures assert what the fixes promise, and can fail', () => {
+  // Comments are stripped before scanning: a decoy name inside a `//` comment, or
+  // an emptied assertion body, must not keep this check green.
   const harness = readFileSync(join(ROOT, 'verify', 'harness', 'index.html'), 'utf8')
+    .replace(/\/\*[\s\S]*?\*\//g, ' ')
+    .replace(/(^|[^:])\/\/[^\n]*/g, '$1 ')
   const needed = [
     'the fixture really replaced the drawing node',
     'a swapped drawing is named again',
@@ -700,16 +704,21 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
   const missing = needed.filter((name) => harness.indexOf(name) === -1)
   if (missing.length > 0) throw new Error(`missing fixture assertions: ${missing.join(', ')}`)
   // A title alone proves nothing: the name has to sit inside an expect() call
-  // that carries a condition, or emptying the body would keep this check green.
+  // whose condition reads something, or emptying the body (or writing `true`)
+  // would keep this check green.
+  const literals = /^(?:true|false|1|0|!0|!1|null|undefined)$/
   const hollow = needed.filter((name) => {
     const at = harness.indexOf(name)
     const open = harness.lastIndexOf('expect(', at)
     if (open === -1) return true
-    const head = harness.slice(open + 'expect('.length, at)
-    return head.trim().length === 0
+    const head = harness
+      .slice(open + 'expect('.length, at)
+      .replace(/['",\s]+$/, '')
+      .trim()
+    return head.length === 0 || literals.test(head)
   })
   if (hollow.length > 0) throw new Error(`fixture assertions without a condition: ${hollow.join(', ')}`)
-  return `${needed.length} assertions present and carrying a condition`
+  return `${needed.length} assertions present, each with a condition that reads something`
 })
 
 /* ---------------------------------------------------------------- report */
