@@ -573,6 +573,11 @@ description: "Task list for 会话内图形渲染"
 - [x] T317 发版 0.1.31（提交 `9792f8a`）→ tag `v0.1.31` → run `45129782309` success（40/229、shasum `a8ea274f5e683dfd16b42443a93b553764b5f452`、logIndex `4050479591`、33 文件）→ registry 第 20 次轮询（`try=19`）200 → `remove_bundle`（卸 0.1.30）→ `install_bundle @0.1.31` applied；profile 依赖 `"0.1.31"`、安装副本 770,108 字节、SHA256 `DFB1E3C57E09C0F21797C14B4B3E61C8C4620787600DC210148DB8B081D8C879` 与仓库根一致、`locale/` 8、`docs/` 9、包内 `version 0.1.31`；E-PUB/E-INS 已补。
 - [ ] T318 第三十轮双评审（`review-docs-30` / `review-impl-30`）：两份都 PASS 才把 feature 001 标记完成并回写 `spec.md` Status。
 
+## Phase 43: 评审收尾与完成（2026-11-23 追加）
+
+- [x] T319 第三十至三十二轮评审闭环：`review-impl-30` **PASS**（9 条探针 8 红；A3 是"删内层 try/catch 仍全绿"的冗余分支，它读 app.asar 证明真实宿主的 `systemPrompt.section()` 是同步的）；`review-docs-30` FAIL（13 条计数/归属类）→ 修在 `5f63ce1`；`review-docs-31` FAIL（3 条：`contracts/host-prompt.md` 的 `index.js` 节选停在 0.1.28、`evidence` 的"八条"应为九条、`data-model.md` 把 `dsh.client.inject` 写成人工核对）→ 修在 `937bbd5`；`review-docs-32` **PASS**（逐行比对证据块、复算打包与行数、交叉核对全部引用的断言名）；`review-impl-32` **PASS**（43 条独立探针 0 红，确认 `5f767a5..HEAD` 只改 `specs/`、产物与 registry 0.1.31 逐字节一致、临时 profile 装卸无残留）。
+- [x] T320 把 feature 001 标记为完成：`spec.md` 的 Status 改为 **完成（Complete）**，保留 E-GAPS（23 项）与"重启复核 T079（G13）"两个诚实缺口指针；副作用为零（改动只在 `specs/`）。
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

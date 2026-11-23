@@ -924,6 +924,12 @@ Done in 4.5s using pnpm v11.28.5
 | 卸载插件后，同一条消息变回纯文本代码块，无报错无占位 | `remove_bundle` 后 `flowchart LR … A[代码块] --> B[就地成图]` 原样显示，`role="img"`（`agent-desktop` 报告为 image）与按钮计数为 0 | US2/FR-009（不含 SC-002 的会话检索命中） |
 | 重新安装后图与按钮立刻回来，历史消息不用改 | `install_bundle` 后同一屏立刻渲染 | FR-010 |
 
+## E-CLOSE feature 完成的评审依据
+
+- `review-docs-32`（HEAD `937bbd5`，只读）：**PASS**。它逐行比对了 E-CHK（与本机 42 行 stdout 零差异，含空行）、E-HARN（与 234 行零差异）、E-BLD（复现同一构建行），复算 `npm pack` 33 文件与 shasum `a8ea274f5e683dfd16b42443a93b553764b5f452`、安装副本逐字节相同、`plan.md:33` 与 `research.md:186` 的行数、E-PROBE 41 行与"四十一次"、E-GAPS G1–G23 与 `tasks.md:661-683` 一一对应，并交叉核对了 102 + 72 个引用的断言名。
+- `review-impl-32`（HEAD `24ac43d`，只读）：**PASS**。43 条独立探针 0 条变红；`git diff --stat 5f767a5..HEAD` 为 7 个文件、全部在 `specs/001-mermaid-fence-render/` 内（`git diff --stat 5f767a5..HEAD -- . ':(exclude)specs'` 为空）；两套检查 40 / 229；重建 SHA256 与已发布 0.1.31 相同；tarball 装进临时 profile 再卸载无残留；并按 asar 字节核对宿主 API 形状（`systemPrompt.section({name, order, text})`、`slots.inject(owner, () => register({...}, Component))`）与实现一致。
+- 两条记录在案、不构成缺陷的观察：①`index.js` 的异步拒绝分支在现宿主上是死代码（`section()` 同步），保留是为"宿主形状变化"兜底，`review-impl-30` 的探针 A3 证明删掉内层 try/catch 仍全绿；②`entry.js` 的 `claimed` WeakSet 在 dispose 时不释放——DSH 的重新启用走注入工厂（新 `ctx`），`review-impl-32` 的 P16 探针证明会重新安装，故无失败证据。
+
 ## E-GAPS 没有取证的部分（共 23 项）
 
 真机、设备与离线条件（都要求动手换条件，不能在 CI 里做）：

@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-22
 
-**Status**: Implemented（代码即 `0.1.31` 的发布内容：`client.js`、证据套件 40 静态 / 229 浏览器（0.1.24 发布时是 39 / 220，这段套件不随包发布）），但**不是全部取证**。没有取证的项一律以 `evidence/verification.md` 的 **E-GAPS（23 项，G1–G23）** 为准，`tasks.md` 末尾的状态表逐行对应；这里只写条数，不展开。真机证据 E-LIVE 目前是 **0.1.2** 的观察；当前版本（0.1.31）重启后的核对是 T079（G13）。
+**Status**: **完成（Complete）**。代码即 `0.1.31` 的发布内容（`client.js` 770,108 字节、SHA256 `DFB1E3C57E09C0F21797C14B4B3E61C8C4620787600DC210148DB8B081D8C879`、已从 registry 装进 profile `desktop`），证据套件 **40 静态 / 229 浏览器**（这套套件不随包发布），第三十二轮独立评审两份均 **PASS**（`review-docs-32` 逐行比对了 E-BLD/E-CHK/E-HARN 与本机单次运行；`review-impl-32` 跑 43 条独立探针、0 条变红，并确认 `5f767a5..HEAD` 的改动全部在 `specs/` 内、产物可复现）。仍未取证的项一律以 `evidence/verification.md` 的 **E-GAPS（23 项，G1–G23）** 为准，`tasks.md` 末尾的状态表逐行对应；真机证据 E-LIVE 目前是 **0.1.2** 的观察，当前版本（0.1.31）重启后的核对是 T079（G13）。
 
 **Input**: User description: "做一个 DSH 插件（npm 包 `@jiezhengj/dsh-dyslexia`），让 Agent 画的 mermaid 图直接渲染在会话流里；不假设用户机器装了什么，依赖打包进插件；不规定图表类型与文本长短；卸载后历史会话仍要能读；手机平板要能用。"
 
