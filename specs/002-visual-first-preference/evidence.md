@@ -337,3 +337,28 @@ The settings-row checks were shown to be falsifiable by breaking the row on purp
 | G3 | 8 languages x 200% font x 360px layout is asserted in the fixture for zh/en; the other six languages are proven only by "differs from English" plus the D6 sentence length check. |
 | G4 | The renamed names were not seen in a live window (plugin page, settings row); 8 titles are proven in the locale files and by assertion. |
 | G5 | No screenshot comparison against host rows (SC-008); the row uses host tokens and matches the neighbour row structure by construction, not by pixels. |
+
+## E-PUB publish
+
+| version | tag | workflow run | shasum | transparency log | files |
+|---|---|---|---|---|---|
+| 0.2.0 | `v0.2.0` | `45194947185` | `c3bedd58f4973d3752043532caeb1f6bf781fc48` | `logIndex=4051965933` | 33 of the packed set, npm `total files: 33` |
+
+CI lines from that run:
+
+```
+check-bundle: @jiezhengj/dsh-dyslexia@0.2.0 | client.js 780550 bytes | sources sha256:db71eb3381be5f8bbd6a8701f8f9ea06 | all 43 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.2.0 | client.js 780550 bytes | sources sha256:db71eb3381be5f8bbd6a8701f8f9ea06 | all 251 checks passed (/usr/bin/google-chrome)
+```
+
+The first two tag pushes (`45194558416`, `45194732082`) failed and published nothing: the workflow had never needed `npm ci`, so `index.js` could not import `@deepseek-ai/schemastery`. The workflow now installs the manifest's own dependencies before rebuilding and checking, and the tag was moved onto that fix.
+
+## E-INS install into the live profile
+
+| what | value |
+|---|---|
+| command | `remove_bundle @jiezhengj/dsh-dyslexia` then `install_bundle @jiezhengj/dsh-dyslexia@0.2.0` |
+| result | `application: applied`, `version: 0.2.0`, pnpm `+ @jiezhengj/dsh-dyslexia 0.2.0` |
+| profile dependency | `"@jiezhengj/dsh-dyslexia": "0.2.0"` |
+| installed `client.js` | 780550 bytes, SHA256 `0014F3499121F6C6D8E5973662441E5E5DF3DFA37A5EFF2EB53253935EA29D85` |
+| repository `client.js` | same 780550 bytes and the same SHA256 |
