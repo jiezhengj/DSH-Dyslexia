@@ -549,6 +549,16 @@ description: "Task list for 会话内图形渲染"
 - [x] T299 `review-impl-27` 的 P2-7：`src/client/view.js` 的 `labelFigure` 在 catch 里改成 `report('figure label', error)`，命名失败不再静默
 - [x] T300 版本 0.1.29 的文档与证据口径：40 静态 / 228 浏览器、`client.js` 769,629 字节、指纹 `867cfbe0…`、`plan.md` 的行数（index 65、client 1003 = view 486 + 209 + 123 + 91 + 94、check-bundle 842）、E-PROBE 补 PS23 并把前言改成"三十七次"、G15② 改为"已由断言守护"
 - [x] T301 发版 0.1.29：提交 `a96abae` → tag `v0.1.29` → run `45121495313` success（40/228、shasum `995896d632c57eab295975730d5d37cf58684218`、logIndex `4050351420`、33 文件）→ registry 第 21 次轮询（`try=20`）200 → `remove_bundle`（卸 0.1.28）→ `install_bundle @0.1.29` applied；profile 依赖 `"0.1.29"`、安装副本 769,629 字节、SHA256 `87A37B23…77B9` 与仓库根一致、`locale/` 8、`docs/` 9 → 补 E-PUB/E-INS
+
+## Phase 41: 第二十八轮评审的修复与 0.1.30（2026-11-23 追加）
+
+- [x] T303 `index.js` 的幂等守卫在 `prompt.section(...)` 失败时回滚登记（`claimed.delete(ctx)`），并排除 `null`/`undefined`/原始值——否则一次被宿主拒绝的首轮简报会让该 ctx 永远注册不到提示词。
+- [x] T304 `check-bundle` 的 `the host half adds one section per context, not one per call` 加上"首次失败后重试仍能注册"（`flaky` 宿主：第一次 `section` 抛错、第二次成功，断言 `attempts === 2`），项数仍是 40。
+- [x] T305 探针 PS24：把 `claimed.delete(ctx)` 换成 `void ctx` → `FAIL … a retry after a failure did not reach the host (1 attempts)`、`check-bundle: 1 failed, 39 passed`、exit 1（证明新断言不是恒真）。
+- [x] T306 文档按 review-docs-28 修：E-LIVE 前言/G13/T079 的版本口径到 0.1.30、G19/G23② 的 39 → 40、E-PROBE 套件史补"静态 0.1.29 起 = 40 项"、探针前言改"至 0.1.30 共三十八次"、`plan.md:19` 的 ③ 把窄屏从"已有证据"改为"只有无头 360 px 夹具（G2）"、`research.md` D14 同步、registry 轮询次数按 `try` 值写成可核对形式。
+- [x] T307 版本 0.1.30：`client.js` 769,629 字节 / 768,599 字符、指纹 `066598a434771bb4053dcce3e4f499e3`；40 静态 / 228 浏览器全绿；E-BLD/E-CHK/E-HARN 用单次运行输出重写（逐行比对为真）。
+- [x] T308 发版 0.1.30：提交 `cf7677c` → tag `v0.1.30` → run `45125072898` success（40/228、shasum `856b1909fd050285fb8c9799d6eea880e716556c`、logIndex `4050408306`、33 文件）→ registry tarball 首次 HEAD 即 200 → `remove_bundle`（卸 0.1.29）→ `install_bundle @0.1.30` applied；profile 依赖 `"0.1.30"`、安装副本 769,629 字节、SHA256 `18E19B35682DF54E4C89A672E0FAD065E4ED9EC7CE6FD6834B6632AEA6140D89` 与仓库根一致。
+- [ ] T309 第二十九轮双评审（`review-docs-29` / `review-impl-29`）：两份都 PASS 才把 feature 001 标记完成并回写 `spec.md` Status。
 - [ ] T302 第二十八轮双评审（`review-docs-28` / `review-impl-28`，目标：两份都 PASS）
 
 ## Dependencies & Execution Order
