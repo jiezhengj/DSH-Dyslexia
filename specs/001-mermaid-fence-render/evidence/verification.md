@@ -19,7 +19,7 @@ build-client: @jiezhengj/dsh-dyslexia -> client.js (769453 bytes, 768423 charact
 ## E-CHK 静态与行为校验
 
 ```text
-ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.21
+ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.22
 ok   package.json points at the repository npm trusts — git+https://github.com/jiezhengj/DSH-Dyslexia.git
 ok   package.json declares the bundle patch and the client half — platform web, no package inject
 ok   no dsh version gate can refuse a start — no engines.dsh, no dsh peers
@@ -46,7 +46,7 @@ ok   every supported sample type draws an svg — flowchart:218x64 sequence:184x
 ok   a broken diagram reports a one-line reason — Parse error on line 2:
 ok   host key echo falls back to bundled strings — key echo, blanks, placeholders rejected
 ok   every language carries the same complete sentences — 12 keys x 8 languages, no engine text in labels
-ok   client.js matches the sources it claims — 44d73fcd045111f9b2c7dd5f3a8a4da7
+ok   client.js matches the sources it claims — d6ff7c407663af2c2f3ebb81f2ae2327
 ok   the picture is the image, and the copy answer is announced — label is a noun, role="img" on the svg, copy result announced
 ok   host children react would refuse fall back to the source — objects, functions and mixed arrays fall back to the source text
 ok   every drawing the engine swaps in is named again — the engine owns re-layout; every swapped drawing node and its zoom buttons are renamed, strings follow the language
@@ -59,7 +59,7 @@ ok   the contract's colour variables are the ones that are wired — 10 engine v
 ok   both size limits reach the engine, each proven on its own — three limits passed to mount, two fixtures that cross one each
 ok   the fixtures assert what the fixes promise, and can fail — 21 assertions present, each with a condition that reads something
 
-check-bundle: @jiezhengj/dsh-dyslexia@0.1.21 | client.js 769453 bytes | sources sha256:44d73fcd045111f9b2c7dd5f3a8a4da7 | all 39 checks passed
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.22 | client.js 769453 bytes | sources sha256:d6ff7c407663af2c2f3ebb81f2ae2327 | all 39 checks passed
 ```
 
 ## E-HARN 浏览器行为校验
@@ -289,7 +289,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.21 | client.js 769453 bytes | sources 
 [ok] the zoom buttons speak the interface language — 放大 | 缩小 | 重置缩放
 [ok] every zoom button in reach can take the keyboard — 1/1 reachable of 3
 [ok] every zoom button is reachable once the picture is zoomed — 3/3 after zoom
-run-harness: @jiezhengj/dsh-dyslexia@0.1.21 | client.js 769453 bytes | sources sha256:44d73fcd045111f9b2c7dd5f3a8a4da7 | all 220 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+run-harness: @jiezhengj/dsh-dyslexia@0.1.22 | client.js 769453 bytes | sources sha256:d6ff7c407663af2c2f3ebb81f2ae2327 | all 220 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
 同一次运行的 stderr 另有 7 段被**刻意捕获**的异常堆栈（loader ×3、prompt section ×3、module ×1，例如 `dsh-dyslexia: loader Error: host changed the loader`、`dsh-dyslexia: prompt section rejected Error: asynchronous failure`）：它们来自敌意宿主用例，属正常输出，不是失败。
@@ -306,7 +306,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.21 | client.js 769453 bytes | sources s
 
 ## E-PROBE 夹具能失败吗：用破坏性探针验证
 
-如果一个断言恒真，"套件全绿"就不构成证据。0.1.8 至 0.1.21 期间共做了二十四次探针（最后两次在 0.1.21 发布之后、尚未发版的核验提交里做）：故意破坏被断言保护的代码、重建 `client.js`、跑两套检查、确认目标断言**变红**，再还原（0.1.10 起的几次在 `%TEMP%` 的仓库副本里做，不动工作树）。报告行里的项数属于**当时的套件**：0.1.10 = 119 项、0.1.11 = 152 项、0.1.12 = 156 项、0.1.13 = 197 项、0.1.14 = 205 项、0.1.15 起 = 213 项、0.1.17 起 = 216 项、0.1.19 起 = 220 项（静态 0.1.19 起 = 39 项）。
+如果一个断言恒真，"套件全绿"就不构成证据。0.1.8 至 0.1.22 期间共做了二十六次探针（最后几次在 0.1.21 发布之后、尚未发版的核验提交里做）：故意破坏被断言保护的代码、重建 `client.js`、跑两套检查、确认目标断言**变红**，再还原（0.1.10 起的几次在 `%TEMP%` 的仓库副本里做，不动工作树）。报告行里的项数属于**当时的套件**：0.1.10 = 119 项、0.1.11 = 152 项、0.1.12 = 156 项、0.1.13 = 197 项、0.1.14 = 205 项、0.1.15 起 = 213 项、0.1.17 起 = 216 项、0.1.19 起 = 220 项（静态 0.1.19 起 = 39 项）。
 
 | 探针 | 破坏方式 | 变红的断言（含报告行） | 说明 |
 |---|---|---|---|
@@ -333,9 +333,11 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.21 | client.js 769453 bytes | sources s
 | PS7 | 同时删掉 `styles.js` 与契约里的 `--pele-critical` 行 | 静态 `the contract's colour variables are the ones that are wired` → `the contract names only 9 engine variables` | 报告行 `check-bundle: 1 failed, 38 passed`（exit 1）。两侧同时缺变量也会被抓（P3-4） |
 | PS8 | 两侧同时把 `--pele-line` 改名成 `--pele-anything`（`styles.js` 与契约一起改） | 静态 `the contract's colour variables are the ones that are wired` → `the styles wire names the engine does not know: anything` |
 | PS9 | 把夹具 `the fixture really replaced the drawing node` 的条件换成字面量 `true` | 静态 `the fixtures assert what the fixes promise, and can fail` → `fixture assertions without a condition: the fixture really replaced the drawing node`；报告行 `check-bundle: 1 failed, 38 passed`（exit 1）。这是第十九轮实现评审报出的 P2：旧守护只拒空条件，`expect(true, '名字')` 能骗过它 |
-| PS10 | 把上面那条 `expect(...)` 整段换成一行 `// the fixture really replaced the drawing node` 注释 | 静态同上 → `missing fixture assertions: the fixture really replaced the drawing node`；`check-bundle: 1 failed, 38 passed`（exit 1）。扫描前先剥注释，注释里的名字不算数 | 报告行 `check-bundle: 1 failed, 38 passed`（exit 1）。两侧一起改名曾全绿（颜色静默退回引擎默认值），现在名字要对得上 `vendor/pele/pele.global.js` 里引擎自己的变量表（第十八轮实现评审 P3-A） |
+| PS10 | 把上面那条 `expect(...)` 整段换成一行 `// the fixture really replaced the drawing node` 注释 | 静态同上 → `missing fixture assertions: the fixture really replaced the drawing node`；`check-bundle: 1 failed, 38 passed`（exit 1）。扫描前先剥注释，注释里的名字不算数 |
+| PS11 | 把同一条 `expect(...)` 的条件换成 `1 === 1`（比较两个字面量，读不到任何东西） | 静态同上 → `fixture assertions without a condition: the fixture really replaced the drawing node`；`check-bundle: 1 failed, 38 passed`（exit 1）。这是第二十轮实现评审报出的 P3：旧守护只拒裸字面量，`1 === 1` 能骗过它 |
+| PS12 | 整块删掉 `MutationObserver`，但在原位留一行 `// probe: MutationObserver deleted` 注释 | 静态 `every drawing the engine swaps in is named again` → `the watcher does not watch the drawing subtree`；`check-bundle: 1 failed, 38 passed`（exit 1）。同一轮 P3：文本断言原先直接读未剥注释的源码，注释里的名字能顶替真代码 | 报告行 `check-bundle: 1 failed, 38 passed`（exit 1）。两侧一起改名曾全绿（颜色静默退回引擎默认值），现在名字要对得上 `vendor/pele/pele.global.js` 里引擎自己的变量表（第十八轮实现评审 P3-A） |
 
-静态检查里另有一条守护 `the fixtures assert what the fixes promise, and can fail`：它要求 P1/P2/P4/P5/PA/PB/PC 里那几个"能变红的断言名"继续存在于夹具中，并且每条名字必须落在一个**真正读值**的 `expect(` 条件里——条件为空、或只是 `true`/`false`/`0` 这类字面量都会让它变红（PS9），名字只出现在注释里也算缺失（PS10）；否则说明有人把夹具掏空或删掉而代码检查仍绿。P6/P7 是另一道：两套检查各自的条目数被钉死，删一条也会红。
+静态检查里另有一条守护 `the fixtures assert what the fixes promise, and can fail`：它要求 P1/P2/P4/P5/PA/PB/PC 里那几个"能变红的断言名"继续存在于夹具中，并且每条名字必须落在一个**真正读值**的 `expect(` 条件里——条件为空、只是 `true`/`false`/`0` 这类字面量（PS9）、或是 `1 === 1` 这种读不到任何东西的自我比较（PS11）都会让它变红，名字只出现在注释里也算缺失（PS10）；否则说明有人把夹具掏空或删掉而代码检查仍绿。同一道守护的兄弟条款：读源码的文本断言一律先剥注释再比对，所以把代码换成同名注释也会红（PS12）。P6/P7 是另一道：两套检查各自的条目数被钉死，删一条也会红。
 
 ## E-COMP 兼容性断言与要求逐条对应
 

@@ -28,7 +28,7 @@ A reply often explains a structure in words a diagram would show in a glance. Th
 Requirements: Node.js 22 or newer, and Chrome/Chromium for the browser checks.
 环境要求：Node.js 22 或更新版本，以及用于浏览器检查的 Chrome/Chromium。
 
-- `node verify/check-bundle.mjs` — static and engine checks of the shipped bundle (manifest, no network calls, no version gate, the vendored engine, eight interface languages, sample diagrams of every supported type). Prints one line per check and exits non-zero on failure.
+- `node verify/check-bundle.mjs` — static and engine checks of the shipped bundle (manifest, no network calls, no version gate, the vendored engine, eight interface languages, seven sample diagrams, drawn by the vendored engine). Prints one line per check and exits non-zero on failure.
   `node verify/check-bundle.mjs` — 对随包产物执行静态与引擎检查（manifest、无网络调用、无版本门、内联引擎、八种界面语言、每种支持图形的示例图）。每项检查打印一行，失败时以非零状态码退出。
 - `node verify/run-harness.mjs` — runs the browser checks in headless Chrome against `verify/harness/index.html` (drawing, eight languages, hostile hosts, broken diagrams, copy, narrow 360 px column, theme colours). Set `DSH_DYSLEXIA_CHROME` to point at a specific Chrome executable if auto-detection fails.
   `node verify/run-harness.mjs` — 在无头 Chrome 中针对 `verify/harness/index.html` 运行浏览器检查（成图、八种语言、异常宿主环境、损坏的图形语法、复制、360 px 窄栏、主题颜色）。若自动探测失败，可设置 `DSH_DYSLEXIA_CHROME` 指向指定的 Chrome 可执行文件。

@@ -38,7 +38,7 @@ The code block is never consumed. It stays in the message as text: it can be cop
 
 Requirements: Node.js 22 or newer, and Chrome/Chromium for the browser checks.
 
-- `node verify/check-bundle.mjs` — static and engine checks of the shipped bundle (manifest, no network calls, no version gate, the vendored engine, eight interface languages, sample diagrams of every supported type). Prints one line per check and exits non-zero on failure.
+- `node verify/check-bundle.mjs` — static and engine checks of the shipped bundle (manifest, no network calls, no version gate, the vendored engine, eight interface languages, seven sample diagrams, drawn by the vendored engine). Prints one line per check and exits non-zero on failure.
 - `node verify/run-harness.mjs` — runs the browser checks in headless Chrome against `verify/harness/index.html` (drawing, eight languages, hostile hosts, broken diagrams, copy, narrow 360 px column, theme colours). Set `DSH_DYSLEXIA_CHROME` to point at a specific Chrome executable if auto-detection fails.
 
 Both commands are in the repository, so the claims in this file can be re-checked at any time; they are also what CI runs before publishing.

@@ -39,6 +39,18 @@ function readJson(relative) {
   return JSON.parse(read(relative))
 }
 
+// Text assertions read code, not prose: a decoy `MutationObserver` left in a
+// comment must not keep a guard green after the real one is deleted.
+function stripComments(text) {
+  return text
+    .replace(/\/\*[\s\S]*?\*\//g, ' ')
+    .replace(/(^|[^:])\/\/[^\n]*/g, '$1 ')
+}
+
+function readCode(relative) {
+  return stripComments(read(relative))
+}
+
 const manifest = readJson('package.json')
 const chunk = read('client.js')
 const host = read('index.js')
@@ -387,7 +399,7 @@ check('a broken diagram reports a one-line reason', () => {
 })
 
 check('host key echo falls back to bundled strings', () => {
-  const source = read('src/client/i18n.js')
+  const source = readCode('src/client/i18n.js')
   assert(/function isResolved/.test(source), 'i18n.js has no resolution guard')
   assert(source.indexOf('trimmed.indexOf(key) !== -1') !== -1, 'i18n.js accepts the key echoed back')
   assert(source.indexOf("indexOf('{{')") !== -1, 'i18n.js accepts an unfilled placeholder')
@@ -400,7 +412,7 @@ check('host key echo falls back to bundled strings', () => {
 })
 
 check('every language carries the same complete sentences', () => {
-  const source = read('src/client/i18n.js')
+  const source = readCode('src/client/i18n.js')
   const keys = [
     'copied',
     'copyFailed',
@@ -449,9 +461,9 @@ check('client.js matches the sources it claims', () => {
 })
 
 check('the picture is the image, and the copy answer is announced', () => {
-  const labels = read('src/client/i18n.js')
+  const labels = readCode('src/client/i18n.js')
   assert(!labels.includes('{{type}}'), 'a label still interpolates the engine type')
-  const view = read('src/client/view.js')
+  const view = readCode('src/client/view.js')
   assert(
     view.includes("svg.setAttribute('role', 'img')"),
     'the drawing itself must carry role="img" so the zoom buttons stay outside it',
@@ -463,7 +475,7 @@ check('the picture is the image, and the copy answer is announced', () => {
 })
 
 check('host children react would refuse fall back to the source', () => {
-  const view = read('src/client/view.js')
+  const view = readCode('src/client/view.js')
   // A host that hands over a plain object (or a function, or an array holding
   // one) makes React throw #31 while this layer renders. That throw would happen
   // inside the layer's own boundary, so the boundary could not catch it and the
@@ -475,7 +487,7 @@ check('host children react would refuse fall back to the source', () => {
 })
 
 check('every drawing the engine swaps in is named again', () => {
-  const view = read('src/client/view.js')
+  const view = readCode('src/client/view.js')
   // The engine owns re-layout: it re-draws by assigning innerHTML, which replaces
   // the whole <svg> with a node that carries role="graphics-document document",
   // an English aria-roledescription and no name. The plugin therefore must watch
@@ -490,7 +502,7 @@ check('every drawing the engine swaps in is named again', () => {
   assert(!/new ResizeObserver/.test(view), 'the plugin still drives its own re-layout instead of leaving it to the engine')
   assert(!/requestAnimationFrame/.test(view), 'the plugin still schedules frames for a re-layout it does not own')
   assert(view.includes('const ZOOM_BUTTONS'), 'the engine zoom controls are never renamed')
-  const labels = read('src/client/i18n.js')
+  const labels = readCode('src/client/i18n.js')
   assert(
     labels.includes('const table = DICTIONARY[fallbackLanguage(doc)] || DICTIONARY.en'),
     'the bundled strings are captured once, so a language switch keeps the old words',
@@ -499,7 +511,7 @@ check('every drawing the engine swaps in is named again', () => {
 })
 
 check('a host block that throws cannot empty the message', () => {
-  const view = read('src/client/view.js')
+  const view = readCode('src/client/view.js')
   assert(view.includes('class SafeChildren extends React.Component'), 'the host block is rendered unguarded')
   assert(view.includes('function hostBlock(children, code)'), 'no single entry point for the host block')
   assert(!/Symbol\.iterator/.test(view), 'an iterable is still passed through to React unchecked')
@@ -643,7 +655,7 @@ check("the contract's colour variables are the ones that are wired", () => {
 })
 
 check('both size limits reach the engine, each proven on its own', () => {
-  const figure = readFileSync(join(ROOT, 'src', 'client', 'figure.js'), 'utf8')
+  const figure = stripComments(readFileSync(join(ROOT, 'src', 'client', 'figure.js'), 'utf8'))
   const harness = readFileSync(join(ROOT, 'verify', 'harness', 'index.html'), 'utf8')
   assert(/limit:\s*24 \* 1024/.test(figure), 'the character limit is not 24 KiB')
   assert(/maxEdges:\s*400/.test(figure), 'the edge limit is not 400')
@@ -707,6 +719,16 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
   // whose condition reads something, or emptying the body (or writing `true`)
   // would keep this check green.
   const literals = /^(?:true|false|1|0|!0|!1|null|undefined)$/
+  // `1 === 1` is a comparison that reads nothing, so a blacklist of bare
+  // literals is not enough: the condition has to mention a name that the
+  // fixture also uses, i.e. something bound in the page itself.
+  const mentionsFixtureName = (head) => {
+    const names = head.match(/[A-Za-z_$][\w$]*/g) || []
+    return names.some((name) => {
+      const pattern = new RegExp(`\\b${name}\\b`, 'g')
+      return (harness.match(pattern) || []).length > 1
+    })
+  }
   const hollow = needed.filter((name) => {
     const at = harness.indexOf(name)
     const open = harness.lastIndexOf('expect(', at)
@@ -715,7 +737,7 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
       .slice(open + 'expect('.length, at)
       .replace(/['",\s]+$/, '')
       .trim()
-    return head.length === 0 || literals.test(head)
+    return head.length === 0 || literals.test(head) || !mentionsFixtureName(head)
   })
   if (hollow.length > 0) throw new Error(`fixture assertions without a condition: ${hollow.join(', ')}`)
   return `${needed.length} assertions present, each with a condition that reads something`
