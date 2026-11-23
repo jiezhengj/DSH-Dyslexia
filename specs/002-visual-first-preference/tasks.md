@@ -66,3 +66,5 @@
 | Eight-language rename (locale, DETAIL alt line, 8 READMEs, index, package description) | done; DETAIL keeps exactly one image line (its alt sentence carries the new name) |
 | Evidence | `evidence.md` (this feature): build, 45 / 274, twelve falsifiability probes (F1, F3–F13), gaps G1–G8 and G11–G13 open, G9/G10 discharged by `0.2.5` |
 | Not done | live-window switch and renamed labels (G1, G4), the host write path to `settings.update` (G2), 200%/360px layout assertion for the row (G3), pixel comparison (G5), E1–E14 end-to-end rows (G6), SC-001 five sample requests (G7), schemastery import failure path (G8); `0.2.5` is published and installed but unobserved in a live window |
+
+**2026-11-24：** T020 的真机核对仍等重启（G1）；T021 的两项评审已均 PASS（实现 `review-impl-002f`、文档 `review-docs-002m`）。
