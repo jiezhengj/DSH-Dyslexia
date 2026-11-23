@@ -1,1 +1,1 @@
-![Un mensaje de chat cuyo bloque de código mermaid se dibuja como diagrama, con los botones Mostrar el código y Copiar el código bajo el dibujo](preview.svg)
+![Un mensaje de chat en el que el bloque de código mermaid se dibuja como diagrama en su sitio, con los botones Mostrar el código y Copiar el código debajo](preview.svg)

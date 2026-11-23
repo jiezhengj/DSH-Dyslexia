@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "DSH Lesbare Diagramme",
-    "description": "Zeichnet jeden mermaid-Codeblock einer Unterhaltung direkt in der Nachricht als Diagramm – ohne Seitenleiste und ohne zweites Fenster. Der Codeblock bleibt der Text der Nachricht und lässt sich daher kopieren, durchsuchen und auch nach dem Ausschalten dieses Plugins noch lesen. Unter jedem Diagramm: Quelle anzeigen und Quelle kopieren; auf einem Telefon passt sich das Diagramm der Spaltenbreite an, und der Zoom bleibt in seinem Rahmen.",
+    "title": "DSH — Ich habe Legasthenie",
+    "description": "Zeichnet mermaid-Blöcke direkt im Gespräch und bittet bei Bedarf um ein Bild statt einer Textwand.",
     "detail": "docs/DETAIL.de.md"
   }
 }

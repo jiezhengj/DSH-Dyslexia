@@ -1,4 +1,4 @@
-# DSH Dyslexia
+# DSH — I'm dyslexic
 
 > A diagram instead of a wall of text — drawn where the text is.
 

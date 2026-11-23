@@ -17,6 +17,17 @@ const BUTTON_CLASS = 'dsh-dyslexia-button'
 const SOURCE_CLASS = 'dsh-dyslexia-source'
 
 const FIGURE_CSS = [
+  '.dsh-dyslexia-row { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 8px 12px; padding: 12px 0; }',
+  '.dsh-dyslexia-row-text { flex: 1 1 220px; min-width: 0; display: flex; flex-direction: column; gap: 4px; }',
+  '.dsh-dyslexia-row-label { font-size: 14px; line-height: 22px; color: var(--dsw-alias-label-primary); }',
+  '.dsh-dyslexia-row-hint { font-size: 12px; line-height: 20px; color: var(--dsw-alias-label-secondary); }',
+  '.dsh-dyslexia-switch { position: relative; flex: none; width: 36px; height: 20px; margin: 2px 0 0 0; padding: 0; border: 0; border-radius: 10px; background: rgba(120, 130, 150, 0.35); cursor: pointer; transition: background 120ms ease; }',
+  '.dsh-dyslexia-switch[aria-checked="true"] { background: var(--dsw-alias-brand-primary); }',
+  '.dsh-dyslexia-switch-knob { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform 120ms ease; }',
+  '.dsh-dyslexia-switch[aria-checked="true"] .dsh-dyslexia-switch-knob { transform: translateX(16px); }',
+  '.dsh-dyslexia-switch:focus-visible { outline: 2px solid var(--dsw-alias-brand-primary); outline-offset: 2px; }',
+  '.dsh-dyslexia-row-state { flex: 1 1 100%; font-size: 12px; line-height: 20px; color: var(--dsw-alias-label-secondary); }',
+  '.dsh-dyslexia-row-state[data-failed="true"] { color: var(--dsw-alias-state-error-primary); }',
   `.${FIGURE_GROUP_CLASS} {`,
   '  max-width: 100%;',
   '  min-width: 0;',

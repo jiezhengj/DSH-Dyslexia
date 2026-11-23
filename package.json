@@ -1,7 +1,7 @@
 {
   "name": "@jiezhengj/dsh-dyslexia",
-  "version": "0.1.32",
-  "description": "Draws mermaid code blocks in DeepSeek Harness conversations as diagrams, in place in the message.",
+  "version": "0.2.0",
+  "description": "DSH — I'm dyslexic: draws mermaid blocks in place inside the conversation and, when it helps, asks for a picture instead of a wall of text.",
   "keywords": [
     "dsh",
     "dsh-plugin",
@@ -57,5 +57,8 @@
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "@deepseek-ai/schemastery": "^3.19.0"
   }
 }

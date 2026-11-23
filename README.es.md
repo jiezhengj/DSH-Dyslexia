@@ -1,4 +1,4 @@
-# DSH Diagramas legibles
+# DSH — Tengo dislexia
 
 > Un diagrama en lugar de un muro de texto, dibujado donde estaba el texto.
 

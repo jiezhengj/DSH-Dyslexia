@@ -24,7 +24,7 @@ import { Script } from 'node:vm'
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)))
 const VENDOR = join(ROOT, 'vendor', 'pele', 'pele.global.js')
 const OUTPUT = join(ROOT, 'client.js')
-const SOURCES = ['styles.js', 'i18n.js', 'figure.js', 'view.js', 'entry.js']
+const SOURCES = ['styles.js', 'i18n.js', 'figure.js', 'view.js', 'settings.js', 'entry.js']
 
 function fail(message) {
   process.stderr.write(`build-client: ${message}\n`)

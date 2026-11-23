@@ -1,4 +1,4 @@
-# DSH Schémas lisibles
+# DSH — Je suis dyslexique
 
 > Un schéma au lieu d’un mur de texte, dessiné là où était le texte.
 

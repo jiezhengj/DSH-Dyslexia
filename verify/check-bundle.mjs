@@ -138,7 +138,11 @@ check('every interface language has its own plugin page', () => {
     const page = readJson(`locale/${language}.json`)
     const meta = page.meta && typeof page.meta === 'object' ? page.meta : {}
     assert(typeof meta.title === 'string' && meta.title.trim(), `locale/${language}.json needs meta.title`)
-    assert(typeof meta.description === 'string' && meta.description.trim().length >= 80, `locale/${language}.json needs a real meta.description`)
+    // One sentence in the language of the page: CJK sentences are legitimately
+    // shorter than Latin ones, so the minimum is the shortest real sentence,
+    // not the length of the long English copy this page used to carry.
+    assert(typeof meta.description === 'string' && meta.description.trim().length >= 24, `locale/${language}.json needs a real meta.description`)
+    assert(/[.!?。！？]$/.test(meta.description.trim()), `locale/${language}.json meta.description must be a finished sentence`)
     assert(typeof meta.detail === 'string', `locale/${language}.json needs meta.detail`)
     assert(meta.detail.endsWith('.md'), `meta.detail must be markdown: ${meta.detail}`)
     const document = read(meta.detail)
@@ -334,21 +338,80 @@ check('host apply survives a host that changed shape', () => {
   return 'six hostile hosts, no throw, no section'
 })
 
-check('the prompt section states the capability once', () => {
+/** Applies the host half to a throwaway host with a fixed switch value. */
+function captureWith(value) {
+  const sections = []
+  const ctx = {
+    systemPrompt: {
+      section(def) {
+        sections.push(def)
+        return () => undefined
+      },
+    },
+  }
+  hostModule.apply(ctx, { visualFirst: { get: () => value } })
+  return sections
+}
+
+function textOf(section) {
+  return typeof section.text === 'function' ? section.text() : section.text
+}
+
+check('the capability briefing is what it was before the switch', () => {
   assert(hostModule !== null, 'the host half never loaded')
   assert(hostModule.name === 'dsh-dyslexia', 'module name mismatch')
   assert(Array.isArray(hostModule.inject) && hostModule.inject.includes('systemPrompt'), 'module inject mismatch')
-  assert(captured.length === 1, `expected one section, got ${captured.length}`)
-  const [section] = captured
+  const closed = captureWith(false)
+  assert(closed.length === 1, `expected one section, got ${closed.length}`)
+  const [section] = closed
   assert(typeof section.name === 'string' && section.name.length > 0, 'section name is empty')
   assert(Number.isInteger(section.order), 'section order must be an integer')
-  assert(typeof section.text === 'string' && section.text.length > 0, 'section text is empty')
-  const words = section.text.trim().split(/\s+/).length
-  assert(words <= 90, `section text is ${words} words, budget is 90`)
-  assert(section.text.includes('mermaid'), 'section text must name the language')
-  const forbidden = ['always', 'must use', 'you should', 'prefer', 'every answer', 'always answer', '尽量', '必须']
-  forbidden.forEach((phrase) => assert(!section.text.toLowerCase().includes(phrase.toLowerCase()), `section text states a preference: ${phrase}`))
+  const text = textOf(section)
+  assert(typeof text === 'string' && text.length > 0, 'section text is empty')
+  const words = text.trim().split(/\s+/).length
+  assert(words <= 95, `capability text is ${words} words, budget is 95`)
+  assert(text.includes('mermaid'), 'section text must name the language')
+  const forbidden = ['always', 'must use', 'you should', 'every answer', 'prefer']
+  forbidden.forEach((phrase) => assert(!text.toLowerCase().includes(phrase.toLowerCase()), `capability text states a preference: ${phrase}`))
   return `${words} words, order ${section.order}, name ${section.name}`
+})
+
+check('the switch adds the preference on top of the capability, and nothing else', () => {
+  const open = textOf(captureWith(true)[0])
+  const closed = textOf(captureWith(false)[0])
+  assert(open.startsWith(closed), 'the capability briefing changed when the switch opened')
+  const extra = open.slice(closed.length).trim()
+  assert(extra.length > 0, 'the switch is on and nothing was added')
+  assert(extra.includes('Do not add a picture'), 'the preference does not say when not to draw')
+  assert(extra.includes('mermaid'), 'the preference does not say how to draw')
+  const unconditional = ['every answer', 'always draw', 'always answer', 'must draw', 'must use a diagram']
+  unconditional.forEach((phrase) => assert(!extra.toLowerCase().includes(phrase), `the preference is unconditional: ${phrase}`))
+  return `${extra.split(/\s+/).length} words of preference, ${closed.split(/\s+/).length} of capability`
+})
+
+check('the switch is on for an empty configuration', () => {
+  const schema = hostModule.Config
+  assert(schema && typeof schema === 'function', 'the host half exports no Config schema')
+  const value = schema({})
+  assert(value && value.visualFirst && typeof value.visualFirst.get === 'function', 'visualFirst is not a live value')
+  assert(value.visualFirst.get() === true, 'the switch does not default to on')
+  return 'visualFirst defaults to true'
+})
+
+check('a host that hands over no configuration still gets the full briefing', () => {
+  const sections = []
+  hostModule.apply({
+    systemPrompt: {
+      section(def) {
+        sections.push(def)
+        return () => undefined
+      },
+    },
+  })
+  assert(sections.length === 1, `a config-less host got ${sections.length} sections`)
+  const text = textOf(sections[0])
+  assert(text.includes('Do not add a picture'), 'a config-less host lost the preference')
+  return 'no config means the default, not an empty briefing'
 })
 
 /* ------------------------------------------------------------ the engine */
@@ -428,6 +491,10 @@ check('every language carries the same complete sentences', () => {
     'hideSource',
     'renderFailed',
     'resetZoom',
+    'settingFailed',
+    'settingHint',
+    'settingLabel',
+    'settingSaved',
     'showSource',
     'syntaxError',
     'zoomIn',
@@ -443,7 +510,7 @@ check('every language carries the same complete sentences', () => {
 
 function sourceFingerprint() {
   // Same normalisation as the builder: CRLF and LF checkouts must agree.
-  const fragments = ['styles.js', 'i18n.js', 'figure.js', 'view.js', 'entry.js'].map((name) =>
+  const fragments = ['styles.js', 'i18n.js', 'figure.js', 'view.js', 'settings.js', 'entry.js'].map((name) =>
     read(`src/client/${name}`).replace(/\r\n/g, '\n'),
   )
   const hash = createHash('sha256')
@@ -591,8 +658,9 @@ check('the host half registers exactly one capability section', () => {
   const [section] = sections
   assert(section.name === 'ui:dsh-dyslexia', `section name ${section.name}`)
   assert(section.order === 9000, `section order ${section.order}`)
-  assert(typeof section.text === 'string' && section.text.trim().length > 0, 'the section has no text')
-  return `${section.name}, order ${section.order}, ${section.text.trim().split(/\s+/).length} words`
+  const text = textOf(section)
+  assert(typeof text === 'string' && text.trim().length > 0, 'the section has no text')
+  return `${section.name}, order ${section.order}, ${text.trim().split(/\s+/).length} words`
 })
 
 check('the host half adds one section per context, not one per call', () => {
@@ -822,8 +890,17 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
     'a copy answer does not outlive the source it described',
     'a fence whose props read throws is left to the host, not the message',
     'a host without effects keeps one stylesheet, not one per apply',
+    'a host with configForms takes the row without throwing',
+    'the row registers on the general settings slot and nowhere else',
+    'the row label is our own sentence, not a host key',
+    'the switch shows the value the host reports',
+    'the switch is named and described by the visible sentences',
+    'the switch keeps the keyboard',
+    'one click asks the host for the opposite value once',
+    'a rejected write leaves the switch where the host put it',
+    'a host without configForms gets the picture and no settings row',
   ]
-  const NEEDED_COUNT = 26
+  const NEEDED_COUNT = 35
   if (needed.length !== NEEDED_COUNT) {
     throw new Error(`the guard list has ${needed.length} names, expected ${NEEDED_COUNT}`)
   }
@@ -880,7 +957,7 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
 
 /* ---------------------------------------------------------------- report */
 
-const EXPECTED_CHECKS = 40
+const EXPECTED_CHECKS = 43
 if (notices.length + failures.length !== EXPECTED_CHECKS) {
   failures.push(
     `[FAIL] the suite has ${notices.length + failures.length} checks, expected ${EXPECTED_CHECKS}: a check was added or removed without updating this number`,

@@ -26,6 +26,11 @@ const DICTIONARY = {
     syntaxError: 'The diagram syntax is not valid, so its source is shown.',
     zoomIn: 'Zoom in',
     zoomOut: 'Zoom out',
+    settingFailed: 'Could not save the change, so the switch stays where it was.',
+    settingHint: 'When a picture carries the answer better than a paragraph, the model draws one and keeps the text to what the picture cannot show.',
+    settingLabel: 'Prefer pictures to prose',
+    settingSaved: 'Saved',
+
   },
   zh: {
     copied: '已复制',
@@ -40,6 +45,11 @@ const DICTIONARY = {
     syntaxError: '图里的语法有误，已改为显示源码。',
     zoomIn: '放大',
     zoomOut: '缩小',
+    settingFailed: '保存失败，开关保持原来的状态。',
+    settingHint: '当一张图比一段话更好懂时，模型会画图，文字只留图讲不清的部分。',
+    settingLabel: '优先用图，而不是成段文字',
+    settingSaved: '已保存',
+
   },
   ja: {
     copied: 'コピーしました',
@@ -54,6 +64,11 @@ const DICTIONARY = {
     syntaxError: '図の構文が正しくないため、ソースを表示しています。',
     zoomIn: '拡大',
     zoomOut: '縮小',
+    settingFailed: '保存できませんでした。スイッチは元のままです。',
+    settingHint: '図のほうが伝わりやすいときは図を描き、文章は図で表せない部分だけにします。',
+    settingLabel: '文章より図を優先',
+    settingSaved: '保存しました',
+
   },
   es: {
     copied: 'Copiado',
@@ -68,6 +83,11 @@ const DICTIONARY = {
     syntaxError: 'La sintaxis del diagrama no es válida, así que se muestra su código.',
     zoomIn: 'Acercar',
     zoomOut: 'Alejar',
+    settingFailed: 'No se pudo guardar el cambio, así que el interruptor se queda como estaba.',
+    settingHint: 'Cuando una imagen explica mejor que un párrafo, el modelo dibuja y deja en texto solo lo que la imagen no puede mostrar.',
+    settingLabel: 'Prefiere las imágenes al texto',
+    settingSaved: 'Guardado',
+
   },
   fr: {
     copied: 'Copié',
@@ -82,6 +102,11 @@ const DICTIONARY = {
     syntaxError: "La syntaxe du schéma n'est pas valide ; sa source est affichée.",
     zoomIn: 'Zoomer',
     zoomOut: 'Dézoomer',
+    settingFailed: 'Impossible d\'enregistrer le changement : l\'interrupteur reste tel quel.',
+    settingHint: 'Quand un schéma explique mieux qu\'un paragraphe, le modèle en dessine un et ne garde en texte que ce que le schéma ne peut pas montrer.',
+    settingLabel: 'Préférer les schémas au texte',
+    settingSaved: 'Enregistré',
+
   },
   de: {
     copied: 'Kopiert',
@@ -96,6 +121,11 @@ const DICTIONARY = {
     syntaxError: 'Die Diagrammsyntax ist ungültig, daher wird ihre Quelle angezeigt.',
     zoomIn: 'Vergrößern',
     zoomOut: 'Verkleinern',
+    settingFailed: 'Die Änderung konnte nicht gespeichert werden, der Schalter bleibt, wie er war.',
+    settingHint: 'Wenn ein Bild mehr erklärt als ein Absatz, zeichnet das Modell eines und lässt im Text nur, was das Bild nicht zeigen kann.',
+    settingLabel: 'Bilder statt Textabsätze',
+    settingSaved: 'Gespeichert',
+
   },
   ru: {
     copied: 'Скопировано',
@@ -110,6 +140,11 @@ const DICTIONARY = {
     syntaxError: 'Синтаксис диаграммы неверен, поэтому показан её код.',
     zoomIn: 'Увеличить',
     zoomOut: 'Уменьшить',
+    settingFailed: 'Не удалось сохранить изменение, переключатель остался прежним.',
+    settingHint: 'Когда рисунок объясняет лучше абзаца, модель рисует его, а в тексте оставляет только то, чего на рисунке не видно.',
+    settingLabel: 'Картинки вместо абзацев',
+    settingSaved: 'Сохранено',
+
   },
   pt: {
     copied: 'Copiado',
@@ -124,6 +159,11 @@ const DICTIONARY = {
     syntaxError: 'A sintaxe do diagrama não é válida, então o código é exibido.',
     zoomIn: 'Ampliar',
     zoomOut: 'Reduzir',
+    settingFailed: 'Não foi possível guardar a alteração, o interruptor fica como estava.',
+    settingHint: 'Quando uma imagem explica melhor que um parágrafo, o modelo desenha e deixa no texto só o que a imagem não mostra.',
+    settingLabel: 'Preferir imagens ao texto',
+    settingSaved: 'Guardado',
+
   },
 }
 

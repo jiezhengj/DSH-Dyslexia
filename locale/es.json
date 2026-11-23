@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "DSH Diagramas legibles",
-    "description": "Dibuja cada bloque de código mermaid de una conversación como un diagrama, dentro del propio mensaje: sin panel lateral y sin una segunda ventana. El bloque de código sigue siendo el texto del mensaje, así que se puede copiar, buscar y seguir leyendo aunque desactives este complemento. Bajo cada dibujo: Mostrar el código y Copiar el código; en un teléfono el dibujo se recompone al ancho de la columna y el zoom ocurre dentro de su marco.",
+    "title": "DSH — Tengo dislexia",
+    "description": "Dibuja los bloques mermaid en la conversación y, cuando ayuda, pide una imagen en vez de un muro de texto.",
     "detail": "docs/DETAIL.es.md"
   }
 }

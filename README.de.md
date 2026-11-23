@@ -1,4 +1,4 @@
-# DSH Lesbare Diagramme
+# DSH — Ich habe Legasthenie
 
 > Ein Diagramm statt einer Textwand – gezeichnet, wo der Text stand.
 

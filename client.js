@@ -1,4 +1,4 @@
-/*! @jiezhengj/dsh-dyslexia 0.1.32 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:95fc767705cdfe6833716071797b209c */
+/*! @jiezhengj/dsh-dyslexia 0.2.0 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:db71eb3381be5f8bbd6a8701f8f9ea06 */
 ;(function () {
   function reportLoadFailure(scope, error) {
     try { console.error('dsh-dyslexia: ' + scope, error) } catch (_error) {}
@@ -190,6 +190,17 @@ const BUTTON_CLASS = 'dsh-dyslexia-button'
 const SOURCE_CLASS = 'dsh-dyslexia-source'
 
 const FIGURE_CSS = [
+  '.dsh-dyslexia-row { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 8px 12px; padding: 12px 0; }',
+  '.dsh-dyslexia-row-text { flex: 1 1 220px; min-width: 0; display: flex; flex-direction: column; gap: 4px; }',
+  '.dsh-dyslexia-row-label { font-size: 14px; line-height: 22px; color: var(--dsw-alias-label-primary); }',
+  '.dsh-dyslexia-row-hint { font-size: 12px; line-height: 20px; color: var(--dsw-alias-label-secondary); }',
+  '.dsh-dyslexia-switch { position: relative; flex: none; width: 36px; height: 20px; margin: 2px 0 0 0; padding: 0; border: 0; border-radius: 10px; background: rgba(120, 130, 150, 0.35); cursor: pointer; transition: background 120ms ease; }',
+  '.dsh-dyslexia-switch[aria-checked="true"] { background: var(--dsw-alias-brand-primary); }',
+  '.dsh-dyslexia-switch-knob { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform 120ms ease; }',
+  '.dsh-dyslexia-switch[aria-checked="true"] .dsh-dyslexia-switch-knob { transform: translateX(16px); }',
+  '.dsh-dyslexia-switch:focus-visible { outline: 2px solid var(--dsw-alias-brand-primary); outline-offset: 2px; }',
+  '.dsh-dyslexia-row-state { flex: 1 1 100%; font-size: 12px; line-height: 20px; color: var(--dsw-alias-label-secondary); }',
+  '.dsh-dyslexia-row-state[data-failed="true"] { color: var(--dsw-alias-state-error-primary); }',
   `.${FIGURE_GROUP_CLASS} {`,
   '  max-width: 100%;',
   '  min-width: 0;',
@@ -323,6 +334,11 @@ const DICTIONARY = {
     syntaxError: 'The diagram syntax is not valid, so its source is shown.',
     zoomIn: 'Zoom in',
     zoomOut: 'Zoom out',
+    settingFailed: 'Could not save the change, so the switch stays where it was.',
+    settingHint: 'When a picture carries the answer better than a paragraph, the model draws one and keeps the text to what the picture cannot show.',
+    settingLabel: 'Prefer pictures to prose',
+    settingSaved: 'Saved',
+
   },
   zh: {
     copied: '已复制',
@@ -337,6 +353,11 @@ const DICTIONARY = {
     syntaxError: '图里的语法有误，已改为显示源码。',
     zoomIn: '放大',
     zoomOut: '缩小',
+    settingFailed: '保存失败，开关保持原来的状态。',
+    settingHint: '当一张图比一段话更好懂时，模型会画图，文字只留图讲不清的部分。',
+    settingLabel: '优先用图，而不是成段文字',
+    settingSaved: '已保存',
+
   },
   ja: {
     copied: 'コピーしました',
@@ -351,6 +372,11 @@ const DICTIONARY = {
     syntaxError: '図の構文が正しくないため、ソースを表示しています。',
     zoomIn: '拡大',
     zoomOut: '縮小',
+    settingFailed: '保存できませんでした。スイッチは元のままです。',
+    settingHint: '図のほうが伝わりやすいときは図を描き、文章は図で表せない部分だけにします。',
+    settingLabel: '文章より図を優先',
+    settingSaved: '保存しました',
+
   },
   es: {
     copied: 'Copiado',
@@ -365,6 +391,11 @@ const DICTIONARY = {
     syntaxError: 'La sintaxis del diagrama no es válida, así que se muestra su código.',
     zoomIn: 'Acercar',
     zoomOut: 'Alejar',
+    settingFailed: 'No se pudo guardar el cambio, así que el interruptor se queda como estaba.',
+    settingHint: 'Cuando una imagen explica mejor que un párrafo, el modelo dibuja y deja en texto solo lo que la imagen no puede mostrar.',
+    settingLabel: 'Prefiere las imágenes al texto',
+    settingSaved: 'Guardado',
+
   },
   fr: {
     copied: 'Copié',
@@ -379,6 +410,11 @@ const DICTIONARY = {
     syntaxError: "La syntaxe du schéma n'est pas valide ; sa source est affichée.",
     zoomIn: 'Zoomer',
     zoomOut: 'Dézoomer',
+    settingFailed: 'Impossible d\'enregistrer le changement : l\'interrupteur reste tel quel.',
+    settingHint: 'Quand un schéma explique mieux qu\'un paragraphe, le modèle en dessine un et ne garde en texte que ce que le schéma ne peut pas montrer.',
+    settingLabel: 'Préférer les schémas au texte',
+    settingSaved: 'Enregistré',
+
   },
   de: {
     copied: 'Kopiert',
@@ -393,6 +429,11 @@ const DICTIONARY = {
     syntaxError: 'Die Diagrammsyntax ist ungültig, daher wird ihre Quelle angezeigt.',
     zoomIn: 'Vergrößern',
     zoomOut: 'Verkleinern',
+    settingFailed: 'Die Änderung konnte nicht gespeichert werden, der Schalter bleibt, wie er war.',
+    settingHint: 'Wenn ein Bild mehr erklärt als ein Absatz, zeichnet das Modell eines und lässt im Text nur, was das Bild nicht zeigen kann.',
+    settingLabel: 'Bilder statt Textabsätze',
+    settingSaved: 'Gespeichert',
+
   },
   ru: {
     copied: 'Скопировано',
@@ -407,6 +448,11 @@ const DICTIONARY = {
     syntaxError: 'Синтаксис диаграммы неверен, поэтому показан её код.',
     zoomIn: 'Увеличить',
     zoomOut: 'Уменьшить',
+    settingFailed: 'Не удалось сохранить изменение, переключатель остался прежним.',
+    settingHint: 'Когда рисунок объясняет лучше абзаца, модель рисует его, а в тексте оставляет только то, чего на рисунке не видно.',
+    settingLabel: 'Картинки вместо абзацев',
+    settingSaved: 'Сохранено',
+
   },
   pt: {
     copied: 'Copiado',
@@ -421,6 +467,11 @@ const DICTIONARY = {
     syntaxError: 'A sintaxe do diagrama não é válida, então o código é exibido.',
     zoomIn: 'Ampliar',
     zoomOut: 'Reduzir',
+    settingFailed: 'Não foi possível guardar a alteração, o interruptor fica como estava.',
+    settingHint: 'Quando uma imagem explica melhor que um parágrafo, o modelo desenha e deixa no texto só o que a imagem não mostra.',
+    settingLabel: 'Preferir imagens ao texto',
+    settingSaved: 'Guardado',
+
   },
 }
 
@@ -1099,6 +1150,145 @@ class FigureBoundary extends React.Component {
 }
 
 
+const SETTINGS_SLOT = 'settings.general.item'
+const SETTINGS_NAMESPACE = 'dsh-dyslexia'
+const SETTINGS_ROW_ID = '@jiezhengj/dsh-dyslexia/visual-first'
+const SETTINGS_ROW_ORDER = 62
+
+/**
+ * The reader's preference, drawn as one row in Settings -> General.
+ *
+ * The row is the whole of the client's settings work: it reads the value the
+ * host already knows, shows it as a switch, writes the new value back through
+ * the `configForms` face and reports what happened. The value on screen is the
+ * value in effect: a write that fails puts the switch back where it was and
+ * says so, instead of showing an intention the host did not accept.
+ */
+
+function createValueStore(initial) {
+  let value = initial
+  const listeners = new Set()
+  return {
+    get() {
+      return value
+    },
+    set(next) {
+      if (next === value) return
+      value = next
+      listeners.forEach((listener) => {
+        try {
+          listener()
+        } catch (ignored) {
+          void ignored
+        }
+      })
+    },
+    subscribe(listener) {
+      listeners.add(listener)
+      return () => listeners.delete(listener)
+    },
+  }
+}
+
+function readPreference(face) {
+  try {
+    if (!face || typeof face.getSnapshot !== 'function') return true
+    const snapshot = face.getSnapshot()
+    const value = snapshot && snapshot.value ? snapshot.value.visualFirst : undefined
+    return value === undefined ? true : value !== false
+  } catch (error) {
+    report('settings snapshot', error)
+    return true
+  }
+}
+
+/** The row component. Receives its store and writer through the inject face. */
+function VisualFirstRow(props) {
+  const injected = props || {}
+  const store = injected.hooks ? injected.hooks.visualFirst : null
+  const say = translateFor(props, typeof document === 'undefined' ? null : document)
+  const labelId = React.useId() + '-label'
+  const hintId = React.useId() + '-hint'
+  const [state, setState] = React.useState('idle')
+  if (!store || typeof React.useSyncExternalStore !== 'function') return null
+  const value = React.useSyncExternalStore(store.subscribe, store.get)
+
+  function choose(next) {
+    const before = store.get()
+    store.set(next)
+    setState('idle')
+    let pending = null
+    try {
+      pending = injected.setValue ? injected.setValue(next) : null
+    } catch (error) {
+      setState('failed')
+      store.set(before)
+      return
+    }
+    if (pending && typeof pending.then === 'function') {
+      pending.then(
+        () => setState('saved'),
+        () => {
+          setState('failed')
+          store.set(before)
+        },
+      )
+    }
+  }
+
+  const children = [
+    React.createElement(
+      'div',
+      { className: 'dsh-dyslexia-row-text', key: 'text' },
+      React.createElement('div', { className: 'dsh-dyslexia-row-label', id: labelId, key: 'label' }, say('settingLabel')),
+      React.createElement('div', { className: 'dsh-dyslexia-row-hint', id: hintId, key: 'hint' }, say('settingHint')),
+    ),
+    React.createElement(
+      'button',
+      {
+        type: 'button',
+        role: 'switch',
+        className: 'dsh-dyslexia-switch',
+        'aria-checked': value ? 'true' : 'false',
+        'aria-labelledby': labelId,
+        'aria-describedby': hintId,
+        onClick: () => choose(!value),
+        key: 'switch',
+      },
+      React.createElement('span', { className: 'dsh-dyslexia-switch-knob' }),
+    ),
+  ]
+  if (state !== 'idle') {
+    children.push(
+      React.createElement(
+        'span',
+        { className: 'dsh-dyslexia-row-state', role: 'status', 'aria-live': 'polite', key: 'state' },
+        say(state === 'saved' ? 'settingSaved' : 'settingFailed'),
+      ),
+    )
+  }
+  return React.createElement('div', { className: 'dsh-dyslexia-row' }, children)
+}
+
+/**
+ * Builds the row for one `configForms` face. A host whose face does not answer
+ * still gets a row — it just starts from the default the plugin ships.
+ */
+function createVisualFirstRow(face) {
+  const store = createValueStore(readPreference(face))
+  return {
+    store,
+    component: VisualFirstRow,
+    inject: {
+      hooks: { visualFirst: store },
+      setValue(next) {
+        if (!face || typeof face.set !== 'function') return null
+        return face.set('visualFirst', next)
+      },
+    },
+  }
+}
+
 /**
  * Client half of `@jiezhengj/dsh-dyslexia`.
  *
@@ -1201,6 +1391,49 @@ function apply(ctx) {
     slots.inject(SLOT_NAME, () => registerLayer(slots))
   } catch (error) {
     report('slots', error)
+  }
+  try {
+    // The preference lives in Settings -> General, in the same row the host
+    // uses for Language and Appearance. The row is registered only when the
+    // host actually offers the two services it needs; a host without them keeps
+    // the default the plugin ships and loses only the switch.
+    const slots = ctx.slots
+    const configForms = ctx.configForms
+    if (
+      slots &&
+      typeof slots.inject === 'function' &&
+      typeof slots.register === 'function' &&
+      configForms &&
+      typeof configForms.get === 'function'
+    ) {
+      const face = configForms.get(SETTINGS_NAMESPACE)
+      if (face) {
+        const row = createVisualFirstRow(face)
+        if (typeof ctx.effect === 'function' && typeof face.subscribe === 'function') {
+          ctx.effect(
+            () =>
+              face.subscribe(() => {
+                row.store.set(readPreference(face))
+              }),
+            'dsh-dyslexia: settings value',
+          )
+        }
+        slots.inject(SETTINGS_SLOT, () =>
+          slots.register(
+            {
+              name: SETTINGS_SLOT,
+              id: SETTINGS_ROW_ID,
+              order: SETTINGS_ROW_ORDER,
+              locale: LOCALE_NAMESPACE,
+              inject: () => row.inject,
+            },
+            row.component,
+          ),
+        )
+      }
+    }
+  } catch (error) {
+    report('settings row', error)
   }
 }
 

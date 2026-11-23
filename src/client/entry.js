@@ -101,4 +101,47 @@ function apply(ctx) {
   } catch (error) {
     report('slots', error)
   }
+  try {
+    // The preference lives in Settings -> General, in the same row the host
+    // uses for Language and Appearance. The row is registered only when the
+    // host actually offers the two services it needs; a host without them keeps
+    // the default the plugin ships and loses only the switch.
+    const slots = ctx.slots
+    const configForms = ctx.configForms
+    if (
+      slots &&
+      typeof slots.inject === 'function' &&
+      typeof slots.register === 'function' &&
+      configForms &&
+      typeof configForms.get === 'function'
+    ) {
+      const face = configForms.get(SETTINGS_NAMESPACE)
+      if (face) {
+        const row = createVisualFirstRow(face)
+        if (typeof ctx.effect === 'function' && typeof face.subscribe === 'function') {
+          ctx.effect(
+            () =>
+              face.subscribe(() => {
+                row.store.set(readPreference(face))
+              }),
+            'dsh-dyslexia: settings value',
+          )
+        }
+        slots.inject(SETTINGS_SLOT, () =>
+          slots.register(
+            {
+              name: SETTINGS_SLOT,
+              id: SETTINGS_ROW_ID,
+              order: SETTINGS_ROW_ORDER,
+              locale: LOCALE_NAMESPACE,
+              inject: () => row.inject,
+            },
+            row.component,
+          ),
+        )
+      }
+    }
+  } catch (error) {
+    report('settings row', error)
+  }
 }

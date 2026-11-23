@@ -1284,6 +1284,240 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           }
           wideRoot.unmount()
           wideStage.remove()
+
+          /* ------------------------------------------------ settings row */
+          // A host that offers `configForms` gets one row on the general
+          // settings slot. The fake face can read, write, reject a write and
+          // change from the outside, so what the row shows can be checked
+          // against state this fixture controls.
+          document.documentElement.lang = 'zh'
+          const SETTINGS_LABEL = '优先用图，而不是成段文字'
+          const SETTINGS_HINT = '当一张图比一段话更好懂时，模型会画图，文字只留图讲不清的部分。'
+          const SETTINGS_SAVED = '已保存'
+          const SETTINGS_FAILED = '保存失败，开关保持原来的状态。'
+          const settingsState = { value: { visualFirst: true } }
+          const settingsSets = []
+          const settingsListeners = new Set()
+          let settingsFailNext = false
+          const settingsFace = {
+            getSnapshot() {
+              return { value: { visualFirst: settingsState.value.visualFirst } }
+            },
+            subscribe(listener) {
+              settingsListeners.add(listener)
+              return () => settingsListeners.delete(listener)
+            },
+            set(field, value) {
+              settingsSets.push([field, value])
+              if (settingsFailNext) {
+                settingsFailNext = false
+                return Promise.reject(new Error('write rejected'))
+              }
+              settingsState.value[field] = value
+              settingsListeners.forEach((listener) => listener())
+              return Promise.resolve()
+            },
+          }
+          const settingsHost = makeContext({})
+          settingsHost.ctx.configForms = {
+            get(namespace) {
+              return namespace === 'dsh-dyslexia' ? settingsFace : null
+            },
+          }
+          let settingsThrew = null
+          try {
+            module.apply(settingsHost.ctx)
+          } catch (error) {
+            settingsThrew = error
+          }
+          expect(
+            settingsThrew === null,
+            'a host with configForms takes the row without throwing',
+            settingsThrew ? String(settingsThrew.message) : 'quiet',
+          )
+          const settingsDefs = settingsHost.defs.filter(
+            (entry) => entry.def && entry.def.name === 'settings.general.item',
+          )
+          expect(
+            settingsHost.defs.length === 2 && settingsDefs.length === 1,
+            'the row registers on the general settings slot and nowhere else',
+            `${settingsHost.defs.length} defs, ${settingsDefs.length} on the slot`,
+          )
+          const settingsDef = (settingsDefs[0] && settingsDefs[0].def) || {}
+          expect(
+            settingsDef.id === '@jiezhengj/dsh-dyslexia/visual-first' &&
+              settingsDef.order === 62 &&
+              settingsDef.locale === 'dyslexia',
+            'the row carries its id, order and locale',
+            `${settingsDef.id} ${settingsDef.order} ${settingsDef.locale}`,
+          )
+          const Row = settingsDefs[0] && settingsDefs[0].component
+          const rowInject = typeof settingsDef.inject === 'function' ? settingsDef.inject() : {}
+          const rowView = mount(Row, rowInject)
+          await tick(40)
+          const row = rowView.stage.querySelector('.dsh-dyslexia-row')
+          const toggle = rowView.stage.querySelector('button[role="switch"]')
+          expect(!!row, 'the settings row renders inside its slot component')
+          const rowLabel = rowView.stage.querySelector('.dsh-dyslexia-row-label')
+          const rowHint = rowView.stage.querySelector('.dsh-dyslexia-row-hint')
+          expect(
+            !!rowLabel && rowLabel.textContent === SETTINGS_LABEL,
+            'the row label is our own sentence, not a host key',
+            rowLabel ? rowLabel.textContent : 'no label',
+          )
+          expect(
+            !!rowHint && rowHint.textContent === SETTINGS_HINT,
+            'the row hint is our own sentence, not a host key',
+            rowHint ? rowHint.textContent : 'no hint',
+          )
+          expect(
+            !!toggle && toggle.getAttribute('aria-checked') === 'true',
+            'the switch shows the value the host reports',
+            toggle ? String(toggle.getAttribute('aria-checked')) : 'no switch',
+          )
+          const labelledBy = toggle ? toggle.getAttribute('aria-labelledby') : null
+          const describedBy = toggle ? toggle.getAttribute('aria-describedby') : null
+          const namedBy = labelledBy ? document.getElementById(labelledBy) : null
+          const describedByNode = describedBy ? document.getElementById(describedBy) : null
+          expect(
+            !!namedBy &&
+              namedBy.textContent === SETTINGS_LABEL &&
+              !!describedByNode &&
+              describedByNode.textContent === SETTINGS_HINT,
+            'the switch is named and described by the visible sentences',
+            `${labelledBy} -> ${namedBy ? namedBy.textContent : 'missing'} | ${describedBy} -> ${
+              describedByNode ? describedByNode.textContent : 'missing'
+            }`,
+          )
+          expect(
+            !!toggle && toggle.disabled !== true && toggle.getAttribute('tabindex') !== '-1',
+            'the switch keeps the keyboard',
+            toggle ? `disabled=${toggle.disabled} tabindex=${toggle.getAttribute('tabindex')}` : 'no switch',
+          )
+          expect(
+            rowView.stage.querySelector('[role="status"]') === null,
+            'no status sentence before the reader touches the switch',
+          )
+          toggle.click()
+          await tick(60)
+          expect(
+            settingsSets.length === 1 && settingsSets[0][0] === 'visualFirst' && settingsSets[0][1] === false,
+            'one click asks the host for the opposite value once',
+            JSON.stringify(settingsSets),
+          )
+          expect(
+            toggle.getAttribute('aria-checked') === 'false',
+            'the switch turns off after the write',
+            String(toggle.getAttribute('aria-checked')),
+          )
+          const savedStatus = rowView.stage.querySelector('[role="status"]')
+          expect(
+            !!savedStatus && savedStatus.textContent === SETTINGS_SAVED,
+            'a saved write says so in the status sentence',
+            savedStatus ? savedStatus.textContent : 'no status',
+          )
+          // A rejected write must put the switch back and say the value did
+          // not change; showing the intended value would be a lie.
+          settingsFailNext = true
+          toggle.click()
+          await tick(60)
+          expect(
+            settingsSets.length === 2 && settingsSets[1][0] === 'visualFirst' && settingsSets[1][1] === true,
+            'the second click tries the other value once',
+            JSON.stringify(settingsSets),
+          )
+          expect(
+            toggle.getAttribute('aria-checked') === 'false',
+            'a rejected write leaves the switch where the host put it',
+            String(toggle.getAttribute('aria-checked')),
+          )
+          const failedStatus = rowView.stage.querySelector('[role="status"]')
+          expect(
+            !!failedStatus && failedStatus.textContent === SETTINGS_FAILED,
+            'a rejected write explains itself in the status sentence',
+            failedStatus ? failedStatus.textContent : 'no status',
+          )
+          rowView.root.unmount()
+          rowView.stage.remove()
+          settingsHost.dispose()
+
+          // A host that already says "off" must show "off" on first paint.
+          const offState = { value: { visualFirst: false } }
+          const offFace = {
+            getSnapshot() {
+              return { value: { visualFirst: offState.value.visualFirst } }
+            },
+            subscribe() {
+              return () => {}
+            },
+            set() {
+              return Promise.resolve()
+            },
+          }
+          const offHost = makeContext({})
+          offHost.ctx.configForms = {
+            get(namespace) {
+              return namespace === 'dsh-dyslexia' ? offFace : null
+            },
+          }
+          module.apply(offHost.ctx)
+          const offDef = offHost.defs.find((entry) => entry.def && entry.def.name === 'settings.general.item')
+          const offView = offDef ? mount(offDef.component, offDef.def.inject()) : null
+          if (offView) await tick(40)
+          const offToggle = offView ? offView.stage.querySelector('button[role="switch"]') : null
+          expect(
+            !!offToggle && offToggle.getAttribute('aria-checked') === 'false',
+            'the switch starts off when the host already says off',
+            offToggle ? String(offToggle.getAttribute('aria-checked')) : 'no switch',
+          )
+          if (offView) {
+            offView.root.unmount()
+            offView.stage.remove()
+          }
+          offHost.dispose()
+
+          // Without the face there is no row, and the picture must still work:
+          // the settings surface is an addition, never a requirement.
+          const plainHost = makeContext({})
+          let plainThrew = null
+          try {
+            module.apply(plainHost.ctx)
+          } catch (error) {
+            plainThrew = error
+          }
+          expect(
+            plainThrew === null &&
+              plainHost.defs.length === 1 &&
+              plainHost.defs[0].def.name === 'conversation.chat.markdown.fence',
+            'a host without configForms gets the picture and no settings row',
+            `${plainHost.defs.length} defs, threw=${plainThrew ? String(plainThrew.message) : 'no'}`,
+          )
+          const plainView = mount(plainHost.defs[0].component, { code: CODE, streaming: false, children: hostBlock(CODE) })
+          await tick(80)
+          expect(
+            plainView.stage.querySelector('[role="img"]') !== null &&
+              plainView.stage.querySelector('.dsh-dyslexia-row') === null,
+            'the picture still draws when the settings surface is missing',
+          )
+          plainView.root.unmount()
+          plainView.stage.remove()
+          plainHost.dispose()
+
+          // A face that answers null is the same as no face at all.
+          const blankHost = makeContext({})
+          blankHost.ctx.configForms = {
+            get() {
+              return null
+            },
+          }
+          module.apply(blankHost.ctx)
+          expect(
+            blankHost.defs.length === 1 &&
+              blankHost.defs[0].def.name === 'conversation.chat.markdown.fence',
+            'a configForms face that answers nothing adds no row',
+            `${blankHost.defs.length} defs`,
+          )
+          blankHost.dispose()
         } catch (error) {
           bad('fixture aborted', String(error && error.stack ? error.stack.split('\n')[0] : error))
         }
