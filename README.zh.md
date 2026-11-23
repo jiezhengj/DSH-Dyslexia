@@ -38,7 +38,7 @@ DeepSeek Harness 本来就在聊天里渲染 Markdown。这个插件只加一件
 
 环境要求：Node.js 22 或更新版本，以及用于浏览器检查的 Chrome/Chromium。
 
-- `node verify/check-bundle.mjs` — 对随包产物执行静态与引擎检查（manifest、无网络调用、无版本门、内联引擎、八种界面语言、每种支持图形的示例图）。每项检查打印一行，失败时以非零状态码退出。
+- `node verify/check-bundle.mjs` — 对随包产物执行静态与引擎检查（manifest、无网络调用、无版本门、内联引擎、八种界面语言、七种图形的示例图）。每项检查打印一行，失败时以非零状态码退出。
 - `node verify/run-harness.mjs` — 在无头 Chrome 中针对 `verify/harness/index.html` 运行浏览器检查（成图、八种语言、异常宿主环境、损坏的图形语法、复制、360 px 窄栏、主题颜色）。若自动探测失败，可设置 `DSH_DYSLEXIA_CHROME` 指向指定的 Chrome 可执行文件。
 
 两条命令都在仓库中，可随时重新验证本文件所述内容；它们也是发布前 CI 运行的检查。

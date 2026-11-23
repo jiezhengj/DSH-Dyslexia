@@ -25,10 +25,18 @@ const MERMAID_RENDER_PROMPT = [
   'An invalid or oversized diagram falls back to its source with a one-line reason, so the block must stay readable alone.',
 ].join(' ')
 
+const claimed = new WeakSet()
+
 export function apply(ctx) {
   try {
     const prompt = ctx === null || ctx === undefined ? undefined : ctx.systemPrompt
     if (!prompt || typeof prompt.section !== 'function') return
+    // A host that calls `apply` twice on one context would otherwise get two
+    // identical sections, which shows up twice in the model's briefing.
+    if (typeof ctx === 'object' || typeof ctx === 'function') {
+      if (claimed.has(ctx)) return
+      claimed.add(ctx)
+    }
     const result = prompt.section({
       name: SECTION_NAME,
       order: SECTION_ORDER,

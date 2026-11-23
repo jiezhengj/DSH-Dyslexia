@@ -471,7 +471,7 @@ check('the picture is the image, and the copy answer is announced', () => {
   assert(!/role: 'img'/.test(view), 'the container must not be role="img"')
   assert(view.includes('aria-live'), 'the copy result is only visible, never announced')
   assert(view.includes('isRenderableChild'), 'falsy host children are not treated as empty')
-  return 'label is a noun, role="img" on the svg, copy result announced'
+  return 'label is a noun, role="img" on the svg, copy result announced; behaviour is asserted by the fixture'
 })
 
 check('host children react would refuse fall back to the source', () => {
@@ -483,7 +483,7 @@ check('host children react would refuse fall back to the source', () => {
   assert(view.includes('React.isValidElement(value)'), 'children are not whitelisted to React-accepted shapes')
   assert(view.includes('value.every(isRenderableChild)'), 'arrays of children are not checked element by element')
   assert(view.includes('sourceFallback('), 'no source fallback exists for a host block that cannot be shown')
-  return 'objects, functions and mixed arrays fall back to the source text'
+  return 'objects, functions and mixed arrays fall back to the source text; behaviour is asserted by the fixture'
 })
 
 check('every drawing the engine swaps in is named again', () => {
@@ -507,7 +507,7 @@ check('every drawing the engine swaps in is named again', () => {
     labels.includes('const table = DICTIONARY[fallbackLanguage(doc)] || DICTIONARY.en'),
     'the bundled strings are captured once, so a language switch keeps the old words',
   )
-  return 'the engine owns re-layout; every swapped drawing node and its zoom buttons are renamed, strings follow the language'
+  return 'the engine owns re-layout; every swapped drawing node and its zoom buttons are renamed, strings follow the language; behaviour is asserted by the fixture'
 })
 
 check('a host block that throws cannot empty the message', () => {
@@ -516,7 +516,7 @@ check('a host block that throws cannot empty the message', () => {
   assert(view.includes('function hostBlock(children, code)'), 'no single entry point for the host block')
   assert(!/Symbol\.iterator/.test(view), 'an iterable is still passed through to React unchecked')
   assert(view.includes('sourceFallback(this.props.code)'), 'the guarded block has no plain-text floor')
-  return 'host blocks render inside their own boundary, with the source text as the floor'
+  return 'host blocks render inside their own boundary, with the source text as the floor; behaviour is asserted by the fixture'
 })
 
 check('a factory that cannot build never throws at the host', () => {
@@ -587,6 +587,33 @@ check('the host half registers exactly one capability section', () => {
   assert(section.order === 9000, `section order ${section.order}`)
   assert(typeof section.text === 'string' && section.text.trim().length > 0, 'the section has no text')
   return `${section.name}, order ${section.order}, ${section.text.trim().split(/\s+/).length} words`
+})
+
+check('the host half adds one section per context, not one per call', () => {
+  const sections = []
+  const ctx = {
+    systemPrompt: {
+      section(def) {
+        sections.push(def)
+        return () => undefined
+      },
+    },
+  }
+  hostHalf.apply(ctx)
+  hostHalf.apply(ctx)
+  hostHalf.apply(ctx)
+  assert(sections.length === 1, `three applies on one context added ${sections.length} sections`)
+  const other = {
+    systemPrompt: {
+      section(def) {
+        sections.push(def)
+        return () => undefined
+      },
+    },
+  }
+  hostHalf.apply(other)
+  assert(sections.length === 2, `a second context added ${sections.length - 1} sections`)
+  return 'three calls on one context, one section; a second context gets its own'
 })
 
 check('the host half stays silent when the host changed shape', () => {
@@ -794,7 +821,7 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
 
 /* ---------------------------------------------------------------- report */
 
-const EXPECTED_CHECKS = 39
+const EXPECTED_CHECKS = 40
 if (notices.length + failures.length !== EXPECTED_CHECKS) {
   failures.push(
     `[FAIL] the suite has ${notices.length + failures.length} checks, expected ${EXPECTED_CHECKS}: a check was added or removed without updating this number`,

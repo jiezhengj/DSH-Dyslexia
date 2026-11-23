@@ -8,7 +8,7 @@ description: "Task list for 会话内图形渲染"
 
 **Prerequisites**: [plan.md](./plan.md), [spec.md](./spec.md), [research.md](./research.md), [data-model.md](./data-model.md), [contracts/](./contracts/), [quickstart.md](./quickstart.md)
 
-**Tests**（历史任务行里的断言名是当时的名字，改名记录见 Phase 24 的 T168）：本功能不引入测试框架（宪法原则 III）。验收 = `verify/check-bundle.mjs` 的 39 项静态断言 + `verify/run-harness.mjs --list` 的 228 项浏览器断言（0.1.9 起 118 项、0.1.10 起 119 项、0.1.11 起 152 项、0.1.12 起 156 项、0.1.13 起 197 项、0.1.14 起 205 项、0.1.15 与 0.1.16 是 213 项、0.1.17 与 0.1.18 是 216 项、0.1.19–0.1.24 是 220 项、0.1.25 是 223 项、0.1.26 是 228 项），外加 `quickstart.md` 证据表里的真机项（见 E-GAPS）。
+**Tests**（历史任务行里的断言名是当时的名字，改名记录见 Phase 24 的 T168）：本功能不引入测试框架（宪法原则 III）。验收 = `verify/check-bundle.mjs` 的 40 项静态断言 + `verify/run-harness.mjs --list` 的 228 项浏览器断言（0.1.9 起 118 项、0.1.10 起 119 项、0.1.11 起 152 项、0.1.12 起 156 项、0.1.13 起 197 项、0.1.14 起 205 项、0.1.15 与 0.1.16 是 213 项、0.1.17 与 0.1.18 是 216 项、0.1.19–0.1.24 是 220 项、0.1.25 是 223 项、0.1.26 是 228 项），外加 `quickstart.md` 证据表里的真机项（见 E-GAPS）。
 
 **Organization**: 按 spec 的用户故事分阶段；每个故事独立可验收。
 
@@ -537,7 +537,19 @@ description: "Task list for 会话内图形渲染"
 - [x] T290 发版 0.1.28（只改文档、README 与版本号）：提交 `2895817` → tag `v0.1.28` → run `45117521081` success、39/228、shasum `816a80a70fe2a3a8c95d131d0412b97e81393bc3`、logIndex `4050291751`、33 文件
 - [x] T291 registry 第 20 次轮询 200 后 `remove_bundle`（卸 0.1.27）→ `install_bundle @0.1.28`；profile 依赖 `"0.1.28"`、安装副本 769,453 字节、SHA256 `0E276FC51F806104E49938248081CD314D3A4C2127361E5A797473BB2E74B0DC` 与仓库根一致、`locale/` 8、`docs/` 9、包内 0.1.28
 - [x] T292 证据补 0.1.28 的 E-PUB 行与 CI 日志块、E-INS 实测表（`evidence/verification.md`）
-- [ ] T293 第二十七轮双评审（`review-docs-27` / `review-impl-27`，目标：两份都 PASS）
+- [x] T293 第二十七轮双评审：`review-impl-27` 判 **PASS**（无 P0/P1；11 条探针、三方产物 SHA256 `0e276fc5…` 相同、独立夹具 97 项全绿）；`review-docs-27` 判 **FAIL**（P1 四条、P2 三条），逐条修见 T294–T296
+
+## Phase 40: 第二十七轮评审的修复与 0.1.29（2026-11-23 追加）
+
+- [x] T294 `review-docs-27` 的 P1：`evidence/verification.md:917` 的"22 项"改"23 项"；`tasks.md` 的 G5 行按证据文件改写 E16（有语言透传的一半夹具、缺混合块夹具与真机观察）；G21 的"九份 README"改"索引页与八份本地化 README"并把"Mermaid 12.1"改成已在 T243 移除
+- [x] T295 `review-docs-27` 的 P1-4：索引页与七份语言 README 的"每种支持图形的示例图 / every supported type / 対応する全図種"等一律改成"七种图形的示例图"等价说法，与 `check-bundle` 的 `SAMPLES` 七项对齐；索引页双语各补一句"其他图种未测，见 G21"
+- [x] T296 `review-docs-27` 的 P2：evidence 的 G22 排到 G23 之前（与 `tasks.md` 状态表同序）；`tasks.md` 的 G17 行补 ⑨（补 `title` 那一行）并把"删掉不会让任何断言变红"限定为"删掉对应实现行"，同时说明⑤/⑧有相邻结果断言
+- [x] T297 `review-impl-27` 的 P2-1：`check-bundle` 里四条源码存在性检查的细节串补"; behaviour is asserted by the fixture"，避免被当成行为担保
+- [x] T298 `review-impl-27` 的 P2-2：`index.js` 的 `apply` 加幂等守卫（模块级 `WeakSet`，同一 `ctx` 只注册一段），并新增静态断言 `the host half adds one section per context, not one per call`（39 → 40 项）；探针 PS23 验证它可红（`three applies on one context added 3 sections`，`1 failed, 39 passed`，exit 1）
+- [x] T299 `review-impl-27` 的 P2-7：`src/client/view.js` 的 `labelFigure` 在 catch 里改成 `report('figure label', error)`，命名失败不再静默
+- [x] T300 版本 0.1.29 的文档与证据口径：40 静态 / 228 浏览器、`client.js` 769,629 字节、指纹 `867cfbe0…`、`plan.md` 的行数（index 65、client 1003 = view 486 + 209 + 123 + 91 + 94、check-bundle 842）、E-PROBE 补 PS23 并把前言改成"三十七次"、G15② 改为"已由断言守护"
+- [ ] T301 发版 0.1.29（提交、tag、Actions、registry、装回 `desktop`）并补 E-PUB/E-INS
+- [ ] T302 第二十八轮双评审（`review-docs-28` / `review-impl-28`，目标：两份都 PASS）
 
 ## Dependencies & Execution Order
 
@@ -615,7 +627,7 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 
 **当前自动化证据**（命令即证据，任何人 clone 后可复跑）：
 
-- `node verify/check-bundle.mjs` → **39 项全过**
+- `node verify/check-bundle.mjs` → **40 项全过**
 - `node verify/run-harness.mjs --list` → 真实 Chromium 里 **228 项全过**（夹具 `verify/harness/index.html`，已提交）
 
 **真机证据**（`evidence/verification.md` 的 E-LIVE）：会话内就地成图、卸载回退、重装恢复、插件页说明；取证的版本是 0.1.2。
@@ -628,7 +640,7 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 | G2 | T023 实体手机/平板触控 | 部分 | 360 px 无横向溢出由夹具覆盖（不是真机窗口），触屏缩放与复位未在真机试 |
 | G3 | T025 断网/裸机安装 | 未做 | 运行期零网络只有静态断言与 `file://` 夹具支撑 |
 | G4 | T041 真机注入畸形宿主 | 部分 | 应用能正常打开、会话正常已确认；七种畸形宿主只在夹具与 vm 里复现 |
-| G5 | T031 E1–E16 逐条复跑 | 部分 | E1/E3/E4/E5 有夹具或 E-LIVE（0.1.2）支撑；E2（同一条消息两块图并存）**自 0.1.13 起有夹具**；E16 与其他非 mermaid 代码块既无夹具也无真机观察；E15（未装插件的新会话不产生只有插件才看得懂的内容）无观察；E10（卸载后旧会话回退）有 0.1.2 观察 |
+| G5 | T031 E1–E16 逐条复跑 | 部分 | E1/E3/E4/E5 有夹具或 E-LIVE（0.1.2）支撑；E2（同一条消息两块图并存）**自 0.1.13 起有夹具**；E16（非 `mermaid` 的代码块不受影响）有**语言透传的一半夹具**（`the source block keeps the language the host sent`，传 `lang: 'mmd'` 后展开源码仍带 `language-mmd`），缺「一条消息里同时有 mermaid 与非 mermaid 代码块」的夹具，也没有真机观察；E15（未装插件的新会话不产生只有插件才看得懂的内容）无观察；E10（卸载后旧会话回退）有 0.1.2 观察 |
 | G6 | SC-001 计时 | 未做 | 没有"1 秒内出图"的计时 |
 | G7 | SC-002 检索命中（T019） | 未做 | 未在卸载态用 `session_search` 查过该块原文 |
 | G8 | SC-003 字号下限 | 未做 | 没有图内字号与正文最小字号的比较断言 |
@@ -636,15 +648,15 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 | G10 | SC-005 主题切换 | 部分 | 只验证了换 CSS 变量后变色，没做明→暗→明切换 |
 | G11 | FR-011 停用后提示词消失（T027） | 未做 | 宿主半边只有静态断言；本机 PATH 无 `dsh` CLI，改用 vm 断言，但不证明真实会话里停用后消失 |
 | G12 | FR-002 真机"无侧栏/无新文件" | 未做 | 结构上不写文件、不碰宿主布局，但没有一次真机核对磁盘与会话条目未变 |
-| G13 | T079 当前版本的重启后真机核对 | 未做 | 0.1.11 至 0.1.28 都已发布并装进 profile `desktop`，运行中的界面仍加载旧 chunk；`E-LIVE` 的观察取自 **0.1.2**（只有中文说明页、就地成图、卸载回退、重装恢复四件事），不能自动转移 |
+| G13 | T079 当前版本的重启后真机核对 | 未做 | 0.1.11 至 0.1.29 都已发布并装进 profile `desktop`，运行中的界面仍加载旧 chunk；`E-LIVE` 的观察取自 **0.1.2**（只有中文说明页、就地成图、卸载回退、重装恢复四件事），不能自动转移 |
 | G14 | 真实窗口缩放时引擎重绘（FR-018 端到端） | 未做 | 无头环境首帧后不再派发帧与 ResizeObserver 通知，只能证明"节点被换 → 立刻重新命名"；拖窄真实窗口这条链只有机制级证据 |
 | G15 | 尚未覆盖的加固面 | 未做 | ①`outputLimit`（2 MiB 绘制输出上限）无用例（字符上限与边数上限自 0.1.19 起已有单独夹具与 PS2/PS3 探针）；②`index.js` 的 `apply` 每次都用 `prompt.section({ name: 'ui:dsh-dyslexia', … })` 注册、没有幂等守卫，同一个正常 `ctx` 上再 `apply` 会得到两段同名提示词，无断言守着；③`slots.inject` 回调丢 disposer 这半句**不成立**（`the fence layer is gone once the host disposes` 就守着它，回调不返回 disposer 即变红），不算缺口；④`prepack` 不跑夹具；⑤`package.json` 若加入 `engines.node` 等非 `dsh` 子键，`no dsh version gate can refuse a start` 不会变红 |
 | G16 | vendor 文本与无头环境的换节点 | 未做 | 绘制输出上限（`outputLimit` 2 MiB）仍按 G15 记，字符上限与边数上限已有夹具，不再重复；这里只记两件小事：`client.js` 里 vendor 许可注释含 `https://github.com/obsidianmd/pele`（静态文本、无网络行为），以及「引擎换掉 `<svg>` 后重新命名」在无头环境只能夹具重放（真实拖窄窗口的端到端见 G14） |
-| G17 | 视图层无断言的行为 | 未做 | 第十四轮实现评审的 P3 汇总，逐条登记在 `evidence/verification.md` 的 G17：失败原因三分类、"已复制"1.5 秒后消失、缩放按钮与引擎顺序的配对、失败后同一实例的自愈、失败时隐藏空画框、`children: []` 退回原文、`props` 与 `code` 都读不出时返回 `null`——这些分支都存在，但删掉不会让任何断言变红；`MutationObserver` 只看直接子节点这一条例外：它有静态字符串守卫（改成 `subtree: true` 会红），只是没有行为观察 |
+| G17 | 视图层无断言的行为 | 未做 | 第十四、二十六轮实现评审的 P2/P3 汇总，逐条登记在 `evidence/verification.md` 的 G17：①失败原因三分类 ②"已复制"1.5 秒后消失 ③缩放按钮与引擎顺序的配对 ④失败后同一实例的自愈 ⑤失败时隐藏空画框 ⑥`children: []` 退回原文 ⑦`props` 与 `code` 都读不出时返回 `null` ⑧挂载后补缩放按钮 `title` 的那一行（PS20：删掉仍全绿，引擎自己也设标题）——这些分支都存在，但**删掉对应的实现行不会让断言变红**（⑤、⑧ 有相邻的结果断言，但不保护被删的那一行）；`MutationObserver` 只看直接子节点是例外：有静态字符串守卫（改成 `subtree: true` 会红），只是没有行为观察 |
 | G18 | 引擎缺失分支只有静态证据 | 未做 | 第十六轮实现评审 P3（第十七轮文档评审修正措辞）：静态断言覆盖了错误边界、`readLayerInput`、`safeRead`、`engineUnavailable` 与 `typeof pele.mount !== 'function'` 守卫字符串（改成恒真会让它变红），但**没有动态用例**把引擎置空后观察回退——入口是 `scripts/build-client.mjs` 的 `catch (error) { pele = null }` |
 | G19 | 静态套件只钉顶层条目数 | 未做 | 第十七轮实现评审 P3：`EXPECTED_CHECKS = 39` 只保证有 39 个 `check()`；某条 `check()` 内部删掉一行 `assert()` 仍是全过（浏览器侧逐条 `expect()` 计数，删一条即报错） |
 | G20 | 启用/停用在运行中的宿主里没有单独观察 | 未做 | E-LIVE 只观察到卸载回退与重装恢复；九份 README 与 `quickstart.md` 都写成"走宿主插件机制、未单独取证" |
-| G21 | 引擎支持的其它图种与"Mermaid 12.1"版本说法 | 未做 | 静态检查采样七种（flowchart/sequence/class/state/er/mindmap/timeline，见 `every supported sample type draws an svg`），浏览器夹具只画了 flowchart 与一条 `sequenceDiagram`；gantt、kanban、xychart、C4、architecture 无任何用例；"Mermaid 12.1" 只来自上游 pele 的说明。九份 README 按"静态采样七种、夹具只画前两种（见 G21）"措辞 |
+| G21 | 引擎支持的其它图种与"Mermaid 12.1"版本说法 | 未做 | 静态检查采样七种（flowchart/sequence/class/state/er/mindmap/timeline，见 `every supported sample type draws an svg`），浏览器夹具只画了 flowchart 与一条 `sequenceDiagram`；gantt、kanban、xychart、C4、architecture 无任何用例；"Mermaid 12.1" 只来自上游 pele 的说明。索引页与八份本地化 README 按"静态采样七种、夹具只画前两种（见 G21）"措辞，"Mermaid 12.1"那句已在 T243 移除 |
 | G22 | `check-bundle` 需要 `specs/` 才完整（合同文件不在 `files` 里） | 未修（登记为局限） | 合同文件不在包里；正常 clone 与 CI 都通过，缺 `specs/` 的副本里 `npm pack` 会以 ENOENT 变红 |
 | G23 | 三处证据强度（banner 指纹含版本、静态全绿≠行为正确、children getter 双保险） | 记录（不改代码） | 第二十六轮实现评审 P2 的原文见 `evidence/verification.md` 的 G23；三条都不影响已发布行为 |
 
@@ -653,4 +665,4 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 | 项 | 状态 | 说明 |
 |---|---|---|
 | T070 0.1.3 重启核对 | 已作废 | 由 T079 取代 |
-| T079 重启后真机核对（0.1.28） | 未做 | 0.1.11 至 0.1.28 已发布并装进 profile `desktop`，运行中的界面仍加载旧 chunk；重启后才换新，届时核对图名/按钮/播报/插件页说明/卸载回退，并把 E-LIVE 改写成 0.1.28 的记录。E-LIVE 里现有的观察是 0.1.2 的 |
+| T079 重启后真机核对（0.1.29） | 未做 | 0.1.11 至 0.1.29 已发布并装进 profile `desktop`，运行中的界面仍加载旧 chunk；重启后才换新，届时核对图名/按钮/播报/插件页说明/卸载回退，并把 E-LIVE 改写成 0.1.29 的记录。E-LIVE 里现有的观察是 0.1.2 的 |

@@ -1,4 +1,4 @@
-/*! @jiezhengj/dsh-dyslexia 0.1.28 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:f85bf7b6ff1d5ed03a5a8ca60413b554 */
+/*! @jiezhengj/dsh-dyslexia 0.1.29 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:867cfbe0dc16b8ef709ee460312d66b7 */
 ;(function () {
   function reportLoadFailure(scope, error) {
     try { console.error('dsh-dyslexia: ' + scope, error) } catch (_error) {}
@@ -693,7 +693,9 @@ function labelFigure(host, translate) {
       }
     }
   } catch (error) {
-    void error
+    // A host page that refuses attributes must not cost the reader the picture,
+    // but the failure should still reach the console instead of vanishing.
+    report('figure label', error)
   }
 }
 

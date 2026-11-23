@@ -7,7 +7,7 @@
 ```json
 {
   "name": "@jiezhengj/dsh-dyslexia",
-  "version": "0.1.28",
+  "version": "0.1.29",
   "description": "Draws mermaid code blocks in DeepSeek Harness conversations as diagrams, in place in the message.",
   "type": "module",
   "main": "index.js",
@@ -95,7 +95,7 @@
 
 8 种界面语言 `zh`、`en`、`ja`、`es`、`fr`、`de`、`ru`、`pt` 各有一份，取自宿主 `dsh-client-locale` 实际注册的语言集合。
 
-# 可静态校验项（`node verify/check-bundle.mjs`，39 项）
+# 可静态校验项（`node verify/check-bundle.mjs`，40 项）
 
 与清单直接相关的断言：
 

@@ -38,7 +38,7 @@ El bloque de código no se consume: sigue en el mensaje como texto, de modo que 
 
 Requisitos: Node.js 22 o superior, y Chrome/Chromium para las comprobaciones en navegador.
 
-- `node verify/check-bundle.mjs` — comprobaciones estáticas y de motor del paquete distribuido (manifiesto, ausencia de llamadas de red, ausencia de puerta de versión, el motor incluido, ocho idiomas de interfaz, diagramas de ejemplo de cada tipo admitido). Imprime una línea por comprobación y termina con código distinto de cero si falla.
+- `node verify/check-bundle.mjs` — comprobaciones estáticas y de motor del paquete distribuido (manifiesto, ausencia de llamadas de red, ausencia de puerta de versión, el motor incluido, ocho idiomas de interfaz, siete diagramas de ejemplo). Imprime una línea por comprobación y termina con código distinto de cero si falla.
 - `node verify/run-harness.mjs` — ejecuta las comprobaciones en navegador con Chrome sin cabeza sobre `verify/harness/index.html` (dibujo, ocho idiomas, anfitriones hostiles, diagramas rotos, copia, columna estrecha de 360 px, colores del tema). Define `DSH_DYSLEXIA_CHROME` apuntando a un ejecutable de Chrome concreto si falla la detección automática.
 
 Ambos comandos están en el repositorio, de modo que lo afirmado en este archivo puede volver a comprobarse en cualquier momento; son también los que ejecuta CI antes de publicar.

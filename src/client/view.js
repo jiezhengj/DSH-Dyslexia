@@ -94,7 +94,9 @@ function labelFigure(host, translate) {
       }
     }
   } catch (error) {
-    void error
+    // A host page that refuses attributes must not cost the reader the picture,
+    // but the failure should still reach the console instead of vanishing.
+    report('figure label', error)
   }
 }
 
