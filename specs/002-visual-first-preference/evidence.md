@@ -375,3 +375,22 @@ The first two tag pushes (`45194558416`, `45194732082`) failed and published not
 | repository `client.js` | same 780550 bytes and the same SHA256 |
 
 0.2.0 is the last published version. 0.2.1 is the documentation-only correction that follows the feature-002 review: it is not tagged, not published and not installed; the 0.2.0 rows above stay as history, and the checks in this file were re-run on the 0.2.1 tree.
+
+## E-PUB publish, 0.2.1
+
+| version | tag | workflow run | shasum | transparency log | files |
+|---|---|---|---|---|---|
+| 0.2.1 | `v0.2.1` | `45204279829` | `b5c03c272b89f53f2416a5140c29b212b5f55b7a` | `logIndex=4053240981` | 33 |
+
+```
+check-bundle: @jiezhengj/dsh-dyslexia@0.2.1 | client.js 780550 bytes | sources sha256:6b5d4e192279b1294304cbed6303e546 | all 44 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.2.1 | client.js 780550 bytes | sources sha256:6b5d4e192279b1294304cbed6303e546 | all 251 checks passed (/usr/bin/google-chrome)
+```
+
+## E-INS install, 0.2.1
+
+| what | value |
+|---|---|
+| command | `remove_bundle @jiezhengj/dsh-dyslexia` then `install_bundle @jiezhengj/dsh-dyslexia@0.2.1` |
+| result | `application: applied`, `version: 0.2.1`, pnpm `+ @jiezhengj/dsh-dyslexia 0.2.1` |
+| installed `client.js` | 780550 bytes, same SHA256 as the repository copy (`0014F3499121F6C6D8E5973662441E5E5DF3DFA37A5EFF2EB53253935EA29D85`) |
