@@ -1,14 +1,22 @@
 # Evidence — feature 002: the preference switch and the new name
 
-This file records what was actually observed while building feature 002. Each block is one run on one tree; no block mixes trees. E-PUB/E-INS exist for all five published versions — `0.2.0`, `0.2.1`, `0.2.2`, `0.2.3` and `0.2.4`: `0.2.2` at line 320, `0.2.0` under "E-PUB publish" at line 369, `0.2.1` at line 398, `0.2.3` at line 417, `0.2.4` at lines 430 and 437. E-BLD, E-CHK and E-HARN quote the `0.2.1` tree only (44 static, 251 browser; E-CHK is the complete stdout of that run — 44 `ok` lines plus the summary — while the 52 deliberately triggered `warn`/stack lines went to stderr). The current tree is the released and installed `0.2.4`: 45 static and 271 browser checks, `client.js` 781963 bytes, sources sha256 `9f13d80f0230257569dd0e525c6eb048`. E-PROBE records F3–F8 on `0.2.1` and F1/F9 on the `0.2.3` tree; no probe has been re-run on `0.2.4` (G10).
+This file records what was actually observed while building feature 002. Each block is one run on one tree; no block mixes trees. E-PUB/E-INS exist for all five published versions — `0.2.0`, `0.2.1`, `0.2.2`, `0.2.3` and `0.2.4` — and for no unpublished tree: the current `0.2.5` has no E-PUB/E-INS block, because it is neither committed nor published. E-BLD, E-CHK and E-HARN quote the `0.2.1` tree only (44 static, 251 browser; the `0.2.5` runs are summary lines in "E-CHK/E-HARN · 0.2.5" below, not transcripts; E-CHK is the complete stdout of that run — 44 `ok` lines plus the summary — while the 52 deliberately triggered `warn`/stack lines went to stderr). The current tree is `0.2.5`, uncommitted and unpublished: 45 static and 274 browser checks, `client.js` 783360 bytes / 781845 characters, sources sha256 `2b5728286c556d8dbaaa349cc9fb8ec5`, file SHA-256 `279c33781ef551e3d3bbb0aabf3d37a681fd5da4f4738c29c724b596667a8766`. The last released and installed tree is `0.2.4` (45 static and 271 browser checks, `client.js` 781963 bytes, sources sha256 `9f13d80f0230257569dd0e525c6eb048`). E-PROBE records F3–F8 on `0.2.1`, F1/F9 on the `0.2.3` tree, and F10–F13 on the `0.2.5` tree; the `0.2.4` tree itself was never probed, and `0.2.5` supersedes it (G10 discharged).
 
 ## E-BLD build
+
+The `0.2.1` tree (the tree E-CHK and E-HARN below quote):
 
 ```
 build-client: @jiezhengj/dsh-dyslexia -> client.js (780550 bytes, 779035 characters, engine 1.13.0, sources 6, syntax ok)
 ```
 
-## E-CHK static and behavioural checks (44)
+The current `0.2.5` tree; `client.js` on disk measures 783360 bytes and 781845 characters, the pair this line prints:
+
+```
+build-client: @jiezhengj/dsh-dyslexia -> client.js (783360 bytes, 781845 characters, engine 1.13.0, sources 6, syntax ok)
+```
+
+## E-CHK static and behavioural checks (44) — the `0.2.1` tree
 
 ```
 ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.2.1
@@ -59,7 +67,7 @@ ok   the fixtures assert what the fixes promise, and can fail — 35 assertions 
 check-bundle: @jiezhengj/dsh-dyslexia@0.2.1 | client.js 780550 bytes | sources sha256:6b5d4e192279b1294304cbed6303e546 | all 44 checks passed
 ```
 
-## E-HARN browser checks (251) — `node verify/run-harness.mjs --list` (a plain run prints only the summary line)
+## E-HARN browser checks (251), the `0.2.1` tree — `node verify/run-harness.mjs --list` (a plain run prints only the summary line)
 
 ```
 [ok] loading client.js registers one factory
@@ -317,6 +325,17 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.2.1 | client.js 780550 bytes | sources s
 run-harness: @jiezhengj/dsh-dyslexia@0.2.1 | client.js 780550 bytes | sources sha256:6b5d4e192279b1294304cbed6303e546 | all 251 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
+## E-CHK/E-HARN · 0.2.5 (45 static, 274 browser)
+
+Only the summary lines were recorded on this tree; the full stdout above stays the `0.2.1` transcript, and no block mixes trees.
+
+```
+check-bundle: @jiezhengj/dsh-dyslexia@0.2.5 | client.js 783360 bytes | sources sha256:2b5728286c556d8dbaaa349cc9fb8ec5 | all 45 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.2.5 | client.js 783360 bytes | sources sha256:2b5728286c556d8dbaaa349cc9fb8ec5 | all 274 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+```
+
+The three browser assertions this round added are `a refused write keeps the value the host took while it was pending` (`verify/harness/index.html:1549`), `a value the host pushes reaches the switch without a write` (`:1612`) and `a thenable that throws out of then cannot break the click` (`:1676`); the static side changed inside `the capability briefing is what it was before the switch` (`verify/check-bundle.mjs:401`), so the static count is unchanged at 45.
+
 ## E-PUB · 0.2.2
 
 - tag `v0.2.2`, commit `cf91d6f`, run `45211420278` completed/success
@@ -333,11 +352,11 @@ run-harness: @jiezhengj/dsh-dyslexia@0.2.1 | client.js 780550 bytes | sources sh
 
 ## E-PROBE — the new checks can fail
 
-Each probe below breaks one protected behaviour in a working copy of the sources, rebuilds it, runs the suite that should see it, records the red line, and restores the copy. F1 and F9 were last run on the `0.2.3` tree (44 static, 260 browser); no probe has been re-run on the current `0.2.4` tree (G10), and `git diff v0.2.3..v0.2.4` changes `src/client/settings.js` and `src/client/entry.js` among the six sources — the `set` result and the `configForms` wait — so those red lines and counts are `0.2.3` numbers, not `0.2.4`'s 45 / 271. `0.2.2` shipped 44 static and 252 browser checks, and F9's no-writer assertion did not exist there. F3–F8 are the earlier runs on the `0.2.1` tree (44 static, 251 browser) and were not re-run. The untouched `0.2.3` copy reported `all 44 checks passed` and `all 260 checks passed` before the breaks.
+Each probe below breaks one protected behaviour in a working copy of the sources, rebuilds it, runs the suite that should see it, records the red line, and restores the copy. F1 and F9 were last run on the `0.2.3` tree (44 static, 260 browser); no probe was run on `0.2.4`, which `0.2.5` supersedes; F10–F13 ran on `0.2.5` (45 static, 274 browser), each in a fresh `%TEMP%` copy of the final tree, restored afterwards. So F1/F9's red lines and counts are `0.2.3` numbers, not the current tree's 45 / 274. `0.2.2` shipped 44 static and 252 browser checks, and F9's no-writer assertion did not exist there. F3–F8 are the earlier runs on the `0.2.1` tree (44 static, 251 browser) and were not re-run. The untouched `0.2.3` copy reported `all 44 checks passed` and `all 260 checks passed` before the breaks.
 
 | probe | change | result |
 |---|---|---|
-| F1 | `index.js`: `briefing` ignores the switch and always appends the preference | `FAIL the section hands the host a function, not a frozen string — the same registration did not read the value again: the briefing is frozen at apply time`, `FAIL the capability briefing is what it was before the switch — capability text is 155 words, budget is 95`, `FAIL the switch adds the preference on top of the capability, and nothing else — the switch is on and nothing was added`, `check-bundle: 3 failed, 41 passed`, exit 1; last run on the `0.2.3` tree, not re-run on `0.2.4` (G10) |
+| F1 | `index.js`: `briefing` ignores the switch and always appends the preference | `FAIL the section hands the host a function, not a frozen string — the same registration did not read the value again: the briefing is frozen at apply time`, `FAIL the capability briefing is what it was before the switch — capability text is 155 words, budget is 95`, `FAIL the switch adds the preference on top of the capability, and nothing else — the switch is on and nothing was added`, `check-bundle: 3 failed, 41 passed`, exit 1; last run on the `0.2.3` tree, not re-run since |
 | F2 | `index.js`: `text: briefing(config)` instead of `text: () => briefing(config)` | `FAIL the section hands the host a function, not a frozen string — section text is a frozen string: the switch would only apply after a restart`, `check-bundle: 1 failed, 43 passed`, exit 1 |
 | F3 | `index.js`: `visualFirst` default `false` | `FAIL the switch is on for an empty configuration — the switch does not default to on`, `check-bundle: 1 failed, 43 passed`, exit 1 |
 | F4 | `src/client/entry.js`: locale registration run immediately instead of through `ctx.effect` | `[bad] styles and strings are claimed as effects — 1`, `[bad] the locale registration is dropped — 0`, `run-harness: 2 failed, 249 passed`, exit 1 |
@@ -345,11 +364,17 @@ Each probe below breaks one protected behaviour in a working copy of the sources
 | F6 | `src/client/settings.js`: `setValue` calls `face.set` twice | `[bad] one click asks the host for the opposite value once — [["visualFirst",false],["visualFirst",false]]`, `[bad] the second click tries the other value once — [["visualFirst",false],["visualFirst",false],["visualFirst",true],["visualFirst",true]]`, `[bad] a rejected write leaves the switch where the host put it — true`, `[bad] a rejected write explains itself in the status sentence — 已保存`, `run-harness: 4 failed, 247 passed`, exit 1 |
 | F7 | `src/client/settings.js`: `aria-checked` always `true` | `[bad] the switch turns off after the write — true`, `[bad] a rejected write leaves the switch where the host put it — true`, `[bad] the switch starts off when the host already says off — true`, `run-harness: 3 failed, 248 passed`, exit 1 |
 | F8 | `src/client/i18n.js`: `hostKey` returns the bare key | `[bad] a host dictionary that already owns a word does not put it on our button — 复制成功`, `[bad] a host that translates the namespaced key is used — 已复制`, `run-harness: 2 failed, 249 passed`, exit 1 |
-| F9 | `src/client/settings.js`: attach `setValue` regardless of `face.set` (`if (face) {` instead of `if (face && typeof face.set === 'function') {`) | `[bad] a host whose face has no setter hands the row no writer at all — setValue is function`, `run-harness: 1 failed, 259 passed`, exit 1; last run on the `0.2.3` tree, not re-run on `0.2.4` (G10) |
+| F9 | `src/client/settings.js`: attach `setValue` regardless of `face.set` (`if (face) {` instead of `if (face && typeof face.set === 'function') {`) | `[bad] a host whose face has no setter hands the row no writer at all — setValue is function`, `run-harness: 1 failed, 259 passed`, exit 1; last run on the `0.2.3` tree, not re-run since |
+| F10 | `src/client/settings.js`: `restore` puts back the value captured before the click and never asks the face again | `[bad] a refused write keeps the value the host took while it was pending — aria-checked=false host=true status=保存失败，开关保持原来的状态。`, `run-harness: 1 failed, 273 passed`, exit 1 |
+| F11 | `src/client/entry.js`: drop the `face.subscribe` effect, so a value the host pushes never reaches the store | `[bad] a refused write that resolves false puts the switch back and says so — sets=[["visualFirst",false],["visualFirst",true],["visualFirst",true]] aria-checked=true host=true status=保存失败，开关保持原来的状态。`, `[bad] a value the host pushes reaches the switch without a write — aria-checked=true paint rgb(74, 108, 247) -> rgb(74, 108, 247)`, `run-harness: 2 failed, 272 passed`, exit 1 |
+| F12 | `index.js`: one word changed in the capability sentence (`in place inside the conversation.` → `in place within the conversation.`) | `FAIL the capability briefing is what it was before the switch — the off-state briefing no longer carries feature 001's sentence: …`, `check-bundle: 1 failed, 44 passed`, exit 1 |
+| F13 | `src/client/settings.js`: the `pending.then(...)` chain moved outside the `try` | `[bad] a thenable that throws out of then cannot break the click — threw=no uncaught=Script error. aria-checked=false host=true status=none`, `run-harness: 1 failed, 273 passed`, exit 1 |
 
 The function-form break (F2) was not caught by the suites before the function check existed: a frozen `text` string kept every earlier check green, and only `the section hands the host a function, not a frozen string` sees it. That is why the check was added; in the E-CHK order it is #22 of the 44 checks.
 
-After restoring and rebuilding, the `0.2.1` probe session passed again: `build-client` reported `sources 6, syntax ok`, `check-bundle` reported `all 44 checks passed`, `run-harness` reported `all 251 checks passed`. The `0.2.3` re-runs of F1 and F9 reported the untouched copy as `all 44 checks passed` and `all 260 checks passed` before the breaks; `0.2.4` has not been probed (G10).
+After restoring and rebuilding, the `0.2.1` probe session passed again: `build-client` reported `sources 6, syntax ok`, `check-bundle` reported `all 44 checks passed`, `run-harness` reported `all 251 checks passed`. The `0.2.3` re-runs of F1 and F9 reported the untouched copy as `all 44 checks passed` and `all 260 checks passed` before the breaks. The `0.2.5` probes (F10–F13) each started from a fresh copy of the final tree and were restored afterwards; that tree's own suites are green at 45 / 274 (see "E-CHK/E-HARN · 0.2.5"). The `0.2.4` tree itself was never probed (G10, discharged on `0.2.5`).
+
+Two fixture details are worth recording. Headless Chrome's virtual time does not advance the 120 ms CSS transition on the switch, so the paint assertion sets `style.transition = 'none'` on the switch before reading the computed colour (`verify/harness/index.html:1596`). React 18 routes an event-handler throw to `window`'s `error` event rather than rethrowing it from `.click()`, so F13's fixture watches that event instead of expecting a throw at the call site (`verify/harness/index.html:1655-1667`).
 
 ## E-GAPS — not proven here
 
@@ -363,8 +388,8 @@ After restoring and rebuilding, the `0.2.1` probe session passed again: `build-c
 | G6 | The E1–E14 end-to-end rows in `quickstart.md` were not run against a live host; no live window was observed for this feature. |
 | G7 | SC-001's five sample requests were not run: no model was asked to answer them with the switch on, so the briefing's effect on real answers is untested. |
 | G8 | `@deepseek-ai/schemastery` is a static import in `index.js`; if the package cannot resolve, the plugin fails to load at import time. There is no graceful degradation, and this failure path was not exercised. |
-| G9 | No assertion compares the switch-off briefing with feature 001's text verbatim (a `diff`); the two-tier rule is proven only by the word budget and by the presence/absence assertions, not by a byte-for-byte comparison with 001. |
-| G10 | No falsifiability probe has been re-run on the `0.2.4` tree. F1 and F9 were last run on `0.2.3`; `git diff v0.2.3..v0.2.4` changes `src/client/settings.js` and `src/client/entry.js` among the six sources (the `set` result and the `configForms` wait), and the static suite grew one check, so the recorded red lines and counts (44 static / 260 browser) are `0.2.3` numbers, not `0.2.4`'s 45 / 271. |
+| G9 | **Discharged in `0.2.5`**: `the capability briefing is what it was before the switch` (`verify/check-bundle.mjs:401-429`) parses the four `MERMAID_RENDER_PROMPT` sentences read-only out of `specs/001-mermaid-fence-render/contracts/host-prompt.md` and asserts exact equality (`text === recorded.join(' ')`) as well as one `includes` per sentence, so one changed word in `index.js` goes red (F12). Still unproven: a comparison with a running feature 001 build — the reference is 001's recorded contract, and no 001 binary was kept. |
+| G10 | **Discharged in `0.2.5`**: four probes (F10–F13) ran on the `0.2.5` tree, each in a fresh `%TEMP%` copy, one per round-5 fix. The `0.2.4` tree itself was never probed — `0.2.5` carries its code plus the fixes, so it supersedes it. F1 and F9 have still not been re-run since `0.2.3`: F1's target (`index.js`) is unchanged since then, while F9's target line in `src/client/settings.js` still exists but that file changed twice after `0.2.3`; neither is a re-run. |
 
 ## E-PUB publish
 
@@ -393,7 +418,7 @@ The first two tag pushes (`45194558416`, `45194732082`) failed and published not
 
 Both `client.js` rows are unverified because that hash was never recorded for 0.2.0: `client.js` embeds the version, so the fingerprint hashes it; the 780550 bytes and SHA256 that stood here before are the 0.2.1 artifact's, not 0.2.0's.
 
-The 0.2.0 rows above stay as history. 0.2.1 followed the feature-002 review and was not documentation-only: besides the wording corrections it added the function-form check to `verify/check-bundle.mjs` (#22) and rebuilt `client.js` with it. It was published (run `45204279829`, shasum `b5c03c272b89f53f2416a5140c29b212b5f55b7a`, logIndex `4053240981`) and installed (E-PUB/E-INS 0.2.1 below); E-CHK and E-HARN in this file are that tree. 0.2.2 is the later code change recorded in E-PUB · 0.2.2 and E-INS · 0.2.2 above (lines 320-332); the counts near the top of this file belong to the `0.2.1` and `0.2.4` trees, not to `0.2.2`.
+The 0.2.0 rows above stay as history. 0.2.1 followed the feature-002 review and was not documentation-only: besides the wording corrections it added the function-form check to `verify/check-bundle.mjs` (#22) and rebuilt `client.js` with it. It was published (run `45204279829`, shasum `b5c03c272b89f53f2416a5140c29b212b5f55b7a`, logIndex `4053240981`) and installed (E-PUB/E-INS 0.2.1 below); E-CHK and E-HARN in this file are that tree. 0.2.2 is the later code change recorded in E-PUB · 0.2.2 and E-INS · 0.2.2 above (the E-PUB · 0.2.2 and E-INS · 0.2.2 sections above); the counts near the top of this file belong to the `0.2.1` and `0.2.4` trees, not to `0.2.2`.
 
 ## E-PUB publish, 0.2.1
 

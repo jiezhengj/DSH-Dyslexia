@@ -377,6 +377,27 @@ check('the section hands the host a function, not a frozen string', () => {
   return 'one registration, three reads, the text follows the value'
 })
 
+// Feature 001's prompt contract records the capability text the switch must
+// leave alone, sentence for sentence. Reading it back makes the check compare
+// against the promise instead of against whatever `index.js` says today: a
+// changed word in the host half goes red here.
+function recordedCapabilitySentences() {
+  const lines = read('specs/001-mermaid-fence-render/contracts/host-prompt.md').split(/\r?\n/)
+  const start = lines.findIndex((line) => /^\s*const MERMAID_RENDER_PROMPT = \[\s*$/.test(line))
+  assert(start !== -1, "feature 001's contract no longer records MERMAID_RENDER_PROMPT")
+  const sentences = []
+  for (let index = start + 1; index < lines.length; index += 1) {
+    const line = lines[index].trim()
+    if (line.startsWith('].join')) break
+    assert(line.length > 0, `the recorded text stops after ${sentences.length} sentences`)
+    const quoted = /^'((?:[^'\\]|\\.)*)',$/.exec(line)
+    assert(quoted !== null, `feature 001's contract line ${index + 1} is not one quoted sentence: ${line}`)
+    sentences.push(quoted[1].replace(/\\(.)/g, '$1'))
+  }
+  assert(sentences.length === 4, `feature 001 recorded ${sentences.length} sentences, expected four`)
+  return sentences
+}
+
 check('the capability briefing is what it was before the switch', () => {
   assert(hostModule !== null, 'the host half never loaded')
   assert(hostModule.name === 'dsh-dyslexia', 'module name mismatch')
@@ -393,7 +414,18 @@ check('the capability briefing is what it was before the switch', () => {
   assert(text.includes('mermaid'), 'section text must name the language')
   const forbidden = ['always', 'must use', 'you should', 'every answer', 'prefer']
   forbidden.forEach((phrase) => assert(!text.toLowerCase().includes(phrase.toLowerCase()), `capability text states a preference: ${phrase}`))
-  return `${words} words, order ${section.order}, name ${section.name}`
+  // The off-state briefing is not "whatever the host half says today": it is the
+  // text feature 001 recorded, sentence for sentence. Comparing with the
+  // contract is what makes a changed word in `index.js` go red.
+  const recorded = recordedCapabilitySentences()
+  recorded.forEach((sentence) => {
+    assert(text.includes(sentence), `the off-state briefing no longer carries feature 001's sentence: ${sentence}`)
+  })
+  assert(
+    text === recorded.join(' '),
+    `the off-state briefing is not feature 001's text any more: ${JSON.stringify(text)}`,
+  )
+  return `${words} words, all four sentences match feature 001's contract, order ${section.order}, name ${section.name}`
 })
 
 check('the switch adds the preference on top of the capability, and nothing else', () => {
@@ -1009,11 +1041,14 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
     'a host without configForms gets the picture and no settings row',
     'a host whose face has no setter hands the row no writer at all',
     'a refused write that resolves false puts the switch back and says so',
+    'a refused write keeps the value the host took while it was pending',
+    'a value the host pushes reaches the switch without a write',
+    'a thenable that throws out of then cannot break the click',
     'a host that gains configForms after apply still gets the settings row',
     "[${lang}] the settings row label is that language's own sentence",
     "[${lang}] the settings row hint is that language's own sentence",
   ]
-  const NEEDED_COUNT = 40
+  const NEEDED_COUNT = 43
   if (needed.length !== NEEDED_COUNT) {
     throw new Error(`the guard list has ${needed.length} names, expected ${NEEDED_COUNT}`)
   }

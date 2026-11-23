@@ -1337,6 +1337,10 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
               }
               if (settingsRefuseNext) {
                 settingsRefuseNext = false
+                // The real host reloads its mirror and tells subscribers the
+                // value it kept *before* the refused write returns; the row must
+                // follow that value, not the one it captured before the click.
+                settingsListeners.forEach((listener) => listener())
                 return Promise.resolve(false)
               }
               settingsState.value[field] = value
@@ -1453,9 +1457,9 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             JSON.stringify(settingsSets),
           )
           expect(
-            toggle.getAttribute('aria-checked') === 'false',
+            toggle.getAttribute('aria-checked') === String(settingsState.value.visualFirst),
             'a rejected write leaves the switch where the host put it',
-            String(toggle.getAttribute('aria-checked')),
+            `aria-checked=${toggle.getAttribute('aria-checked')} host=${settingsState.value.visualFirst}`,
           )
           const failedStatus = rowView.stage.querySelector('[role="status"]')
           expect(
@@ -1478,17 +1482,211 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             settingsSets.length === 3 &&
               settingsSets[2][0] === 'visualFirst' &&
               settingsSets[2][1] === false &&
-              refusedToggle.getAttribute('aria-checked') === 'true' &&
+              refusedToggle.getAttribute('aria-checked') === String(settingsState.value.visualFirst) &&
               !!refusedStatus &&
               refusedStatus.textContent === SETTINGS_FAILED,
             'a refused write that resolves false puts the switch back and says so',
-            `sets=${JSON.stringify(settingsSets)} aria-checked=${refusedToggle.getAttribute('aria-checked')} status=${
-              refusedStatus ? refusedStatus.textContent : 'none'
-            }`,
+            `sets=${JSON.stringify(settingsSets)} aria-checked=${refusedToggle.getAttribute(
+              'aria-checked',
+            )} host=${settingsState.value.visualFirst} status=${refusedStatus ? refusedStatus.textContent : 'none'}`,
           )
           rowView.root.unmount()
           rowView.stage.remove()
           settingsHost.dispose()
+
+          // Two windows on one host: the other window changes the value while
+          // this row's write is still pending, the host announces it, and only
+          // then does the write come back refused. The switch must show what the
+          // host holds now, not the value it captured before the click.
+          const pendingState = { value: { visualFirst: false } }
+          const pendingListeners = new Set()
+          const pendingAnswers = []
+          const pendingFace = {
+            getSnapshot() {
+              return { value: { visualFirst: pendingState.value.visualFirst } }
+            },
+            subscribe(listener) {
+              pendingListeners.add(listener)
+              return () => pendingListeners.delete(listener)
+            },
+            set(field, value) {
+              // The write stays pending until the fixture answers it, so the
+              // external value can arrive first, as it does in the real host.
+              return new Promise((resolve) => {
+                pendingAnswers.push({ field, value, resolve })
+              })
+            },
+          }
+          const pendingHost = makeContext({})
+          pendingHost.ctx.configForms = {
+            get(namespace) {
+              return namespace === 'dsh-dyslexia' ? pendingFace : null
+            },
+          }
+          module.apply(pendingHost.ctx)
+          const pendingDef = pendingHost.defs.find(
+            (entry) => entry.def && entry.def.name === 'settings.general.item',
+          )
+          const pendingView = pendingDef ? mount(pendingDef.component, pendingDef.def.inject()) : null
+          if (pendingView) await tick(40)
+          const pendingToggle = pendingView ? pendingView.stage.querySelector('button[role="switch"]') : null
+          if (pendingToggle) pendingToggle.click()
+          await tick(20)
+          // The other window switches it on and the host tells this row.
+          pendingState.value.visualFirst = true
+          pendingListeners.forEach((listener) => listener())
+          await tick(20)
+          // Only now does this row's write answer "refused".
+          pendingAnswers.forEach((answer) => answer.resolve(false))
+          await tick(80)
+          const pendingStatus = pendingView ? pendingView.stage.querySelector('[role="status"]') : null
+          expect(
+            !!pendingToggle &&
+              pendingState.value.visualFirst === true &&
+              pendingToggle.getAttribute('aria-checked') === String(pendingState.value.visualFirst) &&
+              !!pendingStatus &&
+              pendingStatus.textContent === SETTINGS_FAILED,
+            'a refused write keeps the value the host took while it was pending',
+            pendingToggle
+              ? `aria-checked=${pendingToggle.getAttribute('aria-checked')} host=${
+                  pendingState.value.visualFirst
+                } status=${pendingStatus ? pendingStatus.textContent : 'none'}`
+              : 'no switch',
+          )
+          if (pendingView) {
+            pendingView.root.unmount()
+            pendingView.stage.remove()
+          }
+          pendingHost.dispose()
+
+          // No click at all: the host announces a new value after mount, as a
+          // second window or the host's own recovery does. Both the accessible
+          // state and the paint have to follow it.
+          const externalState = { value: { visualFirst: true } }
+          const externalListeners = new Set()
+          const externalFace = {
+            getSnapshot() {
+              return { value: { visualFirst: externalState.value.visualFirst } }
+            },
+            subscribe(listener) {
+              externalListeners.add(listener)
+              return () => externalListeners.delete(listener)
+            },
+            set(field, value) {
+              externalState.value[field] = value
+              externalListeners.forEach((listener) => listener())
+              return Promise.resolve()
+            },
+          }
+          const externalHost = makeContext({})
+          externalHost.ctx.configForms = {
+            get(namespace) {
+              return namespace === 'dsh-dyslexia' ? externalFace : null
+            },
+          }
+          module.apply(externalHost.ctx)
+          const externalDef = externalHost.defs.find(
+            (entry) => entry.def && entry.def.name === 'settings.general.item',
+          )
+          const externalView = externalDef ? mount(externalDef.component, externalDef.def.inject()) : null
+          if (externalView) await tick(250)
+          const externalToggle = externalView
+            ? externalView.stage.querySelector('button[role="switch"]')
+            : null
+          // The paint has to be readable at once: a 120ms transition would still
+          // be on its way when a headless run reads the style, so it is switched
+          // off for this one node and the colour is the state itself.
+          if (externalToggle) externalToggle.style.transition = 'none'
+          const paintOf = (node) =>
+            node && typeof getComputedStyle === 'function' ? getComputedStyle(node).backgroundColor : ''
+          const onPaint = paintOf(externalToggle)
+          externalState.value.visualFirst = false
+          externalListeners.forEach((listener) => listener())
+          await tick(250)
+          const offPaint = paintOf(externalToggle)
+          expect(
+            !!externalToggle &&
+              externalToggle.getAttribute('aria-checked') === 'false' &&
+              onPaint.includes('74, 108, 247') &&
+              offPaint.includes('120, 130, 150'),
+            'a value the host pushes reaches the switch without a write',
+            `aria-checked=${
+              externalToggle ? externalToggle.getAttribute('aria-checked') : 'no switch'
+            } paint ${onPaint} -> ${offPaint}`,
+          )
+          if (externalView) {
+            externalView.root.unmount()
+            externalView.stage.remove()
+          }
+          externalHost.dispose()
+
+          // A host that hands back a thenable whose `then` throws has refused the
+          // write, but the throw must not escape the click handler and the row
+          // must still say the value did not change.
+          const thenState = { value: { visualFirst: true } }
+          const thenFace = {
+            getSnapshot() {
+              return { value: { visualFirst: thenState.value.visualFirst } }
+            },
+            subscribe() {
+              return () => {}
+            },
+            set() {
+              return {
+                then() {
+                  throw new Error('the host refused while its answer was being watched')
+                },
+              }
+            },
+          }
+          const thenHost = makeContext({})
+          thenHost.ctx.configForms = {
+            get(namespace) {
+              return namespace === 'dsh-dyslexia' ? thenFace : null
+            },
+          }
+          module.apply(thenHost.ctx)
+          const thenDef = thenHost.defs.find((entry) => entry.def && entry.def.name === 'settings.general.item')
+          const thenView = thenDef ? mount(thenDef.component, thenDef.def.inject()) : null
+          if (thenView) await tick(40)
+          const thenToggle = thenView ? thenView.stage.querySelector('button[role="switch"]') : null
+          let thenThrew = null
+          let thenUncaught = null
+          const catchThenUncaught = (event) => {
+            thenUncaught = event.error || event.message
+          }
+          window.addEventListener('error', catchThenUncaught)
+          if (thenToggle) {
+            try {
+              thenToggle.click()
+            } catch (error) {
+              thenThrew = error
+            }
+            await tick(80)
+          }
+          window.removeEventListener('error', catchThenUncaught)
+          const thenStatus = thenView ? thenView.stage.querySelector('[role="status"]') : null
+          expect(
+            !!thenToggle &&
+              thenThrew === null &&
+              thenUncaught === null &&
+              thenToggle.getAttribute('aria-checked') === String(thenState.value.visualFirst) &&
+              !!thenStatus &&
+              thenStatus.textContent === SETTINGS_FAILED,
+            'a thenable that throws out of then cannot break the click',
+            thenToggle
+              ? `threw=${thenThrew ? String(thenThrew.message) : 'no'} uncaught=${
+                  thenUncaught ? String(thenUncaught.message || thenUncaught) : 'no'
+                } aria-checked=${thenToggle.getAttribute(
+                  'aria-checked',
+                )} host=${thenState.value.visualFirst} status=${thenStatus ? thenStatus.textContent : 'none'}`
+              : 'no switch',
+          )
+          if (thenView) {
+            thenView.root.unmount()
+            thenView.stage.remove()
+          }
+          thenHost.dispose()
 
           // The label and the hint are bundled sentences chosen by the interface
           // language, not host keys. English would satisfy every language, so each

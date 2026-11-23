@@ -11,7 +11,7 @@ node verify/run-harness.mjs        # 无头浏览器行为断言
 node verify/run-harness.mjs --list # 逐条列出断言名（证据引用用）
 ```
 
-期望：三项全绿；`build-client` 只打印 `(781963 bytes, 780448 characters, engine 1.13.0, sources 6, syntax ok)` 这一行，版本/字节/指纹行由两条 `verify` 命令输出（形如 `包名@版本 | client.js 字节 | sources sha256`），可直接粘贴进证据。
+期望：三项全绿（`0.2.5` 工作树上是 45 条静态、 274 条浏览器断言）；`build-client` 只打印 `(783360 bytes, 781845 characters, engine 1.13.0, sources 6, syntax ok)` 这一行，版本/字节/指纹行由两条 `verify` 命令输出（形如 `包名@版本 | client.js 字节 | sources sha256`），可直接粘贴进证据。
 
 ## 端到端验证（需要 DSH）
 
@@ -39,7 +39,7 @@ node verify/run-harness.mjs --list # 逐条列出断言名（证据引用用）
 
 ## 探针（证明断言会失败）
 
-对每个关键断言做一次"故意破坏 → 重建 → 跑 → 确认变红 → 还原"；已跑八条（F1、F3–F9），输出行记在 `evidence.md` 的 E-PROBE：
+对每个关键断言做一次"故意破坏 → 重建 → 跑 → 确认变红 → 还原"；已跑十二条（F1、F3–F13），输出行记在 `evidence.md` 的 E-PROBE：
 
 1. **F1 两档提示词**：让 `briefing` 无视开关、总是拼上偏好段 → `the section hands the host a function, not a frozen string`、`the capability briefing is what it was before the switch`、`the switch adds the preference on top of the capability, and nothing else` 报红。
 2. **F3 默认值**：把 `.default(true)` 改成 `.default(false)` → `the switch is on for an empty configuration` 报红。
@@ -49,5 +49,10 @@ node verify/run-harness.mjs --list # 逐条列出断言名（证据引用用）
 6. **F7 `aria-checked` 绑定**：把 `aria-checked` 固定成 `true` → `the switch turns off after the write` 报红。
 7. **F8 命名空间**：让 `hostKey` 返回裸键 → `a host dictionary that already owns a word does not put it on our button`、`a host that translates the namespaced key is used` 报红。
 8. **F9 无 setter 宿主**：在 `inject` 里无条件挂 `setValue`（把 `if (face && typeof face.set === 'function')` 改成 `if (face)`）→ `a host whose face has no setter hands the row no writer at all` 报红（`[bad] ... — setValue is function`，`run-harness: 1 failed, 259 passed`）。
+
+9. **F10 拒绝写入的恢复目标**：让 `restore` 只放回点击前捕获的 `before`、不再读 face → `a refused write keeps the value the host took while it was pending` 报红（`run-harness: 1 failed, 273 passed`）。
+10. **F11 宿主推送的值**：删掉 `entry.js` 里的 `face.subscribe` effect → `a refused write that resolves false puts the switch back and says so` 与 `a value the host pushes reaches the switch without a write` 报红（`run-harness: 2 failed, 272 passed`）。
+11. **F12 能力段逐字比对**：把 `index.js` 能力段里的 `in place inside the conversation.` 改成 `in place within the conversation.` → `the capability briefing is what it was before the switch` 报红（`check-bundle: 1 failed, 44 passed`）。
+12. **F13 thenable 抛错**：把 `pending.then(...)` 移到 `try` 之外 → `a thenable that throws out of then cannot break the click` 报红（`run-harness: 1 failed, 273 passed`）。
 
 F2（段 `text` 从函数改回冻结字符串）在这个函数断言存在前两套都抓不到；现在由第 22 条静态检查 `the section hands the host a function, not a frozen string` 捕获，因此不单列为一条可复现探针。

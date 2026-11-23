@@ -20,7 +20,7 @@
 
 ## D4 客户端如何读与写
 
-- **决定**：`src/client/entry.js` 只声明 `inject = ['slots']`；`ctx.locale` 与 `ctx.configForms` 不写进 `inject`，在 `apply` 里按存在与否取用（没有 `locale` 就跳过词典注册，没有 `configForms` 或 `get` 返回空就不注册行）。有 face 时用 `getSnapshot().value.visualFirst` 取当前值，`face.subscribe(cb)` + `ctx.effect` 跟随外部改动；`createVisualFirstRow(face)` 返回 `{ store, component, inject }`，`inject = { hooks: { visualFirst: store } }`，只有 `typeof face.set === 'function'` 时再加 `inject.setValue = (next) => face.set('visualFirst', next)`；组件点击时调用它，promise reject 就回退并显示失败句。
+- **决定**：`src/client/entry.js` 只声明 `inject = ['slots']`；`ctx.locale` 与 `ctx.configForms` 不写进 `inject`，在 `apply` 里按存在与否取用（没有 `locale` 就跳过词典注册，没有 `configForms` 或 `get` 返回空就不注册行）。有 face 时用 `getSnapshot().value.visualFirst` 取当前值，`face.subscribe(cb)` + `ctx.effect` 跟随外部改动；`createVisualFirstRow(face)` 返回 `{ store, component, inject }`，`inject = { hooks: { visualFirst: store }, readHostValue: () => readPreference(face) }`，只有 `typeof face.set === 'function'` 时再加 `inject.setValue = (next) => face.set('visualFirst', next)`；组件点击时调用它：`set` 以布尔值 resolve（`true` 接受，`false` 拒绝或跳过），reject 与 thenable 的 `then` 抛错都算失败写入，失败时用 `readHostValue()` 重读宿主当前值再回退并显示失败句（捕获值只是兜底）；`pending.then(...)` 放在 `try` 内，点击处理器不会把宿主抛出的错漏到窗口事件。
 - **理由**：只有 `slots` 是"没有它就没有任何事可做"的服务，所以只有它进 `inject`；`locale` 与 `configForms` 按可选取用，宿主少给一个只少词典或少了那一行，渲染层不受影响。命名空间就是 profile entry id `dsh-dyslexia`；设置行 id 是 `@jiezhengj/dsh-dyslexia/visual-first`。
 - **备选**：自己发 HTTP 请求 —— 违反"运行期零网络"，且要自己处理鉴权。
 
@@ -50,7 +50,7 @@
 | 没有 `schemastery`（依赖未装成） | `index.js` 静态 import 失败，插件在 import 阶段就不加载 | —— |
 | 宿主没有 `settings` 服务 | 不 `configure`，段文本按默认值（打开）走 | `configForms` 缺失 → 不注册行 |
 | `configForms` 快照读不到字段 | —— | 行按默认值（打开）显示，不出现禁用态 |
-| 写入被拒/失败 | 值不变 | 开关回到实际值 + 可见失败提示 |
+| 写入被拒/失败 | 值不变 | 开关回到宿主当前值（重读快照）+ 可见失败提示 |
 | 插件被卸载 | 段与配置随插件一起消失 | 行消失 |
 
 ## D8 视觉与布局

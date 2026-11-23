@@ -1,4 +1,4 @@
-/*! @jiezhengj/dsh-dyslexia 0.2.4 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:9f13d80f0230257569dd0e525c6eb048 */
+/*! @jiezhengj/dsh-dyslexia 0.2.5 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:2b5728286c556d8dbaaa349cc9fb8ec5 */
 ;(function () {
   function reportLoadFailure(scope, error) {
     try { console.error('dsh-dyslexia: ' + scope, error) } catch (_error) {}
@@ -1213,6 +1213,27 @@ function VisualFirstRow(props) {
   if (!store || typeof React.useSyncExternalStore !== 'function') return null
   const value = React.useSyncExternalStore(store.subscribe, store.get)
 
+  /**
+   * Puts the switch back on the value the host holds. A host reloads its mirror
+   * and tells subscribers about the value it kept *before* a refused write
+   * returns, so the value captured at click time can be older than the host's
+   * own: restoring the capture would overwrite a newer value that arrived from
+   * another window. The face is asked again whenever the row was given a way to
+   * read it, and the capture is only the floor when there is nothing to read.
+   */
+  function restore(before) {
+    let next = before
+    try {
+      if (typeof injected.readHostValue === 'function') {
+        const hostValue = injected.readHostValue()
+        if (hostValue === true || hostValue === false) next = hostValue
+      }
+    } catch (error) {
+      report('settings revert', error)
+    }
+    store.set(next)
+  }
+
   function choose(next) {
     const before = store.get()
     store.set(next)
@@ -1222,34 +1243,42 @@ function VisualFirstRow(props) {
       if (typeof injected.setValue !== 'function') {
         // A host that cannot take the value is a failed write: the switch must
         // never stand on a preference the host did not accept.
-        store.set(before)
         setState('failed')
+        restore(before)
         return
       }
       pending = injected.setValue(next)
     } catch (error) {
       setState('failed')
-      store.set(before)
+      restore(before)
       return
     }
-    if (pending && typeof pending.then === 'function') {
-      // `set(field, value)` answers `Promise<boolean>`: true when the host took
-      // the value, false when it refused or skipped the write. A host old
-      // enough to resolve nothing still counts as acceptance; a refusal is a
-      // failed write like any rejection, so the switch goes back and the row
-      // says the value did not change.
-      const settle = (accepted) => {
-        if (accepted) {
-          setState('saved')
-          return
+    try {
+      if (pending && typeof pending.then === 'function') {
+        // `set(field, value)` answers `Promise<boolean>`: true when the host took
+        // the value, false when it refused or skipped the write. A host old
+        // enough to resolve nothing still counts as acceptance; a refusal is a
+        // failed write like any rejection, so the switch goes back and the row
+        // says the value did not change.
+        const settle = (accepted) => {
+          if (accepted) {
+            setState('saved')
+            return
+          }
+          setState('failed')
+          restore(before)
         }
-        setState('failed')
-        store.set(before)
+        pending.then(
+          (result) => settle(result === true || result === undefined),
+          () => settle(false),
+        )
       }
-      pending.then(
-        (result) => settle(result === true || result === undefined),
-        () => settle(false),
-      )
+    } catch (error) {
+      // A host that hands back a thenable whose `then` throws has refused the
+      // write just as surely as a rejection: the click handler must not throw
+      // out of the row, and the row says the value did not change.
+      setState('failed')
+      restore(before)
     }
   }
 
@@ -1299,6 +1328,11 @@ function createVisualFirstRow(face) {
   // showing a preference the host never accepted.
   if (face && typeof face.set === 'function') {
     inject.setValue = (next) => face.set('visualFirst', next)
+  }
+  // A face that can answer is asked again whenever the row has to put the
+  // switch back: the value captured at click time is not the host's latest.
+  if (face) {
+    inject.readHostValue = () => readPreference(face)
   }
   return { store, component: VisualFirstRow, inject }
 }
