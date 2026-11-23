@@ -219,7 +219,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T076 `verify/check-bundle.mjs` 新增"图是图像、复制被播报"一项，并让报告行自带 `包名@版本 | 字节数 | 源码指纹`，让任何粘贴的输出自证来自哪棵树
 - [x] T077 夹具新增五类用例（超限源码、流式→完成、falsy children、`t` 换身份不重绘、复制播报），无障碍结构另加三项（组名、缩放按钮在图像外、可聚焦）；`verify/run-harness.mjs` 增加 `--list` 以便证据整段引用单次运行
 - [x] T078 `spec.md` 增 FR-018 与 SC-010；`contracts/client-fence-layer.md`、`data-model.md`、`research.md`（D22）同步
-- [ ] T079 重启 DSH 后做真机核对（图名/按钮/播报/插件页说明/卸载回退）。**0.1.11 至 0.1.20 的发布与安装完成后仍未重启核对**：运行中的界面仍加载旧 chunk；E-LIVE 里能查到的真机观察仍是 **0.1.2**，0.1.7 与 0.1.8 从未在真实宿主里跑过，0.1.9、0.1.10、0.1.11、0.1.12 与 0.1.13 同样如此。
+- [ ] T079 重启 DSH 后做真机核对（图名/按钮/播报/插件页说明/卸载回退）。**0.1.11 至 0.1.21 的发布与安装完成后仍未重启核对**：运行中的界面仍加载旧 chunk；E-LIVE 里能查到的真机观察仍是 **0.1.2**，0.1.7 与 0.1.8 从未在真实宿主里跑过，0.1.9、0.1.10、0.1.11、0.1.12 与 0.1.13 同样如此。
 - [ ] T080 再次请两位评审复核（目标 PASS），通过后把 feature 001 标记完成
 
 ## Phase 14: 第三轮独立评审后的修复（2026-11-23 追加，版本 0.1.6）
@@ -419,7 +419,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T204/T214 的最终事实：`evidence/verification.md` 的 E-LIVE 引言现为“从 0.1.2 到 0.1.19”，G13 区间现为 0.1.3–0.1.19（0.1.19 改了 `src/client/styles.js` 的变量块、测试与文档），0.1.18 只改了文档与 README；两处若再漂移，以 `evidence/verification.md` 为准
 - [x] T215 八份 README 的英文半句补上"real-machine verification covers the Chinese docs page only"（`README.md` 的英文半句另有 `（插件 `0.1.2`）` → `(plugin `0.1.2`)` 的混排修正），与 `README.zh.md` 口径一致
 - [x] T216 发布 `v0.1.19`（提交 `17ea689`）→ GitHub Actions run `45086312392` success（CI 39 项静态 / 220 项浏览器，shasum `9bcbc948d917b04df6f8a93639a4d6437ac5a74c`，provenance logIndex `4049111154`，33 文件）→ 从 registry 装回 profile `desktop`（依赖 `"0.1.19"`，安装副本 769,453 字节、SHA256 `5B54B79C7D59CF25B9CE06ED713F60B7B45D7A74155D0132B0EB3EE7CBE0CFF9` 与仓库根逐字节相同，`locale/` 8、`docs/` 9、包内 `0.1.19`）→ E-PUB/E-INS 补 0.1.19 行
-- [ ] T217 第十七轮双评审（目标 PASS；两份都 PASS 才把 feature 001 标记完成）
+- [x] T217 第十七轮双评审：实现侧 **PASS**（4 条 P3；其中 P3-1/P3-3/P3-4 在 Phase 30 修掉、P3-2 即 G19 登记），文档侧 **FAIL**（3 条 P0 + 5 条 P1 + 4 条 P2，Phase 30 逐条修完）；两份都在 0.1.20 上复核过
 
 ## Phase 30: 第十七轮双评审的收口（2026-11-23 追加，版本 0.1.20）
 
@@ -431,6 +431,19 @@ description: "Task list for 会话内图形渲染"
 - [x] T221 文档侧 3 条 P0：G18 的两句断言改成"静态断言存在、没有动态用例"；G15 删掉 `maxEdges`（0.1.19 起已有夹具与 PS2/PS3）只留 `outputLimit`；G13 区间改 0.1.3–0.1.19、E-LIVE 引言改 0.1.19 并把 G18/G19 移进 E-GAPS 列表内、收尾句改"上面 19 项"
 - [x] T222 文档侧 5 条 P1 + 4 条 P2：T204/T214 改成最终事实、头注版本 0.1.20、`evidence:442` 的旧值改现値、G5 的 220 项、FR-004 的夹具名 `past`→`over` 并补边数六条、E-CHK 块内多余空行、T212 的结果指向、G18 行移到 G17 之后、`quickstart.md:33` 锚点、`README.md:21` 英文半句去掉中文标签
 - [x] T223 发布 `v0.1.20`（提交 `df68d96`）→ GitHub Actions run `45088530926` success（CI 39 项静态 / 220 项浏览器，shasum `43a5602197d04d37211db3c5c225d5b9b3ffe059`，logIndex `4049292002`，33 文件）→ 从 registry 装回 profile `desktop`（依赖 `"0.1.20"`，安装副本 769,453 字节 / SHA256 `910E7E465228102851AC14228B994FBA418FA215C17C90140C1C2410650DA7DE`）→ 补 E-PUB/E-INS → 第十八轮双评审
+
+## Phase 31: 第十八轮双评审的收口（2026-11-23 追加，版本 0.1.21）
+
+第十八轮：实现侧 **PASS**（无 P0/P1/P2，4 条 P3），文档侧 **FAIL**（1 条 P0 + 3 条 P1 + 5 条 P2）。用户可见行为不变，但静态检查与文档都更严。
+
+- [x] T224 实现评审 P3-A：颜色契约检查把 `wired` 的每个名字锚到 `vendor/pele/pele.global.js` 里真实出现的 `--pele-<name>`（`engine` 集合），新增 `assert(invented.length === 0, 'the styles wire names the engine does not know: …')`；返回值改成 `${wired.size} engine variables, owned by engine and contract alike`。两侧一起改名的绕过因此失效
+- [x] T225 探针 PS8（`%TEMP%`/`.probe-ps8` 的 tar 副本，两侧把 `--pele-line` 改名 `--pele-anything`）→ `FAIL … the styles wire names the engine does not know: anything`、`1 failed, 38 passed`，写入 E-PROBE（前言改“二十二次”）
+- [x] T226 实现评审 P3-B/P3-C：G15 的②③ 重写——③ 撤回（`the fence layer is gone once the host disposes` 已守着 `slots.inject` 的 disposer），② 改成静态可读的说法（`index.js` 的 `apply` 每次都用 `prompt.section({ name: 'ui:dsh-dyslexia', … })` 注册、没有幂等守卫，所以同一个正常 `ctx` 上再 `apply` 会得到两段同名提示词），不再引用没有命令输出的“实测”；仍算缺口的只有①、②、④、⑤
+- [x] T227 文档评审 P0：按 0.1.21 重跑两套检查，把 E-BLD/E-CHK/E-HARN 三块用**同一次运行**的完整输出整段重写（E-CHK 的第 37 行随着报告串改成 `owned by engine and contract alike` 而更新）
+- [x] T228 文档评审 P1-1/P1-2/P1-3：E-LIVE 引言的“当前版本（0.1.21）”“从 0.1.2 到 0.1.21”“不能自动转移到 `0.1.21`”；G5 改成“0.1.17 与 0.1.18 是 216 项，0.1.19 起 220 项”；T079 状态行的标题与正文都写 0.1.21
+- [x] T229 文档评审 P2-1/P2-2/P2-3：`plan.md:33` 的行数按 0.1.21 实测重写；E-PROBE 的 PS2/PS3 两行补上“静态 `both size limits reach the engine, each proven on its own` 也会变红（`check-bundle: 1 failed, 38 passed`）”；`quickstart.md`、`README.md`、`README.zh.md` 的“启用/停用立刻生效”改成“卸载已观察、启用与停用走宿主插件机制（未单独取证）”
+- [ ] T230 发布 `v0.1.21`（提交 → tag → Actions → 从 registry 装回 profile `desktop`）→ 补 E-PUB/E-INS 的 0.1.21 行
+- [ ] T231 第十九轮双评审（目标 PASS；两份都 PASS 才把 feature 001 标记完成）
 
 ## Dependencies & Execution Order
 
@@ -531,7 +544,7 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 | G12 | FR-002 真机"无侧栏/无新文件" | 未做 | 结构上不写文件、不碰宿主布局，但没有一次真机核对磁盘与会话条目未变 |
 | G13 | T079 当前版本的重启后真机核对 | 未做 | 0.1.11 至 0.1.20 都已发布并装进 profile `desktop`，运行中的界面仍加载旧 chunk；`E-LIVE` 的观察取自 **0.1.2**（只有中文说明页、就地成图、卸载回退、重装恢复四件事），不能自动转移 |
 | G14 | 真实窗口缩放时引擎重绘（FR-018 端到端） | 未做 | 无头环境首帧后不再派发帧与 ResizeObserver 通知，只能证明"节点被换 → 立刻重新命名"；拖窄真实窗口这条链只有机制级证据 |
-| G15 | 尚未覆盖的加固面 | 未做 | ①`outputLimit`（2 MiB 绘制输出上限）无用例（字符上限与边数上限自 0.1.19 起已有单独夹具与 PS2/PS3 探针）；②`slots.inject` 的 disposer 未单独断言；③`apply` 无幂等断言；④`prepack` 不跑夹具；⑤`package.json` 若加入 `engines.node` 等非 `dsh` 子键，`no dsh version gate can refuse a start` 不会变红 |
+| G15 | 尚未覆盖的加固面 | 未做 | ①`outputLimit`（2 MiB 绘制输出上限）无用例（字符上限与边数上限自 0.1.19 起已有单独夹具与 PS2/PS3 探针）；②`index.js` 的 `apply` 每次都用 `prompt.section({ name: 'ui:dsh-dyslexia', … })` 注册、没有幂等守卫，同一个正常 `ctx` 上再 `apply` 会得到两段同名提示词，无断言守着；③`slots.inject` 回调丢 disposer 这半句**不成立**（`the fence layer is gone once the host disposes` 就守着它，回调不返回 disposer 即变红），不算缺口；④`prepack` 不跑夹具；⑤`package.json` 若加入 `engines.node` 等非 `dsh` 子键，`no dsh version gate can refuse a start` 不会变红 |
 | G16 | vendor 文本与无头环境的换节点 | 未做 | 绘制输出上限（`outputLimit` 2 MiB）仍按 G15 记，字符上限与边数上限已有夹具，不再重复；这里只记两件小事：`client.js` 里 vendor 许可注释含 `https://github.com/obsidianmd/pele`（静态文本、无网络行为），以及「引擎换掉 `<svg>` 后重新命名」在无头环境只能夹具重放（真实拖窄窗口的端到端见 G14） |
 | G17 | 视图层无断言的行为 | 未做 | 第十四轮实现评审的 P3 汇总，逐条登记在 `evidence/verification.md` 的 G17：失败原因三分类、"已复制"1.5 秒后消失、缩放按钮与引擎顺序的配对、失败后同一实例的自愈、失败时隐藏空画框、`children: []` 退回原文、`MutationObserver` 只看直接子节点、`props` 与 `code` 都读不出时返回 `null`——这些分支都存在，但删掉不会让任何断言变红 |
 | G18 | 引擎缺失分支只有静态证据 | 未做 | 第十六轮实现评审 P3（第十七轮文档评审修正措辞）：静态断言覆盖了错误边界、`readLayerInput`、`safeRead`、`engineUnavailable` 与 `typeof pele.mount !== 'function'` 守卫字符串（改成恒真会让它变红），但**没有动态用例**把引擎置空后观察回退——入口是 `scripts/build-client.mjs` 的 `catch (error) { pele = null }` |
@@ -542,4 +555,4 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 | 项 | 状态 | 说明 |
 |---|---|---|
 | T070 0.1.3 重启核对 | 已作废 | 由 T079 取代 |
-| T079 重启后真机核对（0.1.20） | 未做 | 0.1.11 至 0.1.20 已发布并装进 profile `desktop`，运行中的界面仍加载旧 chunk；重启后才换新，届时核对图名/按钮/播报/插件页说明/卸载回退，并把 E-LIVE 改写成 0.1.19 的记录。E-LIVE 里现有的观察是 0.1.2 的 |
+| T079 重启后真机核对（0.1.21） | 未做 | 0.1.11 至 0.1.21 已发布并装进 profile `desktop`，运行中的界面仍加载旧 chunk；重启后才换新，届时核对图名/按钮/播报/插件页说明/卸载回退，并把 E-LIVE 改写成 0.1.21 的记录。E-LIVE 里现有的观察是 0.1.2 的 |

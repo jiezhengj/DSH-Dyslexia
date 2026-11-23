@@ -623,6 +623,12 @@ check("the contract's colour variables are the ones that are wired", () => {
   }
   const wanted = pairOf(contract)
   const wired = pairOf(styles)
+  // Anchor the names to the vendored engine itself: renaming a variable on both
+  // sides used to stay green while the colour silently fell back to the default.
+  const vendor = readFileSync(join(ROOT, 'vendor', 'pele', 'pele.global.js'), 'utf8')
+  const engine = new Set([...vendor.matchAll(/--pele-([a-z-]+)/g)].map((match) => match[1]))
+  const invented = [...wired.keys()].filter((name) => !engine.has(name))
+  assert(invented.length === 0, `the styles wire names the engine does not know: ${invented.join(', ')}`)
   assert(wanted.size >= 10, `the contract names only ${wanted.size} engine variables`)
   assert(wired.has('critical'), 'the engine error colour (--pele-critical) is not wired')
   const missing = [...wanted.keys()].filter((name) => !wired.has(name))
@@ -633,7 +639,7 @@ check("the contract's colour variables are the ones that are wired", () => {
     .filter((name) => wanted.get(name) !== wired.get(name))
     .map((name) => `${name}: ${wanted.get(name)} vs ${wired.get(name)}`)
   assert(mismatched.length === 0, `the contract and the styles disagree: ${mismatched.join('; ')}`)
-  return `${wired.size} engine variables, same names and same host aliases on both sides`
+  return `${wired.size} engine variables, owned by engine and contract alike`
 })
 
 check('both size limits reach the engine, each proven on its own', () => {

@@ -38,7 +38,7 @@ $node = "C:\Users\jiezhengj\.dsh\dsh-runtimes\dsh-primary-runtime\dependencies\n
 
 1. 用 `plugin_manager` 的 `install_bundle` 指向本仓库根目录（需要 danger-full-access 权限，由用户批准）。
 2. 装完确认：`plugin_manager` 的列表里出现 `@jiezhengj/dsh-dyslexia`，标题与描述随当前界面语言显示。
-3. 生效范围（实测口径，两件事分开）：启用/停用/卸载**已在运行的界面里立刻生效**（层随 HMR 图增删，图与按钮立刻出现或消失）；换成**另一个版本的包**时需要重启 DSH，因为宿主进程里的宿主半边与页面里的 chunk 都要重新加载。
+3. 生效范围（三件事分开）：**卸载**已在运行中的界面上观察过，图立刻退回代码块、历史不变（E-LIVE）；启用与停用同样由宿主的插件机制接管、不需要改任何配置文件，但这两步还没有单独的真机观察；换成**另一个版本的包**时需要重启 DSH，因为宿主进程里的宿主半边与页面里的 chunk 都要重新加载。
 
 卸载：`plugin_manager` 的 `remove_bundle`，目标 `@jiezhengj/dsh-dyslexia`。
 
