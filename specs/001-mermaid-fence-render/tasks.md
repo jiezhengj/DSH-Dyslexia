@@ -8,7 +8,7 @@ description: "Task list for 会话内图形渲染"
 
 **Prerequisites**: [plan.md](./plan.md), [spec.md](./spec.md), [research.md](./research.md), [data-model.md](./data-model.md), [contracts/](./contracts/), [quickstart.md](./quickstart.md)
 
-**Tests**（历史任务行里的断言名是当时的名字，改名记录见 Phase 24 的 T168）：本功能不引入测试框架（宪法原则 III）。验收 = `verify/check-bundle.mjs` 的 40 项静态断言 + `verify/run-harness.mjs --list` 的 229 项浏览器断言（0.1.9 起 118 项、0.1.10 起 119 项、0.1.11 起 152 项、0.1.12 起 156 项、0.1.13 起 197 项、0.1.14 起 205 项、0.1.15 与 0.1.16 是 213 项、0.1.17 与 0.1.18 是 216 项、0.1.19–0.1.24 是 220 项、0.1.25 是 223 项、0.1.26 是 229 项），外加 `quickstart.md` 证据表里的真机项（见 E-GAPS）。
+**Tests**（历史任务行里的断言名是当时的名字，改名记录见 Phase 24 的 T168）：本功能不引入测试框架（宪法原则 III）。验收 = `verify/check-bundle.mjs` 的 40 项静态断言 + `verify/run-harness.mjs --list` 的 229 项浏览器断言（0.1.9 起 118 项、0.1.10 起 119 项、0.1.11 起 152 项、0.1.12 起 156 项、0.1.13 起 197 项、0.1.14 起 205 项、0.1.15 与 0.1.16 是 213 项、0.1.17 与 0.1.18 是 216 项、0.1.19–0.1.24 是 220 项、0.1.25 是 223 项、0.1.26–0.1.30 是 228 项、0.1.31 起 229 项），外加 `quickstart.md` 证据表里的真机项（见 E-GAPS）。
 
 **Organization**: 按 spec 的用户故事分阶段；每个故事独立可验收。
 
@@ -674,7 +674,7 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 | G14 | 真实窗口缩放时引擎重绘（FR-018 端到端） | 未做 | 无头环境首帧后不再派发帧与 ResizeObserver 通知，只能证明"节点被换 → 立刻重新命名"；拖窄真实窗口这条链只有机制级证据 |
 | G15 | 尚未覆盖的加固面 | 未做 | ①`outputLimit`（2 MiB 绘制输出上限）无用例（字符上限与边数上限自 0.1.19 起已有单独夹具与 PS2/PS3 探针）；②原先 `apply` 没有幂等守卫（同一 `ctx` 上多次 `apply` 会注册多段同名提示词）；**0.1.29 起已有断言**（`the host half adds one section per context, not one per call`，PS23 会让它变红），0.1.30 又补了"首次失败后重试仍能注册"（PS24），因此不再算缺口；③`slots.inject` 回调丢 disposer 这半句**不成立**（`the fence layer is gone once the host disposes` 就守着它，回调不返回 disposer 即变红），不算缺口；④`prepack` 不跑夹具；⑤`package.json` 若加入 `engines.node` 等非 `dsh` 子键，`no dsh version gate can refuse a start` 不会变红 |
 | G16 | vendor 文本与无头环境的换节点 | 未做 | 绘制输出上限（`outputLimit` 2 MiB）仍按 G15 记，字符上限与边数上限已有夹具，不再重复；这里只记两件小事：`client.js` 里 vendor 许可注释含 `https://github.com/obsidianmd/pele`（静态文本、无网络行为），以及「引擎换掉 `<svg>` 后重新命名」在无头环境只能夹具重放（真实拖窄窗口的端到端见 G14） |
-| G17 | 视图层无断言的行为 | 未做 | 第十四、二十六轮实现评审的 P2/P3 汇总，逐条登记在 `evidence/verification.md` 的 G17：条目编号与 `evidence/verification.md` 的 G17 段一致（①–⑧ 逐条、⑨ 为 `title` 那行）：①失败原因三分类 ②"已复制"回执 1.5 秒后消失 ③缩放按钮与引擎顺序的配对 ④失败后同一实例的自愈 ⑤失败时隐藏空画框 ⑥`children: []` 退回原文 ⑦`props` 与 `code` 都读不出时返回 `null` ⑧`MutationObserver` 只看直接子节点（有静态字符串守卫，改成 `subtree: true` 会红，只是没有行为观察）⑨挂载后补缩放按钮 `title` 的那一行（PS20：删掉仍全绿，引擎自己也设标题）——这些分支都存在，但**删掉对应的实现行不会让断言变红**（②、⑤、⑨ 有相邻的结果断言，但不保护被删的那一行） |
+| G17 | 视图层无断言的行为 | 未做 | 第十四、二十六轮实现评审的 P2/P3 汇总，逐条登记在 `evidence/verification.md` 的 G17：条目编号与 `evidence/verification.md` 的 G17 段逐条对应：①失败原因三分类 ②缩放按钮与引擎顺序的配对 ③失败后同一实例的自愈 ④失败时隐藏空画框 ⑤"已复制"回执（含 1.5 秒时长）⑥`children: []` 退回原文 ⑦`MutationObserver` 只看直接子节点（有静态字符串守卫，改成 `subtree: true` 会红，只是没有行为观察）⑧`props` 与 `code` 都读不出时返回 `null` ⑨挂载后补缩放按钮 `title` 的那一行（PS20：删掉仍全绿，引擎自己也设标题）——这些分支都存在，但**删掉对应的实现行不会让断言变红**（②、⑤、⑨ 有相邻的结果断言，但不保护被删的那一行） |
 | G18 | 引擎缺失分支只有静态证据 | 未做 | 第十六轮实现评审 P3（第十七轮文档评审修正措辞）：静态断言覆盖了错误边界、`readLayerInput`、`safeRead`、`engineUnavailable` 与 `typeof pele.mount !== 'function'` 守卫字符串（改成恒真会让它变红），但**没有动态用例**把引擎置空后观察回退——入口是 `scripts/build-client.mjs` 的 `catch (error) { pele = null }` |
 | G19 | 静态套件只钉顶层条目数 | 未做 | 第十七轮实现评审 P3：`EXPECTED_CHECKS = 40` 只保证有 40 个 `check()`；某条 `check()` 内部删掉一行 `assert()` 仍是全过（浏览器侧逐条 `expect()` 计数，删一条即报错） |
 | G20 | 启用/停用在运行中的宿主里没有单独观察 | 未做 | E-LIVE 只观察到卸载回退与重装恢复；九份 README 与 `quickstart.md` 都写成"走宿主插件机制、未单独取证" |
@@ -687,4 +687,4 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 | 项 | 状态 | 说明 |
 |---|---|---|
 | T070 0.1.3 重启核对 | 已作废 | 由 T079 取代 |
-| T079 重启后真机核对（0.1.31） | 未做 | 0.1.11 至 0.1.31 已发布并装进 profile `desktop`，运行中的界面仍加载旧 chunk；重启后才换新，届时核对图名/按钮/播报/插件页说明/卸载回退，并把 E-LIVE 改写成 0.1.30 的记录。E-LIVE 里现有的观察是 0.1.2 的 |
+| T079 重启后真机核对（0.1.31） | 未做 | 0.1.11 至 0.1.31 已发布并装进 profile `desktop`，运行中的界面仍加载旧 chunk；重启后才换新，届时核对图名/按钮/播报/插件页说明/卸载回退，并把 E-LIVE 改写成 0.1.31 的记录。E-LIVE 里现有的观察是 0.1.2 的 |
