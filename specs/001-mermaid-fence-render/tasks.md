@@ -578,6 +578,7 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 | G19 | 静态套件只钉顶层条目数 | 未做 | 第十七轮实现评审 P3：`EXPECTED_CHECKS = 39` 只保证有 39 个 `check()`；某条 `check()` 内部删掉一行 `assert()` 仍是全过（浏览器侧逐条 `expect()` 计数，删一条即报错） |
 | G20 | 启用/停用在运行中的宿主里没有单独观察 | 未做 | E-LIVE 只观察到卸载回退与重装恢复；九份 README 与 `quickstart.md` 都写成"走宿主插件机制、未单独取证" |
 | G21 | 引擎支持的其它图种与"Mermaid 12.1"版本说法 | 未做 | 夹具与静态检查只采样七种（flowchart/sequence/class/state/er/mindmap/timeline）；gantt、kanban、xychart、C4、architecture 无任何用例；"Mermaid 12.1" 只来自上游 pele 的说明。九份 README 已按"夹具只覆盖这七种（见 G21）"措辞 |
+| G22 | `check-bundle` 需要 `specs/` 才完整（合同文件不在 `files` 里） | 未修（登记为局限） | 合同文件不在包里；正常 clone 与 CI 都通过，缺 `specs/` 的副本里 `npm pack` 会以 ENOENT 变红 |
 
 **待重启复核的项**：
 

@@ -815,7 +815,7 @@ Done in 3.2s using pnpm v11.28.5
 | 卸载插件后，同一条消息变回纯文本代码块，无报错无占位 | `remove_bundle` 后 `flowchart LR … A[代码块] --> B[就地成图]` 原样显示，`role="img"`（`agent-desktop` 报告为 image）与按钮计数为 0 | US2/FR-009（不含 SC-002 的会话检索命中） |
 | 重新安装后图与按钮立刻回来，历史消息不用改 | `install_bundle` 后同一屏立刻渲染 | FR-010 |
 
-## E-GAPS 没有取证的部分（共 21 项）
+## E-GAPS 没有取证的部分（共 22 项）
 
 真机、设备与离线条件（都要求动手换条件，不能在 CI 里做）：
 
@@ -847,6 +847,7 @@ Done in 3.2s using pnpm v11.28.5
 - **G19 静态套件只钉顶层条目数，不钉条目内部的断言数（第十七轮实现评审 P3）**：`verify/check-bundle.mjs` 的 `EXPECTED_CHECKS = 39` 只保证「有 39 个 `check()`」，某一条 `check()` 内部的某行 `assert()` 被删掉时套件仍报全过；浏览器夹具是逐条 `expect()` 计数（删一条即 `run-harness: suite reported X checks, expected Y`），两侧的看守强度并不相同。
 - **G20 启用/停用没有单独的真机观察**：`E-LIVE` 观察到的是卸载回退与重装恢复；启用与停用依赖宿主的插件机制，文档（`quickstart.md` 与九份 README）按"走宿主机制、未单独取证"措辞，没有把这两步写成已验证。
 - **G21 引擎支持的其它图种与"Mermaid 12.1"版本说法没有断言**：夹具与静态检查只采样七种（flowchart、sequence、class、state、er、mindmap、timeline，见 `every supported sample type draws an svg`）；gantt、kanban、xychart、C4、architecture 等引擎声称支持的图种**没有任何用例**，九份 README 里"Mermaid 12.1"的版本说法也只来自上游 pele 的说明，不是本项目的断言。README 因此改成"夹具目前只覆盖这七种（见 G21）"。
+- **G22 `check-bundle` 需要 `specs/` 才完整**：`the contract's colour variables are the ones that are wired` 读 `specs/001-mermaid-fence-render/contracts/client-fence-layer.md`，而 `specs/` 不在 `files` 里。在正常 clone（含 `specs/`）与 CI 上都跑得通；只有从一份没有 `specs/` 的副本里打包时，这条断言会以 `ENOENT` 变红（`npm pack` 的 `prepack` 会跑静态套件）。已发布产物不受影响，消费方安装时也不跑 `prepack`；这一项目前只登记为局限，没有改成"文件缺失就跳过"，因为跳过会让同一条断言在 CI 之外静默失效。
 ---
 
-**本文件与 tasks.md 的关系**：`tasks.md` 末尾的状态表逐行对应上面 21 项，两处若不一致，以本文件为准（本文件是证据的归属地，`tasks.md` 是工作项的记录）。
+**本文件与 tasks.md 的关系**：`tasks.md` 末尾的状态表逐行对应上面 22 项，两处若不一致，以本文件为准（本文件是证据的归属地，`tasks.md` 是工作项的记录）。
