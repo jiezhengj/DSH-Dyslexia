@@ -548,7 +548,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T298 `review-impl-27` 的 P2-2：`index.js` 的 `apply` 加幂等守卫（模块级 `WeakSet`，同一 `ctx` 只注册一段），并新增静态断言 `the host half adds one section per context, not one per call`（39 → 40 项）；探针 PS23 验证它可红（`three applies on one context added 3 sections`，`1 failed, 39 passed`，exit 1）
 - [x] T299 `review-impl-27` 的 P2-7：`src/client/view.js` 的 `labelFigure` 在 catch 里改成 `report('figure label', error)`，命名失败不再静默
 - [x] T300 版本 0.1.29 的文档与证据口径：40 静态 / 228 浏览器、`client.js` 769,629 字节、指纹 `867cfbe0…`、`plan.md` 的行数（index 65、client 1003 = view 486 + 209 + 123 + 91 + 94、check-bundle 842）、E-PROBE 补 PS23 并把前言改成"三十七次"、G15② 改为"已由断言守护"
-- [ ] T301 发版 0.1.29（提交、tag、Actions、registry、装回 `desktop`）并补 E-PUB/E-INS
+- [x] T301 发版 0.1.29：提交 `a96abae` → tag `v0.1.29` → run `45121495313` success（40/228、shasum `995896d632c57eab295975730d5d37cf58684218`、logIndex `4050351420`、33 文件）→ registry 第 21 次轮询 200 → `remove_bundle`（卸 0.1.28）→ `install_bundle @0.1.29` applied；profile 依赖 `"0.1.29"`、安装副本 769,629 字节、SHA256 `87A37B23…77B9` 与仓库根一致、`locale/` 8、`docs/` 9 → 补 E-PUB/E-INS
 - [ ] T302 第二十八轮双评审（`review-docs-28` / `review-impl-28`，目标：两份都 PASS）
 
 ## Dependencies & Execution Order
