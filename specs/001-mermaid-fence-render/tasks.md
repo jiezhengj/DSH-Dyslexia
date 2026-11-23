@@ -686,7 +686,7 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 | G21 | 引擎支持的其它图种与"Mermaid 12.1"版本说法 | 未做 | 静态检查采样七种（flowchart/sequence/class/state/er/mindmap/timeline，见 `every supported sample type draws an svg`），浏览器夹具只画了 flowchart 与一条 `sequenceDiagram`；gantt、kanban、xychart、C4、architecture 无任何用例；"Mermaid 12.1" 只来自上游 pele 的说明。索引页与八份本地化 README 按"静态采样七种、夹具只画前两种（见 G21）"措辞，"Mermaid 12.1"那句已在 T243 移除 |
 | G22 | `check-bundle` 需要 `specs/` 才完整（合同文件不在 `files` 里） | 未修（登记为局限） | 合同文件不在包里；正常 clone 与 CI 都通过，缺 `specs/` 的副本里 `npm pack` 会以 ENOENT 变红 |
 | G23 | 三处证据强度（banner 指纹含版本、静态全绿≠行为正确、children getter 双保险） | 记录（不改代码） | 第二十六轮实现评审 P2 的原文见 `evidence/verification.md` 的 G23；三条都不影响已发布行为 |
-| G24 | 0.1.31 真机核对暴露的三件事 | 记录（未修代码） | ①`remove_bundle` 已 `applied`、profile 与 `node_modules` 都清理干净，但打开着的窗口继续显示图与按钮（`Ctrl+R`/`F5` 也没让窗口重载），卸载要重启应用才从界面消失 → FR-009 的「卸载后回退」只能算重启后成立；②「查看源码」带 `aria-expanded`，被宿主映射成 `menubutton`，`agent-desktop click` 返回 `ACTION_FAILED ... DoDefaultAction`，真机上「展开源码面板」未取证（行为只有无头夹具）；③复制回执文案来自宿主全局词条（`t` 优先），宿主字典里 `copied` 是「复制成功」，覆盖了我们自己的「已复制」 |
+| G24 | 0.1.31 真机核对暴露的三件事 | 记录（未修代码） | ①`remove_bundle` 已 `applied`、profile 与 `node_modules` 都清理干净，但打开着的窗口继续显示图与按钮（`Ctrl+R`/`F5` 也没让窗口重载），卸载要重启应用才从界面消失 → FR-009 的「卸载后回退」只能算重启后成立；②「查看源码」带 `aria-expanded`，被宿主映射成 `menubutton`，`agent-desktop click`/`expand` 返回 `ACTION_FAILED ... DoDefaultAction` 与 `STALE_REF`；**用户本人点击确认面板会展开、按钮变「隐藏源码」**，所以行为有真机证据，缺的只是自动化复核；③复制回执文案来自宿主全局词条（`t` 优先），宿主字典里 `copied` 是「复制成功」，覆盖了我们自己的「已复制」 |
 
 **待重启复核的项**：
 

@@ -923,7 +923,7 @@ Done in 4.5s using pnpm v11.28.5
 |---|---|---|
 | 插件页仍是「DSH 图示阅读」、版本 `v0.1.31`、中文说明、预览图正常渲染、状态「运行中」、底部「已是最新版本」 | 侧栏「插件」→「查看 DSH 图示阅读」的截图（`.tmp/livecheck/shot-detail.png`，1924×1234） | FR-008 的 zh 一种语言，不含其余 7 种说明页 |
 | 会话里的 ```mermaid 代码块就地成图，**不开侧栏、不弹窗** | 同一条消息里代码块位置出现图；无障碍树 `find --role image` 命中 1 个节点、`name="图"`（纯名词，不含引擎类型）；外层盒子没有名字（`find --role group --name "图"` 为 0） | FR-003、FR-007、FR-018 的"图有本地化名字且容器不重复念" |
-| 图下是「查看源码」「复制源码」两个中文按钮 | `find --role button --name "复制源码"` 命中 1 个 `button`；「查看源码」因带 `aria-expanded` 被宿主映射成 `menubutton`（见 G24②） | FR-018 的按钮本地化 |
+| 图下是「查看源码」「复制源码」两个中文按钮，点「查看源码」会展开源码面板、按钮变成「隐藏源码」 | `find --role button --name "复制源码"` 命中 1 个 `button`；「查看源码」因带 `aria-expanded` 被宿主映射成 `menubutton`，自动化点不动（G24②），**由人本人在窗口里点了一次确认：面板展开、按钮变「隐藏源码」** | FR-018 的按钮本地化与面板开合 |
 | 点「复制源码」把源码原文写进剪贴板，界面出现可见回执 | `Set-Clipboard 'sentinel-before-copy'` → 点击 → `Get-Clipboard` 得到 `flowchart LR` / `  A[Agent 写出 mermaid 代码块] --> B[同一条消息里就地成图]` / `  B --> C[原文仍是文本，可复制可检索]`；按钮右侧出现「复制成功」（该文案来自宿主词条，见 G24③） | FR-005、FR-018 的"复制诚实" |
 | 卸载不会改写已渲染的消息，但**也不在运行中的窗口里消失** | `remove_bundle` 返回 `applied`、profile 依赖与 `node_modules` 都已移除；随后 8 秒内那条消息仍显示图与两个按钮（`find --role image` 仍为 1、`复制源码` 仍为 1），按 `Ctrl+R` 与 `F5` 之后画面也没有变化（我无法确认窗口是否真的重载过，只能说这两次按键没有让图消失） | FR-009 的后半**改为未取证**（见 G24①） |
 
@@ -941,6 +941,15 @@ Done in 4.5s using pnpm v11.28.5
 - `review-docs-32`（HEAD `937bbd5`，只读）：**PASS**。它逐行比对了 E-CHK（与本机 42 行 stdout 零差异，含空行）、E-HARN（与 234 行零差异）、E-BLD（复现同一构建行），复算 `npm pack` 33 文件与 shasum `a8ea274f5e683dfd16b42443a93b553764b5f452`、安装副本逐字节相同、`plan.md:33` 与 `research.md:186` 的行数、E-PROBE 41 行与"四十一次"、E-GAPS G1–G23 与 `tasks.md:661-683` 一一对应，并交叉核对了 102 + 72 个引用的断言名。
 - `review-impl-32`（HEAD `24ac43d`，只读）：**PASS**。43 条独立探针 0 条变红；`git diff --stat 5f767a5..HEAD` 为 7 个文件、全部在 `specs/001-mermaid-fence-render/` 内（`git diff --stat 5f767a5..HEAD -- . ':(exclude)specs'` 为空）；两套检查 40 / 229；重建 SHA256 与已发布 0.1.31 相同；tarball 装进临时 profile 再卸载无残留；并按 asar 字节核对宿主 API 形状（`systemPrompt.section({name, order, text})`、`slots.inject(owner, () => register({...}, Component))`）与实现一致。
 - 两条记录在案、不构成缺陷的观察：①`index.js` 的异步拒绝分支在现宿主上是死代码（`section()` 同步），保留是为"宿主形状变化"兜底，`review-impl-30` 的探针 A3 证明删掉内层 try/catch 仍全绿；②`entry.js` 的 `claimed` WeakSet 在 dispose 时不释放——DSH 的重新启用走注入工厂（新 `ctx`），`review-impl-32` 的 P16 探针证明会重新安装，故无失败证据。
+
+### E-NEXT 卸载回合的下一步（2026-11-23 21 时，已执行到"卸载"）
+
+要验的是 `FR-009` 的时机：**卸载要不要重启才从界面消失**。计划与进度：
+
+1. **已做（2026-11-23 21:2x）**：`plugin_manager` 的 `remove_bundle @jiezhengj/dsh-dyslexia` 返回 `{"stage":"remove","changed":true,"application":"applied"}`（pnpm 输出 `- @jiezhengj/dsh-dyslexia 0.1.31`）；随后核对 profile：`package.json` 里 `dsh-dyslexia` 的依赖与 bundles 条目都没有了，`node_modules/@jiezhengj/dsh-dyslexia` 也不存在。运行中的窗口不受影响（G24①），这正是要靠重启来验的地方。
+2. **等用户重启 DSH**（用户已同意："你来卸载，我来重启"）。重启后本会话结束，新会话里要做的核对：那条含 ```mermaid 的消息应显示**纯代码块原文**（`role="image"` 与「复制源码」按钮都不再出现），历史消息内容不变、不报错 —— 这就是 E10 / G24① 的正面证据。
+3. 然后把 `install_bundle @jiezhengj/dsh-dyslexia@0.1.31` 装回，请用户再重启一次；重启后同一条消息应重新出现图、图名「图」、两个按钮，且**不需要改历史消息** —— E11 / `FR-010`。
+4. 两段都用 `agent-desktop find --role image` / `find --role button --name 复制源码` 的计数与截图记录，然后回写 E-LIVE（把"卸载后回退"的时机从"未取证"改成实测），同步 `tasks.md` 的 T079 与 G24①，并把 `quickstart.md` 与九份 README 里"卸载要重启"的措辞与实测对齐（若实测与现在写的一致，就不必再改）。
 
 ## E-GAPS 没有取证的部分（共 24 项）
 
@@ -980,7 +989,7 @@ Done in 4.5s using pnpm v11.28.5
 
 - **G24 0.1.31 真机核对暴露的三件事（2026-11-23，未修，先按事实记录）**：
   ①**卸载在运行中的窗口里不生效**：`remove_bundle` 已经 `applied`（profile 依赖与 `node_modules` 都清理干净），但已打开的窗口继续显示图与两个按钮，`Ctrl+R`/`F5` 也没让窗口重新加载；也就是说客户端 chunk 是随窗口加载的，卸载要等**重启应用**才从界面上消失。`E-LIVE` 在 0.1.2 记过"卸载后同一条消息立刻变回代码块"，那是在另一版宿主上看到的；`FR-009` 的"卸载后回退"因此只能算**重启后**成立，`quickstart.md` 与九份 README 里"卸载立刻生效"的措辞要按这个事实改。
-  ②**「查看源码」在无障碍树里是 `menubutton`，自动化点不动**：`aria-expanded` 让宿主把它映射成 `menubutton`，`agent-desktop click` 对它返回 `ACTION_FAILED ... DoDefaultAction`，真实鼠标点击（坐标按 UIA bounds 换算）也没有观察到标签在「查看源码/隐藏源码」之间翻转，所以 0.1.31 真机上"展开源码面板"这一步**没有取证**；它的开合行为只有无头夹具（`[lang] the source toggle flips its word`、`the source toggle starts collapsed`、`expands`）。
+  ②**「查看源码」只能靠人点，自动化点不动**（这已是取舍，不是缺陷）：`aria-expanded` 让宿主把它映射成 `menubutton`，`agent-desktop` 的 `click`/`expand` 对它返回 `ACTION_FAILED ... DoDefaultAction` 与 `STALE_REF`（节点在读取活状态时失效），按 UIA bounds 换算的真实鼠标点击也没有让标签翻转。**2026-11-23 21 时由用户本人在窗口里点击确认：面板展开、按钮变成「隐藏源码」**，所以这条用户可见行为有真机证据，缺的只是「自动化能否复核它」。开合本身另有夹具（`[lang] the source toggle flips its word`、`the source toggle starts collapsed`、`the source toggle expands`）。
   ③**复制回执的文案来自宿主词条**：`translateFor` 先问宿主的 `t`，宿主的全局字典里有 `copied: 复制成功`，所以界面显示的是"复制成功"而不是我们 `i18n.js` 里的"已复制"。含义与语言都对，但说明**键名与宿主全局词条撞车时以宿主为准**；这一点从未在文档里写过。
 
 **本文件与 tasks.md 的关系**：`tasks.md` 末尾的状态表逐行对应上面 24 项，两处若不一致，以本文件为准（本文件是证据的归属地，`tasks.md` 是工作项的记录）。
