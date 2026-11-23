@@ -74,7 +74,7 @@ src/client/
 ├── figure.js / view.js         # 不变（001 的渲染与降级）
 client.js                       # 构建产物（scripts/build-client.mjs 生成）
 locale/*.json                   # 8 语言 meta.title/description 改名
-docs/DETAIL.*.md                # 8 篇说明页只有图片行，新名字只在该图 alt 句
+docs/DETAIL*.md                # 8 篇说明页只有图片行，新名字只在该图 alt 句
 README*.md                      # 索引 + 8 篇：改名、开关说明、偏好措辞
 verify/
 ├── check-bundle.mjs            # 新增静态/源码级断言
@@ -105,7 +105,7 @@ verify/
 
 1. 宿主：`Config` + 两档提示词段 + 降级；静态断言先行。
 2. 客户端：`settings.js` + 文案 + 样式；夹具先行（假 `configForms`、假 `t`、8 语言、写失败）。
-3. 改名：`locale/*.json`、`docs/DETAIL.*.md`、9 份 README、`package.json` description。
+3. 改名：`locale/*.json`、`docs/DETAIL*.md`、9 份 README、`package.json` description。
 4. 探针：十二条（F1、F3–F13）逐条破坏受保护行为，确认断言会红。
 5. 文档与证据：spec/plan/data-model/contracts/quickstart/evidence 同步；发版、装回、双评审。
 
