@@ -513,6 +513,13 @@ description: "Task list for 会话内图形渲染"
 - [x] T275 探针表补 PS20–PS22，前言改「三十六次」，G17 增 ⑨ 并写明守护只覆盖 `needed` 名单
 - [x] T276 版本 0.1.26 的文档口径（39 静态 / 228 浏览器、`check-bundle.mjs` 815 行、`harness/index.html` 1237 行、E-BLD/E-CHK/E-HARN 单次运行重写）
 
+## Phase 37: 0.1.26 的发布与装回（2026-11-23 追加）
+
+- [x] T277 发布 `v0.1.26`（提交 `0026db4`）→ GitHub Actions run `45112579779` success；`check-bundle` 39 项 / `run-harness` 228 项，CI 与本机两行逐字相同；shasum `6eed7f9d48d579b22abe80abdf3ed5d956c495b1`，logIndex `4050182557`，total files 33
+- [x] T278 registry tarball 第 21 次轮询返回 200 后 `remove_bundle`（卸 0.1.25）→ `install_bundle @0.1.26` → `applied`；profile 依赖 `"0.1.26"`，安装副本 `client.js` 769,453 字节、SHA256 `F63EB3FE3842BCBD5DC00231EF2D4003E6000806002BC25B152187A6AA847AD8` 与仓库根逐字节相同，`locale/` 8、`docs/` 9、包内 0.1.26
+- [x] T279 证据补 0.1.26 的 E-PUB 行与 CI 日志块、E-INS 实测表（`evidence/verification.md`）
+- [ ] T280 第二十五轮双评审（目标：两份都 PASS）
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
