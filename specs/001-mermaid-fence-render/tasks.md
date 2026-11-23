@@ -527,7 +527,17 @@ description: "Task list for 会话内图形渲染"
 - [x] T283 逐条修：探针史改 `220 → 222 → 223 → 228`、八份 README 改成"静态检查采样七种、浏览器夹具只画前两种"、`README.md`/`README.zh.md` 补 G7 免责、`README.md` 的"不进会话历史"补 G12、G21 归属拆开、`research.md` 夹具行数改 1237/1368
 - [x] T284 发版 0.1.27（只改文档、README 与版本号；`client.js` 只差 banner 的版本与指纹）：提交 `cf73c1e` → run `45114993254` success、39/228、shasum `b85f6c59e4b09cd9ffb46cff815491a5d16c86f0`、logIndex `4050249983`
 - [x] T285 registry 第 20 次轮询 200 后 `remove_bundle`（卸 0.1.26）→ `install_bundle @0.1.27`；profile 依赖 `"0.1.27"`、安装副本 769,453 字节、SHA256 `33ED2519D2D0B1AE1BE79A16E55FF87BE0B78C4526832E2AC3816EA5F68FC003` 与仓库根一致
-- [ ] T286 第二十六轮双评审（`review-docs-26` / `review-impl-26`，目标：两份都 PASS）
+- [x] T286 第二十六轮双评审：`review-impl-26` 判 **PASS**（无 P0/P1；三条 P2 是记录与覆盖精度问题，已登记）；`review-docs-26` 判 **FAIL**（P1 三条、P2 五条），逐条修见 T287–T289
+
+## Phase 39: 0.1.28 的修复、发布、装回与第二十七轮评审（2026-11-23 追加）
+
+- [x] T287 `review-impl-26` 的 P2：banner 的 `sources sha256` 含 version 的问题、`check-bundle` 全绿不等于行为正确、`children` getter 双保险的覆盖精度——三条都记进 `evidence/verification.md` 的 G15 与 `research.md` D22，不改代码
+- [x] T288 `review-docs-26` 的 P1：`spec.md:7` 的"当前版本"改到 0.1.28；`evidence` 的 G21 与 `tasks.md` 的 G21 行把"夹具只画两种"与"静态采样七种"分开写，不再互相引述成矛盾句
+- [x] T289 `review-docs-26` 的 P2：E-CHK 块补回真实 stdout 的空行（41 行）、九份 README 的 G7/G12 双向补齐、探针前言改成"破坏是临时的，落地后留下的改动只在 `verify/` 与 `specs/` 里"、`evidence` 与 `tasks.md` 的 0.1.27 描述补上 `package.json` 与 banner、`plan.md:33` 的 `v0.1.26` 行注明"0.1.27 未改动这两套"
+- [x] T290 发版 0.1.28（只改文档、README 与版本号）：提交 `2895817` → tag `v0.1.28` → run `45117521081` success、39/228、shasum `816a80a70fe2a3a8c95d131d0412b97e81393bc3`、logIndex `4050291751`、33 文件
+- [x] T291 registry 第 20 次轮询 200 后 `remove_bundle`（卸 0.1.27）→ `install_bundle @0.1.28`；profile 依赖 `"0.1.28"`、安装副本 769,453 字节、SHA256 `0E276FC51F806104E49938248081CD314D3A4C2127361E5A797473BB2E74B0DC` 与仓库根一致、`locale/` 8、`docs/` 9、包内 0.1.28
+- [x] T292 证据补 0.1.28 的 E-PUB 行与 CI 日志块、E-INS 实测表（`evidence/verification.md`）
+- [ ] T293 第二十七轮双评审（`review-docs-27` / `review-impl-27`，目标：两份都 PASS）
 
 ## Dependencies & Execution Order
 
@@ -636,6 +646,7 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 | G20 | 启用/停用在运行中的宿主里没有单独观察 | 未做 | E-LIVE 只观察到卸载回退与重装恢复；九份 README 与 `quickstart.md` 都写成"走宿主插件机制、未单独取证" |
 | G21 | 引擎支持的其它图种与"Mermaid 12.1"版本说法 | 未做 | 静态检查采样七种（flowchart/sequence/class/state/er/mindmap/timeline，见 `every supported sample type draws an svg`），浏览器夹具只画了 flowchart 与一条 `sequenceDiagram`；gantt、kanban、xychart、C4、architecture 无任何用例；"Mermaid 12.1" 只来自上游 pele 的说明。九份 README 按"静态采样七种、夹具只画前两种（见 G21）"措辞 |
 | G22 | `check-bundle` 需要 `specs/` 才完整（合同文件不在 `files` 里） | 未修（登记为局限） | 合同文件不在包里；正常 clone 与 CI 都通过，缺 `specs/` 的副本里 `npm pack` 会以 ENOENT 变红 |
+| G23 | 三处证据强度（banner 指纹含版本、静态全绿≠行为正确、children getter 双保险） | 记录（不改代码） | 第二十六轮实现评审 P2 的原文见 `evidence/verification.md` 的 G23；三条都不影响已发布行为 |
 
 **待重启复核的项**：
 

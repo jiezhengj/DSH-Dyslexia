@@ -426,6 +426,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.28 | client.js 769453 bytes | sources s
 | 0.1.25 | `45109072637` | success | `04f750a1bce2cd320e4dc9f67c03dca211bd09a6` | `4050087976` | 33 |
 | 0.1.26 | `45112579779` | success | `6eed7f9d48d579b22abe80abdf3ed5d956c495b1` | `4050182557` | 33 |
 | 0.1.27 | `45114993254` | success | `b85f6c59e4b09cd9ffb46cff815491a5d16c86f0` | `4050249983` | 33 |
+| 0.1.28 | `45117521081` | success | `816a80a70fe2a3a8c95d131d0412b97e81393bc3` | `4050291751` | 33 |
 
 > `—` 表示该次发布没有对应记录：0.1.0 是手动 `npm publish`，没有 provenance；0.1.5 的第一次是失败的运行，没有产物。0.1.3 与 0.1.4 当时没有记下 logIndex，这里写"未记录"而不是补造一个。
 
@@ -821,6 +822,17 @@ npm notice publish Provenance statement published to transparency log: https://s
 + @jiezhengj/dsh-dyslexia@0.1.27
 ```
 
+0.1.28（run `45117521081`，39 项静态 / 228 项浏览器；只改文档与 README，`client.js` 的 banner 因指纹含版本号而重算，行为与 0.1.27 相同）：
+
+```text
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.28 | client.js 769453 bytes | sources sha256:f85bf7b6ff1d5ed03a5a8ca60413b554 | all 39 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.1.28 | client.js 769453 bytes | sources sha256:f85bf7b6ff1d5ed03a5a8ca60413b554 | all 228 checks passed (/usr/bin/google-chrome)
+npm notice shasum: 816a80a70fe2a3a8c95d131d0412b97e81393bc3
+npm notice total files: 33
+npm notice publish Provenance statement published to transparency log: https://search.sigstore.dev/?logIndex=4050291751
++ @jiezhengj/dsh-dyslexia@0.1.28
+```
+
 ## E-CI 发布前检查抓到一个真实缺陷（0.1.5 第一次运行）
 
 `45046044274` 在 "Refuse to publish if the committed chunk is stale" 这一步失败：
@@ -836,13 +848,13 @@ npm notice publish Provenance statement published to transparency log: https://s
 
 ## E-INS 从 registry 安装
 
-先 `remove_bundle @jiezhengj/dsh-dyslexia`（输出 `- @jiezhengj/dsh-dyslexia 0.1.26`；同一包名不允许直接换版本，直接装会返回 `{"stage":"install","error":{"code":"already-installed"},…}`），再 `install_bundle @jiezhengj/dsh-dyslexia@0.1.27`，返回 `{"stage":"enable","changed":true,"application":"applied","version":"0.1.27"}`。pnpm 输出：
+先 `remove_bundle @jiezhengj/dsh-dyslexia`（输出 `- @jiezhengj/dsh-dyslexia 0.1.27`；同一包名不允许直接换版本，直接装会返回 `{"stage":"install","error":{"code":"already-installed"},…}`），再 `install_bundle @jiezhengj/dsh-dyslexia@0.1.28`，返回 `{"stage":"enable","changed":true,"application":"applied","version":"0.1.28"}`。pnpm 输出：
 
 ```text
 dependencies:
-+ @jiezhengj/dsh-dyslexia 0.1.27
++ @jiezhengj/dsh-dyslexia 0.1.28
 
-Done in 3.7s using pnpm v11.28.5
+Done in 5.4s using pnpm v11.28.5
 ```
 
 装之前先按 registry 等 tarball 可下载（第 20 次轮询返回 200）；npmjs 的版本文件先 200、tarball 后到，这个滞后每次发版都会出现（约 2–10 分钟），不是包的问题。
@@ -851,11 +863,11 @@ Done in 3.7s using pnpm v11.28.5
 
 | 检查 | 实测 |
 |---|---|
-| profile 依赖 | `"@jiezhengj/dsh-dyslexia": "0.1.27"`（版本号，不是 `link:`） |
-| `node_modules/@jiezhengj/dsh-dyslexia/client.js` | 769,453 字节，SHA256 `33ED2519D2D0B1AE1BE79A16E55FF87BE0B78C4526832E2AC3816EA5F68FC003`（与仓库根逐字节相同） |
+| profile 依赖 | `"@jiezhengj/dsh-dyslexia": "0.1.28"`（版本号，不是 `link:`） |
+| `node_modules/@jiezhengj/dsh-dyslexia/client.js` | 769,453 字节，SHA256 `0E276FC51F806104E49938248081CD314D3A4C2127361E5A797473BB2E74B0DC`（与仓库根逐字节相同） |
 | `locale/` | 8 个 json |
 | `docs/` | 9 个文件（8 篇 `DETAIL*.md` + `preview.svg`） |
-| 包内 `version` | `0.1.27` |
+| 包内 `version` | `0.1.28` |
 
 ## E-LIVE 真机（DSH 桌面窗口内）
 
@@ -868,7 +880,7 @@ Done in 3.7s using pnpm v11.28.5
 | 卸载插件后，同一条消息变回纯文本代码块，无报错无占位 | `remove_bundle` 后 `flowchart LR … A[代码块] --> B[就地成图]` 原样显示，`role="img"`（`agent-desktop` 报告为 image）与按钮计数为 0 | US2/FR-009（不含 SC-002 的会话检索命中） |
 | 重新安装后图与按钮立刻回来，历史消息不用改 | `install_bundle` 后同一屏立刻渲染 | FR-010 |
 
-## E-GAPS 没有取证的部分（共 22 项）
+## E-GAPS 没有取证的部分（共 23 项）
 
 真机、设备与离线条件（都要求动手换条件，不能在 CI 里做）：
 
@@ -900,5 +912,6 @@ Done in 3.7s using pnpm v11.28.5
 - **G19 静态套件只钉顶层条目数，不钉条目内部的断言数（第十七轮实现评审 P3）**：`verify/check-bundle.mjs` 的 `EXPECTED_CHECKS = 39` 只保证「有 39 个 `check()`」，某一条 `check()` 内部的某行 `assert()` 被删掉时套件仍报全过；浏览器夹具是逐条 `expect()` 计数（删一条即 `run-harness: suite reported X checks, expected Y`），两侧的看守强度并不相同。
 - **G20 启用/停用没有单独的真机观察**：`E-LIVE` 观察到的是卸载回退与重装恢复；启用与停用依赖宿主的插件机制，文档（`quickstart.md` 与九份 README）按"走宿主机制、未单独取证"措辞，没有把这两步写成已验证。
 - **G21 引擎支持的其它图种与"Mermaid 12.1"版本说法没有断言**：**静态检查**采样七种（flowchart、sequence、class、state、er、mindmap、timeline，见 `every supported sample type draws an svg`）；浏览器夹具只画了 flowchart 与一条 `sequenceDiagram`；gantt、kanban、xychart、C4、architecture 等引擎声称支持的图种**没有任何用例**，九份 README 里"Mermaid 12.1"的版本说法也只来自上游 pele 的说明，不是本项目的断言。九份 README 因此改成"静态检查采样这七种、浏览器夹具只画了前两种（见 G21）"。
+- **G23 三处「证据能证明到哪一步」的位置（第二十六轮实现评审 P2 记录，不是缺陷）**：①`client.js` banner 的 `sources sha256` 把 `name` 与 `version` 并进了哈希，所以只改版本号的发版（如 0.1.27、0.1.28）看起来也像"源码变了"——`verify/check-bundle.mjs` 用同一组输入重算，陈旧产物照样被挡住，受影响的是人拿 banner 做来源比对；②`check-bundle` 39 项全绿**不代表行为正确**：恒真守护只覆盖 `needed` 名单里的 26 个断言名（PS21 证明名单外的断言改成 `&& true` 不会红，见 G19），行为证据只来自 `run-harness` 的 228 项；③`children` getter 抛错有**双保险**——`view.js` 的 `safeRead` 守卫与 `FigureBoundary.render` 的 `catch` 任缺一条都不变红，但用户可见结果始终是"源码照常显示、消息不空"（探针 3 与探针 9 的对照），属覆盖精度而非缺陷。三条都不改代码，只登记证据强度。
 - **G22 `check-bundle` 需要 `specs/` 才完整**：`the contract's colour variables are the ones that are wired` 读 `specs/001-mermaid-fence-render/contracts/client-fence-layer.md`，而 `specs/` 不在 `files` 里。在正常 clone（含 `specs/`）与 CI 上都跑得通；只有从一份没有 `specs/` 的副本里打包时，这条断言会以 `ENOENT` 变红（`npm pack` 的 `prepack` 会跑静态套件）。已发布产物不受影响，消费方安装时也不跑 `prepack`；这一项目前只登记为局限，没有改成"文件缺失就跳过"，因为跳过会让同一条断言在 CI 之外静默失效。
 **本文件与 tasks.md 的关系**：`tasks.md` 末尾的状态表逐行对应上面 22 项，两处若不一致，以本文件为准（本文件是证据的归属地，`tasks.md` 是工作项的记录）。
