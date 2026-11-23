@@ -317,6 +317,20 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.2.1 | client.js 780550 bytes | sources s
 run-harness: @jiezhengj/dsh-dyslexia@0.2.1 | client.js 780550 bytes | sources sha256:6b5d4e192279b1294304cbed6303e546 | all 251 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
+## E-PUB · 0.2.2
+
+- tag `v0.2.2`, commit `cf91d6f`, run `45211420278` completed/success
+- CI: `check-bundle ... all 44 checks passed` and `run-harness ... all 252 checks passed (/usr/bin/google-chrome)`
+- `npm notice shasum: 1f17ac1be4c1ea5c5e97c814cc699a6c910ee03d`, `npm notice total files: 33`
+- provenance `logIndex=4054074805`
+
+## E-INS · 0.2.2
+
+- `remove_bundle @jiezhengj/dsh-dyslexia` removed `0.2.1`; `install_bundle @jiezhengj/dsh-dyslexia@0.2.2` returned `application: applied`, `version: 0.2.2`
+- registry tarball answered HEAD 200 on try 24
+- installed copy `client.js` is 780967 bytes, SHA-256 `1829B38B0EBE284E...`, byte-identical to the repository copy; installed `package.json` says `0.2.2`
+- this is a code change (settings.js writer lane, the liveness check, one new fixture), so the running window still has the 0.2.1 chunk until the app restarts
+
 ## E-PROBE — the new checks can fail
 
 Each new check was shown to fail with its own break. The break was applied to a working copy of the sources, rebuilt, run, then restored; the tree ended where it started.
