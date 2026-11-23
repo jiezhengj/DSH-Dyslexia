@@ -64,7 +64,7 @@ flowchart LR
 
 ## Uninstalling and compatibility
 
-- Uninstalling keeps every past conversation intact: earlier drawings turn back into the code blocks they came from, still readable.
+- Uninstalling keeps every past conversation intact: earlier drawings turn back into the code blocks they came from, still readable.  (this takes effect after restarting the app — a running window keeps the figures it has already loaded)
 - The plugin declares no version gate and no required host package, so no version check refuses a start; a real host upgrade has not been rehearsed yet (see G1). if the host changes shape, the plugin steps aside and the plain code block is shown.
 
 ## License

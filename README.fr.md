@@ -45,7 +45,7 @@ Les deux commandes sont dans le dépôt, si bien que ce qui est affirmé dans ce
 
 ## Limites connues
 
-- **Vérifié ici :** dessin dans la discussion vérifié dans DSH bureau `0.2.2-rc.5` (extension `0.1.2`, la vérification sur appareil réel ne couvre que la page de documentation en chinois) ; repli des libellés vérifié ; repli à la désinstallation et réinstallation vérifiés ; huit langues d’interface vérifiées dans le harnais sans interface ; colonne étroite de 360 px vérifiée.
+- **Vérifié ici :** dessin dans la discussion vérifié dans DSH bureau `0.2.2-rc.5` (extension `0.1.2`, la vérification sur appareil réel ne couvre que la page de documentation en chinois) ; repli des libellés vérifié ; repli à la désinstallation et réinstallation vérifiés ; huit langues d’interface vérifiées dans le harnais sans interface ; colonne étroite de 360 px vérifiée.  (prend effet après redémarrage de l’application ; une fenêtre ouverte continue d’afficher les figures déjà chargées)
 - **Probable, mais non prouvé sur votre machine :** autres versions de DSH ; autres navigateurs basés sur Chromium ; les mêmes vérifications sur appareils mobiles (la mise en page est vérifiée dans une fenêtre d’affichage de 360 px d’un navigateur de bureau, pas sur un téléphone physique) ; très grands schémas (il existe des limites : 24 KiB de source, 2 MiB de sortie dessinée, 400 arêtes ; au-delà, il se replie sur le bloc de code).
 - **Non effectué :** aucune mise à niveau de DSH n’a été répétée à ce jour (voir G1) ; les schémas ne sont pas dessinés tant qu’un message est encore en cours de diffusion ; seuls les blocs ` ```mermaid ` sont pris en charge (pas les autres langages de bloc de code).
 

@@ -64,7 +64,7 @@ flowchart LR
 
 ## Desinstalação e compatibilidade
 
-- Desinstalar mantém intactas as conversas anteriores: os desenhos antigos voltam a ser os blocos de código de onde vieram, legíveis.
+- Desinstalar mantém intactas as conversas anteriores: os desenhos antigos voltam a ser os blocos de código de onde vieram, legíveis.  (passa a valer após reiniciar a aplicação; uma janela aberta continua a mostrar as figuras já carregadas)
 - O plugin não declara limite de versão nem pacote de anfitrião obrigatório, então nenhuma verificação de versão impede a inicialização; uma atualização real do anfitrião não foi ensaiada (ver G1). se a forma do anfitrião mudar, o plugin se retira e o bloco de código original é mostrado.
 
 ## Licença

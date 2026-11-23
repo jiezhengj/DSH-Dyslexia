@@ -915,7 +915,19 @@ Done in 4.5s using pnpm v11.28.5
 
 ## E-LIVE 真机（DSH 桌面窗口内）
 
-**以下记录来自 0.1.2**，当前版本（0.1.31）的重启核对是 T079（**尚未取证**，见 G13）。之所以保留，是因为它们证明了链路本身可用；从 0.1.2 到 0.1.31 渲染层改过多次（`role` 结构、`aria-roledescription` 的移除与重排版后重标、可见的复制反馈、空/非法 `children` 的处理、源码块的 `language-mermaid` 标记、外层盒子去掉名字），所以这些观察**不能**自动转移到 `0.1.31`。
+**0.1.31 的重启后核对（2026-11-23 17:1x，本机桌面窗口）**
+
+重启发生在 16:56 与 17:09（`Get-Process 'DeepSeek Harness'` 的 `StartTime`），GUI 是 `http://127.0.0.1:52954`，装进 profile 的版本是 `0.1.31`（依赖与包内 `version` 都是）。这一轮看的是五件事：
+
+| 观察 | 证据 | 归属 |
+|---|---|---|
+| 插件页仍是「DSH 图示阅读」、版本 `v0.1.31`、中文说明、预览图正常渲染、状态「运行中」、底部「已是最新版本」 | 侧栏「插件」→「查看 DSH 图示阅读」的截图（`.tmp/livecheck/shot-detail.png`，1924×1234） | FR-008 的 zh 一种语言，不含其余 7 种说明页 |
+| 会话里的 ```mermaid 代码块就地成图，**不开侧栏、不弹窗** | 同一条消息里代码块位置出现图；无障碍树 `find --role image` 命中 1 个节点、`name="图"`（纯名词，不含引擎类型）；外层盒子没有名字（`find --role group --name "图"` 为 0） | FR-003、FR-007、FR-018 的"图有本地化名字且容器不重复念" |
+| 图下是「查看源码」「复制源码」两个中文按钮 | `find --role button --name "复制源码"` 命中 1 个 `button`；「查看源码」因带 `aria-expanded` 被宿主映射成 `menubutton`（见 G24②） | FR-018 的按钮本地化 |
+| 点「复制源码」把源码原文写进剪贴板，界面出现可见回执 | `Set-Clipboard 'sentinel-before-copy'` → 点击 → `Get-Clipboard` 得到 `flowchart LR` / `  A[Agent 写出 mermaid 代码块] --> B[同一条消息里就地成图]` / `  B --> C[原文仍是文本，可复制可检索]`；按钮右侧出现「复制成功」（该文案来自宿主词条，见 G24③） | FR-005、FR-018 的"复制诚实" |
+| 卸载不会改写已渲染的消息，但**也不在运行中的窗口里消失** | `remove_bundle` 返回 `applied`、profile 依赖与 `node_modules` 都已移除；随后 8 秒内那条消息仍显示图与两个按钮（`find --role image` 仍为 1、`复制源码` 仍为 1），`Ctrl+R` 与 `F5` 也没有让窗口重新加载 | FR-009 的后半**改为未取证**（见 G24①） |
+
+**以下四条来自 0.1.2**，保留是因为它们证明链路本身可用；0.1.3–0.1.31 改过渲染层（`role` 结构、`aria-roledescription` 的移除与重排版后重标、可见的复制反馈、空/非法 `children` 的处理、源码块的 `language-mermaid` 标记、外层盒子去掉名字），所以它们**不能**自动转移。
 
 | 观察 | 当时的证据 | 归属 |
 |---|---|---|
@@ -930,7 +942,7 @@ Done in 4.5s using pnpm v11.28.5
 - `review-impl-32`（HEAD `24ac43d`，只读）：**PASS**。43 条独立探针 0 条变红；`git diff --stat 5f767a5..HEAD` 为 7 个文件、全部在 `specs/001-mermaid-fence-render/` 内（`git diff --stat 5f767a5..HEAD -- . ':(exclude)specs'` 为空）；两套检查 40 / 229；重建 SHA256 与已发布 0.1.31 相同；tarball 装进临时 profile 再卸载无残留；并按 asar 字节核对宿主 API 形状（`systemPrompt.section({name, order, text})`、`slots.inject(owner, () => register({...}, Component))`）与实现一致。
 - 两条记录在案、不构成缺陷的观察：①`index.js` 的异步拒绝分支在现宿主上是死代码（`section()` 同步），保留是为"宿主形状变化"兜底，`review-impl-30` 的探针 A3 证明删掉内层 try/catch 仍全绿；②`entry.js` 的 `claimed` WeakSet 在 dispose 时不释放——DSH 的重新启用走注入工厂（新 `ctx`），`review-impl-32` 的 P16 探针证明会重新安装，故无失败证据。
 
-## E-GAPS 没有取证的部分（共 23 项）
+## E-GAPS 没有取证的部分（共 24 项）
 
 真机、设备与离线条件（都要求动手换条件，不能在 CI 里做）：
 
@@ -966,4 +978,9 @@ Done in 4.5s using pnpm v11.28.5
 
 - **G23 三处「证据能证明到哪一步」的位置（第二十六轮实现评审 P2 记录，不是缺陷）**：①`client.js` banner 的 `sources sha256` 把 `name` 与 `version` 并进了哈希，所以只改版本号的发版（如 0.1.27、0.1.28）看起来也像"源码变了"——`verify/check-bundle.mjs` 用同一组输入重算，陈旧产物照样被挡住，受影响的是人拿 banner 做来源比对；②`check-bundle` 40 项全绿**不代表行为正确**：恒真守护只覆盖 `needed` 名单里的 26 个断言名（PS21 证明名单外的断言改成 `&& true` 不会红，见 G19），行为证据只来自 `run-harness` 的 229 项；③`children` getter 抛错有**双保险**——`view.js` 的 `safeRead` 守卫与 `FigureBoundary.render` 的 `catch` 任缺一条都不变红，但用户可见结果始终是"源码照常显示、消息不空"（探针 3 与探针 9 的对照），属覆盖精度而非缺陷。其中②在 0.1.27 起把四条源码检查的细节串补上「behaviour is asserted by the fixture」，避免被误读成行为担保；三条都不改产品行为。
 
-**本文件与 tasks.md 的关系**：`tasks.md` 末尾的状态表逐行对应上面 23 项，两处若不一致，以本文件为准（本文件是证据的归属地，`tasks.md` 是工作项的记录）。
+- **G24 0.1.31 真机核对暴露的三件事（2026-11-23，未修，先按事实记录）**：
+  ①**卸载在运行中的窗口里不生效**：`remove_bundle` 已经 `applied`（profile 依赖与 `node_modules` 都清理干净），但已打开的窗口继续显示图与两个按钮，`Ctrl+R`/`F5` 也没让窗口重新加载；也就是说客户端 chunk 是随窗口加载的，卸载要等**重启应用**才从界面上消失。`E-LIVE` 在 0.1.2 记过"卸载后同一条消息立刻变回代码块"，那是在另一版宿主上看到的；`FR-009` 的"卸载后回退"因此只能算**重启后**成立，`quickstart.md` 与九份 README 里"卸载立刻生效"的措辞要按这个事实改。
+  ②**「查看源码」在无障碍树里是 `menubutton`，自动化点不动**：`aria-expanded` 让宿主把它映射成 `menubutton`，`agent-desktop click` 对它返回 `ACTION_FAILED ... DoDefaultAction`，真实鼠标点击（坐标按 UIA bounds 换算）也没有观察到标签在「查看源码/隐藏源码」之间翻转，所以 0.1.31 真机上"展开源码面板"这一步**没有取证**；它的开合行为只有无头夹具（`[lang] the source toggle flips its word`、`the source toggle starts collapsed`、`expands`）。
+  ③**复制回执的文案来自宿主词条**：`translateFor` 先问宿主的 `t`，宿主的全局字典里有 `copied: 复制成功`，所以界面显示的是"复制成功"而不是我们 `i18n.js` 里的"已复制"。含义与语言都对，但说明**键名与宿主全局词条撞车时以宿主为准**；这一点从未在文档里写过。
+
+**本文件与 tasks.md 的关系**：`tasks.md` 末尾的状态表逐行对应上面 24 项，两处若不一致，以本文件为准（本文件是证据的归属地，`tasks.md` 是工作项的记录）。

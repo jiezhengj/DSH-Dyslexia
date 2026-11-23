@@ -64,7 +64,7 @@ flowchart LR
 
 ## Desinstalación y compatibilidad
 
-- Desinstalar mantiene intactas las conversaciones anteriores: los dibujos vuelven a ser los bloques de código de los que salieron, legibles.
+- Desinstalar mantiene intactas las conversaciones anteriores: los dibujos vuelven a ser los bloques de código de los que salieron, legibles.  (surtur efecto tras reiniciar la aplicación; una ventana abierta sigue mostrando las figuras ya cargadas)
 - El complemento no declara puerta de versión ni paquete anfitrión obligatorio, así que ninguna comprobación de versión impide el arranque; una actualización real del anfitrión no se ha ensayado (véase G1). si el anfitrión cambia de forma, el complemento se aparta y se muestra el bloque de código original.
 
 ## Licencia
