@@ -418,7 +418,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T213 文档：`spec.md` Status 改 `0.1.19` 与"E-GAPS 18 项（G1–G18）"；`evidence/verification.md` 的 E-GAPS 增 **G18**（引擎缺失分支只有静态证据：引擎已内联，运行期不可能缺失，把 `mountFigure` 的 `typeof pele.mount === 'function'` 守卫改成恒真，两套检查都不会变红）；计数 37 → 39、216 → 220（`plan.md`、`quickstart.md`、`tasks.md`、`contracts/plugin-manifest.md`、`evidence` 的复跑注释）
 - [x] T214 `tasks.md` 的 T204 改成最终事实（`evidence` 的 E-LIVE 引言是"从 0.1.2 到 0.1.17"、G13 区间是 0.1.3–0.1.17，0.1.18 只改了文档与 README）
 - [x] T215 八份 README 的英文半句补上"real-machine verification covers the Chinese docs page only"（`README.md` 的英文半句另有 `（插件 `0.1.2`）` → `(plugin `0.1.2`)` 的混排修正），与 `README.zh.md` 口径一致
-- [x] T216 发布 `v0.1.19`——run id、shasum、logIndex、安装哈希等发版后回填；CI 应报 39 项静态 / 220 项浏览器；从 registry 装回 profile `desktop` 并核对安装副本与仓库根逐字节相同、`locale/` 8、`docs/` 9
+- [x] T216 发布 `v0.1.19`（提交 `17ea689`）→ GitHub Actions run `45086312392` success（CI 39 项静态 / 220 项浏览器，shasum `9bcbc948d917b04df6f8a93639a4d6437ac5a74c`，provenance logIndex `4049111154`，33 文件）→ 从 registry 装回 profile `desktop`（依赖 `"0.1.19"`，安装副本 769,453 字节、SHA256 `5B54B79C7D59CF25B9CE06ED713F60B7B45D7A74155D0132B0EB3EE7CBE0CFF9` 与仓库根逐字节相同，`locale/` 8、`docs/` 9、包内 `0.1.19`）→ E-PUB/E-INS 补 0.1.19 行
 - [ ] T217 第十七轮双评审（目标 PASS；两份都 PASS 才把 feature 001 标记完成）
 
 ## Dependencies & Execution Order
