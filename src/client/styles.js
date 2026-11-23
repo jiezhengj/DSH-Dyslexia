@@ -30,6 +30,7 @@ const FIGURE_CSS = [
   '  --pele-surface-alt: var(--dsw-alias-bg-base);',
   '  --pele-border: var(--dsw-alias-border-l1);',
   '  --pele-accent: var(--dsw-alias-brand-primary);',
+  '  --pele-critical: var(--dsw-alias-state-error-primary);',
   '  --pele-font: inherit;',
   '  max-width: 100%;',
   '  box-sizing: border-box;',

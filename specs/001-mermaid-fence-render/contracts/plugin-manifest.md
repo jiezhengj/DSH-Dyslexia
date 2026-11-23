@@ -95,7 +95,7 @@
 
 8 种界面语言 `zh`、`en`、`ja`、`es`、`fr`、`de`、`ru`、`pt` 各有一份，取自宿主 `dsh-client-locale` 实际注册的语言集合。
 
-# 可静态校验项（`node verify/check-bundle.mjs`，37 项）
+# 可静态校验项（`node verify/check-bundle.mjs`，39 项）
 
 与清单直接相关的断言：
 
@@ -116,7 +116,7 @@
 15. **文案完整**：12 个键 × 8 语言齐全，失败整句里不含 `{{reason}}`、不含引擎英文。
 16. **key 回显防线**：`i18n.js` 的 `isResolved` 拒绝回显 key、纯空白、未替换占位符。
 
-# 浏览器行为校验（`node verify/run-harness.mjs --list`，216 项）
+# 浏览器行为校验（`node verify/run-harness.mjs --list`，216 项 → 0.1.19 起 220 项）
 
 夹具 `verify/harness/index.html` 提交进仓库，用真实 Chromium 打开 `file://`，覆盖：槽注册形状、8 语言逐个驱动、5 类敌意 `t`、绘制/坏图/引擎抛错/getter 抛错、复制成功与失败、360 px 窄屏、主题换色、locale 重试、7 种畸形 `ctx`、内部 key 不外泄。
 

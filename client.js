@@ -1,4 +1,4 @@
-/*! @jiezhengj/dsh-dyslexia 0.1.18 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:f5b4e6eb0b1402f42ba0fcc19e23df9e */
+/*! @jiezhengj/dsh-dyslexia 0.1.19 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:f08d3ef095f2cc09d26ca04c013dcc9a */
 ;(function () {
   function reportLoadFailure(scope, error) {
     try { console.error('dsh-dyslexia: ' + scope, error) } catch (_error) {}
@@ -203,6 +203,7 @@ const FIGURE_CSS = [
   '  --pele-surface-alt: var(--dsw-alias-bg-base);',
   '  --pele-border: var(--dsw-alias-border-l1);',
   '  --pele-accent: var(--dsw-alias-brand-primary);',
+  '  --pele-critical: var(--dsw-alias-state-error-primary);',
   '  --pele-font: inherit;',
   '  max-width: 100%;',
   '  box-sizing: border-box;',

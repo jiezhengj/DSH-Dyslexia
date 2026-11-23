@@ -600,6 +600,64 @@ check('the host half stays silent when the host changed shape', () => {
 
 /* ------------------------------------------- the fixtures can fail at all */
 
+check("the contract's colour variables are the ones that are wired", () => {
+  const contract = readFileSync(
+    join(ROOT, 'specs', '001-mermaid-fence-render', 'contracts', 'client-fence-layer.md'),
+    'utf8',
+  )
+  const styles = readFileSync(join(ROOT, 'src', 'client', 'styles.js'), 'utf8')
+  const pairOf = (text) => {
+    const pairs = new Map()
+    const pattern = /--pele-([a-z-]+):\s*([^;'\n]+);/g
+    let match = pattern.exec(text)
+    while (match) {
+      pairs.set(match[1], match[2].trim())
+      match = pattern.exec(text)
+    }
+    return pairs
+  }
+  const wanted = pairOf(contract)
+  const wired = pairOf(styles)
+  assert(wanted.size >= 8, `the contract names only ${wanted.size} engine variables`)
+  const missing = [...wanted.keys()].filter((name) => !wired.has(name))
+  const extra = [...wired.keys()].filter((name) => !wanted.has(name))
+  assert(missing.length === 0, `the contract names variables the styles do not wire: ${missing.join(', ')}`)
+  assert(extra.length === 0, `the styles wire variables the contract never names: ${extra.join(', ')}`)
+  const mismatched = [...wanted.keys()]
+    .filter((name) => wanted.get(name) !== wired.get(name))
+    .map((name) => `${name}: ${wanted.get(name)} vs ${wired.get(name)}`)
+  assert(mismatched.length === 0, `the contract and the styles disagree: ${mismatched.join('; ')}`)
+  return `${wired.size} engine variables, same names and same host aliases on both sides`
+})
+
+check('both size limits reach the engine, each proven on its own', () => {
+  const figure = readFileSync(join(ROOT, 'src', 'client', 'figure.js'), 'utf8')
+  const harness = readFileSync(join(ROOT, 'verify', 'harness', 'index.html'), 'utf8')
+  assert(/limit:\s*24 \* 1024/.test(figure), 'the character limit is not 24 KiB')
+  assert(/maxEdges:\s*400/.test(figure), 'the edge limit is not 400')
+  assert(/outputLimit:\s*2 \* 1024 \* 1024/.test(figure), 'the output limit is not 2 MiB')
+  const fixtures = [
+    'a source over the size limit says why',
+    'a source over the size limit is not drawn',
+    'a picture with too many edges says why',
+    'a picture with too many edges is not drawn',
+  ]
+  for (const name of fixtures) {
+    assert(harness.includes(name), `the harness lost the fixture ${name}`)
+  }
+  // Two fixtures, not one: a source that crosses both limits keeps passing when
+  // either check is loosened, which is how the old single fixture stayed green.
+  assert(
+    /length: 40[\s\S]{0,80}x'\.repeat\(760\)/.test(harness),
+    'the character-limit fixture does not cross only the character limit',
+  )
+  assert(
+    /length: 420[\s\S]{0,80}--> A\$\{index \+ 1\}/.test(harness),
+    'the edge-limit fixture does not cross only the edge limit',
+  )
+  return 'three limits passed to mount, two fixtures that cross one each'
+})
+
 check('the fixtures assert what the fixes promise, and can fail', () => {
   const harness = readFileSync(join(ROOT, 'verify', 'harness', 'index.html'), 'utf8')
   const needed = [
@@ -642,7 +700,7 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
 
 /* ---------------------------------------------------------------- report */
 
-const EXPECTED_CHECKS = 37
+const EXPECTED_CHECKS = 39
 if (notices.length + failures.length !== EXPECTED_CHECKS) {
   failures.push(
     `[FAIL] the suite has ${notices.length + failures.length} checks, expected ${EXPECTED_CHECKS}: a check was added or removed without updating this number`,

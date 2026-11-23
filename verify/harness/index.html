@@ -773,14 +773,28 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           keyEcho.root.unmount()
           keyEcho.stage.remove()
 
-          /* ------------------------------------- a picture nobody can draw */
-          const huge = 'flowchart LR\n' + Array.from({ length: 900 }, (_, index) => `  N${index}[node ${index}] --> N${index + 1}[node ${index + 1}]`).join('\n')
-          const hugeView = mount(Layer, { code: huge, streaming: false, children: hostBlock('huge') })
-          await tick(160)
-          expect(!!hugeView.stage.querySelector('.dsh-dyslexia-note'), 'a source past the size limit says why', hugeView.stage.textContent.slice(0, 40))
-          expect(hugeView.stage.textContent.indexOf('huge') !== -1, 'a source past the size limit keeps the host block')
-          hugeView.root.unmount()
-          hugeView.stage.remove()
+          /* ------------------------- each size limit on its own, so neither hides the other */
+          // Over the character limit (24 KiB) and nowhere near the edge limit (400):
+          // strip `limit` from figure.js and this one starts drawing.
+          const longSource = 'flowchart LR\n' + Array.from({ length: 40 }, (_, index) => `  N${index}[${'x'.repeat(760)}] --> N${index + 1}[node]`).join('\n')
+          const longView = mount(Layer, { code: longSource, streaming: false, children: hostBlock('long') })
+          await tick(200)
+          expect(!!longView.stage.querySelector('.dsh-dyslexia-note'), 'a source over the size limit says why', longView.stage.textContent.slice(0, 40))
+          expect(longView.stage.textContent.indexOf('long') !== -1, 'a source over the size limit keeps the host block')
+          expect(!longView.stage.querySelector('[role="img"]'), 'a source over the size limit is not drawn')
+          longView.root.unmount()
+          longView.stage.remove()
+
+          // Over the edge limit (400) and far under the character limit: strip
+          // `maxEdges` from figure.js and this one starts drawing instead.
+          const manyEdges = 'flowchart LR\n' + Array.from({ length: 420 }, (_, index) => `  A${index} --> A${index + 1}`).join('\n')
+          const edgeView = mount(Layer, { code: manyEdges, streaming: false, children: hostBlock('many edges') })
+          await tick(200)
+          expect(!!edgeView.stage.querySelector('.dsh-dyslexia-note'), 'a picture with too many edges says why', edgeView.stage.textContent.slice(0, 40))
+          expect(edgeView.stage.textContent.indexOf('many edges') !== -1, 'a picture with too many edges keeps the host block')
+          expect(!edgeView.stage.querySelector('[role="img"]'), 'a picture with too many edges is not drawn')
+          edgeView.root.unmount()
+          edgeView.stage.remove()
 
           /* ----------------------------------- streaming turns into a picture */
           const turnStage = document.createElement('div')

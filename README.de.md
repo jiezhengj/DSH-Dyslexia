@@ -45,7 +45,7 @@ Beide Befehle liegen im Repository, sodass sich die Aussagen in dieser Datei jed
 
 ## Bekannte Grenzen
 
-- **Hier verifiziert:** Zeichnen im Chat in DSH Desktop `0.2.2-rc.5` (Plugin `0.1.2`) verifiziert; Beschriftungs-Fallback verifiziert; Deinstallations-Fallback und Neuinstallation verifiziert; acht Oberflächensprachen im Headless-Test verifiziert; schmale 360-px-Spalte verifiziert.
+- **Hier verifiziert:** Zeichnen im Chat in DSH Desktop `0.2.2-rc.5` (Plugin `0.1.2`, echte Geräteprüfung nur für die chinesische Dokumentationsseite) verifiziert; Beschriftungs-Fallback verifiziert; Deinstallations-Fallback und Neuinstallation verifiziert; acht Oberflächensprachen im Headless-Test verifiziert; schmale 360-px-Spalte verifiziert.
 - **Wahrscheinlich, aber auf deinem Rechner nicht bewiesen:** andere DSH-Versionen; andere Chromium-basierte Browser; dieselben Prüfungen auf Mobilgeräten (das Layout ist in einem 360-px-Viewport eines Desktop-Browsers verifiziert, nicht auf einem physischen Telefon); sehr große Diagramme (es gibt Grenzen: 24 KiB Quelltext, 2 MiB Zeichenausgabe, 400 Kanten; darüber hinaus fällt es auf den Codeblock zurück).
 - **Nicht durchgeführt:** ein Upgrade von DSH über eine Hauptversion hinweg wurde nicht geprobt; Diagramme werden nicht gezeichnet, solange eine Nachricht noch streamt; nur ` ```mermaid `-Blöcke werden behandelt (keine anderen Codeblock-Sprachen).
 

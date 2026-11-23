@@ -6,20 +6,20 @@
 
 ```bash
 node scripts/build-client.mjs       # 由 src/client/*.js + vendor/pele 生成 client.js
-node verify/check-bundle.mjs        # 37 项静态与行为断言，纯 Node 内置模块
-node verify/run-harness.mjs --list  # 216 项浏览器断言，需要本机 Chrome
+node verify/check-bundle.mjs        # 39 项静态与行为断言，纯 Node 内置模块
+node verify/run-harness.mjs --list  # 220 项浏览器断言，需要本机 Chrome
 ```
 
 ## E-BLD 构建
 
 ```text
-build-client: @jiezhengj/dsh-dyslexia -> client.js (769391 bytes, 768361 characters, engine 1.13.0, sources 5, syntax ok)
+build-client: @jiezhengj/dsh-dyslexia -> client.js (769453 bytes, 768423 characters, engine 1.13.0, sources 5, syntax ok)
 ```
 
 ## E-CHK 静态与行为校验
 
 ```text
-ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.18
+ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.19
 ok   package.json points at the repository npm trusts — git+https://github.com/jiezhengj/DSH-Dyslexia.git
 ok   package.json declares the bundle patch and the client half — platform web, no package inject
 ok   no dsh version gate can refuse a start — no engines.dsh, no dsh peers
@@ -28,7 +28,7 @@ ok   the required published files exist — 24 required files
 ok   every interface language has its own plugin page — 8 languages
 ok   cordis.patch.yml inserts the plugin by package name — 3 lines
 ok   both locales carry metadata — en, zh
-ok   client.js is one loader chunk keyed by the package name — 769391 bytes
+ok   client.js is one loader chunk keyed by the package name — 769453 bytes
 ok   client.js requires react and nothing else — react
 ok   client.js never reaches the network — no fetch, no XHR, no dynamic import, no remote URL
 ok   client.js carries the vendored engine — Pele 1.13.0 inlined
@@ -46,7 +46,7 @@ ok   every supported sample type draws an svg — flowchart:218x64 sequence:184x
 ok   a broken diagram reports a one-line reason — Parse error on line 2:
 ok   host key echo falls back to bundled strings — key echo, blanks, placeholders rejected
 ok   every language carries the same complete sentences — 12 keys x 8 languages, no engine text in labels
-ok   client.js matches the sources it claims — f5b4e6eb0b1402f42ba0fcc19e23df9e
+ok   client.js matches the sources it claims — f08d3ef095f2cc09d26ca04c013dcc9a
 ok   the picture is the image, and the copy answer is announced — label is a noun, role="img" on the svg, copy result announced
 ok   host children react would refuse fall back to the source — objects, functions and mixed arrays fall back to the source text
 ok   every drawing the engine swaps in is named again — the engine owns re-layout; every swapped drawing node and its zoom buttons are renamed, strings follow the language
@@ -55,8 +55,11 @@ ok   a factory that cannot build never throws at the host — module-level throw
 ok   nothing in the package asks you to edit an instruction file — 17 shipped text files, no instruction-file ask
 ok   the host half registers exactly one capability section — ui:dsh-dyslexia, order 9000, 85 words
 ok   the host half stays silent when the host changed shape — five silent hosts, two throwing sections
+ok   the contract's colour variables are the ones that are wired — 10 engine variables, same names and same host aliases on both sides
+ok   both size limits reach the engine, each proven on its own — three limits passed to mount, two fixtures that cross one each
 ok   the fixtures assert what the fixes promise, and can fail — 21 assertions present and carrying a condition
-check-bundle: @jiezhengj/dsh-dyslexia@0.1.18 | client.js 769391 bytes | sources sha256:f5b4e6eb0b1402f42ba0fcc19e23df9e | all 37 checks passed
+
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.19 | client.js 769453 bytes | sources sha256:f08d3ef095f2cc09d26ca04c013dcc9a | all 39 checks passed
 ```
 
 ## E-HARN 浏览器行为校验
@@ -242,8 +245,12 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.18 | client.js 769391 bytes | sources 
 [ok] the fence layer is gone once the host disposes — 0
 [ok] a host without effects keeps one stylesheet, not one per apply — 1
 [ok] no internal key reaches the eye — leaked: 
-[ok] a source past the size limit says why — 这张图无法绘制，已改为显示源码。huge
-[ok] a source past the size limit keeps the host block
+[ok] a source over the size limit says why — 这张图无法绘制，已改为显示源码。long
+[ok] a source over the size limit keeps the host block
+[ok] a source over the size limit is not drawn
+[ok] a picture with too many edges says why — 这张图无法绘制，已改为显示源码。many edges
+[ok] a picture with too many edges keeps the host block
+[ok] a picture with too many edges is not drawn
 [ok] the picture appears when the stream ends
 [ok] a falsy children is not mistaken for content — 图里的语法有误，已改为显示源码。flowchart TD
   A-->
@@ -282,7 +289,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.18 | client.js 769391 bytes | sources 
 [ok] the zoom buttons speak the interface language — 放大 | 缩小 | 重置缩放
 [ok] every zoom button in reach can take the keyboard — 1/1 reachable of 3
 [ok] every zoom button is reachable once the picture is zoomed — 3/3 after zoom
-run-harness: @jiezhengj/dsh-dyslexia@0.1.18 | client.js 769391 bytes | sources sha256:f5b4e6eb0b1402f42ba0fcc19e23df9e | all 216 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+run-harness: @jiezhengj/dsh-dyslexia@0.1.19 | client.js 769453 bytes | sources sha256:f08d3ef095f2cc09d26ca04c013dcc9a | all 220 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
 同一次运行的 stderr 另有 7 段被**刻意捕获**的异常堆栈（loader ×3、prompt section ×3、module ×1，例如 `dsh-dyslexia: loader Error: host changed the loader`、`dsh-dyslexia: prompt section rejected Error: asynchronous failure`）：它们来自敌意宿主用例，属正常输出，不是失败。
@@ -299,7 +306,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.18 | client.js 769391 bytes | sources s
 
 ## E-PROBE 夹具能失败吗：用破坏性探针验证
 
-如果一个断言恒真，"套件全绿"就不构成证据。0.1.8 至 0.1.17 期间共做了十五次探针：故意破坏被断言保护的代码、重建 `client.js`、跑两套检查、确认目标断言**变红**，再还原（0.1.10 起的几次在 `%TEMP%` 的仓库副本里做，不动工作树）。报告行里的项数属于**当时的套件**：0.1.10 = 119 项、0.1.11 = 152 项、0.1.12 = 156 项、0.1.13 = 197 项、0.1.14 = 205 项、0.1.15 起 = 213 项、0.1.17 起 = 216 项。
+如果一个断言恒真，"套件全绿"就不构成证据。0.1.8 至 0.1.19 期间共做了十八次探针：故意破坏被断言保护的代码、重建 `client.js`、跑两套检查、确认目标断言**变红**，再还原（0.1.10 起的几次在 `%TEMP%` 的仓库副本里做，不动工作树）。报告行里的项数属于**当时的套件**：0.1.10 = 119 项、0.1.11 = 152 项、0.1.12 = 156 项、0.1.13 = 197 项、0.1.14 = 205 项、0.1.15 起 = 213 项、0.1.17 起 = 216 项、0.1.19 起 = 220 项（静态 0.1.19 起 = 39 项）。
 
 | 探针 | 破坏方式 | 变红的断言（含报告行） | 说明 |
 |---|---|---|---|
@@ -318,6 +325,9 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.18 | client.js 769391 bytes | sources s
 | PR3 | 0.1.14 时：把 `FigureBoundary.render` 里 `try { input = readLayerInput(this.props) }` 拆开，直接读 | 夹具 `a fence whose props read throws is left to the host, not the message` 报 `""`（整条消息被清空） | `run-harness: 1 failed, 204 passed`，exit 1 |
 | PT1 | 0.1.15 时：把 `src/client/view.js` 的 `finishCopy('failed')` 全换成 `finishCopy('copied')` | 8 条 `[lang] a refused clipboard says so` 全部变红（`已复制 / expected 复制失败` 等） | `run-harness: 8 failed, 205 passed`，exit 1 |
 | PS1 | 0.1.17 时：只删掉 `src/client/view.js` 里 `setShowSource(false)` 一行（保留 `setCopyState('idle')`） | 夹具 `a new fence closes a panel the reader opened for the old one` → `panels=1`（应 0）、`the new fence offers the panel closed, not open` → `true`（应 `false`） | `run-harness: 2 failed, 214 passed`，exit 1。0.1.17 之前这一行删掉没有任何断言变红（第十三轮实现评审 P3-7 指出的覆盖缺口），所以新增这两条才让"源码一换就收起面板"成为可证伪的行为 |
+| PS2 | `src/client/figure.js` 的 `FIGURE_LIMITS` 删掉 `limit: 24 * 1024,` 一行 | 夹具 `a source over the size limit says why`、`a source over the size limit keeps the host block`、`a source over the size limit is not drawn` 三条变红；`a picture with too many edges …` 三条仍绿 | 报告行 `run-harness: 3 failed, 217 passed`（exit 1）。证明「字符上限」这一条被单独保护：旧的 `huge` 夹具同时越两条上限，删任一条都不会红 |
+| PS3 | 同上，删掉 `maxEdges: 400,` 一行 | 夹具 `a picture with too many edges says why`、`a picture with too many edges keeps the host block`、`a picture with too many edges is not drawn` 三条变红；字符上限三条仍绿 | 报告行 `run-harness: 3 failed, 217 passed`（exit 1）。两条上限各自可证伪 |
+| PS4 | `contracts/client-fence-layer.md` 把 `--pele-line: var(--dsw-alias-border-l2)` 改回 `border-l1` | 静态 `the contract's colour variables are the ones that are wired` → `the contract and the styles disagree: line: var(--dsw-alias-border-l1) vs var(--dsw-alias-border-l2)` | 报告行 `check-bundle: 1 failed, 38 passed`（exit 1）。契约与 `styles.js` 的十行变量逐行相等由断言看守 |
 
 静态检查里另有一条守护 `the fixtures assert what the fixes promise, and can fail`：它要求 P1/P2/P4/P5/PA/PB/PC 里那几个"能变红的断言名"继续存在于夹具中，并且每条名字必须落在带条件的 `expect(` 调用里（掏空断言体会红），否则说明有人把夹具删了而代码检查仍绿。P6/P7 是另一道：两套检查各自的条目数被钉死，删一条也会红。
 
@@ -724,7 +734,7 @@ Done in 2.4s using pnpm v11.28.5
 | 卸载插件后，同一条消息变回纯文本代码块，无报错无占位 | `remove_bundle` 后 `flowchart LR … A[代码块] --> B[就地成图]` 原样显示，`role="img"`（`agent-desktop` 报告为 image）与按钮计数为 0 | US2/FR-009（不含 SC-002 的会话检索命中） |
 | 重新安装后图与按钮立刻回来，历史消息不用改 | `install_bundle` 后同一屏立刻渲染 | FR-010 |
 
-## E-GAPS 没有取证的部分（共 17 项）
+## E-GAPS 没有取证的部分（共 18 项）
 
 真机、设备与离线条件（都要求动手换条件，不能在 CI 里做）：
 
@@ -756,3 +766,5 @@ Done in 2.4s using pnpm v11.28.5
 ---
 
 **本文件与 tasks.md 的关系**：`tasks.md` 末尾的状态表逐行对应上面 17 项，两处若不一致，以本文件为准（本文件是证据的归属地，`tasks.md` 是工作项的记录）。
+
+- **G18 引擎缺失分支只有静态证据（第十六轮实现评审 P3）**：`verify/check-bundle.mjs` 的 `an engine that fails to load leaves the picture to the host` 只断言产物里存在错误边界、`readLayerInput`、`safeRead` 与 `engineUnavailable` 这句话；引擎已经内联进 `client.js`，运行期不可能缺失，所以这条路**没有动态用例**——把 `figure.js` 里 `mountFigure` 的 `typeof pele.mount === 'function'` 守卫改成恒真，两套检查都不会变红。它的价值是模型知情（宿主换了加载方式时仍给一句话，而不是白屏），不是可以被演练的行为。
