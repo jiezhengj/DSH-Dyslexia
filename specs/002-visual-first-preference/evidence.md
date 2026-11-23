@@ -1,6 +1,6 @@
 # Evidence — feature 002: the preference switch and the new name
 
-This file records what was actually observed while building feature 002. Every block below is one run on one tree; nothing is copied from another version. There are two E-PUB/E-INS blocks: 0.2.0 as history and 0.2.1 as the published version. E-CHK and E-HARN quote the 0.2.1 run only (44 static, 251 browser). The working tree is 0.2.2, whose counts are 44 static and 252 browser checks; the 0.2.2 rows are added after this documentation pass.
+This file records what was actually observed while building feature 002. Each block is one run on one tree; no block mixes trees. E-PUB/E-INS exist for all three published versions — `0.2.0`, `0.2.1` and `0.2.2` — with the `0.2.2` pair near the top and the older pairs under "E-PUB publish" below. E-BLD, E-CHK and E-HARN quote the `0.2.1` tree only (44 static, 251 browser; E-CHK is a filtered excerpt of the 44 `ok` lines). The current tree is `0.2.2` plus this review pass's fixture additions: 44 static and 260 browser checks, `client.js` 780967 bytes, sources sha256 `d5830e94c5a81da942a4b0414eead34e`; the published `0.2.2` run passed 44/252 before those additions. E-PROBE records F3–F8 on `0.2.1` and F1/F9 on the current tree.
 
 ## E-BLD build
 
@@ -333,11 +333,11 @@ run-harness: @jiezhengj/dsh-dyslexia@0.2.1 | client.js 780550 bytes | sources sh
 
 ## E-PROBE — the new checks can fail
 
-Each new check was shown to fail with its own break. The break was applied to a working copy of the sources, rebuilt, run, then restored; the tree ended where it started.
+Each probe below breaks one protected behaviour in a working copy of the sources, rebuilds it, runs the suite that should see it, records the red line, and restores the copy. F1 and F9 were run on the current `0.2.2` tree (44 static, 260 browser); F3–F8 are the earlier runs on the `0.2.1` tree (44 static, 251 browser) and were not re-run. The untouched copy reported `all 44 checks passed` and `all 260 checks passed` before the breaks.
 
 | probe | change | result |
 |---|---|---|
-| F1 | `index.js`: `briefing` ignores the switch and always appends the preference | `FAIL the capability briefing is what it was before the switch — capability text is 155 words, budget is 95`, `FAIL the switch adds the preference on top of the capability, and nothing else — the switch is on and nothing was added`, `FAIL the section hands the host a function, not a frozen string — two captures with different values produced the same text`, `check-bundle: 3 failed, 41 passed`, exit 1 |
+| F1 | `index.js`: `briefing` ignores the switch and always appends the preference | `FAIL the section hands the host a function, not a frozen string — the same registration did not read the value again: the briefing is frozen at apply time`, `FAIL the capability briefing is what it was before the switch — capability text is 155 words, budget is 95`, `FAIL the switch adds the preference on top of the capability, and nothing else — the switch is on and nothing was added`, `check-bundle: 3 failed, 41 passed`, exit 1 |
 | F2 | `index.js`: `text: briefing(config)` instead of `text: () => briefing(config)` | `FAIL the section hands the host a function, not a frozen string — section text is a frozen string: the switch would only apply after a restart`, `check-bundle: 1 failed, 43 passed`, exit 1 |
 | F3 | `index.js`: `visualFirst` default `false` | `FAIL the switch is on for an empty configuration — the switch does not default to on`, `check-bundle: 1 failed, 43 passed`, exit 1 |
 | F4 | `src/client/entry.js`: locale registration run immediately instead of through `ctx.effect` | `[bad] styles and strings are claimed as effects — 1`, `[bad] the locale registration is dropped — 0`, `run-harness: 2 failed, 249 passed`, exit 1 |
@@ -345,10 +345,11 @@ Each new check was shown to fail with its own break. The break was applied to a 
 | F6 | `src/client/settings.js`: `setValue` calls `face.set` twice | `[bad] one click asks the host for the opposite value once — [["visualFirst",false],["visualFirst",false]]`, `[bad] the second click tries the other value once — [["visualFirst",false],["visualFirst",false],["visualFirst",true],["visualFirst",true]]`, `[bad] a rejected write leaves the switch where the host put it — true`, `[bad] a rejected write explains itself in the status sentence — 已保存`, `run-harness: 4 failed, 247 passed`, exit 1 |
 | F7 | `src/client/settings.js`: `aria-checked` always `true` | `[bad] the switch turns off after the write — true`, `[bad] a rejected write leaves the switch where the host put it — true`, `[bad] the switch starts off when the host already says off — true`, `run-harness: 3 failed, 248 passed`, exit 1 |
 | F8 | `src/client/i18n.js`: `hostKey` returns the bare key | `[bad] a host dictionary that already owns a word does not put it on our button — 复制成功`, `[bad] a host that translates the namespaced key is used — 已复制`, `run-harness: 2 failed, 249 passed`, exit 1 |
+| F9 | `src/client/settings.js`: attach `setValue` regardless of `face.set` (`if (face) {` instead of `if (face && typeof face.set === 'function') {`) | `[bad] a host whose face has no setter hands the row no writer at all — setValue is function`, `run-harness: 1 failed, 259 passed`, exit 1 |
 
 The function-form break (F2) was not caught by the suites before the function check existed: a frozen `text` string kept every earlier check green, and only `the section hands the host a function, not a frozen string` sees it. That is why the check was added; in the E-CHK order it is #22 of the 44 checks.
 
-After restoring and rebuilding, the tree passed again: `build-client` reported `sources 6, syntax ok`, `check-bundle` reported `all 44 checks passed`, `run-harness` reported `all 251 checks passed`.
+After restoring and rebuilding, the `0.2.1` probe session passed again: `build-client` reported `sources 6, syntax ok`, `check-bundle` reported `all 44 checks passed`, `run-harness` reported `all 251 checks passed`. For the current-tree re-runs, the untouched copy reported `all 44 checks passed` and `all 260 checks passed` before the breaks.
 
 ## E-GAPS — not proven here
 
@@ -356,7 +357,7 @@ After restoring and rebuilding, the tree passed again: `build-client` reported `
 |---|---|
 | G1 | The switch was not operated in a live DSH window: the row is proven in the browser fixture (fake `configForms`), not against the running host service. |
 | G2 | The write path to the host (`settings.update`) was not exercised end to end; the fixture proves only that our half calls `set` once and honours its answer. |
-| G3 | Only the zh row text is asserted in the fixture (`the row label is our own sentence, not a host key — 优先用图，而不是成段文字` and its hint). No narrow-layout assertion exists: neither suite renders the row at 360px or at 200% font size. The seven non-zh translations are proven only by the 16-keys-x-8-languages completeness check, not by being rendered; no assertion compares a non-English string with its English counterpart. |
+| G3 | The row label is asserted in the fixture in all eight languages (`the row label is our own sentence, not a host key — 优先用图，而不是成段文字` for zh, plus one label assertion per other language after this review pass). No narrow-layout assertion exists: neither suite renders the row at 360px or at 200% font size. No assertion compares a non-English string with its English counterpart word for word. |
 | G4 | The renamed names were not seen in a live window (plugin page, settings row); 8 titles are proven in the locale files and by assertion. |
 | G5 | No screenshot comparison against host rows (SC-008); the row uses host tokens and matches the neighbour row structure by construction, not by pixels. |
 | G6 | The E1–E14 end-to-end rows in `quickstart.md` were not run against a live host; no live window was observed for this feature. |
@@ -391,7 +392,7 @@ The first two tag pushes (`45194558416`, `45194732082`) failed and published not
 
 Both `client.js` rows are unverified because that hash was never recorded for 0.2.0: `client.js` embeds the version, so the fingerprint hashes it; the 780550 bytes and SHA256 that stood here before are the 0.2.1 artifact's, not 0.2.0's.
 
-The 0.2.0 rows above stay as history. 0.2.1 is the documentation-only correction that follows the feature-002 review: it was published (run `45204279829`, shasum `b5c03c272b89f53f2416a5140c29b212b5f55b7a`, logIndex `4053240981`) and installed (E-PUB/E-INS 0.2.1 below); the checks in this file were re-run on the 0.2.1 tree.
+The 0.2.0 rows above stay as history. 0.2.1 followed the feature-002 review and was not documentation-only: besides the wording corrections it added the function-form check to `verify/check-bundle.mjs` (#22) and rebuilt `client.js` with it. It was published (run `45204279829`, shasum `b5c03c272b89f53f2416a5140c29b212b5f55b7a`, logIndex `4053240981`) and installed (E-PUB/E-INS 0.2.1 below); E-CHK and E-HARN in this file are that tree. 0.2.2 is the later code change described at the top of this file.
 
 ## E-PUB publish, 0.2.1
 

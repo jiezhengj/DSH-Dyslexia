@@ -20,8 +20,8 @@
 
 ## D4 客户端如何读与写
 
-- **决定**：`inject: ['slots', 'locale', 'configForms']`；`const face = ctx.configForms.get('dsh-dyslexia')`；`getSnapshot().value.visualFirst` 取当前值，`face.subscribe(cb)` + `ctx.effect` 跟随外部改动，`face.set('visualFirst', v).catch(…)` 写入。
-- **理由**：这是官方 ui-chat 的 link-opening 行同款写法；命名空间就是 profile entry id `dsh-dyslexia`；设置行 id 是 `@jiezhengj/dsh-dyslexia/visual-first`。
+- **决定**：`src/client/entry.js` 只声明 `inject = ['slots']`；`ctx.locale` 与 `ctx.configForms` 不写进 `inject`，在 `apply` 里按存在与否取用（没有 `locale` 就跳过词典注册，没有 `configForms` 或 `get` 返回空就不注册行）。有 face 时用 `getSnapshot().value.visualFirst` 取当前值，`face.subscribe(cb)` + `ctx.effect` 跟随外部改动；`createVisualFirstRow(face)` 返回 `{ store, component, inject }`，`inject = { hooks: { visualFirst: store } }`，只有 `typeof face.set === 'function'` 时再加 `inject.setValue = (next) => face.set('visualFirst', next)`；组件点击时调用它，promise reject 就回退并显示失败句。
+- **理由**：只有 `slots` 是"没有它就没有任何事可做"的服务，所以只有它进 `inject`；`locale` 与 `configForms` 按可选取用，宿主少给一个只少词典或少了那一行，渲染层不受影响。命名空间就是 profile entry id `dsh-dyslexia`；设置行 id 是 `@jiezhengj/dsh-dyslexia/visual-first`。
 - **备选**：自己发 HTTP 请求 —— 违反"运行期零网络"，且要自己处理鉴权。
 
 ## D5 依赖：`@deepseek-ai/schemastery`

@@ -1441,6 +1441,44 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           rowView.stage.remove()
           settingsHost.dispose()
 
+          // The label is a bundled sentence chosen by the interface language, not a
+          // host key. English would satisfy every language, so each one is compared
+          // with its own string from src/client/i18n.js.
+          const SETTING_LABELS = {
+            en: 'Prefer pictures to prose',
+            ja: '文章より図を優先',
+            es: 'Prefiere las imágenes al texto',
+            fr: 'Préférer les schémas au texte',
+            de: 'Bilder statt Textabsätze',
+            ru: 'Картинки вместо абзацев',
+            pt: 'Preferir imagens ao texto',
+          }
+          for (const lang of ['en', 'ja', 'es', 'fr', 'de', 'ru', 'pt']) {
+            document.documentElement.lang = lang
+            const langHost = makeContext({})
+            langHost.ctx.configForms = {
+              get(namespace) {
+                return namespace === 'dsh-dyslexia' ? settingsFace : null
+              },
+            }
+            module.apply(langHost.ctx)
+            const langDef = langHost.defs.find((entry) => entry.def && entry.def.name === 'settings.general.item')
+            const langView = langDef ? mount(langDef.component, langDef.def.inject()) : null
+            if (langView) await tick(40)
+            const langLabel = langView ? langView.stage.querySelector('.dsh-dyslexia-row-label') : null
+            expect(
+              !!langLabel && langLabel.textContent === SETTING_LABELS[lang],
+              `[${lang}] the settings row label is that language's own sentence`,
+              langLabel ? langLabel.textContent : 'no label',
+            )
+            if (langView) {
+              langView.root.unmount()
+              langView.stage.remove()
+            }
+            langHost.dispose()
+          }
+          document.documentElement.lang = 'zh'
+
           // A host that already says "off" must show "off" on first paint.
           const offState = { value: { visualFirst: false } }
           const offFace = {
@@ -1493,6 +1531,15 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           }
           module.apply(noSetHost.ctx)
           const noSetDef = noSetHost.defs.find((entry) => entry.def && entry.def.name === 'settings.general.item')
+          // The outcome alone cannot tell "the row saw there is no writer" from
+          // "the row called a writer that threw": the face is the only thing that
+          // knows the host cannot write, so the row must be handed no writer at all.
+          const noSetInject = noSetDef && typeof noSetDef.def.inject === 'function' ? noSetDef.def.inject() : {}
+          expect(
+            typeof noSetInject.setValue === 'undefined',
+            'a host whose face has no setter hands the row no writer at all',
+            `setValue is ${typeof noSetInject.setValue}`,
+          )
           const noSetView = noSetDef ? mount(noSetDef.component, noSetDef.def.inject()) : null
           if (noSetView) await tick(40)
           const noSetToggle = noSetView ? noSetView.stage.querySelector('button[role="switch"]') : null

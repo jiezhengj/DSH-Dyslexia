@@ -15,7 +15,9 @@ ctx.slots.inject('settings.general.item', () => ctx.slots.register({
 - 槽名 MUST 是 `settings.general.item`（`kind: list`、`scope: root`）。
 - 注册项 `id` MUST 为稳定字面量 `@jiezhengj/dsh-dyslexia/visual-first`；`order` MUST 为 `62`（重复注册同 id 由宿主去重）。
 - 注册条件：`ctx.slots.inject`/`ctx.slots.register` 都是函数，且 `ctx.configForms.get('dsh-dyslexia')` 返回 face；否则整行不注册（不抛错、不占位，没有"不可用"状态）。
-- 组件 MUST NOT 依赖 owner 传入的任何 props；标题、值、写入路径全部经 `inject` 面提供。
+- 组件 MUST NOT 依赖 owner 传入的任何 props；值从 `inject.hooks.visualFirst`（store）读取，写入路径从 `inject.setValue` 取得。
+- `createVisualFirstRow(face)` MUST 返回 `{ store, component, inject }`；`inject` MUST 始终带 `hooks.visualFirst`，`setValue` MUST 仅在 host face 的 `set` 是函数时存在，否则整个键缺席。
+- 读者点击而 `inject.setValue` 缺席时，行 MUST 把开关放回点击前的值并显示 `settingFailed` 句，MUST NOT 静默停在读者点出的新值上。
 
 ## 数据面
 
@@ -24,8 +26,8 @@ ctx.slots.inject('settings.general.item', () => ctx.slots.register({
 | `face.getSnapshot()` | `{ value: { visualFirst?: boolean } }` | 宿主已生效值；缺字段按 `true` |
 | `face.subscribe(listener)` | `() => void` | 外部改动回调；`entry.js` 用 `ctx.effect` 注册清理 |
 | `face.set('visualFirst', next)` | `Promise<void>` | 写入；失败时 reject |
-| `row.store` | `{ get, set, subscribe }` | 组件用 `useSyncExternalStore` 读取 |
-| `row.setValue(next)` | `Promise<void> \| null` | 调一次 `face.set`；face 不可写时返回 null |
+| `row.inject` | `{ hooks: { visualFirst: store }, setValue?: (next) => Promise<void> }` | 传给组件的 inject 面；`setValue` 只在 `typeof face.set === 'function'` 时挂上，否则整个键缺席 |
+| `row.store` | `{ get, set, subscribe }` | 组件用 `useSyncExternalStore` 读取；它也就是 `inject.hooks.visualFirst` |
 
 ## DOM 与可访问性
 
@@ -58,5 +60,6 @@ ctx.slots.inject('settings.general.item', () => ctx.slots.register({
 | `configForms` 缺失 | 不注册行，渲染层照常 |
 | 快照缺字段 | 行按 `true` 显示，不禁用 |
 | 写入 reject | 开关回退到实际值 + `settingFailed` |
+| 宿主 face 没有 `set` | `inject` 不带 `setValue`；点击回退到点击前的值 + `settingFailed` |
 | 宿主 `t` 回显键名 / 抛错 / 空白 | 回落包内 8 语言字典（复用 001 的 `hostKey` 命名空间发问） |
 | 宿主已在别处注册同 id | 宿主去重，不重复 |

@@ -15,7 +15,7 @@
 
 ## Phase 2：客户端设置行
 
-- [x] **T006** 新增 `src/client/settings.js`：`VisualFirstRow` 组件（标题 + 说明 + 开关）与 `inject` 面（`getValue`/`subscribe`/`setValue`）；写入失败回退 + `role="status"` 提示。没有禁用态，也没有 2 秒清空。
+- [x] **T006** 新增 `src/client/settings.js`：`createVisualFirstRow(face)` 返回 `{ store, component, inject }`；`VisualFirstRow` 组件（标题 + 说明 + 开关）从 `inject.hooks.visualFirst` 读值，`inject.setValue` 仅在 face 有 `set` 时存在；点击无写入面或写入 reject 时回退到点击前的值 + `role="status"` 失败提示。没有禁用态，也没有 2 秒清空。
 - [x] **T007** `src/client/entry.js`：宿主同时提供 `slots.inject`/`slots.register`，且 `configForms.get('dsh-dyslexia')` 返回 face 时，注册 `settings.general.item`（`id: '@jiezhengj/dsh-dyslexia/visual-first'`、`order: 62`、`locale: 'dyslexia'`），并 `ctx.effect` 订阅与注销；否则整行不注册（没有"不可用"占位），图照常。
 - [x] **T008** `src/client/i18n.js` 增 4 条设置文案 × 8 语言（`settingLabel`/`settingHint`/`settingSaved`/`settingFailed`），沿用 `hostKey` 命名空间发问。
 - [x] **T009** `src/client/styles.js` 增设置行样式（flex 行、标题/说明层级、开关轨道与圆点、焦点环），全部取宿主 token，无固定宽度。
@@ -31,14 +31,14 @@
 
 ## Phase 4：探针与证据
 
-- [x] **T015** 探针七条（quickstart 列出）：F1 两档提示词、F3 默认 true、F4 dispose 路径、F5 写失败回退、F6 只写一次、F7 `aria-checked` 绑定、F8 命名空间——逐条破坏 → 重建 → 跑两套 → 确认变红 → 还原，把输出行原文记进 `evidence.md`。F2（段文本改回冻结字符串）在这个函数断言存在前两套都抓不到，现在由第 22 条静态检查捕获，单列为历史说明。
-- [x] **T016** `specs/002-visual-first-preference/evidence.md`：E-BLD/E-CHK/E-HARN 三块用单次运行输出原样照抄；未取证项单列。E1–E14 端到端逐条记录未做，见 `evidence.md` G6。
+- [x] **T015** 探针八条（quickstart 列出）：F1 两档提示词、F3 默认 true、F4 dispose 路径、F5 写失败回退、F6 只写一次、F7 `aria-checked` 绑定、F8 命名空间、F9 无 setter 宿主——逐条破坏 → 重建 → 跑两套 → 录下红行 → 还原，把输出行原文记进 `evidence.md`。F1 与 F9 在当前 0.2.2 工作树上重跑（F9 用本轮新增的 `a host whose face has no setter hands the row no writer at all` 断言），F3–F8 是 0.2.1 树上的记录。F2（段文本改回冻结字符串）在这个函数断言存在前两套都抓不到，现在由第 22 条静态检查捕获，单列为历史说明。
+- [x] **T016** `specs/002-visual-first-preference/evidence.md`：E-BLD 与 E-HARN 用单次运行输出原样照抄；E-CHK 是 44 条 `ok` 行的筛选摘录（真实 stdout 还含故意触发的 `warn` 与堆栈行，未抄入）；未取证项单列。E1–E14 端到端逐条记录未做，见 `evidence.md` G6。
 - [x] **T017** `spec.md`/`plan.md`/`data-model.md`/`contracts/*` 与本清单的计数、断言名、版本号与实际一致（交叉核对每个反引号名都存在）。
 
 ## Phase 5：发版与评审
 
-- [x] **T018** 版本升到 `0.2.0`（新增依赖与用户可见行为），`npm pack` 核对文件数，更新 `specs/001-mermaid-fence-render/contracts/plugin-manifest.md`（feature 002 没有自己的 manifest 契约）。本轮修正把版本升到 `0.2.2`：文档修正 + 新增一条静态检查 + 版本号，`client.js` 随之重建。
-- [x] **T019** 打 tag、GitHub Actions 发布、从 registry 装回 `desktop`、核对安装副本哈希与 `locale/`。发布与装回记录见 `evidence.md` E-PUB/E-INS：`0.2.0` 是历史，`0.2.1` 已发布（run `45204279829`、shasum `b5c03c272b89f53f2416a5140c29b212b5f55b7a`、logIndex `4053240981`）并已装回。
+- [x] **T018** 版本升到 `0.2.0`（新增依赖与用户可见行为），`npm pack` 核对文件数，更新 `specs/001-mermaid-fence-render/contracts/plugin-manifest.md`（feature 002 没有自己的 manifest 契约）。本轮修正把版本升到 `0.2.2`，这是代码变更而不只是文档：`settings.js` 里宿主 face 没有 `set` 时不再挂 `setValue`（点击回退并显示失败句）；第 22 条静态检查改写成"一次注册读三次值"，静态条数仍是 **44**；浏览器夹具新增无 setter 宿主一条，发布时浏览器条数 **252**。评审并行改动又加了 8 条夹具断言（7 种语言的标签 + 直接断言 inject 面无 `setValue`），当前工作树是 **44 / 260**；`client.js` 随之重建。
+- [x] **T019** 打 tag、GitHub Actions 发布、从 registry 装回 `desktop`、核对安装副本哈希与 `locale/`。发布与装回记录见 `evidence.md` E-PUB/E-INS：`0.2.0` 是历史，`0.2.1` 是中间版本（run `45204279829`、shasum `b5c03c272b89f53f2416a5140c29b212b5f55b7a`、logIndex `4053240981`），`0.2.2` 是当前发布版本（run `45211420278`、shasum `1f17ac1be4c1ea5c5e97c814cc699a6c910ee03d`、logIndex `4054074805`），两个版本都已装回。
 - [ ] **T020** 真机核对：设置行出现、两档切换生效、重启后保持、8 语言标题正确、卸载后行消失。未做，见 `evidence.md` G1/G3/G4/G6。
 - [ ] **T021** 起两份独立评审（文档 / 实现），两份 PASS 才把 feature 002 标记完成。评审返回 FAIL；本轮按评审清单修正文档后重审，见 `evidence.md` G1–G9。
 
@@ -60,7 +60,7 @@
 | area | state |
 |---|---|
 | Host half: `Config` with `visualFirst` (default on, `.volatile()`), two-tier briefing, `claimSettingsPage` | done, 44 static checks |
-| Client half: settings row on `settings.general.item`, `configForms` read/write, revert on refusal | done, 252 browser checks; no disabled state, no timer |
+| Client half: settings row on `settings.general.item`, `configForms` read/write, revert on refusal | done, 260 browser checks in the current tree (252 as published); no disabled state, no timer |
 | Eight-language rename (locale, DETAIL alt line, 8 READMEs, index, package description) | done; DETAIL keeps exactly one image line (its alt sentence carries the new name) |
-| Evidence | `evidence.md` (this feature): build, 44, 252, seven falsifiability probes (F1, F3–F8), nine gaps |
+| Evidence | `evidence.md` (this feature): build, 44, 260, eight falsifiability probes (F1, F3–F9), nine gaps |
 | Not done | live-window switch and renamed labels (G1, G4), the host write path to `settings.update` (G2), 200%/360px layout assertion for the row (G3), pixel comparison (G5), E1–E14 end-to-end rows (G6), SC-001 five sample requests (G7), schemastery import failure path (G8), no verbatim diff of the switch-off text against 001 (G9) |

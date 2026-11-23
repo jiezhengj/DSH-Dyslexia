@@ -53,7 +53,7 @@ Gap ids (`G…`) refer to feature 001's E-GAPS in `specs/001-mermaid-fence-rende
 
 ## Install
 
-Install `@jiezhengj/dsh-dyslexia` in your DeepSeek Harness profile (the Plugins page). It draws figures in the conversation as soon as it is installed (verified on a real machine). Uninstalling takes effect after restarting the app: a running window keeps the figure and both buttons it has already loaded, and history needs no edit (see feature 001's E-GAPS, G24①). Enabling and disabling go through the host's plugin mechanism without touching any configuration file, but **those two steps have not been observed separately** (see feature 001's E-GAPS, G20). A version change needs the app restarted before the new client code is loaded. On npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
+Install `@jiezhengj/dsh-dyslexia` in your DeepSeek Harness profile (the Plugins page). It draws figures in the conversation; the renderer was live-checked on plugin `0.1.31` and `0.1.32`, and the switch itself has not been observed in a live window yet (see feature 002's E-GAPS, G1/G6). Uninstalling takes effect after restarting the app: a running window keeps the figure and both buttons it has already loaded, and history needs no edit (see feature 001's E-GAPS, G24①). Enabling and disabling go through the host's plugin mechanism without touching any configuration file, but **those two steps have not been observed separately** (see feature 001's E-GAPS, G20). A version change needs the app restarted before the new client code is loaded. On npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
 
 ## Example
 

@@ -7,7 +7,7 @@
  * drawn and that a broken one reports a one-line reason.
  */
 
-import { readFileSync, statSync } from 'node:fs'
+import { existsSync, readFileSync, statSync } from 'node:fs'
 import { createHash } from 'node:crypto'
 import { dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
@@ -545,12 +545,33 @@ function sourceFingerprint() {
   return hash.digest('hex').slice(0, 32)
 }
 
+// The builder exports its assembly, so the committed chunk can be compared with
+// the bytes these sources produce, not just with the fingerprint it carries.
+const builder = await import(pathToFileURL(join(ROOT, 'scripts', 'build-client.mjs')).href)
+
+function describeDifference(actual, expected) {
+  const limit = Math.min(actual.length, expected.length)
+  let at = 0
+  while (at < limit && actual[at] === expected[at]) at += 1
+  const from = Math.max(0, at - 24)
+  const sample = (text) => JSON.stringify(text.slice(from, at + 48))
+  return `first difference at character ${at} of ${expected.length}: on disk ${sample(actual)}, rebuilt ${sample(expected)}`
+}
+
 check('client.js matches the sources it claims', () => {
   const expected = sourceFingerprint()
   const found = /sources sha256:([0-9a-f]{32})/.exec(chunk)
   assert(found, 'client.js carries no source fingerprint')
   assert(found[1] === expected, `client.js is stale: rebuild it (chunk ${found[1]}, sources ${expected})`)
-  return `${expected}`
+  // The fingerprint only says which sources the banner names: code appended
+  // after the banner leaves it untouched. Rebuilding the chunk here proves the
+  // body is those sources, byte for byte, not just that it claims to be.
+  const rebuilt = builder.buildChunk(ROOT)
+  assert(
+    rebuilt.chunk === chunk,
+    `client.js is not the bytes its sources produce (${Buffer.byteLength(chunk, 'utf8')} bytes on disk vs ${Buffer.byteLength(rebuilt.chunk, 'utf8')} rebuilt; ${describeDifference(chunk, rebuilt.chunk)})`,
+  )
+  return `${expected}, ${Buffer.byteLength(chunk, 'utf8')} bytes rebuilt from the six sources`
 })
 
 check('the picture is the image, and the copy answer is announced', () => {
@@ -657,7 +678,12 @@ check('nothing in the package asks you to edit an instruction file', () => {
   assert(offenders.length === 0, `shipped text asks for an instruction file: ${offenders.map((f) => f.path).join(', ')}`)
   const code = readFileSync(join(ROOT, 'client.js'), 'utf8') + readFileSync(join(ROOT, 'index.js'), 'utf8')
   assert(!/AGENTS\.md|CLAUDE\.md/i.test(code), 'the code reads or writes an instruction file')
-  return `${shipped.length} shipped text files, no instruction-file ask`
+  // The root used to carry `visual-first-agents-snippet.md`, a paragraph to paste
+  // into AGENTS.md: exactly the mechanism this feature replaces. Deleting it is
+  // part of the promise, so a copy left at the root would be the same ask again.
+  const stale = 'visual-first-agents-snippet.md'
+  assert(!existsSync(join(ROOT, stale)), `${stale} is back at the root, asking for an AGENTS.md preference`)
+  return `${shipped.length} shipped text files, no instruction-file ask, no ${stale} at the root`
 })
 
 /* ------------------------------------------------- host half, for real */
@@ -748,7 +774,51 @@ check('the host half adds one section per context, not one per call', () => {
   }
   assert(lateAttempts === 2, `an async refusal burned the context (${lateAttempts} attempts)`)
   assert(heard.length === 1 && /refused the first attempt later/.test(heard[0]), `the async refusal was reported ${heard.length} times: ${heard.join(' | ')}`)
-  return 'three calls on one context, one section; a second context gets its own; a failed attempt still allows a retry, whether the host refused at once or later'
+  // A thenable may also throw from `.then` itself, and then the rejection handler
+  // never runs: the refusal is only visible to the `catch` around that call, so
+  // that branch has to release the context too or the context is burned for good.
+  let thenableAttempts = 0
+  const hostile = {
+    systemPrompt: {
+      section() {
+        thenableAttempts += 1
+        if (thenableAttempts === 1) {
+          return {
+            then() {
+              throw new Error('the host refused while its promise was being watched')
+            },
+          }
+        }
+        return { then() {} }
+      },
+    },
+  }
+  const heardFromThenable = []
+  const originalWarnForThenable = console.warn
+  console.warn = (...args) => heardFromThenable.push(args.join(' '))
+  let thenableThrew = null
+  try {
+    hostHalf.apply(hostile)
+  } catch (error) {
+    thenableThrew = error
+  }
+  try {
+    hostHalf.apply(hostile)
+  } catch (error) {
+    thenableThrew = thenableThrew || error
+  } finally {
+    console.warn = originalWarnForThenable
+  }
+  assert(
+    thenableThrew === null,
+    `a thenable that threw out of .then escaped apply: ${thenableThrew && thenableThrew.message}`,
+  )
+  assert(thenableAttempts === 2, `a thenable that threw out of .then burned the context (${thenableAttempts} attempts)`)
+  assert(
+    heardFromThenable.length === 1 && /refused while its promise was being watched/.test(heardFromThenable[0]),
+    `the throwing thenable was reported ${heardFromThenable.length} times: ${heardFromThenable.join(' | ')}`,
+  )
+  return 'three calls on one context, one section; a second context gets its own; a failed attempt still allows a retry, whether the host refused at once, later, or by throwing out of .then'
 })
 
 check('the host half stays silent when the host changed shape', () => {
@@ -919,8 +989,10 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
     'one click asks the host for the opposite value once',
     'a rejected write leaves the switch where the host put it',
     'a host without configForms gets the picture and no settings row',
+    'a host whose face has no setter hands the row no writer at all',
+    "[${lang}] the settings row label is that language's own sentence",
   ]
-  const NEEDED_COUNT = 35
+  const NEEDED_COUNT = 37
   if (needed.length !== NEEDED_COUNT) {
     throw new Error(`the guard list has ${needed.length} names, expected ${NEEDED_COUNT}`)
   }

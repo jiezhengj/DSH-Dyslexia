@@ -39,14 +39,15 @@ node verify/run-harness.mjs --list # 逐条列出断言名（证据引用用）
 
 ## 探针（证明断言会失败）
 
-对每个关键断言做一次"故意破坏 → 重建 → 跑 → 确认变红 → 还原"；已跑七条，输出行记在 `evidence.md` 的 E-PROBE：
+对每个关键断言做一次"故意破坏 → 重建 → 跑 → 确认变红 → 还原"；已跑八条（F1、F3–F9），输出行记在 `evidence.md` 的 E-PROBE：
 
-1. **F1 两档提示词**：让 `briefing` 无视开关、总是拼上偏好段 → `the capability briefing is what it was before the switch`、`the switch adds the preference on top of the capability, and nothing else` 报红。
+1. **F1 两档提示词**：让 `briefing` 无视开关、总是拼上偏好段 → `the section hands the host a function, not a frozen string`、`the capability briefing is what it was before the switch`、`the switch adds the preference on top of the capability, and nothing else` 报红。
 2. **F3 默认值**：把 `.default(true)` 改成 `.default(false)` → `the switch is on for an empty configuration` 报红。
 3. **F4 注销路径**：把 `ctx.effect` 换成直接调用 → `styles and strings are claimed as effects` 等浏览器断言报红。
 4. **F5 写失败回退**：删掉失败分支里的 `store.set(before)` → `a rejected write leaves the switch where the host put it` 报红。
 5. **F6 只写一次**：把 `setValue(next)` 调两次 → `one click asks the host for the opposite value once` 报红。
 6. **F7 `aria-checked` 绑定**：把 `aria-checked` 固定成 `true` → `the switch turns off after the write` 报红。
 7. **F8 命名空间**：让 `hostKey` 返回裸键 → `a host dictionary that already owns a word does not put it on our button`、`a host that translates the namespaced key is used` 报红。
+8. **F9 无 setter 宿主**：在 `inject` 里无条件挂 `setValue`（把 `if (face && typeof face.set === 'function')` 改成 `if (face)`）→ `a host whose face has no setter hands the row no writer at all` 报红（`[bad] ... — setValue is function`，`run-harness: 1 failed, 259 passed`）。
 
 F2（段 `text` 从函数改回冻结字符串）在这个函数断言存在前两套都抓不到；现在由第 22 条静态检查 `the section hands the host a function, not a frozen string` 捕获，因此不单列为一条可复现探针。

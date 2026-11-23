@@ -1,4 +1,4 @@
-/*! @jiezhengj/dsh-dyslexia 0.2.2 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:d5830e94c5a81da942a4b0414eead34e */
+/*! @jiezhengj/dsh-dyslexia 0.2.3 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:72f28eeb68d05c266cb96c689b0dbce6 */
 ;(function () {
   function reportLoadFailure(scope, error) {
     try { console.error('dsh-dyslexia: ' + scope, error) } catch (_error) {}
