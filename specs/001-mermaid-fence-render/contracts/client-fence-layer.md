@@ -61,11 +61,11 @@ type Props = {
 
 宿主仍在迭代，本层对"接口变了"的唯一正确反应是**安静地不画**。以下每条都是必须成立的行为，且都有一条可重复的断言（括号内为 `verify/check-bundle.mjs` 的断言名或夹具用例名）：
 
-7. **不注册也不抛**：`ctx.slots` 缺失、`ctx.slots.inject()` 抛错、`register` 签名变化 → 放弃注册，宿主照常渲染原代码块（夹具 `apply stays silent on a changed host`（7 种畸形 `ctx`：`undefined`、`null`、`{}`、`{slots:null}`、`{slots:{}}`、`inject`/`register` 为空函数、`inject` 抛错） 覆盖 `slots` 为 `null`、`{}`、`{inject(){},register(){}}` 与 `inject` 抛错四种；`register` 抛错由 `a host that rejects the locale option does not break apply` 与 `the retried registration drops the locale option` 覆盖）。
+7. **不注册也不抛**：`ctx.slots` 缺失、`ctx.slots.inject()` 抛错、`register` 签名变化 → 放弃注册，宿主照常渲染原代码块（夹具 `apply stays silent on a changed host` 逐一覆盖七种畸形 `ctx`：`undefined`、`null`、`{}`、`{slots:null}`、`{slots:{}}`、`inject`/`register` 为空函数、`inject` 抛错；`register` 抛错由 `a host that rejects the locale option does not break apply` 与 `the retried registration drops the locale option` 覆盖）。
 8. **locale 可选且不可信**：`ctx.locale` 缺失或 `register` 失败 → 改用不带 `locale` 的注册重试；仍失败则放弃注册。宿主 `t` 只有在返回"真实译文"时才采信——非空字符串、不等于请求的 key、不含未替换的 `{{占位符}}`；否则用包内 8 语言字典（夹具 `a host t that throws still shows words`、`a host t that echoes the key still shows words`、`no internal key reaches the eye`）。
 9. **数据守卫**：`code` 不是字符串、取值器抛错、缺 `document`、`children` 是 React 不收的形状（普通对象 / 函数 / 含对象的数组）→ 不进入绘制，并把源码交回（夹具 `a throwing code getter leaves the host block`、`a throwing children getter does not reach the host`、`a refused children cannot empty the message — object`、`a refused children cannot empty the message — function`）。语法错误是另一件事（E4），由 `a broken diagram says why` 覆盖。
 10. **绘制期零外泄**：pele 在渲染子树里抛错 → 错误边界渲染 `children`，并在 `code` 变化时复位（夹具 `a throwing engine leaves a sentence`、`a throwing engine keeps the host block`）。
-11. **停用后什么都不留下**：样式表、locale 文案与围栏层都由 `apply()` 里的注册句柄持有，插件停用时按注册顺序逆序释放（夹具 `disabling the plugin takes its stylesheet away`、`the locale registration is dropped`、`the fence layer is gone once the host disposes`；探针验证——把 `entry.js` 的 `ctx.effect(() => drop, …)` 换成 `void drop` 后，`styles and strings are claimed as effects` 由 2 变 1、`disabling the plugin takes its stylesheet away` 由 `false` 变 `true`，见 E-PROBE 的 P2）。
+11. **停用后什么都不留下**：样式表、locale 文案与围栏层都由 `apply()` 里的注册句柄持有，插件停用时三样都被释放（夹具 `disabling the plugin takes its stylesheet away`、`the locale registration is dropped`、`the fence layer is gone once the host disposes`——它们证明"会被释放"，**不**证明"按逆序释放"：释放顺序属宿主 cordis 的行为，本层观察不到，无断言，与 G17 同类；探针验证——把 `entry.js` 的 `ctx.effect(() => drop, …)` 换成 `void drop` 后，`styles and strings are claimed as effects` 由 2 变 1、`disabling the plugin takes its stylesheet away` 由 `false` 变 `true`，见 E-PROBE 的 P2）。
 12. **引擎不可用**：pele 未挂载或 `mount` 不存在 → 视为"该处不画"，保留原文并给一行本地化原因，不抛错（`an engine that fails to load leaves the picture to the host`）。
 
 # DOM 与可访问性契约

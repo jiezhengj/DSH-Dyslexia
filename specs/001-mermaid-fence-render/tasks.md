@@ -64,7 +64,7 @@ description: "Task list for 会话内图形渲染"
 
 ### Implementation for User Story 1
 
-- [x] T012 [P] [US1] 写 `src/client/figure.js`：pele 实例生命周期——`mount(el, code, options)`、`refresh()`、`destroy()`、缩放控制；选项含 `autoDirection`、`directionBreakpoint`、`padding`、`maxEdges`、`outputLimit`、`zoom`、`onError`；只接受 `MermaidSource.code`（见 [data-model.md](./data-model.md)）作为输入，不缓存
+- [x] T012 [P] [US1] 写 `src/client/figure.js`：pele 实例生命周期——`mount(el, code, options)`、`refresh()`、`destroy()`、缩放控制；选项含 `autoDirection`、`directionBreakpoint`、`padding`、`maxEdges`、`outputLimit`、`zoom`、`onError`（本条记录**当时的设计**；最终调用面见 `contracts/client-fence-layer.md` 的「引擎调用面」：不传 `onError`、不使用 `refresh()`，生命周期终点只有 `destroy()`）；只接受 `MermaidSource.code`（见 [data-model.md](./data-model.md)）作为输入，不缓存
 - [x] T013 [P] [US1] 写 `src/client/view.js` 的层组件骨架：`streaming === true` 直接返回 `children`（消费 `MermaidSource.streaming`）；渲染成功返回图容器 + 源码切换条；失败返回本地化说明 + `children`
 - [x] T014 [US1] 写 `src/client/entry.js`：`ctx.slots.inject('conversation.chat.markdown.fence', …)` 注册 `{ name, id: '@jiezhengj/dsh-dyslexia/mermaid', key: 'mermaid', order: 100, locale: 'dyslexia' }`，并 `ctx.locale.register('dyslexia', { zh, en })` 提供全部可见文案（依赖 T013）
 - [x] T015 [US1] 接上失败与超限回退：把 pele 的 `error`/超限判定映射为「代码块 + 一行可读原因」，原因文案不得含堆栈（[contracts/client-fence-layer.md](./contracts/client-fence-layer.md) 行为契约 3）
@@ -99,7 +99,7 @@ description: "Task list for 会话内图形渲染"
 
 ### Implementation for User Story 3
 
-- [x] T021 [P] [US3] 在 `src/client/figure.js` 加 `ResizeObserver` → `refresh()`，让容器尺寸/字体变化时重排而不重新解析（消费 `RenderArtifact.width`/`height`）
+- [x] T021 [P] [US3] 在 `src/client/figure.js` 加 `ResizeObserver` → `refresh()`，让容器尺寸/字体变化时重排而不重新解析（本条记录**当时的设计**；0.1.10 起插件不再自建 `ResizeObserver`，重排归引擎，见 D22 / T119）（消费 `RenderArtifact.width`/`height`）
 - [x] T022 [US3] 落窄屏规则：容器 `max-width: 100%`、溢出在图内滚动（`src/client/styles.js`）；字号下限由绘制选项 `fontSize` 保证（`src/client/figure.js` 的 `figureFontSize`），**不是** CSS；缩放控件只在溢出时出现。（"图内文字不小于正文最小字号"目前无断言，见 E-GAPS）。**0.1.10 起插件不再自建 `ResizeObserver`**（重排归引擎，见 D22 / T119），本条记录的是当时的设计。
 - [ ] T023 [US3] 取证 E8（360 px 无横向溢出、图按容器重排）与 E9（触屏/鼠标缩放与复位，不影响其余布局），至少含一张 360 px 截图
 
@@ -158,7 +158,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T037 [P] 渲染期兜底：`view.js` 增加错误边界与围栏数据守卫、`figure.js` 增加引擎缺失守卫 → 对应 FR-016
 - [x] T038 主机半边降级：`index.js` 的 `apply` 对缺失/变形 `systemPrompt` 静默跳过（不注册半截段落、不抛错）→ 对应 FR-014
 - [x] T039 静态证据：`verify/check-bundle.mjs` 增加六项兼容性断言（"无版本门""可独立编译""畸形加载器不抛""工厂抛错仍可用""含边界与守卫""畸形宿主 ctx 不抛"）→ 对应 FR-017 / SC-008
-- [x] T040 渲染期证据：夹具迁入仓库 `verify/harness/index.html` + `node verify/run-harness.mjs`，增加到 76 项（0.1.5 起 82 项，0.1.6 起 92 项，0.1.7 起 101 项，0.1.8 起 108 项，0.1.9 起 118 项，0.1.10 起 119 项，0.1.11 起 152 项，0.1.12 起 156 项，0.1.13 起 197 项、0.1.14 起 205 项、0.1.15 起 213 项（历史值按发布时的实跑记录，不追改）；宿主 `t` 抛错/回显 key、`code`/`children` 取值器抛错、引擎抛错、无 slots 服务、坏语法、裁剪板缺失、窄屏、主题）→ 对应 FR-017 / SC-006 / SC-009
+- [x] T040 渲染期证据：夹具迁入仓库 `verify/harness/index.html` + `node verify/run-harness.mjs`，增加到 76 项（0.1.5 起 82 项，0.1.6 起 92 项，0.1.7 起 101 项，0.1.8 起 108 项，0.1.9 起 118 项，0.1.10 起 119 项，0.1.11 起 152 项，0.1.12 起 156 项，0.1.13 起 197 项、0.1.14 起 205 项、0.1.15 与 0.1.16 是 213 项、0.1.17 起 216 项、0.1.19 起 220 项（历史值按发布时的实跑记录，不追改）；宿主 `t` 抛错/回显 key、`code`/`children` 取值器抛错、引擎抛错、无 slots 服务、坏语法、裁剪板缺失、窄屏、主题）→ 对应 FR-017 / SC-006 / SC-009
 - [ ] T041 真机验证 US5：装机后应用正常打开、会话正常、图照常显示（已由 E-LIVE 覆盖一部分）；"畸形宿主"降级只在夹具里复现，真机未注入 → 部分取证
 - [ ] T042 宿主升级演练：记录当前版本号，下一次 DSH 升级后检查"能打开、能进会话、历史图回退为文本"，并把结果追加到 evidence
 
@@ -372,7 +372,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T181 `verify/check-bundle.mjs` 的报告串改 `five silent hosts, two throwing sections`（实际跑 5 次静默 + 2 次抛错），并同步证据里的 E-CHK 行
 - [x] T182 重建与复跑：`node verify/check-bundle.mjs` = `@0.1.16 | 769391 bytes | sources sha256:f837913297259c0f99bc780f154d287a | all 37 checks passed`；`node verify/run-harness.mjs --list` = 213 项全过；`evidence/verification.md` 的 E-BLD/E-CHK/E-HARN 用同一次运行重写
 - [x] T183 发布 `v0.1.16`（run `45079253651`，shasum `4a559a0cd107e2dd2175b2d2ff10e3075a53e309`，logIndex `4048629730`，33 文件）、从 registry 装回 profile `desktop`（依赖 `0.1.16`、安装副本 769,391 字节 / `9A5ADC5B…BB3D`）、补 E-PUB/E-INS 的 0.1.16 行
-- [ ] T184 第十四轮双评审（文档 + 实现）；两份都 PASS 才把 feature 001 标记完成
+- [ ] T184 第十四轮双评审（文档 + 实现）；两份都 PASS 才把 feature 001 标记完成（实现侧 PASS、文档侧 FAIL，故本轮未完）
 
 ## Phase 26: 第十三轮实现评审的 P3 收口（2026-11-23 追加，版本 0.1.17）
 
@@ -382,7 +382,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T188 `verify/run-harness.mjs` 的 `EXPECTED_CHECKS` 由 213 改 216（新增三条：两条面板断言 + 既有 `the opened panel is on screen before the source changes` 已计入）
 - [x] T189 文档计数与行数：`plan.md`（216、`check-bundle.mjs` 663 行、`harness/index.html` 1163 行）、`quickstart.md`、`research.md`（1163 + 131 = 1294）、`contracts/plugin-manifest.md`、`evidence/verification.md`（E-BLD/E-CHK/E-HARN 用 0.1.17 单次运行重写、E-PROBE 增 PS1 并把项数口径补到 0.1.17 = 216）
 - [x] T190 发布 `v0.1.17`（run `45079768869`，shasum `e7db974d5fe519d9d454b9a5807ce7d49f943955`，logIndex `4048647791`，33 文件）、从 registry 装回 profile `desktop`（依赖 `0.1.17`、安装副本 769,391 字节 / `2FE079ED…B43B`）、补 E-PUB/E-INS 的 0.1.17 行
-- [ ] T191 第十四轮双评审（文档 + 实现）；两份都 PASS 才把 feature 001 标记完成
+- [ ] T191 第十四轮双评审（文档侧 FAIL 收口后再确认；两份都 PASS 才把 feature 001 标记完成）
 
 ## Phase 27: 第十四轮文档评审后的修复（2026-11-23 追加；文档改动未触及随包文件，故未发新版）
 
