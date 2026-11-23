@@ -7,8 +7,8 @@ Draws `mermaid` code blocks in a DeepSeek Harness conversation as diagrams, in p
 
 ## About
 
-A reply often explains a structure in words a diagram would show in a glance. This plugin lets the chat draw `mermaid` blocks where they stand, so the picture sits in the conversation and the code block stays its text: copyable, searchable, and readable after the plugin is removed.
-回复里经常用一段文字去讲一个结构，而一张图一眼就能看清。这个插件让聊天就地画出 `mermaid` 代码块：图留在会话里，代码块仍是消息的文本——可复制、可检索，插件卸掉之后也仍可读。
+A reply often explains a structure in words a diagram would show in a glance. This plugin lets the chat draw `mermaid` blocks where they stand, so the picture sits in the conversation and the code block stays its text: copyable and readable after the plugin is removed.
+回复里经常用一段文字去讲一个结构，而一张图一眼就能看清。这个插件让聊天就地画出 `mermaid` 代码块：图留在会话里，代码块仍是消息的文本——可复制，插件卸掉之后也仍可读。
 
 ## Data and privacy / 数据与隐私
 

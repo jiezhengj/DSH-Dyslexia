@@ -590,9 +590,17 @@ check('the host half registers exactly one capability section', () => {
 })
 
 check('the host half stays silent when the host changed shape', () => {
-  for (const ctx of [undefined, null, {}, { systemPrompt: null }, { systemPrompt: {} }]) {
-    hostHalf.apply(ctx)
+  const warnings = []
+  const original = console.warn
+  console.warn = (...args) => warnings.push(args.join(' '))
+  try {
+    for (const ctx of [undefined, null, {}, { systemPrompt: null }, { systemPrompt: {} }]) {
+      hostHalf.apply(ctx)
+    }
+  } finally {
+    console.warn = original
   }
+  assert(warnings.length === 0, `the host half warned on ${warnings.length} unchanged hosts: ${warnings.join(' | ')}`)
   hostHalf.apply({
     systemPrompt: {
       section() {
@@ -607,7 +615,7 @@ check('the host half stays silent when the host changed shape', () => {
       },
     },
   })
-  return 'five silent hosts, two throwing sections'
+  return 'five silent hosts (no warning), two throwing sections (one warning each)'
 })
 
 /* ------------------------------------------- the fixtures can fail at all */
@@ -657,9 +665,20 @@ check("the contract's colour variables are the ones that are wired", () => {
 check('both size limits reach the engine, each proven on its own', () => {
   const figure = stripComments(readFileSync(join(ROOT, 'src', 'client', 'figure.js'), 'utf8'))
   const harness = readFileSync(join(ROOT, 'verify', 'harness', 'index.html'), 'utf8')
-  assert(/limit:\s*24 \* 1024/.test(figure), 'the character limit is not 24 KiB')
-  assert(/maxEdges:\s*400/.test(figure), 'the edge limit is not 400')
-  assert(/outputLimit:\s*2 \* 1024 \* 1024/.test(figure), 'the output limit is not 2 MiB')
+  // Compare the numbers themselves: a prefix match would accept
+  // `24 * 1024 * 1000` or `4000`, and `prepack` only runs this file.
+  const limitOf = (name) => {
+    const match = figure.match(new RegExp(name + ':\\s*([0-9\\s*+]+),'))
+    if (!match) return NaN
+    try {
+      return Function(`return ${match[1].trim()}`)()
+    } catch (error) {
+      return NaN
+    }
+  }
+  assert(limitOf('limit') === 24 * 1024, `the character limit is ${limitOf('limit')}, not 24 KiB`)
+  assert(limitOf('maxEdges') === 400, `the edge limit is ${limitOf('maxEdges')}, not 400`)
+  assert(limitOf('outputLimit') === 2 * 1024 * 1024, `the output limit is ${limitOf('outputLimit')}, not 2 MiB`)
   // Declaring the limits is not enough: they have to reach `pele.mount`.
   assert(/\.\.\.FIGURE_LIMITS/.test(figure), 'FIGURE_LIMITS is not spread into the mount options')
   const fixtures = [
@@ -700,6 +719,7 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
     'the fence layer is gone once the host disposes',
     'the layer survives a throwing code getter',
     'a throwing code getter still yields an element',
+    'the hostile children bag mounted without a setup error',
     'the layer survives a throwing children getter',
     'a throwing children getter still yields an element',
     'a throwing code getter leaves the host block',
@@ -717,6 +737,10 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
     'a fence whose props read throws is left to the host, not the message',
     'a host without effects keeps one stylesheet, not one per apply',
   ]
+  const NEEDED_COUNT = 26
+  if (needed.length !== NEEDED_COUNT) {
+    throw new Error(`the guard list has ${needed.length} names, expected ${NEEDED_COUNT}`)
+  }
   const missing = needed.filter((name) => harness.indexOf(name) === -1)
   if (missing.length > 0) throw new Error(`missing fixture assertions: ${missing.join(', ')}`)
   // A title alone proves nothing: the name has to sit inside an expect() call

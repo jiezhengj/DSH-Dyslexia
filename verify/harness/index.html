@@ -380,6 +380,7 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
 
           const childrenGetter = { code: CODE, streaming: false }
           let childrenView = null
+          let childrenSetupError = null
           try {
             const stage = document.createElement('div')
             stage.className = 'stage'
@@ -395,7 +396,8 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             root.render(element)
             childrenView = { stage, root }
           } catch (error) {
-                }
+            childrenSetupError = error
+          }
           await tick(80)
           // React 18 renders asynchronously, so a throw inside work never reaches
           // this try block: what must be asserted is the visible outcome, not the
@@ -415,6 +417,7 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           } catch (error) {
             childrenGetterCaught = error
           }
+          expect(childrenSetupError === null, 'the hostile children bag mounted without a setup error', childrenSetupError ? String(childrenSetupError.message) : '')
           expect(!childrenGetterCaught, 'the layer survives a throwing children getter', childrenGetterCaught ? String(childrenGetterCaught.message) : '')
           expect(!!childrenGetterRendered, 'a throwing children getter still yields an element')
           expect(
@@ -1090,6 +1093,7 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           document.documentElement.lang = 'zh'
 
           /* -------------------------------------- the copy answer is announced */
+          const announcedClipboard = navigator.clipboard
           Object.defineProperty(navigator, 'clipboard', {
             configurable: true,
             get() {
@@ -1105,6 +1109,10 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           expect(!!live && live.getAttribute('aria-live') === 'polite' && live.textContent === '已复制', 'the copy answer is announced, not only coloured', live ? live.textContent : 'no live region')
           announced.root.unmount()
           announced.stage.remove()
+          Object.defineProperty(navigator, 'clipboard', {
+            configurable: true,
+            value: announcedClipboard,
+          })
 
           /* ---------------------------- the image, the group, the zoom buttons */
           document.documentElement.lang = 'zh'

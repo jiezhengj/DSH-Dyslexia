@@ -10,15 +10,32 @@ export const inject = ['systemPrompt']
 
 export function apply(ctx) {
   try {
-    const systemPrompt = ctx?.systemPrompt
-    if (!systemPrompt || typeof systemPrompt.section !== 'function') return
-    systemPrompt.section({
+    const prompt = ctx === null || ctx === undefined ? undefined : ctx.systemPrompt
+    if (!prompt || typeof prompt.section !== 'function') return
+    const result = prompt.section({
       name: SECTION_NAME,   // 'ui:dsh-dyslexia'
       order: SECTION_ORDER, // 9000
       text: MERMAID_RENDER_PROMPT,
     })
+    // A later host may make `section` asynchronous; an unhandled rejection
+    // would be noise in the host's console, so it is caught too.
+    if (result && typeof result.then === 'function') {
+      try {
+        result.then(undefined, (error) => warn('prompt section rejected', error))
+      } catch (error) {
+        warn('prompt section promise unusable', error)
+      }
+    }
   } catch (error) {
-    console.warn('[dsh-dyslexia] prompt section skipped:', error); // 真实实现用 `dsh-dyslexia: <scope>` 作前缀
+    warn('prompt section skipped', error)
+  }
+}
+
+function warn(scope, error) {
+  try {
+    console.warn(`dsh-dyslexia: ${scope}`, error)
+  } catch (ignored) {
+    void ignored
   }
 }
 ```
@@ -30,7 +47,7 @@ export function apply(ctx) {
 | `name` 用 `'dsh-dyslexia'` | 与 patch `id` 无关，是 Loader 身份标识 |
 | `inject` 只列 `systemPrompt` | 少一条注入少一条失败路径；不在浏览器宿主里要求任何服务 |
 | `order` 用固定有限数值（9000） | 官方文档允许"External contributions may use any finite order"；9000 落在第一方指引之后、persona 后缀（10200）之前 |
-| 用 `ctx.systemPrompt.section(...)` 的返回值做自动注销 | 该调用已绑定 `systemPrompt.section()` 这个 effect label，插件卸载即撤销 |
+| 撤销一段 | 调用 `section()` 即把它绑到插件自己的 effect label 上，卸载/禁用时宿主一并撤销；实现不持有也不需要返回值 |
 | 不注册工具、不注册命令、不注册设置项 | 能力播报不该新增任何可调用面（research D4） |
 | 不注册动态 context | 静态事实；动态 provider 会打乱提示词缓存 |
 | 不读写文件、不发网络请求 | 宪法原则 II / III |
