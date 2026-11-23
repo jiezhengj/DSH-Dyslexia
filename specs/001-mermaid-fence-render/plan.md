@@ -30,7 +30,7 @@
 - 所有宿主服务调用、注册调用、渲染调用都就地降级，绝不把异常抛回宿主；
 - 宿主派发的数据不符合预期时，一律交回宿主原本的代码块。
 
-**Scale/Scope**: 单张图通常 5–20 个节点；上限由 pele 的 `limit`/`outputLimit`/`maxEdges` 约束，超限即回退为文本（FR-004）。代码量实况（2026-11-23，0.1.23）：宿主 `index.js` 57 行；`src/client` 共 1001 行（view 484 / i18n 209 / styles 123 / figure 91 / entry 94）；`scripts/build-client.mjs` 147 行；`verify/check-bundle.mjs` 767 行；`verify/harness/index.html` 1178 行 + 驱动 `verify/run-harness.mjs` 132 行。
+**Scale/Scope**: 单张图通常 5–20 个节点；上限由 pele 的 `limit`/`outputLimit`/`maxEdges` 约束，超限即回退为文本（FR-004）。代码量实况（2026-11-23，0.1.24）：宿主 `index.js` 57 行；`src/client` 共 1001 行（view 484 / i18n 209 / styles 123 / figure 91 / entry 94）；`scripts/build-client.mjs` 147 行；`verify/check-bundle.mjs` 776 行；`verify/harness/index.html` 1177 行 + 驱动 `verify/run-harness.mjs` 131 行。
 
 ## Constitution Check
 
@@ -42,7 +42,7 @@
 - **IV 降级不丢数据** — PASS（本功能最重的一项）：hoc 层缺省即回退（"with no applicable layer the content renders unchanged"）；异常时渲染 `children`；浏览器半边整体不注册任何持久化实体，卸载即无痕；重装后由图源重画；**并追加启动侧降级**——插件不得把宿主拖到打不开（见"兼容性策略"与 FR-013～FR-016）。
 - **V 窄屏先行** — PASS：`mount()` 按容器宽重排（重排由引擎自己的尺寸观察驱动，插件不另建 `ResizeObserver`）；`autoDirection` + `directionBreakpoint` 处理窄屏流程图；溢出在图内滚动；缩放控件只作用于图自身。
 - **技术约束** — PASS：配色全部走 `--dsw-alias-*` 主题令牌并映射到 pele 的 `--pele-*` 变量；可见文字走包内 8 语言字典（`zh, en, ja, es, fr, de, ru, pt`），并尝试 `ctx.locale.register('dyslexia', DICTIONARY)` 与带 `locale: 'dyslexia'` 的槽注册作为兜底；插件卡片文案用 `locale/<lang>.json` 的 `meta` 段（8 份）；LICENSE 与第三方许可随包发布。
-- **验证流程** — PASS（附条件）：装、卸、窄屏三类证据在 quickstart.md 里列成表；打包后核对 `npm pack` 文件清单（OP-2/OP-3 验证过）；**断网复跑没有做**，登记在 `evidence/verification.md` 的 G3 与 G9；无法验证的项在交付说明里显式标注。
+- **验证流程** — PASS（附条件）：装、卸、窄屏三类证据在 quickstart.md 里列成表；打包后核对 `npm pack` 文件清单（`npm pack` 清单每次发版都核对，见 `evidence/verification.md` 的 E-PKG 与 E-PUB）；**断网复跑没有做**，登记在 `evidence/verification.md` 的 G3 与 G9；无法验证的项在交付说明里显式标注。
 
 无违反项，`Complexity Tracking` 留空。
 

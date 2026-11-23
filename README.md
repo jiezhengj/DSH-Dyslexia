@@ -38,17 +38,17 @@ Both commands are in the repository, so the claims in this file can be re-checke
 
 ## Known limits / 已知限制
 
-- **Verified here:** in-chat drawing in DSH desktop `0.2.2-rc.5` (plugin `0.1.2`, real-machine verification covers the Chinese docs page only); label fallback; uninstall fallback and reinstall; eight interface languages (in the headless harness); a 360 px wide column in a headless Chrome fixture (a layout check, not a phone).
-  **已在此验证：** DSH 桌面端 `0.2.2-rc.5`（插件 `0.1.2`，真机只覆盖中文说明页）会话内成图；标签回退；卸载回退与重新安装；八种界面语言（在无头测试环境里）；360 px 窄栏布局。
+- **Verified here:** on a real machine — in-chat drawing in DSH desktop `0.2.2-rc.5` (plugin `0.1.2`), uninstall fallback and reinstall, and the Chinese plugin page; in the headless harness — label fallback, the eight interface languages, and a 360 px wide column (a layout check, not a phone).
+  **已在此验证：** 真机——DSH 桌面端 `0.2.2-rc.5`（插件 `0.1.2`）的会话内成图、卸载回退与重新安装、插件说明页（中文）；无头夹具——标签回退、八种界面语言、360 px 窄栏布局（只验证布局，不是手机）。
 - **Likely, not proven on your machine:** other DSH versions; other Chromium-based browsers; the same checks on mobile devices (the layout is verified in a 360 px viewport in a desktop browser, not on a physical phone); very large diagrams (limits: source 24 KiB, drawing output 2 MiB, 400 edges; beyond that it falls back to the code block).
   **大概率可用，但未在你的机器上实证：** 其他 DSH 版本；其他 Chromium 内核浏览器；移动设备上的同类表现（布局仅在桌面浏览器的 360 px 视口中验证，未在实体手机上实测）；超大图形（上限为源码 24 KiB、绘制输出 2 MiB、400 条边；超出后回退显示代码块）。
-- **Not done:** upgrading DSH across a major version has not been rehearsed; diagrams are not drawn while a message is still streaming; only `mermaid` fences (` ```mermaid `) are handled (not other fence languages).
-  **尚未覆盖：** 尚未演练跨大版本升级 DSH；消息仍在流式输出时不会成图；只处理 ` ```mermaid ` 代码块（不处理其他语言标记的代码块）。
+- **Not done:** no DSH upgrade has been rehearsed yet (see G1); diagrams are not drawn while a message is still streaming; only `mermaid` fences (` ```mermaid `) are handled (not other fence languages).
+  **尚未覆盖：** 尚未演练任何一次 DSH 升级（见 G1）；消息仍在流式输出时不会成图；只处理 ` ```mermaid ` 代码块（不处理其他语言标记的代码块）。
 
 ## Install
 
-Install `@jiezhengj/dsh-dyslexia` in the DeepSeek Harness Plugins page. Uninstalling was watched on a running app (the figure falls back to the code block at once, history untouched); enabling and disabling go through the host's own plugin mechanism and need no config edit. A version change needs the app restarted before the new client code is loaded.
-在 DeepSeek Harness 的插件页安装 `@jiezhengj/dsh-dyslexia`。卸载已在运行中的界面上观察过（图立刻退回代码块、历史不变）；启用与停用走宿主自己的插件机制、不需要改配置。更换版本需要重启应用才会加载新的客户端代码。
+Install `@jiezhengj/dsh-dyslexia` in the DeepSeek Harness Plugins page. Uninstalling was watched on a running app (the figure falls back to the code block at once, history untouched); enabling and disabling go through the host's own plugin mechanism and need no config edit, but **those two steps have not been observed separately** (see G20). A version change needs the app restarted before the new client code is loaded.
+在 DeepSeek Harness 的插件页安装 `@jiezhengj/dsh-dyslexia`。卸载已在运行中的界面上观察过（图立刻退回代码块、历史不变）；启用与停用走宿主自己的插件机制、不需要改配置，但**这两步还没有单独的真机观察**（见 G20）。更换版本需要重启应用才会加载新的客户端代码。
 
 - 装好即用：装进 profile 之后会话里直接成图（真机已验证）。卸载在运行中的界面上观察过（图与按钮消失、消息变回原来的代码块，历史消息不用改）；启用与停用同样由宿主的插件机制接管、不需要改任何配置文件，但**这两步还没有单独的真机观察**（见 G20）。换版本需要重启 DSH 才能加载新的客户端 chunk。npm 上的包：https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
 - Source: https://github.com/jiezhengj/DSH-Dyslexia

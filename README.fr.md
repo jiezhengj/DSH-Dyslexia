@@ -17,7 +17,7 @@ Le bloc de code n’est jamais consommé. Il reste le texte du message : on peut
 
 ## Ce que vous obtenez
 
-- Des schémas à leur place pour les blocs `mermaid` : organigramme, séquence, classes, états, ER, carte mentale, chronologie et les autres types de Mermaid 12.1.
+- Des schémas à leur place pour les blocs `mermaid` : organigramme, séquence, classes, états, ER, carte mentale, chronologie et d’autres types que le moteur prend en charge ; le harnais n’exerce que ces sept (les autres ne sont pas testés, voir G21).
 - **Afficher la source** et **Copier la source** sous chaque schéma : le texte derrière l’image est à un clic.
 - Pendant la génération d’une réponse, le bloc reste un bloc ; le schéma apparaît quand le bloc est complet.
 - Un bloc illisible affiche le code d’origine et une ligne indiquant la raison, jamais un cadre vide.
@@ -47,7 +47,7 @@ Les deux commandes sont dans le dépôt, si bien que ce qui est affirmé dans ce
 
 - **Vérifié ici :** dessin dans la discussion vérifié dans DSH bureau `0.2.2-rc.5` (extension `0.1.2`, la vérification sur appareil réel ne couvre que la page de documentation en chinois) ; repli des libellés vérifié ; repli à la désinstallation et réinstallation vérifiés ; huit langues d’interface vérifiées dans le harnais sans interface ; colonne étroite de 360 px vérifiée.
 - **Probable, mais non prouvé sur votre machine :** autres versions de DSH ; autres navigateurs basés sur Chromium ; les mêmes vérifications sur appareils mobiles (la mise en page est vérifiée dans une fenêtre d’affichage de 360 px d’un navigateur de bureau, pas sur un téléphone physique) ; très grands schémas (il existe des limites : 24 KiB de source, 2 MiB de sortie dessinée, 400 arêtes ; au-delà, il se replie sur le bloc de code).
-- **Non effectué :** une mise à niveau majeure de DSH n’a pas été répétée ; les schémas ne sont pas dessinés tant qu’un message est encore en cours de diffusion ; seuls les blocs ` ```mermaid ` sont pris en charge (pas les autres langages de bloc de code).
+- **Non effectué :** aucune mise à niveau de DSH n’a été répétée à ce jour (voir G1) ; les schémas ne sont pas dessinés tant qu’un message est encore en cours de diffusion ; seuls les blocs ` ```mermaid ` sont pris en charge (pas les autres langages de bloc de code).
 
 ## Installation
 
@@ -64,8 +64,8 @@ flowchart LR
 
 ## Désinstallation et compatibilité
 
-- La désinstallation laisse intactes toutes les conversations passées : les anciens schémas redeviennent les blocs de code dont ils venaient, lisibles et recherchables.
-- Le greffon ne déclare ni seuil de version ni paquet hôte obligatoire : une mise à jour de l’hôte ne peut donc pas empêcher l’application de démarrer ; si l’hôte change de forme, le greffon s’efface et le bloc de code d’origine est affiché.
+- La désinstallation laisse intactes toutes les conversations passées : les anciens schémas redeviennent les blocs de code dont ils venaient, lisibles.
+- Le greffon ne déclare ni seuil de version ni paquet hôte obligatoire : aucun contrôle de version ne peut donc refuser le démarrage ; une mise à jour réelle de l’hôte n’a pas été répétée (voir G1). si l’hôte change de forme, le greffon s’efface et le bloc de code d’origine est affiché.
 
 ## Licence
 

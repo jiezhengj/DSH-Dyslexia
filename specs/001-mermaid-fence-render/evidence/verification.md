@@ -1,6 +1,6 @@
 # 验证证据
 
-本文件只记录**已经真实跑过**的命令输出。E-BLD、E-CHK、E-HARN 三段各自来自一次运行，其中 E-CHK 与 E-HARN 的报告行自带 `包名@版本 | client.js 字节数 | sources sha256:<指纹>`，所以这两段可被追溯到具体的一棵树；E-BLD 是构建日志本身（它写出 `client.js`，随后由这两段报告行限定）。E-PUB 记录 CI 运行，E-INS 与 E-LIVE 记录真机操作，各自注明版本与 run，不能当成"同一次运行"的输出。当前版本：`0.1.23`。
+本文件只记录**已经真实跑过**的命令输出。E-BLD、E-CHK、E-HARN 三段各自来自一次运行，其中 E-CHK 与 E-HARN 的报告行自带 `包名@版本 | client.js 字节数 | sources sha256:<指纹>`，所以这两段可被追溯到具体的一棵树；E-BLD 是构建日志本身（它写出 `client.js`，随后由这两段报告行限定）。E-PUB 记录 CI 运行，E-INS 与 E-LIVE 记录真机操作，各自注明版本与 run，不能当成"同一次运行"的输出。当前版本：`0.1.24`。
 
 复跑方式（任何人 clone 后都一样）：
 
@@ -19,7 +19,7 @@ build-client: @jiezhengj/dsh-dyslexia -> client.js (769453 bytes, 768423 charact
 ## E-CHK 静态与行为校验
 
 ```text
-ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.23
+ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.1.24
 ok   package.json points at the repository npm trusts — git+https://github.com/jiezhengj/DSH-Dyslexia.git
 ok   package.json declares the bundle patch and the client half — platform web, no package inject
 ok   no dsh version gate can refuse a start — no engines.dsh, no dsh peers
@@ -46,7 +46,7 @@ ok   every supported sample type draws an svg — flowchart:218x64 sequence:184x
 ok   a broken diagram reports a one-line reason — Parse error on line 2:
 ok   host key echo falls back to bundled strings — key echo, blanks, placeholders rejected
 ok   every language carries the same complete sentences — 12 keys x 8 languages, no engine text in labels
-ok   client.js matches the sources it claims — 00fe7860f20f5178fcd5e5a0073883e8
+ok   client.js matches the sources it claims — 5bc072d12a6078b7cb49ecba54131ae8
 ok   the picture is the image, and the copy answer is announced — label is a noun, role="img" on the svg, copy result announced
 ok   host children react would refuse fall back to the source — objects, functions and mixed arrays fall back to the source text
 ok   every drawing the engine swaps in is named again — the engine owns re-layout; every swapped drawing node and its zoom buttons are renamed, strings follow the language
@@ -59,7 +59,7 @@ ok   the contract's colour variables are the ones that are wired — 10 engine v
 ok   both size limits reach the engine, each proven on its own — three limits passed to mount, two fixtures that cross one each
 ok   the fixtures assert what the fixes promise, and can fail — 21 assertions present, each with a condition that reads something
 
-check-bundle: @jiezhengj/dsh-dyslexia@0.1.23 | client.js 769453 bytes | sources sha256:00fe7860f20f5178fcd5e5a0073883e8 | all 39 checks passed
+check-bundle: @jiezhengj/dsh-dyslexia@0.1.24 | client.js 769453 bytes | sources sha256:5bc072d12a6078b7cb49ecba54131ae8 | all 39 checks passed
 ```
 
 ## E-HARN 浏览器行为校验
@@ -289,7 +289,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.1.23 | client.js 769453 bytes | sources 
 [ok] the zoom buttons speak the interface language — 放大 | 缩小 | 重置缩放
 [ok] every zoom button in reach can take the keyboard — 1/1 reachable of 3
 [ok] every zoom button is reachable once the picture is zoomed — 3/3 after zoom
-run-harness: @jiezhengj/dsh-dyslexia@0.1.23 | client.js 769453 bytes | sources sha256:00fe7860f20f5178fcd5e5a0073883e8 | all 220 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+run-harness: @jiezhengj/dsh-dyslexia@0.1.24 | client.js 769453 bytes | sources sha256:5bc072d12a6078b7cb49ecba54131ae8 | all 220 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
 同一次运行的 stderr 另有 7 段被**刻意捕获**的异常堆栈（loader ×3、prompt section ×3、module ×1，例如 `dsh-dyslexia: loader Error: host changed the loader`、`dsh-dyslexia: prompt section rejected Error: asynchronous failure`）：它们来自敌意宿主用例，属正常输出，不是失败。
@@ -306,7 +306,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.23 | client.js 769453 bytes | sources s
 
 ## E-PROBE 夹具能失败吗：用破坏性探针验证
 
-如果一个断言恒真，"套件全绿"就不构成证据。0.1.8 至 0.1.23 期间共做了二十六次探针（最后两次在 0.1.22 发布之后、尚未发版的核验提交里做）：故意破坏被断言保护的代码、重建 `client.js`、跑两套检查、确认目标断言**变红**，再还原（0.1.10 起的几次在 `%TEMP%` 的仓库副本里做，不动工作树）。报告行里的项数属于**当时的套件**：0.1.10 = 119 项、0.1.11 = 152 项、0.1.12 = 156 项、0.1.13 = 197 项、0.1.14 = 205 项、0.1.15 起 = 213 项、0.1.17 起 = 216 项、0.1.19 起 = 220 项（静态 0.1.19 起 = 39 项）。
+如果一个断言恒真，"套件全绿"就不构成证据。0.1.8 至 0.1.24 期间共做了二十七次探针（最后三次在 0.1.22、0.1.23 发布之后的核验提交里做，改动都只在从不随包的 `verify/` 与 `specs/` 里）：故意破坏被断言保护的代码、重建 `client.js`、跑两套检查、确认目标断言**变红**，再还原（0.1.10 起的几次在 `%TEMP%` 的仓库副本里做，不动工作树）。报告行里的项数属于**当时的套件**：0.1.10 = 119 项、0.1.11 = 152 项、0.1.12 = 156 项、0.1.13 = 197 项、0.1.14 = 205 项、0.1.15 起 = 213 项、0.1.17 起 = 216 项、0.1.19 起 = 220 项（静态 0.1.19 起 = 39 项）。
 
 | 探针 | 破坏方式 | 变红的断言（含报告行） | 说明 |
 |---|---|---|---|
@@ -335,9 +335,10 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.23 | client.js 769453 bytes | sources s
 | PS9 | 把夹具 `the fixture really replaced the drawing node` 的条件换成字面量 `true` | 静态 `the fixtures assert what the fixes promise, and can fail` → `fixture assertions without a condition: the fixture really replaced the drawing node`；报告行 `check-bundle: 1 failed, 38 passed`（exit 1）。这是第十九轮实现评审报出的 P2：旧守护只拒空条件，`expect(true, '名字')` 能骗过它 |
 | PS10 | 把上面那条 `expect(...)` 整段换成一行 `// the fixture really replaced the drawing node` 注释 | 静态同上 → `missing fixture assertions: the fixture really replaced the drawing node`；`check-bundle: 1 failed, 38 passed`（exit 1）。扫描前先剥注释，注释里的名字不算数 |
 | PS11 | 把同一条 `expect(...)` 的条件换成 `1 === 1`（比较两个字面量，读不到任何东西） | 静态同上 → `fixture assertions without a condition: the fixture really replaced the drawing node`；`check-bundle: 1 failed, 38 passed`（exit 1）。这是第二十轮实现评审报出的 P3：旧守护只拒裸字面量，`1 === 1` 能骗过它 |
-|  PS12 | 整块删掉 `MutationObserver`，但在原位留一行 `// probe: MutationObserver deleted` 注释 | 静态 `every drawing the engine swaps in is named again` → `the watcher does not watch the drawing subtree`；`check-bundle: 1 failed, 38 passed`（exit 1）。同一轮 P3：文本断言原先直接读未剥注释的源码，注释里的名字能顶替真代码 |
+|  PS12 | 整块删掉 `MutationObserver`，但在原位留一行 `// probe: MutationObserver deleted` 注释 | 静态 `every drawing the engine swaps in is named again` → `the watcher does not watch the drawing subtree`；`check-bundle: 1 failed, 38 passed`（exit 1）。夹具 `a swapped drawing is named again` 与 `a drawing swapped after a width change is named again` → `[bad] … graphics-document document|null|roledesc=flowchart`，`run-harness` 以 1 退出。同一轮 P3：文本断言原先直接读未剥注释的源码，注释里的名字能顶替真代码 |
+|  PS13 | 把夹具 `a swapped drawing is named again` 的条件从 `!!renamed && …` 换成 `!!renamed || true`（仍提到同名变量，不是字面量） | 静态 `the fixtures assert what the fixes promise, and can fail` → `fixture assertions without a condition: a swapped drawing is named again`；`check-bundle: 1 failed, 38 passed`（exit 1）。加固前两套全绿 |
 
-静态检查里另有一条守护 `the fixtures assert what the fixes promise, and can fail`：它要求 P1/P2/P4/P5/PA/PB/PC 里那几个"能变红的断言名"继续存在于夹具中，并且每条名字必须落在一个**真正读值**的 `expect(` 条件里——条件为空、只是 `true`/`false`/`0` 这类字面量（PS9）、或是 `1 === 1` 这种读不到任何东西的自我比较（PS11）都会让它变红，名字只出现在注释里也算缺失（PS10）；否则说明有人把夹具掏空或删掉而代码检查仍绿。同一道守护的兄弟条款：读源码的文本断言一律先剥注释再比对，所以把代码换成同名注释也会红（PS12）。P6/P7 是另一道：两套检查各自的条目数被钉死，删一条也会红。
+静态检查里另有一条守护 `the fixtures assert what the fixes promise, and can fail`：它要求 P1/P2/P4/P5/PA/PB/PC 里那几个"能变红的断言名"继续存在于夹具中，并且每条名字必须落在一个**真正读值**的 `expect(` 条件里——条件为空、只是 `true`/`false`/`0` 这类字面量（PS9）、或是 `1 === 1` 这种读不到任何东西的自我比较（PS11）、`|| true` 这种非字面量的恒真分支（PS13）都会让它变红，名字只出现在注释里也算缺失（PS10）；否则说明有人把夹具掏空或删掉而代码检查仍绿。同一道守护的兄弟条款：读源码的文本断言一律先剥注释再比对，所以把代码换成同名注释也会红（PS12）。P6/P7 是另一道：两套检查各自的条目数被钉死，删一条也会红。
 
 ## E-COMP 兼容性断言与要求逐条对应
 
@@ -451,7 +452,7 @@ npm notice shasum: 71feabc22885e097974a35668e4717837fefd226
 npm notice total files: 33
 ```
 
-0.1.10（run `45062588313`，36 / 119）——这是**当时**那棵树的两条报告行；版本、字节数、指纹与项数都与当前不同（当前 0.1.23 是 769,453 字节、`00fe7860…`、39 / 220），共同点只有命令与工作流：
+0.1.10（run `45062588313`，36 / 119）——这是**当时**那棵树的两条报告行；版本、字节数、指纹与项数都与当前不同（当前 0.1.24 是 769,453 字节、`5bc072d1…`、39 / 220），共同点只有命令与工作流：
 
 ```text
 check-bundle: @jiezhengj/dsh-dyslexia@0.1.10 | client.js 767298 bytes | sources sha256:336ea7199fb90a0c8202c03e0c14bbe7 | all 36 checks passed
@@ -786,11 +787,11 @@ Done in 3.5s using pnpm v11.28.5
 | `docs/` | 9 个文件（8 篇 `DETAIL*.md` + `preview.svg`） |
 | 包内 `version` | `0.1.23` |
 
-这一轮的 `remove_bundle` 返回 `{"code":"not-removable"}`，所以只做了安装（`install_bundle` 直接 applied）。安装本身不需要重启：新 chunk 写进 profile 后即刻生效；但**已经在跑的会话仍持旧 chunk**，重启后才换成 0.1.23——这与 G13 记的"重启后逐项复核"是两件事。
+这一轮的 `remove_bundle` 返回 `{"code":"not-removable"}`，所以只做了安装（`install_bundle` 直接 applied）。新 chunk 写进 profile 磁盘后，**已经在跑的会话仍持旧 chunk**；要让它换成新版本，必须重启 DSH——这与 G13 记的"重启后逐项复核"是两步，先重启、再核对。
 
 ## E-LIVE 真机（DSH 桌面窗口内）
 
-**以下记录来自 0.1.2**，当前版本（0.1.23）的重启核对是 T079（**尚未取证**，见 G13）。之所以保留，是因为它们证明了链路本身可用；从 0.1.2 到 0.1.23 渲染层改过多次（`role` 结构、`aria-roledescription` 的移除与重排版后重标、可见的复制反馈、空/非法 `children` 的处理、源码块的 `language-mermaid` 标记、外层盒子去掉名字），所以这些观察**不能**自动转移到 `0.1.23`。
+**以下记录来自 0.1.2**，当前版本（0.1.24）的重启核对是 T079（**尚未取证**，见 G13）。之所以保留，是因为它们证明了链路本身可用；从 0.1.2 到 0.1.24 渲染层改过多次（`role` 结构、`aria-roledescription` 的移除与重排版后重标、可见的复制反馈、空/非法 `children` 的处理、源码块的 `language-mermaid` 标记、外层盒子去掉名字），所以这些观察**不能**自动转移到 `0.1.23`。
 
 | 观察 | 当时的证据 | 归属 |
 |---|---|---|
@@ -799,7 +800,7 @@ Done in 3.5s using pnpm v11.28.5
 | 卸载插件后，同一条消息变回纯文本代码块，无报错无占位 | `remove_bundle` 后 `flowchart LR … A[代码块] --> B[就地成图]` 原样显示，`role="img"`（`agent-desktop` 报告为 image）与按钮计数为 0 | US2/FR-009（不含 SC-002 的会话检索命中） |
 | 重新安装后图与按钮立刻回来，历史消息不用改 | `install_bundle` 后同一屏立刻渲染 | FR-010 |
 
-## E-GAPS 没有取证的部分（共 20 项）
+## E-GAPS 没有取证的部分（共 21 项）
 
 真机、设备与离线条件（都要求动手换条件，不能在 CI 里做）：
 
@@ -830,6 +831,7 @@ Done in 3.5s using pnpm v11.28.5
 - **G18 引擎缺失分支只有静态证据（第十六轮实现评审 P3，第十七轮文档评审修正）**：引擎被内联进 `client.js`，正常构建下运行期不会缺失；`an engine that fails to load leaves the picture to the host` 断言的是产物里存在错误边界、`readLayerInput`、`safeRead`、`engineUnavailable` 这句话，以及 `typeof pele.mount !== 'function'` 这个守卫字符串（把守卫改成恒真，这条静态断言会立刻变红），但**没有动态用例**把引擎置空后观察回退——`scripts/build-client.mjs` 的 `catch (error) { pele = null }` 与 `plan.md` 的「引擎 IIFE 失败则置空」就是这条分支的入口。它的价值是「模型知情、宿主换了加载方式时仍给一句话而不是白屏」，不是可演练的行为。
 - **G19 静态套件只钉顶层条目数，不钉条目内部的断言数（第十七轮实现评审 P3）**：`verify/check-bundle.mjs` 的 `EXPECTED_CHECKS = 39` 只保证「有 39 个 `check()`」，某一条 `check()` 内部的某行 `assert()` 被删掉时套件仍报全过；浏览器夹具是逐条 `expect()` 计数（删一条即 `run-harness: suite reported X checks, expected Y`），两侧的看守强度并不相同。
 - **G20 启用/停用没有单独的真机观察**：`E-LIVE` 观察到的是卸载回退与重装恢复；启用与停用依赖宿主的插件机制，文档（`quickstart.md` 与九份 README）按"走宿主机制、未单独取证"措辞，没有把这两步写成已验证。
+- **G21 引擎支持的其它图种与"Mermaid 12.1"版本说法没有断言**：夹具与静态检查只采样七种（flowchart、sequence、class、state、er、mindmap、timeline，见 `every supported sample type draws an svg`）；gantt、kanban、xychart、C4、architecture 等引擎声称支持的图种**没有任何用例**，九份 README 里"Mermaid 12.1"的版本说法也只来自上游 pele 的说明，不是本项目的断言。README 因此改成"夹具目前只覆盖这七种（见 G21）"。
 ---
 
-**本文件与 tasks.md 的关系**：`tasks.md` 末尾的状态表逐行对应上面 19 项，两处若不一致，以本文件为准（本文件是证据的归属地，`tasks.md` 是工作项的记录）。
+**本文件与 tasks.md 的关系**：`tasks.md` 末尾的状态表逐行对应上面 21 项，两处若不一致，以本文件为准（本文件是证据的归属地，`tasks.md` 是工作项的记录）。

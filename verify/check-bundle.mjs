@@ -729,6 +729,11 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
       return (harness.match(pattern) || []).length > 1
     })
   }
+  // Mentioning a fixture name is still not enough: `!!drawn || true` reads the
+  // name and is true whatever it holds. A condition whose value can be decided
+  // by a constant in a short-circuit or ternary branch is treated as hollow.
+  const constantBranch =
+    /\|\|\s*(?:true|1|!0|"")|&&\s*(?:false|0|null|undefined|"")|\?\s*[^:]*:\s*(?:true|false)\b/
   const hollow = needed.filter((name) => {
     const at = harness.indexOf(name)
     const open = harness.lastIndexOf('expect(', at)
@@ -737,7 +742,12 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
       .slice(open + 'expect('.length, at)
       .replace(/['",\s]+$/, '')
       .trim()
-    return head.length === 0 || literals.test(head) || !mentionsFixtureName(head)
+    return (
+      head.length === 0 ||
+      literals.test(head) ||
+      !mentionsFixtureName(head) ||
+      constantBranch.test(head)
+    )
   })
   if (hollow.length > 0) throw new Error(`fixture assertions without a condition: ${hollow.join(', ')}`)
   return `${needed.length} assertions present, each with a condition that reads something`

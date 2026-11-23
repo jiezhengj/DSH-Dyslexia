@@ -7,7 +7,7 @@
 ```json
 {
   "name": "@jiezhengj/dsh-dyslexia",
-  "version": "0.1.23",
+  "version": "0.1.24",
   "description": "Draws mermaid code blocks in DeepSeek Harness conversations as diagrams, in place in the message.",
   "type": "module",
   "main": "index.js",
@@ -107,7 +107,7 @@
 6. `cordis.patch.yml` 含 `insert:`、`id: dsh-dyslexia`、`name: '@jiezhengj/dsh-dyslexia'`。
 7. 8 个 `locale/*.json` 各有 `meta.title`、`meta.description`（≥80 字符）、`meta.detail`；`detail` 指向的文档存在且恰好一行、形如 `![alt](preview.svg)`；8 种标题互不相同。
 8. `index.js` 含 `export const inject = ['systemPrompt']`；`apply` 在正常宿主上恰好注册一段（`ui:dsh-dyslexia`、order 9000、85 词），在 **5 种静默 ctx**（`undefined`、`null`、`{}`、`systemPrompt: null`、`systemPrompt: {}`）与 **2 次异常调用**（`section` 抛错、`section` 返回 rejected Promise）共 7 次 `apply` 上都静默——框架的 `apply stays silent on a changed host` 断言七种畸形客户端 ctx，另有本次宿主机侧的七次调用，两者不是同一组。
-9. **无版本门**（三句，各自的归属不同）：不含 `engines.dsh` 与指向 DSH 包的 `peerDependencies`（`no dsh version gate can refuse a start`）；不含 `dsh.client.inject`（`package.json declares the bundle patch and the client half`，第 79 行 `assert(client.inject === undefined, …)`）；`engines` 的其余子键（如 `engines.node`）不在静态断言覆盖内，见 G15 第五条。"宿主版本未知时真的装一次"是 G1。
+9. **无版本门**（三句，各自的归属不同）：不含 `engines.dsh` 与指向 DSH 包的 `peerDependencies`（`no dsh version gate can refuse a start`）；不含 `dsh.client.inject`（`package.json declares the bundle patch and the client half`，第 91 行 `assert(client.inject === undefined, …)`）；`engines` 的其余子键（如 `engines.node`）不在静态断言覆盖内，见 G15 第五条。"宿主版本未知时真的装一次"是 G1。
 10. **产物可独立编译**：`new vm.Script(client.js)` 不抛错（FR-015 / SC-008）。
 11. **宿主加载器异常不连累**：会抛错的 `load`、缺失 `load`、缺失 `window` 三种宿主执行 `client.js` 均不抛。
 12. **工厂抛错仍可用**：工厂里 `require('react')` 抛错时返回空模块（`apply` 与 `inject` 都在、`inject` 为空），`apply` 静默。

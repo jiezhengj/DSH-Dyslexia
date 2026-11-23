@@ -17,7 +17,7 @@ The code block is never consumed. It stays in the message as text: it can be cop
 
 ## What you get
 
-- Diagrams in place for `mermaid` code blocks: flowcharts, sequence, class, state, ER, mind map, timeline and the other Mermaid 12.1 diagram types.
+- Diagrams in place for `mermaid` code blocks: flowcharts, sequence, class, state, ER, mind map, timeline, and other diagram types the vendored engine supports; the harness exercises these seven only (see G21).
 - **Show source** and **Copy source** under every drawing, so the text behind the picture is one click away.
 - While a reply is streaming, the block stays a code block; the drawing appears when the block is complete.
 - A block that cannot be parsed shows the plain code block plus one line saying why — never an empty frame.
@@ -45,9 +45,9 @@ Both commands are in the repository, so the claims in this file can be re-checke
 
 ## Known limits
 
-- **Verified here:** in-chat drawing in DSH desktop `0.2.2-rc.5` (plugin `0.1.2`; real-machine verification covers the Chinese docs page only); label fallback; uninstall fallback and reinstall; eight interface languages (in the headless harness); a 360 px wide column in a headless Chrome fixture (a layout check, not a phone).
+- **Verified here:** on a real machine — in-chat drawing in DSH desktop `0.2.2-rc.5` (plugin `0.1.2`), uninstall fallback and reinstall, and the Chinese plugin page; in the headless harness — label fallback, the eight interface languages, and a 360 px wide column (a layout check, not a phone).
 - **Likely, not proven on your machine:** other DSH versions; other Chromium-based browsers; the same checks on mobile devices (the layout is verified in a 360 px viewport in a desktop browser, not on a physical phone); very large diagrams (limits: source 24 KiB, drawing output 2 MiB, 400 edges; beyond that it falls back to the code block).
-- **Not done:** upgrading DSH across a major version has not been rehearsed; diagrams are not drawn while a message is still streaming; only ` ```mermaid ` fences are handled (not other fence languages).
+- **Not done:** no DSH upgrade has been rehearsed yet (see G1); diagrams are not drawn while a message is still streaming; only ` ```mermaid ` fences are handled (not other fence languages).
 
 ## Install
 
@@ -64,8 +64,8 @@ flowchart LR
 
 ## Uninstalling and compatibility
 
-- Uninstalling keeps every past conversation intact: earlier drawings turn back into the code blocks they came from, still readable and still searchable.
-- The plugin declares no version gate and no required host package, so a host upgrade cannot stop the app from starting; if the host changes shape, the plugin steps aside and the plain code block is shown.
+- Uninstalling keeps every past conversation intact: earlier drawings turn back into the code blocks they came from, still readable.
+- The plugin declares no version gate and no required host package, so no version check refuses a start; a real host upgrade has not been rehearsed yet (see G1). if the host changes shape, the plugin steps aside and the plain code block is shown.
 
 ## License
 

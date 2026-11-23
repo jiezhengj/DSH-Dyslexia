@@ -17,7 +17,7 @@ Der Codeblock wird nie verbraucht. Er bleibt der Text der Nachricht: kopierbar, 
 
 ## Was du bekommst
 
-- Diagramme an Ort und Stelle für `mermaid`-Codeblöcke: Flussdiagramm, Sequenz, Klasse, Zustand, ER, Mindmap, Zeitachse und die übrigen Diagrammtypen von Mermaid 12.1.
+- Diagramme an Ort und Stelle für `mermaid`-Codeblöcke: Flussdiagramm, Sequenz, Klasse, Zustand, ER, Mindmap, Zeitachse und weitere vom Motor unterstützte Diagrammtypen; der Test prüft nur diese sieben (weitere Typen sind ungetestet, siehe G21).
 - **Quelle anzeigen** und **Quelle kopieren** unter jedem Diagramm – der Text hinter dem Bild ist einen Klick entfernt.
 - Während eine Antwort noch streamt, bleibt der Block ein Codeblock; das Diagramm erscheint, sobald der Block vollständig ist.
 - Ein nicht auswertbarer Block zeigt den ursprünglichen Codeblock plus eine Zeile mit dem Grund – nie einen leeren Rahmen.
@@ -47,7 +47,7 @@ Beide Befehle liegen im Repository, sodass sich die Aussagen in dieser Datei jed
 
 - **Hier verifiziert:** Zeichnen im Chat in DSH Desktop `0.2.2-rc.5` (Plugin `0.1.2`, echte Geräteprüfung nur für die chinesische Dokumentationsseite) verifiziert; Beschriftungs-Fallback verifiziert; Deinstallations-Fallback und Neuinstallation verifiziert; acht Oberflächensprachen im Headless-Test verifiziert; schmale 360-px-Spalte verifiziert.
 - **Wahrscheinlich, aber auf deinem Rechner nicht bewiesen:** andere DSH-Versionen; andere Chromium-basierte Browser; dieselben Prüfungen auf Mobilgeräten (das Layout ist in einem 360-px-Viewport eines Desktop-Browsers verifiziert, nicht auf einem physischen Telefon); sehr große Diagramme (es gibt Grenzen: 24 KiB Quelltext, 2 MiB Zeichenausgabe, 400 Kanten; darüber hinaus fällt es auf den Codeblock zurück).
-- **Nicht durchgeführt:** ein Upgrade von DSH über eine Hauptversion hinweg wurde nicht geprobt; Diagramme werden nicht gezeichnet, solange eine Nachricht noch streamt; nur ` ```mermaid `-Blöcke werden behandelt (keine anderen Codeblock-Sprachen).
+- **Nicht durchgeführt:** ein DSH-Upgrade wurde noch nie geprobt (siehe G1); Diagramme werden nicht gezeichnet, solange eine Nachricht noch streamt; nur ` ```mermaid `-Blöcke werden behandelt (keine anderen Codeblock-Sprachen).
 
 ## Installation
 
@@ -64,8 +64,8 @@ flowchart LR
 
 ## Deinstallation und Kompatibilität
 
-- Eine Deinstallation lässt jede frühere Unterhaltung unversehrt: Frühere Diagramme werden wieder zu den Codeblöcken, aus denen sie entstanden, lesbar und durchsuchbar.
-- Das Plugin deklariert keine Versionsschwelle und kein erforderliches Host-Paket; ein Host-Update kann den Start der App daher nicht verhindern. Ändert sich die Form des Hosts, tritt das Plugin zurück und der ursprüngliche Codeblock wird gezeigt.
+- Eine Deinstallation lässt jede frühere Unterhaltung unversehrt: Frühere Diagramme werden wieder zu den Codeblöcken, aus denen sie entstanden, lesbar.
+- Das Plugin deklariert keine Versionsschwelle und kein erforderliches Host-Paket; eine Versionsprüfung den Start also nicht ablehnen kann; ein echtes Host-Update wurde noch nicht geprobt (siehe G1). Ändert sich die Form des Hosts, tritt das Plugin zurück und der ursprüngliche Codeblock wird gezeigt.
 
 ## Lizenz
 

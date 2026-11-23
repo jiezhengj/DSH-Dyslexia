@@ -17,7 +17,7 @@ El bloque de código no se consume: sigue en el mensaje como texto, de modo que 
 
 ## Qué obtienes
 
-- Diagramas en su sitio para bloques `mermaid`: flujo, secuencia, clases, estados, ER, mapas mentales, líneas de tiempo y los demás tipos de Mermaid 12.1.
+- Diagramas en su sitio para bloques `mermaid`: flujo, secuencia, clases, estados, ER, mapas mentales, líneas de tiempo y otros tipos que admite el motor; el arnés solo ejercita estos siete (los demás no están probados, véase G21).
 - **Mostrar el código** y **Copiar el código** bajo cada dibujo: el texto detrás de la imagen queda a un clic.
 - Mientras una respuesta se está generando, el bloque sigue siendo un bloque; el dibujo aparece cuando el bloque está completo.
 - Un bloque que no se puede analizar muestra el código original y una línea con el motivo; nunca un marco vacío.
@@ -47,7 +47,7 @@ Ambos comandos están en el repositorio, de modo que lo afirmado en este archivo
 
 - **Verificado aquí:** dibujo en el chat verificado en DSH escritorio `0.2.2-rc.5` (plugin `0.1.2`, la verificación en equipo real solo cubre la página de documentación en chino); respaldo de etiquetas verificado; respaldo al desinstalar y reinstalación verificados; ocho idiomas de interfaz verificados en el arnés sin interfaz; columna estrecha de 360 px verificada.
 - **Probable, pero no demostrado en tu equipo:** otras versiones de DSH; otros navegadores basados en Chromium; las mismas comprobaciones en dispositivos móviles (la disposición está verificada en un área de visualización de 360 px en un navegador de escritorio, no en un teléfono físico); diagramas muy grandes (hay límites: 24 KiB de código fuente, 2 MiB de salida dibujada y 400 aristas; más allá de eso vuelve al bloque de código).
-- **No realizado:** no se ha ensayado una actualización de DSH entre versiones mayores; los diagramas no se dibujan mientras un mensaje sigue transmitiéndose; solo se tratan bloques ` ```mermaid ` (no otros lenguajes de bloque de código).
+- **No realizado:** no se ha ensayado ninguna actualización de DSH (véase G1); los diagramas no se dibujan mientras un mensaje sigue transmitiéndose; solo se tratan bloques ` ```mermaid ` (no otros lenguajes de bloque de código).
 
 ## Instalación
 
@@ -64,8 +64,8 @@ flowchart LR
 
 ## Desinstalación y compatibilidad
 
-- Desinstalar mantiene intactas las conversaciones anteriores: los dibujos vuelven a ser los bloques de código de los que salieron, legibles y buscables.
-- El complemento no declara puerta de versión ni paquete anfitrión obligatorio, así que una actualización del anfitrión no puede impedir que la aplicación arranque; si el anfitrión cambia de forma, el complemento se aparta y se muestra el bloque de código original.
+- Desinstalar mantiene intactas las conversaciones anteriores: los dibujos vuelven a ser los bloques de código de los que salieron, legibles.
+- El complemento no declara puerta de versión ni paquete anfitrión obligatorio, así que ninguna comprobación de versión impide el arranque; una actualización real del anfitrión no se ha ensayado (véase G1). si el anfitrión cambia de forma, el complemento se aparta y se muestra el bloque de código original.
 
 ## Licencia
 
