@@ -1,6 +1,6 @@
 # Evidence — feature 002: the preference switch and the new name
 
-This file records what was actually observed while building feature 002. Each block is one run on one tree; no block mixes trees. E-PUB/E-INS exist for all five published versions — `0.2.0`, `0.2.1`, `0.2.2`, `0.2.3` and `0.2.4` — and for no unpublished tree: the current `0.2.5` has no E-PUB/E-INS block, because it is neither committed nor published. E-BLD, E-CHK and E-HARN quote the `0.2.1` tree only (44 static, 251 browser; the `0.2.5` runs are summary lines in "E-CHK/E-HARN · 0.2.5" below, not transcripts; E-CHK is the complete stdout of that run — 44 `ok` lines plus the summary — while the 52 deliberately triggered `warn`/stack lines went to stderr). The current tree is `0.2.5`, uncommitted and unpublished: 45 static and 274 browser checks, `client.js` 783360 bytes / 781845 characters, sources sha256 `2b5728286c556d8dbaaa349cc9fb8ec5`, file SHA-256 `279c33781ef551e3d3bbb0aabf3d37a681fd5da4f4738c29c724b596667a8766`. The last released and installed tree is `0.2.4` (45 static and 271 browser checks, `client.js` 781963 bytes, sources sha256 `9f13d80f0230257569dd0e525c6eb048`). E-PROBE records F3–F8 on `0.2.1`, F1/F9 on the `0.2.3` tree, and F10–F13 on the `0.2.5` tree; the `0.2.4` tree itself was never probed, and `0.2.5` supersedes it (G10 discharged).
+This file records what was actually observed while building feature 002. Each block is one run on one tree; no block mixes trees. E-PUB/E-INS exist for all six published versions — `0.2.0`, `0.2.1`, `0.2.2`, `0.2.3`, `0.2.4` and `0.2.5` — and for no unpublished tree: every version that was cut has both blocks, and `0.2.5` is one of them (commit `0be17fe`, tag `v0.2.5`, run `45240437544`, installed into the live `desktop` profile — see "E-PUB · 0.2.5" and "E-INS · 0.2.5" below). E-BLD, E-CHK and E-HARN quote the `0.2.1` tree only (44 static, 251 browser; the `0.2.5` runs are summary lines in "E-CHK/E-HARN · 0.2.5" below, not transcripts; E-CHK is the complete stdout of that run — 44 `ok` lines plus the summary — while the 52 deliberately triggered `warn`/stack lines went to stderr). The current tree is `0.2.5`, committed, released and installed — the same tree this file's runs measured: 45 static and 274 browser checks, `client.js` 783360 bytes / 781845 characters, sources sha256 `2b5728286c556d8dbaaa349cc9fb8ec5`, file SHA-256 `279c33781ef551e3d3bbb0aabf3d37a681fd5da4f4738c29c724b596667a8766`. The tree `0.2.5` replaced in the profile is `0.2.4` (45 static and 271 browser checks, `client.js` 781963 bytes, sources sha256 `9f13d80f0230257569dd0e525c6eb048`). E-PROBE records F3–F8 on `0.2.1`, F1/F9 on the `0.2.3` tree, and F10–F13 on the `0.2.5` tree; the `0.2.4` tree itself was never probed, and `0.2.5` supersedes it (G10 discharged).
 
 ## E-BLD build
 
@@ -334,6 +334,8 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.2.5 | client.js 783360 bytes | sources s
 run-harness: @jiezhengj/dsh-dyslexia@0.2.5 | client.js 783360 bytes | sources sha256:2b5728286c556d8dbaaa349cc9fb8ec5 | all 274 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
+CI on run `45240437544` printed the same two lines for the tagged commit (only the browser path differs, `/usr/bin/google-chrome`), so these are the published release's numbers and not a local run alone; the verbatim CI block is under "E-PUB · 0.2.5" below.
+
 The three browser assertions this round added are `a refused write keeps the value the host took while it was pending` (`verify/harness/index.html:1549`), `a value the host pushes reaches the switch without a write` (`:1612`) and `a thenable that throws out of then cannot break the click` (`:1676`); the static side changed inside `the capability briefing is what it was before the switch` (`verify/check-bundle.mjs:401`), so the static count is unchanged at 45.
 
 ## E-PUB · 0.2.2
@@ -464,3 +466,23 @@ run-harness: @jiezhengj/dsh-dyslexia@0.2.1 | client.js 780550 bytes | sources sh
 - `remove_bundle @jiezhengj/dsh-dyslexia` removed `0.2.3`; `install_bundle @jiezhengj/dsh-dyslexia@0.2.4` returned `application: applied`, `version: 0.2.4`
 - installed copy `client.js` is 781963 bytes, SHA-256 `D74D8083E8E417F578A3E26B10C986CEBDEDBA84C7A7F03114A250D0AB3B6DFB`, byte-identical to the repository copy; installed `package.json` says `0.2.4`; `locale/` 8, `docs/` 9
 - this is a code change (the resolved-write result is now read; the row waits for `configForms`): a window that is already open keeps the `0.2.3` chunk until the app restarts
+
+## E-PUB · 0.2.5
+
+- commit `0be17fe` ("0.2.5: refuse-write honesty against the host's real value, an external-change fixture, a verbatim 001 briefing guard"), tag `v0.2.5` ("0.2.5: the switch follows the host, not the click"), both pushed to `main`
+- GitHub Actions run `45240437544`, conclusion `success`, workflow `publish`, head branch `v0.2.5`
+- CI, verbatim:
+
+```
+check-bundle: @jiezhengj/dsh-dyslexia@0.2.5 | client.js 783360 bytes | sources sha256:2b5728286c556d8dbaaa349cc9fb8ec5 | all 45 checks passed
+npm notice shasum: c9a8cd6145a7cab17f6b19f66d520f1b5c6b48f8
+npm notice total files: 33
+run-harness: @jiezhengj/dsh-dyslexia@0.2.5 | client.js 783360 bytes | sources sha256:2b5728286c556d8dbaaa349cc9fb8ec5 | all 274 checks passed (/usr/bin/google-chrome)
+```
+
+## E-INS · 0.2.5
+
+- registry tarball `dsh-dyslexia-0.2.5.tgz` answered HEAD 200 on poll `try=15` (20 s apart); the version document answered before the tarball did, as in every earlier release
+- `remove_bundle @jiezhengj/dsh-dyslexia` removed `0.2.4` (pnpm printed `- @jiezhengj/dsh-dyslexia 0.2.4`), then `install_bundle @jiezhengj/dsh-dyslexia@0.2.5` returned `application: applied`, `version: 0.2.5` (pnpm `+ @jiezhengj/dsh-dyslexia 0.2.5`, and it added a `minimumReleaseAgeExclude` line for this version)
+- installed copy at `C:\Users\jiezhengj\.dsh\profiles\desktop\node_modules\@jiezhengj\dsh-dyslexia`: `package.json` version `0.2.5`; `client.js` 783360 bytes, SHA-256 `279C33781EF551E3D3BBB0AABF3D37A681FD5DA4F4738C29C724B596667A8766`, identical to the repository copy; `locale/` 8 files; `docs/` 9 entries; the profile `package.json` dependency reads `"@jiezhengj/dsh-dyslexia": "0.2.5"`
+- this is a code release: a window that was already open keeps the `0.2.4` chunk until the app restarts, so the live window has still not shown this build — T020 and G1 stay open
