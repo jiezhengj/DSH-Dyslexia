@@ -412,3 +412,16 @@ run-harness: @jiezhengj/dsh-dyslexia@0.2.1 | client.js 780550 bytes | sources sh
 | command | `remove_bundle @jiezhengj/dsh-dyslexia` then `install_bundle @jiezhengj/dsh-dyslexia@0.2.1` |
 | result | `application: applied`, `version: 0.2.1`, pnpm `+ @jiezhengj/dsh-dyslexia 0.2.1` |
 | installed `client.js` | 780550 bytes, same SHA256 as the repository copy (`5BD4168C2F8971F67B0982CC3E73BE01EC49BE9DAAA01474EDA245CC401DD85A`) |
+
+## E-PUB · 0.2.3
+
+- tag `v0.2.3` on commit `acb4343`, pushed to `main`; Actions run `45219837527` concluded `success`
+- CI, verbatim: `check-bundle: @jiezhengj/dsh-dyslexia@0.2.3 | client.js 780967 bytes | sources sha256:72f28eeb68d05c266cb96c689b0dbce6 | all 44 checks passed` and `run-harness: @jiezhengj/dsh-dyslexia@0.2.3 | client.js 780967 bytes | sources sha256:72f28eeb68d05c266cb96c689b0dbce6 | all 260 checks passed (/usr/bin/google-chrome)`
+- `npm notice shasum: 60b0136612e52b64e1e3920117ed3f41b9185e05`, `npm notice total files: 33`
+
+## E-INS · 0.2.3
+
+- `remove_bundle @jiezhengj/dsh-dyslexia` removed `0.2.2`; `install_bundle @jiezhengj/dsh-dyslexia@0.2.3` returned `application: applied`, `version: 0.2.3`
+- registry tarball answered HEAD 200 on try 20
+- installed copy `client.js` is 780967 bytes, SHA-256 `8C7E4EE76D95304D738CA44F2E7605B079CD2D64AC54332A52D7B20C70E9E211`, byte-identical to the repository copy; installed `package.json` says `0.2.3`; `locale/` 8 files, `docs/` 9
+- this is a code change (the chunk is now compared byte for byte with a rebuild of the six sources, the no-writer lane is asserted directly, the throwing thenable is covered, all eight settings labels are asserted, and the stale AGENTS.md snippet is gone), so a window that was already open keeps the `0.2.2` chunk until DSH restarts
