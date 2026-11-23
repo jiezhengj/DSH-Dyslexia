@@ -925,7 +925,7 @@ Done in 4.5s using pnpm v11.28.5
 | 会话里的 ```mermaid 代码块就地成图，**不开侧栏、不弹窗** | 同一条消息里代码块位置出现图；无障碍树 `find --role image` 命中 1 个节点、`name="图"`（纯名词，不含引擎类型）；外层盒子没有名字（`find --role group --name "图"` 为 0） | FR-003、FR-007、FR-018 的"图有本地化名字且容器不重复念" |
 | 图下是「查看源码」「复制源码」两个中文按钮 | `find --role button --name "复制源码"` 命中 1 个 `button`；「查看源码」因带 `aria-expanded` 被宿主映射成 `menubutton`（见 G24②） | FR-018 的按钮本地化 |
 | 点「复制源码」把源码原文写进剪贴板，界面出现可见回执 | `Set-Clipboard 'sentinel-before-copy'` → 点击 → `Get-Clipboard` 得到 `flowchart LR` / `  A[Agent 写出 mermaid 代码块] --> B[同一条消息里就地成图]` / `  B --> C[原文仍是文本，可复制可检索]`；按钮右侧出现「复制成功」（该文案来自宿主词条，见 G24③） | FR-005、FR-018 的"复制诚实" |
-| 卸载不会改写已渲染的消息，但**也不在运行中的窗口里消失** | `remove_bundle` 返回 `applied`、profile 依赖与 `node_modules` 都已移除；随后 8 秒内那条消息仍显示图与两个按钮（`find --role image` 仍为 1、`复制源码` 仍为 1），`Ctrl+R` 与 `F5` 也没有让窗口重新加载 | FR-009 的后半**改为未取证**（见 G24①） |
+| 卸载不会改写已渲染的消息，但**也不在运行中的窗口里消失** | `remove_bundle` 返回 `applied`、profile 依赖与 `node_modules` 都已移除；随后 8 秒内那条消息仍显示图与两个按钮（`find --role image` 仍为 1、`复制源码` 仍为 1），按 `Ctrl+R` 与 `F5` 之后画面也没有变化（我无法确认窗口是否真的重载过，只能说这两次按键没有让图消失） | FR-009 的后半**改为未取证**（见 G24①） |
 
 **以下四条来自 0.1.2**，保留是因为它们证明链路本身可用；0.1.3–0.1.31 改过渲染层（`role` 结构、`aria-roledescription` 的移除与重排版后重标、可见的复制反馈、空/非法 `children` 的处理、源码块的 `language-mermaid` 标记、外层盒子去掉名字），所以它们**不能**自动转移。
 
