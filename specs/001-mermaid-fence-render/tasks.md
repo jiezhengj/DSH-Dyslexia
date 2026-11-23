@@ -520,6 +520,15 @@ description: "Task list for 会话内图形渲染"
 - [x] T279 证据补 0.1.26 的 E-PUB 行与 CI 日志块、E-INS 实测表（`evidence/verification.md`）
 - [ ] T280 第二十五轮双评审（目标：两份都 PASS）
 
+## Phase 38: 0.1.27 的发布、装回与第二十五轮评审判定（2026-11-23 追加）
+
+- [x] T281 `review-impl-25` 判 **PASS**（无 P0/P1/P2；11 条探针逐条复核，三方产物 SHA256 `f63eb3fe…7ad8` 相同，兼容性扫描 0 命中）
+- [x] T282 `review-docs-25` 判 **FAIL**：P0 五条（E-PROBE 前言 223 口径、`plan.md:19`、`quickstart.md:89`、`tasks.md:11`、`plugin-manifest.md:119` 顺序）、P1 六条（`evidence:475/:868/:882`、`research.md:186`、`tasks.md:636`、八份 README 的七种图种归属）、P2 五条
+- [x] T283 逐条修：探针史改 `220 → 222 → 223 → 228`、八份 README 改成"静态检查采样七种、浏览器夹具只画前两种"、`README.md`/`README.zh.md` 补 G7 免责、`README.md` 的"不进会话历史"补 G12、G21 归属拆开、`research.md` 夹具行数改 1237/1368
+- [x] T284 发版 0.1.27（只改文档与 README）：提交 `cf73c1e` → run `45114993254` success、39/228、shasum `b85f6c59e4b09cd9ffb46cff815491a5d16c86f0`、logIndex `4050249983`
+- [x] T285 registry 第 20 次轮询 200 后 `remove_bundle`（卸 0.1.26）→ `install_bundle @0.1.27`；profile 依赖 `"0.1.27"`、安装副本 769,453 字节、SHA256 `33ED2519D2D0B1AE1BE79A16E55FF87BE0B78C4526832E2AC3816EA5F68FC003` 与仓库根一致
+- [ ] T286 第二十六轮双评审（`review-docs-26` / `review-impl-26`，目标：两份都 PASS）
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
