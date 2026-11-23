@@ -593,7 +593,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T328 探针 PS28（`%TEMP%\probe-r33` 副本，把 `hostKey` 改回裸 `key`）：`[bad] a host dictionary that already owns a word does not put it on our button — 复制成功`、`[bad] a host that translates the namespaced key is used — 已复制`、`run-harness: 2 failed, 229 passed`、exit 1 —— 真机那句"复制成功"被原样重现。
 - [x] T329 文档：`research.md` D20 补"全窗口一本字典 + 按命名空间发问"的补充结论；`contracts/client-fence-layer.md` 第 8 条补同一条契约与两个夹具名；`evidence/verification.md` 的 E-PROBE 加 PS28、G24③ 改为已修（含夹具、探针与静态检查三处依据）、头注版本与项数、E-BLD/E-CHK/E-HARN 用 0.1.32 单次运行重写；`spec.md` Status、`plan.md`（231、1013→1028 行、901/1298）、`quickstart.md`、`contracts/plugin-manifest.md`（0.1.32、231）、`tasks.md` 状态表与 Tests 行同步。
 - [x] T330 发版准备：版本 0.1.32、`client.js` 770,843 字节 / 769,797 字符、指纹 `95fc767705cdfe6833716071797b209c`、SHA256 `76FB10977FE0631FBBE80CDBBEC59CD59DAB54888D5C48C814B4898E9AB9D87D`；40 静态 / 231 浏览器全绿。
-- [ ] T331 发版与真机复核：tag `v0.1.32` → CI 发布 → 装回 `desktop` → 用户重启后在窗口里点「复制源码」，回执应是**「已复制」**（不再是宿主的「复制成功」）。
+- [ ] T331 发版与真机复核：tag `v0.1.32` → CI 发布（run `45186326156` success、shasum `14927a3f68ebe0f76c2dbd79d82a4bcb47302b33`、logIndex `4051787873`）→ registry 第 15 次轮询可下载 → 卸 0.1.31、装 0.1.32（依赖 `"0.1.32"`、安装副本 770,843 字节、SHA256 `76FB1097…9D87D` 与仓库根逐字节相同）**已完成**；剩最后一步：用户重启后在窗口里点「复制源码」，回执应是**「已复制」**（不再是宿主的「复制成功」）。
 
 ## Dependencies & Execution Order
 
