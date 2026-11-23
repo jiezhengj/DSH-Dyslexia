@@ -71,10 +71,10 @@
 | 降级点 | 触发条件 | 可见表现 | 断言 / 证据 |
 |---|---|---|---|
 | 清单被版本门否决 | 不可能：清单里没有 `engines`、`engines.dsh`、也没有 dsh peer | 不会发生（这是要求本身） | `engines.dsh` 与 dsh peer 由 `no dsh version gate can refuse a start` 断言；整个 `engines` 键与 `dsh.client.inject` 由人工核对 `package.json`（`dsh.client.inject` 另有 `package.json declares the bundle patch and the client half`）；其余 `engines` 子键见 G15 第五条（FR-013） |
-| 产物语法错误 | 构建期 | 不产出包 | `client.js compiles on its own`（FR-015） |
-| 加载器缺失 / `load` 抛错 | 宿主加载客户端模块时 | 本插件不生效，其他插件照常 | `a broken host loader cannot make the chunk throw`（FR-015） |
-| 工厂内 `require`/初始化抛错 | 宿主注入的 `react` 缺失等 | 返回空模块 `{ apply(){}, inject: [] }` | `a failing factory still yields a silent module`（FR-015） |
-| 引擎 IIFE 抛错 | pele 在未知宿主里执行失败 | 图不画，代码块原样显示，并有一行原因 | `an engine that fails to load leaves the picture to the host`（FR-014） |
+| 产物语法错误 | 构建期 | 不产出包 | 静态 `client.js compiles on its own`（FR-015） |
+| 加载器缺失 / `load` 抛错 | 宿主加载客户端模块时 | 本插件不生效，其他插件照常 | 静态 `a broken host loader cannot make the chunk throw`（FR-015） |
+| 工厂内 `require`/初始化抛错 | 宿主注入的 `react` 缺失等 | 返回空模块 `{ apply(){}, inject: [] }` | 静态 `a failing factory still yields a silent module`（FR-015） |
+| 引擎 IIFE 抛错 | pele 在未知宿主里执行失败 | 图不画，代码块原样显示，并有一行原因 | 静态 `an engine that fails to load leaves the picture to the host`（FR-014） |
 | 缺 `slots` 服务 / 注册签名变化 | 宿主接口变化 | 不注册层，代码块原样显示 | 夹具 `apply stays silent on a changed host`（FR-014） |
 | 缺 `locale` 或 `t` 抛错 | 宿主本地化接口变化 | 图照画，标签回落包内 8 语言字典 | 夹具 `a host t that throws still shows words`（FR-014） |
 | `t` 把 key 原样回显 / 占位符未替换 | 宿主命名空间未注册（实测行为） | 图照画，标签用包内 8 语言字典，界面上不出现 `copySource` 这类内部 key | `host key echo falls back to bundled strings` + 夹具 `a host t that echoes the key still shows words`、`no internal key reaches the eye`（FR-008 / SC-009） |

@@ -51,7 +51,7 @@ Both commands are in the repository, so the claims in this file can be re-checke
 
 ## Install
 
-Install `@jiezhengj/dsh-dyslexia` in your DeepSeek Harness profile (the Plugins page). Enabling, disabling and uninstalling take effect immediately; a version change needs the app restarted before the new client code is loaded. The package is on npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia.
+Install `@jiezhengj/dsh-dyslexia` in your DeepSeek Harness profile (the Plugins page). It draws figures in the conversation as soon as it is installed (verified on a real machine). Uninstalling was observed on a running interface: the figure and its buttons go, the message turns back into its original code block, and history needs no edit. Enabling and disabling go through the host's plugin mechanism without touching any configuration file, but **those two steps have not been observed separately** (see G20). A version change needs the app restarted before the new client code is loaded. On npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
 
 ## Example
 

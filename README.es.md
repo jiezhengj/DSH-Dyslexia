@@ -51,7 +51,7 @@ Ambos comandos están en el repositorio, de modo que lo afirmado en este archivo
 
 ## Instalación
 
-Instala el paquete `@jiezhengj/dsh-dyslexia` en tu perfil de DeepSeek Harness (página de complementos) y reinicia la aplicación cuando cambies de versión. Activar, desactivar y desinstalar surten efecto de inmediato; cambiar de versión requiere reiniciar para cargar el nuevo código de cliente. En npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
+Instala el paquete `@jiezhengj/dsh-dyslexia` en tu perfil de DeepSeek Harness (página de complementos); dibuja figuras en la conversación en cuanto se instala (verificado en una máquina real). La desinstalación se observó en una interfaz en marcha: la figura y sus botones desaparecen, el mensaje vuelve a mostrar su bloque de código original y el historial no necesita cambios. Activar y desactivar pasan por el mecanismo de complementos del anfitrión sin tocar ningún archivo de configuración, pero **esos dos pasos no se han observado por separado** (véase G20). Al cambiar de versión hay que reiniciar la aplicación para cargar el nuevo código de cliente. En npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
 
 ## Ejemplo
 

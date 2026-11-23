@@ -18,7 +18,7 @@ export function apply(ctx) {
       text: MERMAID_RENDER_PROMPT,
     })
   } catch (error) {
-    console.warn('[dsh-dyslexia] prompt section skipped:', error)
+    console.warn('[dsh-dyslexia] prompt section skipped:', error); // 真实实现用 `dsh-dyslexia: <scope>` 作前缀
   }
 }
 ```

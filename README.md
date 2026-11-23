@@ -50,7 +50,7 @@ Both commands are in the repository, so the claims in this file can be re-checke
 Install `@jiezhengj/dsh-dyslexia` in the DeepSeek Harness Plugins page. Uninstalling was watched on a running app (the figure falls back to the code block at once, history untouched); enabling and disabling go through the host's own plugin mechanism and need no config edit. A version change needs the app restarted before the new client code is loaded.
 在 DeepSeek Harness 的插件页安装 `@jiezhengj/dsh-dyslexia`。卸载已在运行中的界面上观察过（图立刻退回代码块、历史不变）；启用与停用走宿主自己的插件机制、不需要改配置。更换版本需要重启应用才会加载新的客户端代码。
 
-- npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
+- 装好即用：装进 profile 之后会话里直接成图（真机已验证）。卸载在运行中的界面上观察过（图与按钮消失、消息变回原来的代码块，历史消息不用改）；启用与停用同样由宿主的插件机制接管、不需要改任何配置文件，但**这两步还没有单独的真机观察**（见 G20）。换版本需要重启 DSH 才能加载新的客户端 chunk。npm 上的包：https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
 - Source: https://github.com/jiezhengj/DSH-Dyslexia
 
 ## Documentation

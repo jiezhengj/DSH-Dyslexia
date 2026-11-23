@@ -238,7 +238,7 @@ description: "Task list for 会话内图形渲染"
 
 - [x] T090 `view.js` 的 `isRenderableChild` 改为白名单（元素 / 字符串 / 数字 / 全由这些组成的数组），否则一律当"宿主没给内容"：普通对象、函数、含对象的数组会让 React 抛 `#31`，而这个抛错发生在边界自己的 render 里，边界接不住，整条消息会消失
 - [x] T091 流式且无宿主块、失败且宿主块不可用时，改为自绘 `<pre><code>` 源码，屏幕不再出现空块
-- [x] T092 `ResizeObserver` 的构造与 `observe` 一并放进 `try`：缺该构造函数的宿主只失去"随宽度重排"，不会失去一次渲染
+- [x] T092 `ResizeObserver` 的构造与 `observe` 一并放进 `try`：缺该构造函数的宿主只失去"随宽度重排"，不会失去一次渲染（本条记录**当时的设计**；0.1.10 起插件不再自建尺寸监听，见 T119）
 - [x] T093 `ensureFigureStyles` 返回自己注入的 `<style>`，`apply` 用 `ctx.effect(() => drop)` 在停用时移除（注意 `ctx.effect(setup)` 把返回值当清理函数，把清理函数当 setup 传会立刻执行）
 - [x] T094 夹具补 9 项：对象 `children`、函数 `children`、失败图 + 对象 `children`、含对象的数组 `children`（各断言"消息不为空"且"没有 React #31"）、流式无宿主块仍显示源码、以及图像名/无英文 role description/全图唯一图像三项 → 92 → 101 项
 - [x] T095 文档更正：证据版本口径（0.1.5 → 0.1.7）、E-LIVE 的缺口绑定到 0.1.7、G5 改成"E2/E16 无夹具无观察"、E15 编号纠正、FR-016/FR-018 补齐断言名、plan 与 research 的实测行数（客户端 842 / 夹具 582 / 驱动 122）、T040 与 T083 的项数历史（76 → 82 → 92 → 101）、T088 勾选、T070 标作废、删掉多余围栏
@@ -270,8 +270,8 @@ description: "Task list for 会话内图形渲染"
 - [x] T108 夹具 +1 项 `a picture that fits offers no zoom buttons`：小图不渲染引擎缩放控件，与"超宽图有 3 个"配对 → FR-018 的条件渲染（109 项，0.1.9 起 118 项）
 - [x] T109 9 份 README 的设计说明把"偏好写在自己的 `AGENTS.md`"改为"装好即生效，不需要改任何指令文件"（与 T107 的断言一致）
 - [x] T110 第六轮文档评审逐条：T087 的 `run-harness` 92 项（不是 108）、`evidence` 头版本 0.1.9、`plan.md` 的 108/34 口径、`quickstart` 的 34 项与发布示例占位符、`contracts/client-fence-layer.md` 的 `a host that rejects the locale option does not break apply` / `the retried registration drops the locale option`、`contracts/plugin-manifest.md` 的 `apply stays silent on a changed host` 与"七种"、T079/quickstart 的 0.1.8、`research.md` 的 7 组与"739 行夹具 + 122 行驱动"、`checklists` 的 SC-009～SC-010、G4 行口径
-- [x] T112 夹具把"重排版后重新标注"改成**会失败**的检查（第六轮实现评审 P0：原用例在无头夹具里根本没换 `<svg>`，删掉修复仍全绿）：新增"夹具确实换掉了绘图节点"与"换掉的绘图被重新命名"，并保留"重排版后仍命名"；探针验证——把两处 `labelFigure(host, translateRef.current)` 全换成 `void 0` 后这三条变红（`graphics-document document|null|roledesc=flowchart`），恢复后全绿
-- [x] T113 `src/client/view.js` 用 `requestAnimationFrame` 推迟 ReObserver 回调里的 `refresh()` 与重标注，消除真实重排版时宿主控制台的 `ResizeObserver loop completed with undelivered notifications.`
+- [x] T112 夹具把"重排版后重新标注"改成**会失败**的检查（第六轮实现评审 P0：原用例在无头夹具里根本没换 `<svg>`，删掉修复仍全绿）：新增"夹具确实换掉了绘图节点"与"换掉的绘图被重新命名"，并保留"重排版后仍命名"；探针验证——把两处 `labelFigure(host, translateRef.current)` 全换成 `void 0` 后这三条变红（`graphics-document document|null|roledesc=flowchart`），恢复后全绿（0.1.10 起改为"引擎换掉节点后重新命名"，本条记录当时的设计，见 T119）
+- [x] T113 `src/client/view.js` 用 `requestAnimationFrame` 推迟 ReObserver 回调里的 `refresh()` 与重标注，消除真实重排版时宿主控制台的 `ResizeObserver loop completed with undelivered notifications.`（0.1.10 起不再使用 `requestAnimationFrame` 与 `refresh()`，本条记录当时的设计，见 T119）
 - [x] T114 证据里写明 `role="img"` 的取舍：图有了名字与类型无关的标签，但图内节点文字对读屏不可达，可读文本走"查看源码"面板
 - [x] T115 夹具的假 `ctx` 按 cordis 语义收集 disposer，并断言卸载后 `<style id="dsh-dyslexia-figure-style">` 消失、层与 locale 注销被调用
 - [x] T116 `check-bundle` +1 项 `the fixtures assert what the fixes promise, and can fail`：把评审证明"恒真"的那几条断言名（换节点、重命名、缩放条件渲染、卸载清理）逐一要求存在于夹具里，防止有人删掉夹具而代码检查仍绿 → 36 项
@@ -445,6 +445,19 @@ description: "Task list for 会话内图形渲染"
 - [x] T230 发布 `v0.1.21`（提交 `577bbe0`）→ GitHub Actions run `45091169265` success（CI 39 项静态 / 220 项浏览器，shasum `75589577bf6a3e8ac8258485c7d85bc441e93cc4`，logIndex `4049694107`，33 文件）→ 从 registry 装回 profile `desktop`（依赖 `"0.1.21"`，安装副本 769,453 字节 / SHA256 `C65A95A2E754BFEF9F64043C496EF976EF66352E915B976E005F2C82D4FF7C03` 与仓库根逐字节相同）→ 补 E-PUB/E-INS 的 0.1.21 行
 - [ ] T231 第十九轮双评审（目标 PASS；两份都 PASS 才把 feature 001 标记完成）
 
+## Phase 32: 第二十轮双评审的收口（2026-11-23 追加，版本 0.1.23）
+
+第二十轮：实现侧 **PASS**（无 P0/P1/P2，4 条 P3），文档侧 **FAIL**（1 条 P0 + 3 条 P1 + 7 条 P2）。用户可见行为不变；本轮只改文档、README 与测试守护。
+
+- [x] T232 文档评审 P0：把"启用/停用在运行中的宿主里没有单独观察"登记为 **G20**，E-GAPS 标题与范围改 `共 20 项` / `G1–G20`，`tasks.md` 状态表补 G20 行，`spec.md` Status 的计数同步
+- [x] T233 文档评审 P1-1：九份 README 的安装段整行重写——只把**卸载**写成运行中观察过，启用/停用写成"走宿主插件机制、没有单独观察（见 G20）"，换版本要重启；`README.md` / `README.en.md` / `README.zh.md` 同步同一口径
+- [x] T234 文档评审 P1-2：E-COMP 的 FR-014 行把 `an engine that fails to load leaves the picture to the host` 从"客户端（夹具）"移到"宿主半边（静态）"，并注明它在产物里不可达、见 G18
+- [x] T235 文档评审 P1-3/P2：`verification.md` 头注、`spec.md`、`plan.md` 的版本口径统一到 0.1.23；探针表把 PS8 的说明从 PS12 行挪回 PS8 行；`plan.md:33` 的 `check-bundle.mjs` 767 行 / `harness/index.html` 1178 行 / `run-harness.mjs` 132 行按实测重写；`data-model.md` 的 74–77 行证据列加"静态"前缀；`tasks.md` 的表格标题改"待重启复核的项"；T092/T112/T113 补"本条记录当时的设计"；`README.zh.md` / `README.en.md` 的"宿主升级不会让它开不了机"补"未演练，见 G1"；`contracts/host-prompt.md` 的样例告警补前缀说明
+- [x] T236 重建 `client.js`（README 随包，文档改动必须发版）：`769453 bytes`、`sources sha256:00fe7860f20f5178fcd5e5a0073883e8`、SHA256 `B8389139F5223D6034C8CEC6FB90AB8613736AED17BAF930D4A4A7572510448B`；`check-bundle` 39 项、`run-harness` 220 项全绿
+- [x] T237 E-BLD/E-CHK/E-HARN 三块用本次运行（0.1.23）的完整输出整段重写，`.tmp/verify-evidence.py` 复核 `check doc 40 live 40 same` / `harness doc 225 live 225 same`
+- [ ] T238 发布 `v0.1.23` → 从 registry 装回 profile `desktop` → 补 E-PUB/E-INS 的 0.1.23 行
+- [ ] T239 第二十一轮双评审（目标 PASS；两份都 PASS 才把 feature 001 标记完成）
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
@@ -548,9 +561,10 @@ Task: "准备一份 200+ 节点大图夹具（E6）"
 | G16 | vendor 文本与无头环境的换节点 | 未做 | 绘制输出上限（`outputLimit` 2 MiB）仍按 G15 记，字符上限与边数上限已有夹具，不再重复；这里只记两件小事：`client.js` 里 vendor 许可注释含 `https://github.com/obsidianmd/pele`（静态文本、无网络行为），以及「引擎换掉 `<svg>` 后重新命名」在无头环境只能夹具重放（真实拖窄窗口的端到端见 G14） |
 | G17 | 视图层无断言的行为 | 未做 | 第十四轮实现评审的 P3 汇总，逐条登记在 `evidence/verification.md` 的 G17：失败原因三分类、"已复制"1.5 秒后消失、缩放按钮与引擎顺序的配对、失败后同一实例的自愈、失败时隐藏空画框、`children: []` 退回原文、`MutationObserver` 只看直接子节点、`props` 与 `code` 都读不出时返回 `null`——这些分支都存在，但删掉不会让任何断言变红 |
 | G18 | 引擎缺失分支只有静态证据 | 未做 | 第十六轮实现评审 P3（第十七轮文档评审修正措辞）：静态断言覆盖了错误边界、`readLayerInput`、`safeRead`、`engineUnavailable` 与 `typeof pele.mount !== 'function'` 守卫字符串（改成恒真会让它变红），但**没有动态用例**把引擎置空后观察回退——入口是 `scripts/build-client.mjs` 的 `catch (error) { pele = null }` |
+| G20 | 启用/停用在运行中的宿主里没有单独观察 | 未做 | E-LIVE 只观察到卸载回退与重装恢复；九份 README 与 `quickstart.md` 都写成"走宿主插件机制、未单独取证" |
 | G19 | 静态套件只钉顶层条目数 | 未做 | 第十七轮实现评审 P3：`EXPECTED_CHECKS = 39` 只保证有 39 个 `check()`；某条 `check()` 内部删掉一行 `assert()` 仍是全过（浏览器侧逐条 `expect()` 计数，删一条即报错） |
 
-**已完成但需重启复核的项**：
+**待重启复核的项**：
 
 | 项 | 状态 | 说明 |
 |---|---|---|

@@ -51,7 +51,7 @@ Les deux commandes sont dans le dépôt, si bien que ce qui est affirmé dans ce
 
 ## Installation
 
-Installez le paquet `@jiezhengj/dsh-dyslexia` dans votre profil DeepSeek Harness (page des greffons), puis redémarrez l’application en cas de changement de version. L’activation, la désactivation et la désinstallation prennent effet immédiatement ; changer de version exige un redémarrage pour charger le nouveau code client. Sur npm : https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
+Installez le paquet `@jiezhengj/dsh-dyslexia` dans votre profil DeepSeek Harness (page des greffons) ; il dessine les figures dans la conversation dès son installation (vérifié sur une machine réelle). La désinstallation a été observée sur une interface en cours d'exécution : la figure et ses boutons disparaissent, le message redevient son bloc de code d'origine et l'historique n'a pas besoin d'être modifié. L'activation et la désactivation passent par le mécanisme de greffons de l'hôte sans toucher à aucun fichier de configuration, mais **ces deux étapes n'ont pas été observées séparément** (voir G20). Changer de version exige un redémarrage pour charger le nouveau code client. Sur npm : https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
 
 ## Exemple
 

@@ -51,7 +51,7 @@ Beide Befehle liegen im Repository, sodass sich die Aussagen in dieser Datei jed
 
 ## Installation
 
-Installiere das Paket `@jiezhengj/dsh-dyslexia` in deinem DeepSeek-Harness-Profil (Plugin-Seite) und starte die App bei einem Versionswechsel neu. Aktivieren, Deaktivieren und Deinstallieren wirken sofort; ein Versionswechsel braucht einen Neustart, damit der neue Client-Code geladen wird. Auf npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
+Installiere das Paket `@jiezhengj/dsh-dyslexia` in deinem DeepSeek-Harness-Profil (Plugin-Seite); es zeichnet Diagramme im Gespräch, sobald es installiert ist (auf einem echten Rechner geprüft). Das Deinstallieren wurde in einer laufenden Oberfläche beobachtet: Abbildung und Schaltflächen verschwinden, die Nachricht zeigt wieder ihren ursprünglichen Codeblock, die Historie bleibt unverändert. Aktivieren und Deaktivieren laufen über den Plugin-Mechanismus des Hosts, ohne dass eine Konfigurationsdatei angefasst wird, **wurden aber nicht getrennt beobachtet** (siehe G20). Bei einem Versionswechsel muss die App neu starten, damit der neue Client-Code geladen wird. Auf npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
 
 ## Beispiel
 
