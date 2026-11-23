@@ -949,7 +949,7 @@ Done in 4.5s using pnpm v11.28.5
 
 1. **已做（2026-11-23 21:2x）**：`plugin_manager` 的 `remove_bundle @jiezhengj/dsh-dyslexia` 返回 `{"stage":"remove","changed":true,"application":"applied"}`（pnpm 输出 `- @jiezhengj/dsh-dyslexia 0.1.31`）；随后核对 profile：`package.json` 里 `dsh-dyslexia` 的依赖与 bundles 条目都没有了，`node_modules/@jiezhengj/dsh-dyslexia` 也不存在。运行中的窗口不受影响（G24①），这正是要靠重启来验的地方。
 2. **已完成（2026-11-23 21:19 重启）**：同一条含 ```mermaid 的消息显示为**纯代码块原文**——`role="image"`、`复制源码`、`查看源码` 三处计数都是 0，第 21 轮的截图里是一块带 `代码块` 标题的 `flowchart LR …`（`.tmp/livecheck/turn21-codeblock.png`），历史消息内容不变、无报错 —— E10 / G24① 的正面证据。
-3. 然后把 `install_bundle @jiezhengj/dsh-dyslexia@0.1.31` 装回，请用户再重启一次；重启后同一条消息应重新出现图、图名「图」、两个按钮，且**不需要改历史消息** —— E11 / `FR-010`。
+3. **装回已完成（2026-11-23 21:2x）**：`install_bundle @jiezhengj/dsh-dyslexia@0.1.31` 返回 `applied`，profile 依赖 `"@jiezhengj/dsh-dyslexia": "0.1.31"`，安装副本 `client.js` 770,108 字节、SHA256 前缀 `DFB1E3C57E09C0F2` 与仓库根一致；**等用户再重启一次**。重启后同一条消息应重新出现图、图名「图」、两个按钮，且不需要改历史消息 —— E11 / `FR-010`。
 4. 两段都用 `agent-desktop find --role image` / `find --role button --name 复制源码` 的计数与截图记录，然后回写 E-LIVE（把"卸载后回退"的时机从"未取证"改成实测），同步 `tasks.md` 的 T079 与 G24①，并把 `quickstart.md` 与九份 README 里"卸载要重启"的措辞与实测对齐（若实测与现在写的一致，就不必再改）。
 
 ## E-GAPS 没有取证的部分（共 24 项）
