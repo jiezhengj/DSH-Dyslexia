@@ -606,19 +606,25 @@ check("the contract's colour variables are the ones that are wired", () => {
     'utf8',
   )
   const styles = readFileSync(join(ROOT, 'src', 'client', 'styles.js'), 'utf8')
+  // A decoy inside a comment must not win: strip comments before reading either
+  // side, so writing the right mapping into a comment cannot launder a wrong one.
+  const strip = (text) => text.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/(^|[^:])\/\/[^\n]*/g, '$1 ')
   const pairOf = (text) => {
     const pairs = new Map()
     const pattern = /--pele-([a-z-]+):\s*([^;'\n]+);/g
-    let match = pattern.exec(text)
+    const source = strip(text)
+    let match = pattern.exec(source)
     while (match) {
+      assert(!pairs.has(match[1]), `--pele-${match[1]} is declared twice`)
       pairs.set(match[1], match[2].trim())
-      match = pattern.exec(text)
+      match = pattern.exec(source)
     }
     return pairs
   }
   const wanted = pairOf(contract)
   const wired = pairOf(styles)
-  assert(wanted.size >= 8, `the contract names only ${wanted.size} engine variables`)
+  assert(wanted.size >= 10, `the contract names only ${wanted.size} engine variables`)
+  assert(wired.has('critical'), 'the engine error colour (--pele-critical) is not wired')
   const missing = [...wanted.keys()].filter((name) => !wired.has(name))
   const extra = [...wired.keys()].filter((name) => !wanted.has(name))
   assert(missing.length === 0, `the contract names variables the styles do not wire: ${missing.join(', ')}`)
@@ -636,6 +642,8 @@ check('both size limits reach the engine, each proven on its own', () => {
   assert(/limit:\s*24 \* 1024/.test(figure), 'the character limit is not 24 KiB')
   assert(/maxEdges:\s*400/.test(figure), 'the edge limit is not 400')
   assert(/outputLimit:\s*2 \* 1024 \* 1024/.test(figure), 'the output limit is not 2 MiB')
+  // Declaring the limits is not enough: they have to reach `pele.mount`.
+  assert(/\.\.\.FIGURE_LIMITS/.test(figure), 'FIGURE_LIMITS is not spread into the mount options')
   const fixtures = [
     'a source over the size limit says why',
     'a source over the size limit is not drawn',

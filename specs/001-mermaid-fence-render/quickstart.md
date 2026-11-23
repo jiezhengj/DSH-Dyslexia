@@ -30,7 +30,7 @@ $node = "C:\Users\jiezhengj\.dsh\dsh-runtimes\dsh-primary-runtime\dependencies\n
 & $node verify/check-bundle.mjs
 ```
 
-逐条断言见 [contracts/plugin-manifest.md](./contracts/plugin-manifest.md#可静态校验项verifycheck-bundlemjs-断言)。任何一条失败即视为不可发布。
+逐条断言见 [contracts/plugin-manifest.md](./contracts/plugin-manifest.md) 的「可静态校验项」一节。任何一条失败即视为不可发布。
 
 # 四、安装进本机 profile
 

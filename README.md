@@ -18,7 +18,7 @@ A reply often explains a structure in words a diagram would show in a glance. Th
   不收集任何信息，也不向任何地方发送数据。
 - It reads only the `mermaid` code block text that is already displayed in your page, and it writes only the diagram into that page.
   只读取页面上已经显示出来的 `mermaid` 代码块文本，只把生成的图写回该页面。
-- The **Copy source** (**复制源码**) button uses your browser clipboard; nothing leaves the page.
+- The **Copy source** button uses your browser clipboard; nothing leaves the page.
   **复制源码**（**Copy source**）按钮只使用浏览器剪贴板；没有任何内容离开当前页面。
 - Nothing is added to your session history: the diagram is a rendering, not a stored object.
   不会向会话历史写入任何内容：图只是界面渲染结果，不是保存的对象。
