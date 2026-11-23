@@ -430,7 +430,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T220 探针 PS5/PS6/PS7（`C:\Users\jiezhengj\Documents\Project\.probe-ps5|ps6|ps7` 的 tar 副本）：PS5 错映射 + 末尾注释诱饵 → `1 failed, 38 passed`；PS6 删 `...FIGURE_LIMITS,` → `1 failed, 38 passed`；PS7 两侧同时删 `--pele-critical` → `1 failed, 38 passed`。三行写入 E-PROBE（前言改"二十一次"）
 - [x] T221 文档侧 3 条 P0：G18 的两句断言改成"静态断言存在、没有动态用例"；G15 删掉 `maxEdges`（0.1.19 起已有夹具与 PS2/PS3）只留 `outputLimit`；G13 区间改 0.1.3–0.1.19、E-LIVE 引言改 0.1.19 并把 G18/G19 移进 E-GAPS 列表内、收尾句改"上面 19 项"
 - [x] T222 文档侧 5 条 P1 + 4 条 P2：T204/T214 改成最终事实、头注版本 0.1.20、`evidence:442` 的旧值改现値、G5 的 220 项、FR-004 的夹具名 `past`→`over` 并补边数六条、E-CHK 块内多余空行、T212 的结果指向、G18 行移到 G17 之后、`quickstart.md:33` 锚点、`README.md:21` 英文半句去掉中文标签
-- [ ] T223 发版 0.1.20（本轮 `client.js` 重新构建只为换版本指纹）→ tag → CI → 装回 `desktop` → 补 E-PUB/E-INS → 第十八轮双评审
+- [x] T223 发布 `v0.1.20`（提交 `df68d96`）→ GitHub Actions run `45088530926` success（CI 39 项静态 / 220 项浏览器，shasum `43a5602197d04d37211db3c5c225d5b9b3ffe059`，logIndex `4049292002`，33 文件）→ 从 registry 装回 profile `desktop`（依赖 `"0.1.20"`，安装副本 769,453 字节 / SHA256 `910E7E465228102851AC14228B994FBA418FA215C17C90140C1C2410650DA7DE`）→ 补 E-PUB/E-INS → 第十八轮双评审
 
 ## Dependencies & Execution Order
 
