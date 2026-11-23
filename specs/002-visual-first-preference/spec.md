@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-23
 
-**Status**: Implemented in `0.2.0` (2026-11-23); documentation corrected for `0.2.1`. Evidence: `evidence.md` in this folder (build, 44 static checks, 251 browser checks, seven falsifiability probes F1/F3–F8). Not proven: SC-001 (five sample requests), the E1–E14 end-to-end rows, live-window switch operation and live renamed labels, any 200%/360px layout assertion for the settings row, pixel comparison against host rows, the schemastery import-failure path — see gaps G1–G8.
+**Status**: Implemented in `0.2.0` (2026-11-23); published as `0.2.1`; documentation corrected for `0.2.2`. Evidence: `evidence.md` in this folder (build, 44 static checks, 252 browser checks, seven falsifiability probes F1/F3–F8). Not proven: SC-001 (five sample requests), the E1–E14 end-to-end rows, live-window switch operation and live renamed labels, any 200%/360px layout assertion for the settings row, the host write path (`settings.update`, G2), pixel comparison against host rows, the schemastery import-failure path, a verbatim diff of the switch-off text against feature 001 — see gaps G1–G9.
 
 **Input**: User description: "插件可以有个简单的设置面板，里面有个开关：仅仅是在会话里更好地渲染 mermaid，还是同时更积极地用图形化的方式表达和输出。名称改为 DSH 我有阅读障碍（其他语种按语义翻译）。如果 Agent 并不积极地用图形化的方式输出，渲染再完美也没有意义。"
 

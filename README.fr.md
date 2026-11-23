@@ -47,13 +47,13 @@ Les deux commandes sont dans le dépôt, si bien que ce qui est affirmé dans ce
 
 Les identifiants `G…` renvoient aux E-GAPS de la fonctionnalité 001, dans `specs/001-mermaid-fence-render/evidence/verification.md`.
 
-- **Vérifié ici :** les observations sur machine réelle datent du greffon `0.1.2` ; les preuves de cette version restent au niveau du banc de test. Non testés : l’interrupteur dans une fenêtre réelle, la mise en page étroite en huit langues et toute comparaison de pixels avec les lignes de l’hôte.
+- **Vérifié ici :** les contrôles sur machine réelle qui restent transposables sont ceux du greffon `0.1.31` et `0.1.32` ; les anciennes lignes `0.1.2` ne se transposent plus après les changements de rendu de `0.1.3`–`0.1.31`. Les preuves de cette version restent au niveau du banc de test. Non testés : l’interrupteur dans une fenêtre réelle, la mise en page étroite en huit langues et toute comparaison de pixels avec les lignes de l’hôte. Les pages du greffon dans les autres langues n’ont toujours pas été vues (voir les E-GAPS de la feature 001, G13).
 - **Probable, mais non prouvé sur votre machine :** autres versions de DSH ; autres navigateurs basés sur Chromium ; les mêmes vérifications sur appareils mobiles (la mise en page est vérifiée dans une fenêtre d’affichage de 360 px d’un navigateur de bureau, pas sur un téléphone physique) ; très grands schémas (il existe des limites : 24 KiB de source, 2 MiB de sortie dessinée, 400 arêtes ; au-delà, il se replie sur le bloc de code).
-- **Non effectué :** aucune mise à niveau de DSH n’a été répétée à ce jour (voir les E-GAPS de la feature 001, G1) ; les schémas ne sont pas dessinés tant qu’un message est encore en cours de diffusion ; seuls les blocs ` ```mermaid ` sont pris en charge (pas les autres langages de bloc de code).
+- **Non effectué :** aucune mise à niveau de DSH n’a été simulée à ce jour (voir les E-GAPS de la feature 001, G1) ; les schémas ne sont pas dessinés tant qu’un message est encore en cours de diffusion ; seuls les blocs ` ```mermaid ` sont pris en charge (pas les autres langages de bloc de code).
 
 ## Installation
 
-Installez le paquet `@jiezhengj/dsh-dyslexia` dans votre profil DeepSeek Harness (page des greffons) ; il dessine les figures dans la conversation dès son installation (vérifié sur une machine réelle). La désinstallation a été observée sur une interface en cours d'exécution : la figure et ses boutons disparaissent, le message redevient son bloc de code d'origine et l'historique n'a pas besoin d'être modifié. L'activation et la désactivation passent par le mécanisme de greffons de l'hôte sans toucher à aucun fichier de configuration, mais **ces deux étapes n'ont pas été observées séparément** (voir les E-GAPS de la feature 001, G20). Changer de version exige un redémarrage pour charger le nouveau code client. Sur npm : https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
+Installez le paquet `@jiezhengj/dsh-dyslexia` dans votre profil DeepSeek Harness (page des greffons) ; il dessine les figures dans la conversation dès son installation (vérifié sur une machine réelle). La désinstallation prend effet après redémarrage de l’application : une fenêtre ouverte continue d’afficher la figure et ses deux boutons déjà chargés, et l’historique n’a pas besoin d’être modifié (voir les E-GAPS de la feature 001, G24①). L'activation et la désactivation passent par le mécanisme de greffons de l'hôte sans toucher à aucun fichier de configuration, mais **ces deux étapes n'ont pas été observées séparément** (voir les E-GAPS de la feature 001, G20). Changer de version exige un redémarrage pour charger le nouveau code client. Sur npm : https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
 
 ## Exemple
 
@@ -66,8 +66,8 @@ flowchart LR
 
 ## Désinstallation et compatibilité
 
-- La désinstallation laisse intactes toutes les conversations passées : les anciens schémas redeviennent les blocs de code dont ils venaient, lisibles.
-- Le greffon ne déclare ni seuil de version ni paquet hôte obligatoire : aucun contrôle de version ne peut donc refuser le démarrage ; une mise à jour réelle de l’hôte n’a pas été répétée (voir les E-GAPS de la feature 001, G1). si l’hôte change de forme, le greffon s’efface et le bloc de code d’origine est affiché.
+- La désinstallation ne modifie aucune conversation passée, mais elle prend effet après redémarrage de l’application : jusque-là une fenêtre ouverte continue d’afficher les schémas et leurs deux boutons déjà chargés ; après le redémarrage, les anciens schémas redeviennent les blocs de code dont ils venaient, lisibles.
+- Le greffon ne déclare ni seuil de version ni paquet hôte obligatoire : aucun contrôle de version ne peut donc refuser le démarrage ; une mise à jour réelle de l’hôte n’a pas été simulée (voir les E-GAPS de la feature 001, G1). Si l’hôte change de forme, le greffon s’efface et le bloc de code d’origine est affiché.
 
 ## Licence
 

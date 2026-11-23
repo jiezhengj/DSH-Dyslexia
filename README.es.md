@@ -47,13 +47,13 @@ Ambos comandos están en el repositorio, de modo que lo afirmado en este archivo
 
 Los identificadores `G…` remiten a los E-GAPS de la feature 001, en `specs/001-mermaid-fence-render/evidence/verification.md`.
 
-- **Verificado aquí:** las observaciones en máquina real son del plugin `0.1.2`; la evidencia de esta versión solo llega al nivel de fixture. Sin probar: el interruptor en una ventana real, el diseño estrecho en ocho idiomas y cualquier comparación de píxeles con las filas del anfitrión.
+- **Verificado aquí:** las comprobaciones en máquina real que siguen siendo válidas son las del plugin `0.1.31` y `0.1.32`; las filas antiguas de `0.1.2` ya no se trasladan tras los cambios de renderizado de `0.1.3`–`0.1.31`. La evidencia de esta versión solo llega al nivel de fixture. Sin probar: el interruptor en una ventana real, el diseño estrecho en ocho idiomas y cualquier comparación de píxeles con las filas del anfitrión. Las páginas del complemento en los demás idiomas siguen sin verse (ver los E-GAPS de la feature 001, G13).
 - **Probable, pero no demostrado en tu equipo:** otras versiones de DSH; otros navegadores basados en Chromium; las mismas comprobaciones en dispositivos móviles (la disposición está verificada en un área de visualización de 360 px en un navegador de escritorio, no en un teléfono físico); diagramas muy grandes (hay límites: 24 KiB de código fuente, 2 MiB de salida dibujada y 400 aristas; más allá de eso vuelve al bloque de código).
 - **No realizado:** no se ha ensayado ninguna actualización de DSH (véanse los E-GAPS de la feature 001, G1); los diagramas no se dibujan mientras un mensaje sigue transmitiéndose; solo se tratan bloques ` ```mermaid ` (no otros lenguajes de bloque de código).
 
 ## Instalación
 
-Instala el paquete `@jiezhengj/dsh-dyslexia` en tu perfil de DeepSeek Harness (página de complementos); dibuja figuras en la conversación en cuanto se instala (verificado en una máquina real). La desinstalación se observó en una interfaz en marcha: la figura y sus botones desaparecen, el mensaje vuelve a mostrar su bloque de código original y el historial no necesita cambios. Activar y desactivar pasan por el mecanismo de complementos del anfitrión sin tocar ningún archivo de configuración, pero **esos dos pasos no se han observado por separado** (véanse los E-GAPS de la feature 001, G20). Al cambiar de versión hay que reiniciar la aplicación para cargar el nuevo código de cliente. En npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
+Instala el paquete `@jiezhengj/dsh-dyslexia` en tu perfil de DeepSeek Harness (página de complementos); dibuja figuras en la conversación en cuanto se instala (verificado en una máquina real). La desinstalación surtirá efecto tras reiniciar la aplicación: una ventana abierta sigue mostrando la figura y sus dos botones ya cargados, y el historial no necesita cambios (ver los E-GAPS de la feature 001, G24①). Activar y desactivar pasan por el mecanismo de complementos del anfitrión sin tocar ningún archivo de configuración, pero **esos dos pasos no se han observado por separado** (véanse los E-GAPS de la feature 001, G20). Al cambiar de versión hay que reiniciar la aplicación para cargar el nuevo código de cliente. En npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
 
 ## Ejemplo
 
@@ -66,8 +66,8 @@ flowchart LR
 
 ## Desinstalación y compatibilidad
 
-- Desinstalar mantiene intactas las conversaciones anteriores: los dibujos vuelven a ser los bloques de código de los que salieron, legibles.  (surtur efecto tras reiniciar la aplicación; una ventana abierta sigue mostrando las figuras ya cargadas)
-- El complemento no declara puerta de versión ni paquete anfitrión obligatorio, así que ninguna comprobación de versión impide el arranque; una actualización real del anfitrión no se ha ensayado (véanse los E-GAPS de la feature 001, G1). si el anfitrión cambia de forma, el complemento se aparta y se muestra el bloque de código original.
+- Desinstalar no modifica ninguna conversación anterior, pero surtirá efecto al reiniciar la aplicación: hasta entonces una ventana abierta sigue mostrando las figuras y sus dos botones ya cargados; tras el reinicio, los dibujos vuelven a ser los bloques de código de los que salieron, legibles.
+- El complemento no declara puerta de versión ni paquete anfitrión obligatorio, así que ninguna comprobación de versión impide el arranque; una actualización real del anfitrión no se ha ensayado (véanse los E-GAPS de la feature 001, G1). Si el anfitrión cambia de forma, el complemento se aparta y se muestra el bloque de código original.
 
 ## Licencia
 

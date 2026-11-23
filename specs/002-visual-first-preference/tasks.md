@@ -10,7 +10,7 @@
 - [x] **T002** `index.js` 新增 `Config`（`z.object({ visualFirst: z.boolean().default(true).volatile() })`）与 `apply(ctx, config)`；`@deepseek-ai/schemastery` 在模块顶部静态 import——该包无法解析时插件在 import 阶段就失败，没有降级（见 `evidence.md` G8）。
 - [x] **T003** 把 `MERMAID_RENDER_PROMPT` 拆成 `CAPABILITY_TEXT` + `PREFERENCE_TEXT`，段 `text` 改为函数：`visualFirst` 为真时两段拼接，否则只出能力段（逐字等于 001）。
 - [x] **T004** 在宿主没有 `settings` 服务时不调用 `configure`；有则 `ctx.inject(['settings'], child => child.effect(() => child.settings.configure({ auto: false }, ctx.fiber)))`，避免宿主生成多余设置页。
-- [x] **T005** `verify/check-bundle.mjs` 新增静态断言：`Config` 含 `visualFirst`、`.default(true)`、`.volatile()`；偏好段字符串存在且只在真分支出现；禁止措辞表（`must`/`always`/`every answer`）不出现；段名/order 未变。静态检查现为 **44** 条，第 44 条是 `the section hands the host a function, not a frozen string`。
+- [x] **T005** `verify/check-bundle.mjs` 新增静态断言：`Config` 含 `visualFirst`、`.default(true)`、`.volatile()`；偏好段字符串存在且只在真分支出现；两张禁止措辞表分别不出现（能力段：`always`/`must use`/`you should`/`every answer`/`prefer`；偏好段：`every answer`/`always draw`/`always answer`/`must draw`/`must use a diagram`）；段名/order 未变。静态检查现为 **44** 条，其中第 22 条是 `the section hands the host a function, not a frozen string`（#44 是 `the fixtures assert what the fixes promise, and can fail`）。
   - 证据：`check-bundle` 通过行 + 对应断言名。
 
 ## Phase 2：客户端设置行
@@ -31,16 +31,16 @@
 
 ## Phase 4：探针与证据
 
-- [x] **T015** 探针七条（quickstart 列出）：F1 两档提示词、F3 默认 true、F4 dispose 路径、F5 写失败回退、F6 只写一次、F7 `aria-checked` 绑定、F8 命名空间——逐条破坏 → 重建 → 跑两套 → 确认变红 → 还原，把输出行原文记进 `evidence.md`。F2（段文本改回冻结字符串）在 check 44 存在前两套都抓不到，现在由第 44 条捕获，单列为历史说明。
+- [x] **T015** 探针七条（quickstart 列出）：F1 两档提示词、F3 默认 true、F4 dispose 路径、F5 写失败回退、F6 只写一次、F7 `aria-checked` 绑定、F8 命名空间——逐条破坏 → 重建 → 跑两套 → 确认变红 → 还原，把输出行原文记进 `evidence.md`。F2（段文本改回冻结字符串）在这个函数断言存在前两套都抓不到，现在由第 22 条静态检查捕获，单列为历史说明。
 - [x] **T016** `specs/002-visual-first-preference/evidence.md`：E-BLD/E-CHK/E-HARN 三块用单次运行输出原样照抄；未取证项单列。E1–E14 端到端逐条记录未做，见 `evidence.md` G6。
 - [x] **T017** `spec.md`/`plan.md`/`data-model.md`/`contracts/*` 与本清单的计数、断言名、版本号与实际一致（交叉核对每个反引号名都存在）。
 
 ## Phase 5：发版与评审
 
-- [x] **T018** 版本升到 `0.2.0`（新增依赖与用户可见行为），`npm pack` 核对文件数，更新 `specs/001-mermaid-fence-render/contracts/plugin-manifest.md`（feature 002 没有自己的 manifest 契约）。本轮文档修正把版本升到 `0.2.1`，只改文档与版本号。
-- [x] **T019** 打 tag、GitHub Actions 发布、从 registry 装回 `desktop`、核对安装副本哈希与 `locale/`。发布与装回记录见 `evidence.md` E-PUB/E-INS（`0.2.0`；`0.2.1` 未发布、未装回）。
+- [x] **T018** 版本升到 `0.2.0`（新增依赖与用户可见行为），`npm pack` 核对文件数，更新 `specs/001-mermaid-fence-render/contracts/plugin-manifest.md`（feature 002 没有自己的 manifest 契约）。本轮修正把版本升到 `0.2.2`：文档修正 + 新增一条静态检查 + 版本号，`client.js` 随之重建。
+- [x] **T019** 打 tag、GitHub Actions 发布、从 registry 装回 `desktop`、核对安装副本哈希与 `locale/`。发布与装回记录见 `evidence.md` E-PUB/E-INS：`0.2.0` 是历史，`0.2.1` 已发布（run `45204279829`、shasum `b5c03c272b89f53f2416a5140c29b212b5f55b7a`、logIndex `4053240981`）并已装回。
 - [ ] **T020** 真机核对：设置行出现、两档切换生效、重启后保持、8 语言标题正确、卸载后行消失。未做，见 `evidence.md` G1/G3/G4/G6。
-- [ ] **T021** 起两份独立评审（文档 / 实现），两份 PASS 才把 feature 002 标记完成。评审返回 FAIL；本轮按评审清单修正文档后重审，见 `evidence.md` G1–G8。
+- [ ] **T021** 起两份独立评审（文档 / 实现），两份 PASS 才把 feature 002 标记完成。评审返回 FAIL；本轮按评审清单修正文档后重审，见 `evidence.md` G1–G9。
 
 ## Dependencies
 
@@ -60,7 +60,7 @@
 | area | state |
 |---|---|
 | Host half: `Config` with `visualFirst` (default on, `.volatile()`), two-tier briefing, `claimSettingsPage` | done, 44 static checks |
-| Client half: settings row on `settings.general.item`, `configForms` read/write, revert on refusal | done, 251 browser checks; no disabled state, no timer |
+| Client half: settings row on `settings.general.item`, `configForms` read/write, revert on refusal | done, 252 browser checks; no disabled state, no timer |
 | Eight-language rename (locale, DETAIL alt line, 8 READMEs, index, package description) | done; DETAIL keeps exactly one image line (its alt sentence carries the new name) |
-| Evidence | `evidence.md` (this feature): build, 44, 251, seven falsifiability probes (F1, F3–F8), eight gaps |
-| Not done | live-window switch and renamed labels (G1, G4), 200%/360px layout assertion for the row (G3), pixel comparison (G5), E1–E14 end-to-end rows (G6), SC-001 five sample requests (G7), schemastery import failure path (G8) |
+| Evidence | `evidence.md` (this feature): build, 44, 252, seven falsifiability probes (F1, F3–F8), nine gaps |
+| Not done | live-window switch and renamed labels (G1, G4), the host write path to `settings.update` (G2), 200%/360px layout assertion for the row (G3), pixel comparison (G5), E1–E14 end-to-end rows (G6), SC-001 five sample requests (G7), schemastery import failure path (G8), no verbatim diff of the switch-off text against 001 (G9) |

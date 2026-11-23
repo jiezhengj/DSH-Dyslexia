@@ -1,6 +1,6 @@
 # Evidence — feature 002: the preference switch and the new name
 
-This file records what was actually observed while building feature 002. Every block below is one run on one tree; nothing is copied from another version. The E-PUB and E-INS blocks record the last published version, 0.2.0, as history; everything else was re-run on the 0.2.1 tree.
+This file records what was actually observed while building feature 002. Every block below is one run on one tree; nothing is copied from another version. There are two E-PUB/E-INS blocks: 0.2.0 as history and 0.2.1 as the published version. E-CHK and E-HARN quote the 0.2.1 run only (44 static, 251 browser). The working tree is 0.2.2, whose counts are 44 static and 252 browser checks; the 0.2.2 rows are added after this documentation pass.
 
 ## E-BLD build
 
@@ -332,7 +332,7 @@ Each new check was shown to fail with its own break. The break was applied to a 
 | F7 | `src/client/settings.js`: `aria-checked` always `true` | `[bad] the switch turns off after the write — true`, `[bad] a rejected write leaves the switch where the host put it — true`, `[bad] the switch starts off when the host already says off — true`, `run-harness: 3 failed, 248 passed`, exit 1 |
 | F8 | `src/client/i18n.js`: `hostKey` returns the bare key | `[bad] a host dictionary that already owns a word does not put it on our button — 复制成功`, `[bad] a host that translates the namespaced key is used — 已复制`, `run-harness: 2 failed, 249 passed`, exit 1 |
 
-The function-form break (F2) was not caught by the suites before check 44 existed: a frozen `text` string kept every earlier check green, and only `the section hands the host a function, not a frozen string` sees it. That is why 44 was added.
+The function-form break (F2) was not caught by the suites before the function check existed: a frozen `text` string kept every earlier check green, and only `the section hands the host a function, not a frozen string` sees it. That is why the check was added; in the E-CHK order it is #22 of the 44 checks.
 
 After restoring and rebuilding, the tree passed again: `build-client` reported `sources 6, syntax ok`, `check-bundle` reported `all 44 checks passed`, `run-harness` reported `all 251 checks passed`.
 
@@ -342,12 +342,13 @@ After restoring and rebuilding, the tree passed again: `build-client` reported `
 |---|---|
 | G1 | The switch was not operated in a live DSH window: the row is proven in the browser fixture (fake `configForms`), not against the running host service. |
 | G2 | The write path to the host (`settings.update`) was not exercised end to end; the fixture proves only that our half calls `set` once and honours its answer. |
-| G3 | Only the zh row text is asserted in the fixture (`the row label is our own sentence, not a host key — 优先用图，而不是成段文字` and its hint). No narrow-layout assertion exists: neither suite renders the row at 360px or at 200% font size. The six non-zh translations are proven only by the 16-keys-x-8-languages completeness check and by differing from English, not by being rendered. |
+| G3 | Only the zh row text is asserted in the fixture (`the row label is our own sentence, not a host key — 优先用图，而不是成段文字` and its hint). No narrow-layout assertion exists: neither suite renders the row at 360px or at 200% font size. The seven non-zh translations are proven only by the 16-keys-x-8-languages completeness check, not by being rendered; no assertion compares a non-English string with its English counterpart. |
 | G4 | The renamed names were not seen in a live window (plugin page, settings row); 8 titles are proven in the locale files and by assertion. |
 | G5 | No screenshot comparison against host rows (SC-008); the row uses host tokens and matches the neighbour row structure by construction, not by pixels. |
 | G6 | The E1–E14 end-to-end rows in `quickstart.md` were not run against a live host; no live window was observed for this feature. |
 | G7 | SC-001's five sample requests were not run: no model was asked to answer them with the switch on, so the briefing's effect on real answers is untested. |
 | G8 | `@deepseek-ai/schemastery` is a static import in `index.js`; if the package cannot resolve, the plugin fails to load at import time. There is no graceful degradation, and this failure path was not exercised. |
+| G9 | No assertion compares the switch-off briefing with feature 001's text verbatim (a `diff`); the two-tier rule is proven only by the word budget and by the presence/absence assertions, not by a byte-for-byte comparison with 001. |
 
 ## E-PUB publish
 
@@ -371,10 +372,12 @@ The first two tag pushes (`45194558416`, `45194732082`) failed and published not
 | command | `remove_bundle @jiezhengj/dsh-dyslexia` then `install_bundle @jiezhengj/dsh-dyslexia@0.2.0` |
 | result | `application: applied`, `version: 0.2.0`, pnpm `+ @jiezhengj/dsh-dyslexia 0.2.0` |
 | profile dependency | `"@jiezhengj/dsh-dyslexia": "0.2.0"` |
-| installed `client.js` | 780550 bytes, SHA256 `5BD4168C2F8971F67B0982CC3E73BE01EC49BE9DAAA01474EDA245CC401DD85A` |
-| repository `client.js` | same 780550 bytes and the same SHA256 |
+| installed `client.js` | unverified — the 0.2.0 tarball hash was not recorded |
+| repository `client.js` | unverified — the 0.2.0 tarball hash was not recorded |
 
-0.2.0 is the last published version. 0.2.1 is the documentation-only correction that follows the feature-002 review: it is not tagged, not published and not installed; the 0.2.0 rows above stay as history, and the checks in this file were re-run on the 0.2.1 tree.
+Both `client.js` rows are unverified because that hash was never recorded for 0.2.0: `client.js` embeds the version, so the fingerprint hashes it; the 780550 bytes and SHA256 that stood here before are the 0.2.1 artifact's, not 0.2.0's.
+
+The 0.2.0 rows above stay as history. 0.2.1 is the documentation-only correction that follows the feature-002 review: it was published (run `45204279829`, shasum `b5c03c272b89f53f2416a5140c29b212b5f55b7a`, logIndex `4053240981`) and installed (E-PUB/E-INS 0.2.1 below); the checks in this file were re-run on the 0.2.1 tree.
 
 ## E-PUB publish, 0.2.1
 

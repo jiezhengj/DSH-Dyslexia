@@ -49,4 +49,4 @@ node verify/run-harness.mjs --list # 逐条列出断言名（证据引用用）
 6. **F7 `aria-checked` 绑定**：把 `aria-checked` 固定成 `true` → `the switch turns off after the write` 报红。
 7. **F8 命名空间**：让 `hostKey` 返回裸键 → `a host dictionary that already owns a word does not put it on our button`、`a host that translates the namespaced key is used` 报红。
 
-F2（段 `text` 从函数改回冻结字符串）在 check 44 存在前两套都抓不到；现在由 `the section hands the host a function, not a frozen string` 捕获，因此不单列为一条可复现探针。
+F2（段 `text` 从函数改回冻结字符串）在这个函数断言存在前两套都抓不到；现在由第 22 条静态检查 `the section hands the host a function, not a frozen string` 捕获，因此不单列为一条可复现探针。

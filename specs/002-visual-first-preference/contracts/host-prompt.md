@@ -22,7 +22,9 @@ The reader finds long stretches of prose hard work. When a flow, a structure, a 
 
 ## 禁止措辞（静态断言守护）
 
-- 不得出现 `must`、`always`、`every answer`、`each reply` 这类无条件要求。
+- 偏好段（仅开关打开时追加的那一段）不得出现 `every answer`、`always draw`、`always answer`、`must draw`、`must use a diagram`；`the switch adds the preference on top of the capability, and nothing else` 对这五条做大小写不敏感的子串断言。
+- 能力段（开关关闭时输出的那一段）不得出现 `always`、`must use`、`you should`、`every answer`、`prefer`；`the capability briefing is what it was before the switch` 对这五条做大小写不敏感的子串断言。
+- 这两张表不是对任意 `must` / `each reply` 的守护：能力段里的 `must`（“the block must stay readable alone”）是允许的，裸 `each reply` 也没有断言；判据是否足够具体仍靠人工核对。
 - 不得要求读者改任何指令文件。
 - 不得声称图能替代源码（源码必须可复制、可检索）。
 

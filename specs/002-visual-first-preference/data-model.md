@@ -27,7 +27,7 @@
 | --- | --- | --- | --- |
 | 能力段 | 字符串 | 恒存在 | 001 的四句能力陈述，逐字保留 |
 | 偏好段 | 字符串 | 仅当 `visualFirst === true` | "何时该画、何时不必画"的判据 |
-| 禁止措辞 | 词表 | 不含 `must`/`always`/`every answer` | 由静态断言守护 |
+| 禁止措辞 | 词表 | 偏好段不含 `every answer`/`always draw`/`always answer`/`must draw`/`must use a diagram`；能力段不含 `always`/`must use`/`you should`/`every answer`/`prefer`（裸 `must`、`each reply` 没有断言） | 由静态断言逐条守护 |
 
 **组装规则**：`capability`，若 `visualFirst` 为真再追加 `\n\n` + `preference`。段名 `ui:dsh-dyslexia`、`order 9000` 不变（保证装配顺序稳定，不产生第二段）。
 

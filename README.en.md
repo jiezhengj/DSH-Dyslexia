@@ -47,13 +47,13 @@ Both commands are in the repository, so the claims in this file can be re-checke
 
 Gap ids (`G…`) refer to feature 001's E-GAPS in `specs/001-mermaid-fence-render/evidence/verification.md`.
 
-- **Verified here:** the live-window observations are from plugin `0.1.2`; this version's evidence is fixture-level only. Not yet tested: the switch operated in a live window, an eight-language narrow layout, and any pixel comparison with the host's own rows.
+- **Verified here:** the live-window checks that still transfer are plugin `0.1.31` and `0.1.32`; the older `0.1.2` rows no longer transfer after the renderer changes in `0.1.3`–`0.1.31`. This version's evidence is fixture-level only. Not yet tested: the switch operated in a live window, an eight-language narrow layout, and any pixel comparison with the host's own rows. The plugin pages in the other languages have still not been seen (see feature 001's E-GAPS, G13).
 - **Likely, not proven on your machine:** other DSH versions; other Chromium-based browsers; the same checks on mobile devices (the layout is verified in a 360 px viewport in a desktop browser, not on a physical phone); very large diagrams (limits: source 24 KiB, drawing output 2 MiB, 400 edges; beyond that it falls back to the code block).
 - **Not done:** no DSH upgrade has been rehearsed yet (see feature 001's E-GAPS, G1); diagrams are not drawn while a message is still streaming; only ` ```mermaid ` fences are handled (not other fence languages).
 
 ## Install
 
-Install `@jiezhengj/dsh-dyslexia` in your DeepSeek Harness profile (the Plugins page). It draws figures in the conversation as soon as it is installed (verified on a real machine). Uninstalling was observed on a running interface: the figure and its buttons go, the message turns back into its original code block, and history needs no edit. Enabling and disabling go through the host's plugin mechanism without touching any configuration file, but **those two steps have not been observed separately** (see feature 001's E-GAPS, G20). A version change needs the app restarted before the new client code is loaded. On npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
+Install `@jiezhengj/dsh-dyslexia` in your DeepSeek Harness profile (the Plugins page). It draws figures in the conversation as soon as it is installed (verified on a real machine). Uninstalling takes effect after restarting the app: a running window keeps the figure and both buttons it has already loaded, and history needs no edit (see feature 001's E-GAPS, G24①). Enabling and disabling go through the host's plugin mechanism without touching any configuration file, but **those two steps have not been observed separately** (see feature 001's E-GAPS, G20). A version change needs the app restarted before the new client code is loaded. On npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
 
 ## Example
 
@@ -66,8 +66,8 @@ flowchart LR
 
 ## Uninstalling and compatibility
 
-- Uninstalling keeps every past conversation intact: earlier drawings turn back into the code blocks they came from, still readable.  (this takes effect after restarting the app — a running window keeps the figures it has already loaded)
-- The plugin declares no version gate and no required host package, so no version check refuses a start; a real host upgrade has not been rehearsed yet (see feature 001's E-GAPS, G1). if the host changes shape, the plugin steps aside and the plain code block is shown.
+- Uninstalling does not modify any past conversation, but the change takes effect after restarting the app: until then a running window keeps the figures and both buttons it has already loaded; after the restart, earlier drawings turn back into the code blocks they came from, still readable.
+- The plugin declares no version gate and no required host package, so no version check blocks startup; a real host upgrade has not been rehearsed yet (see feature 001's E-GAPS, G1). If the host changes shape, the plugin steps aside and the plain code block is shown.
 
 ## License
 

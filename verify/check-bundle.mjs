@@ -358,14 +358,23 @@ function textOf(section) {
 }
 
 check('the section hands the host a function, not a frozen string', () => {
-  const [section] = captureWith(true)
+  let value = true
+  const sections = []
+  const ctx = { systemPrompt: { section(def) { sections.push(def); return () => undefined } } }
+  hostModule.apply(ctx, { visualFirst: { get: () => value } })
+  assert(sections.length === 1, `expected one section, got ${sections.length}`)
+  const [section] = sections
   assert(typeof section.text === 'function', 'section text is a frozen string: the switch would only apply after a restart')
   const source = readFileSync(join(ROOT, 'index.js'), 'utf8')
   assert(source.includes('text: () => briefing(config)'), 'the section text is not a call into briefing()')
   const open = textOf(section)
-  const closedGap = textOf(captureWith(false)[0])
-  assert(open !== closedGap, 'two captures with different values produced the same text')
-  return 'text is a function, and the value at capture time changes the text'
+  value = false
+  const closed = textOf(section)
+  value = true
+  const reopened = textOf(section)
+  assert(open !== closed, 'the same registration did not read the value again: the briefing is frozen at apply time')
+  assert(open === reopened, 'the reopened briefing did not return to the open text')
+  return 'one registration, three reads, the text follows the value'
 })
 
 check('the capability briefing is what it was before the switch', () => {

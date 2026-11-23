@@ -47,13 +47,13 @@ Beide Befehle liegen im Repository, sodass sich die Aussagen in dieser Datei jed
 
 Die Kennungen `G…` verweisen auf die E-GAPS von Feature 001 in `specs/001-mermaid-fence-render/evidence/verification.md`.
 
-- **Hier verifiziert:** Die Beobachtungen auf echter Hardware stammen von Plugin `0.1.2`; die Belege dieser Version sind reine Fixture-Ebene. Nicht getestet: der Schalter in einem echten Fenster, ein schmales Layout in acht Sprachen und ein Pixelvergleich mit den Zeilen des Hosts.
+- **Hier verifiziert:** Die weiterhin übertragbaren Prüfungen auf echter Hardware sind die von Plugin `0.1.31` und `0.1.32`; die alten `0.1.2`-Zeilen lassen sich nach den Renderer-Änderungen in `0.1.3`–`0.1.31` nicht mehr übertragen. Die Belege dieser Version sind reine Fixture-Ebene. Nicht getestet: der Schalter in einem echten Fenster, ein schmales Layout in acht Sprachen und ein Pixelvergleich mit den Zeilen des Hosts. Die Plugin-Seiten in den übrigen Sprachen wurden noch nicht gesehen (siehe die E-GAPS von Feature 001, G13).
 - **Wahrscheinlich, aber auf deinem Rechner nicht bewiesen:** andere DSH-Versionen; andere Chromium-basierte Browser; dieselben Prüfungen auf Mobilgeräten (das Layout ist in einem 360-px-Viewport eines Desktop-Browsers verifiziert, nicht auf einem physischen Telefon); sehr große Diagramme (es gibt Grenzen: 24 KiB Quelltext, 2 MiB Zeichenausgabe, 400 Kanten; darüber hinaus fällt es auf den Codeblock zurück).
 - **Nicht durchgeführt:** ein DSH-Upgrade wurde noch nie geprobt (siehe die E-GAPS von Feature 001, G1); Diagramme werden nicht gezeichnet, solange eine Nachricht noch streamt; nur ` ```mermaid `-Blöcke werden behandelt (keine anderen Codeblock-Sprachen).
 
 ## Installation
 
-Installiere das Paket `@jiezhengj/dsh-dyslexia` in deinem DeepSeek-Harness-Profil (Plugin-Seite); es zeichnet Diagramme im Gespräch, sobald es installiert ist (auf einem echten Rechner geprüft). Das Deinstallieren wurde in einer laufenden Oberfläche beobachtet: Abbildung und Schaltflächen verschwinden, die Nachricht zeigt wieder ihren ursprünglichen Codeblock, die Historie bleibt unverändert. Aktivieren und Deaktivieren laufen über den Plugin-Mechanismus des Hosts, ohne dass eine Konfigurationsdatei angefasst wird, **wurden aber nicht getrennt beobachtet** (siehe die E-GAPS von Feature 001, G20). Bei einem Versionswechsel muss die App neu starten, damit der neue Client-Code geladen wird. Auf npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
+Installiere das Paket `@jiezhengj/dsh-dyslexia` in deinem DeepSeek-Harness-Profil (Plugin-Seite); es zeichnet Diagramme im Gespräch, sobald es installiert ist (auf einem echten Rechner geprüft). Das Deinstallieren wirkt erst nach einem Neustart der App: Ein geöffnetes Fenster zeigt die bereits geladenen Abbildungen und beide Schaltflächen weiterhin, die Historie bleibt unverändert (siehe die E-GAPS von Feature 001, G24①). Aktivieren und Deaktivieren laufen über den Plugin-Mechanismus des Hosts, ohne dass eine Konfigurationsdatei angefasst wird, **wurden aber nicht getrennt beobachtet** (siehe die E-GAPS von Feature 001, G20). Bei einem Versionswechsel muss die App neu starten, damit der neue Client-Code geladen wird. Auf npm: https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
 
 ## Beispiel
 
@@ -66,8 +66,8 @@ flowchart LR
 
 ## Deinstallation und Kompatibilität
 
-- Eine Deinstallation lässt jede frühere Unterhaltung unversehrt: Frühere Diagramme werden wieder zu den Codeblöcken, aus denen sie entstanden, lesbar.
-- Das Plugin deklariert keine Versionsschwelle und kein erforderliches Host-Paket; eine Versionsprüfung den Start also nicht ablehnen kann; ein echtes Host-Update wurde noch nicht geprobt (siehe die E-GAPS von Feature 001, G1). Ändert sich die Form des Hosts, tritt das Plugin zurück und der ursprüngliche Codeblock wird gezeigt.
+- Eine Deinstallation verändert keine frühere Unterhaltung, wirkt aber erst nach einem Neustart der App: Bis dahin zeigt ein geöffnetes Fenster die bereits geladenen Diagramme und beide Schaltflächen weiterhin; nach dem Neustart werden frühere Diagramme wieder zu den Codeblöcken, aus denen sie entstanden, lesbar.
+- Das Plugin deklariert keine Versionsschwelle und kein erforderliches Host-Paket, sodass eine Versionsprüfung den Start nicht ablehnen kann; ein echtes Host-Update wurde noch nicht geprobt (siehe die E-GAPS von Feature 001, G1). Ändert sich die Form des Hosts, tritt das Plugin zurück und der ursprüngliche Codeblock wird gezeigt.
 
 ## Lizenz
 

@@ -49,12 +49,14 @@ specs/002-visual-first-preference/
 ├── research.md
 ├── data-model.md
 ├── quickstart.md
+├── evidence.md                 # 构建/检查/探针输出与未取证项（G1–G9）
 ├── contracts/
 │   ├── plugin-config.md        # 配置项与宿主侧读取契约
 │   ├── settings-row.md         # 设置行的槽契约、DOM/可访问性契约
 │   └── host-prompt.md          # 两档提示词文本与判据
 ├── checklists/
-│   └── requirements.md
+│   ├── requirements.md
+│   └── implementation.md       # 实施前清单：哪条断言缺失就在这里不勾
 └── tasks.md
 ```
 

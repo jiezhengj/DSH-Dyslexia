@@ -67,7 +67,14 @@ function VisualFirstRow(props) {
     setState('idle')
     let pending = null
     try {
-      pending = injected.setValue ? injected.setValue(next) : null
+      if (typeof injected.setValue !== 'function') {
+        // A host that cannot take the value is a failed write: the switch must
+        // never stand on a preference the host did not accept.
+        store.set(before)
+        setState('failed')
+        return
+      }
+      pending = injected.setValue(next)
     } catch (error) {
       setState('failed')
       store.set(before)
@@ -124,15 +131,12 @@ function VisualFirstRow(props) {
  */
 function createVisualFirstRow(face) {
   const store = createValueStore(readPreference(face))
-  return {
-    store,
-    component: VisualFirstRow,
-    inject: {
-      hooks: { visualFirst: store },
-      setValue(next) {
-        if (!face || typeof face.set !== 'function') return null
-        return face.set('visualFirst', next)
-      },
-    },
+  const inject = { hooks: { visualFirst: store } }
+  // A host whose face cannot write gets no writer at all: the row then treats
+  // the click as a failed write, puts the switch back and says so, instead of
+  // showing a preference the host never accepted.
+  if (face && typeof face.set === 'function') {
+    inject.setValue = (next) => face.set('visualFirst', next)
   }
+  return { store, component: VisualFirstRow, inject }
 }

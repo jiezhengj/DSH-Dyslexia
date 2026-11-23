@@ -1474,7 +1474,56 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             offView.root.unmount()
             offView.stage.remove()
           }
-          offHost.dispose()
+          // A host whose face can read but not write shows the same failure as a
+          // rejected write: the switch stays on the value in effect and the
+          // status sentence says so. Showing the intended value would be a lie.
+          const noSetFace = {
+            getSnapshot() {
+              return { value: { visualFirst: true } }
+            },
+            subscribe() {
+              return () => {}
+            },
+          }
+          const noSetHost = makeContext({})
+          noSetHost.ctx.configForms = {
+            get(namespace) {
+              return namespace === 'dsh-dyslexia' ? noSetFace : null
+            },
+          }
+          module.apply(noSetHost.ctx)
+          const noSetDef = noSetHost.defs.find((entry) => entry.def && entry.def.name === 'settings.general.item')
+          const noSetView = noSetDef ? mount(noSetDef.component, noSetDef.def.inject()) : null
+          if (noSetView) await tick(40)
+          const noSetToggle = noSetView ? noSetView.stage.querySelector('button[role="switch"]') : null
+          let noSetThrew = null
+          if (noSetToggle) {
+            try {
+              noSetToggle.click()
+            } catch (error) {
+              noSetThrew = error
+            }
+            await tick(60)
+          }
+          const noSetStatus = noSetView ? noSetView.stage.querySelector('[role="status"]') : null
+          expect(
+            !!noSetToggle &&
+              noSetThrew === null &&
+              noSetToggle.getAttribute('aria-checked') === 'true' &&
+              !!noSetStatus &&
+              noSetStatus.textContent === SETTINGS_FAILED,
+            'a host whose face has no setter keeps the switch and says the write failed',
+            noSetToggle
+              ? `aria-checked=${noSetToggle.getAttribute('aria-checked')} status=${
+                  noSetStatus ? noSetStatus.textContent : 'none'
+                } set=${typeof noSetFace.set} threw=${noSetThrew ? String(noSetThrew.message) : 'no'}`
+              : 'no switch',
+          )
+          if (noSetView) {
+            noSetView.root.unmount()
+            noSetView.stage.remove()
+          }
+          noSetHost.dispose()
 
           // Without the face there is no row, and the picture must still work:
           // the settings surface is an addition, never a requirement.
