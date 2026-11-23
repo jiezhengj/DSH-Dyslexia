@@ -369,7 +369,7 @@ description: "Task list for 会话内图形渲染"
 - [x] T178 README：`README.zh.md` 的"验证了八种界面语言"补"（在无头测试环境里；插件 `0.1.2` 的真机验证只覆盖中文说明页）"；`README.md` 的"8 接口语言"改"8 种界面语言"
 - [x] T179 `evidence/verification.md` 的 P2：G16 去掉与 G15 重复的规模上限、只留 vendor 文本与"无头环境只能夹具重放"；E-LIVE 引言"不能自动转移到 `0.1.14`"改 `0.1.15`；0.1.12 本地 `--list` 块标明是**节选**；E-PUB 表 0.1.3/0.1.4 的 logIndex 由 `—` 改"未记录"并加脚注说明 `—` 的含义
 - [x] T180 措辞统一（"偏好"不是使用前提，FR-012）：`spec.md`、`plan.md`、`research.md`（D19 ⑦ 的七组枚举与 `quickstart.md` 的 E-COMP-1 对齐）、`contracts/host-prompt.md` 四处；`quickstart.md` 的 E-COMP 标题补 SC-009、E-COMP-5 的"真机装/重启"改"真机装卸"
-- [x] T181 `verify/check-bundle.mjs` 的报告串改 `five silent hosts, two throwing sections`（实际跑 5 次静默 + 2 次抛错），并同步证据里的 E-CHK 行
+- [x] T181 `verify/check-bundle.mjs` 的报告串改 `five silent hosts, two throwing sections`（实际跑 5 次静默 + 2 次抛错），并同步证据里的 E-CHK 行；0.1.30 起该串扩为 `five silent hosts (no warning), two refused sections (one warning each, naming the error)`（T313 在同一条 `check()` 里断言两段被拒各报一次并写明原因）
 - [x] T182 重建与复跑：`node verify/check-bundle.mjs` = `@0.1.16 | 769391 bytes | sources sha256:f837913297259c0f99bc780f154d287a | all 37 checks passed`；`node verify/run-harness.mjs --list` = 213 项全过；`evidence/verification.md` 的 E-BLD/E-CHK/E-HARN 用同一次运行重写
 - [x] T183 发布 `v0.1.16`（run `45079253651`，shasum `4a559a0cd107e2dd2175b2d2ff10e3075a53e309`，logIndex `4048629730`，33 文件）、从 registry 装回 profile `desktop`（依赖 `0.1.16`、安装副本 769,391 字节 / `9A5ADC5B…BB3D`）、补 E-PUB/E-INS 的 0.1.16 行
 - [ ] T184 第十四轮双评审（文档 + 实现）；两份都 PASS 才把 feature 001 标记完成（实现侧 PASS、文档侧 FAIL，故本轮未完）
@@ -399,7 +399,7 @@ description: "Task list for 会话内图形渲染"
 
 - [x] T200 `evidence/verification.md` 的 G15 增第五条（`package.json` 若加入 `engines.node` 等非 `dsh` 子键，`no dsh version gate can refuse a start` 不会变红），"这四项"改"这五项"——修第十五轮文档评审的 P1（`spec.md:144` 的归属指针指向一个不存在的条目）
 - [x] T201 `spec.md` 的 SC-007 与 `tasks.md` 的 T197、状态表 G15 行同步写成"G15 第五条"
-- [x] T202 `contracts/plugin-manifest.md` 第 9 条拆成三句：`engines.dsh` 与 dsh peer 由 `no dsh version gate can refuse a start` 保证；`dsh.client.inject` 由 `package.json declares the bundle patch and the client half` 保证（第 79 行 `assert(client.inject === undefined, …)`（v0.1.19–0.1.21 的行号；v0.1.22 起该断言移到第 91 行，见 `contracts/plugin-manifest.md`））；其余 `engines` 子键见 G15 第五条
+- [x] T202 `contracts/plugin-manifest.md` 第 9 条拆成三句：`engines.dsh` 与 dsh peer 由 `no dsh version gate can refuse a start` 保证；`dsh.client.inject` 由 `package.json declares the bundle patch and the client half` 保证（`assert(client.inject === undefined, …)` 在 v0.1.19–0.1.21 是第 79 行，v0.1.22 起是第 91 行；见 `contracts/plugin-manifest.md`）；其余 `engines` 子键见 G15 第五条
 - [x] T203 `data-model.md` 的"清单被版本门否决"行不再把整条 `engines` 归给静态断言，改为"`engines.dsh` 与 dsh peer 由断言、整个 `engines` 键与 `dsh.client.inject` 由人工核对 `package.json`"
 - [x] T204 `evidence/verification.md` 的 E-LIVE 引言"从 0.1.2 到 0.1.13"改为"从 0.1.2 到 0.1.17"（0.1.18 只改了文档与 README，没有再动渲染层），G13 区间改 0.1.3–0.1.17（第十七轮文档评审指出这已是中间态：`76d9181` 把 E-LIVE 引言推进到 0.1.19，G13 随后也改到 0.1.3–0.1.19，以 `evidence/verification.md` 现文为准）；`README.md` 的中文半句补回"（插件 `0.1.2`，真机只覆盖中文说明页）"，`README.zh.md` 同步
 - [x] T205 `tasks.md` 的 T187 去掉无法在 E-PROBE 表里复核的"探针 P12b"编号，改写成本轮复跑的事实（往 `files` 加一个条目后报告串仍为 `24 required files`，说明打包总数已是派生值）

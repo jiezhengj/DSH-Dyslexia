@@ -70,7 +70,7 @@
 
 | 降级点 | 触发条件 | 可见表现 | 断言 / 证据 |
 |---|---|---|---|
-| 清单被版本门否决 | 不可能：清单里没有 `engines`、`engines.dsh`、也没有 dsh peer | 不会发生（这是要求本身） | `engines.dsh` 与 dsh peer 由 `no dsh version gate can refuse a start` 断言；`dsh.client.inject` 由 `check-bundle` 的 `package.json declares the bundle patch and the client half`（`assert(client.inject === undefined, …)`）机器断言；`engines` 里与 DSH 无关的子键仍由人工核对 `package.json`（`dsh.client.inject` 另有 `package.json declares the bundle patch and the client half`）；其余 `engines` 子键见 G15 第五条（FR-013） |
+| 清单被版本门否决 | 不可能：清单里没有 `engines`、`engines.dsh`、也没有 dsh peer | 不会发生（这是要求本身） | `engines.dsh` 与 dsh peer 由 `no dsh version gate can refuse a start` 断言；`dsh.client.inject` 由 `check-bundle` 的 `package.json declares the bundle patch and the client half`（`assert(client.inject === undefined, …)`）机器断言；`engines` 里与 DSH 无关的子键仍由人工核对 `package.json`；其余 `engines` 子键见 G15 第五条（FR-013） |
 | 产物语法错误 | 构建期 | 不产出包 | 静态 `client.js compiles on its own`（FR-015） |
 | 加载器缺失 / `load` 抛错 | 宿主加载客户端模块时 | 本插件不生效，其他插件照常 | 静态 `a broken host loader cannot make the chunk throw`（FR-015） |
 | 工厂内 `require`/初始化抛错 | 宿主注入的 `react` 缺失等 | 返回空模块 `{ apply(){}, inject: [] }` | 静态 `a failing factory still yields a silent module`（FR-015） |
