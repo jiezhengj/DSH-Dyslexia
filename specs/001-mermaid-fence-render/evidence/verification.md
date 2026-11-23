@@ -378,7 +378,7 @@ run-harness: @jiezhengj/dsh-dyslexia@0.1.31 | client.js 770108 bytes | sources s
 | FR-007 跟随宿主主题并在切换后更新 | 浏览器：`the picture follows the host colour without reloading`；真实明暗切换未做（G10） |
 | FR-008 8 种界面语言可读、畸形翻译服务回退 | 静态：`every language carries the same complete sentences`、`host key echo falls back to bundled strings`；浏览器：`[ja] a picture is drawn`（8 语言各一轮）、`a host t that echoes the key still shows words`、`a host t that throws still shows words`、`no internal key reaches the eye` |
 | FR-009 卸载/禁用/出错时回退文本 | 浏览器：`disabling the plugin takes its stylesheet away`、`the layer survives a throwing children getter`、`styles and strings are claimed as effects`；真机卸载回退见 E-LIVE 的「卸载插件后，同一条消息变回纯文本代码块」一行（0.1.2，见 G13） |
-| FR-010 重装后图恢复、无需迁移 | 真机：E-LIVE 的「重新安装后图与按钮立刻回来」一行（0.1.2，见 G13）；数据层面由 `data-model.md` 的"图源只在消息文本里"保证 |
+| FR-010 重装后图恢复、无需迁移 | 真机：E-LIVE 的「再装回 `0.1.31` 并重启之后，同一条消息重新就地成图，历史消息一个字都没改」一行（0.1.31，已核）；数据层面由 `data-model.md` 的"图源只在消息文本里"保证 |
 | FR-011 启用时让模型知情、停用后消失 | 静态：`the host half registers exactly one capability section`、`the host half adds one section per context, not one per call`（同一 `ctx` 三次 `apply` 仍只一段；另一个 `ctx` 各一段；宿主当场拒绝或稍后拒绝都能重试成功）、`the host half stays silent when the host changed shape`（五类畸形宿主零告警，两段被拒的简报各报一次且写明原因）；浏览器侧同一 `ctx` 二次 `apply` 只注册一层（`a second apply does not add a second fence layer`）；"停用后模型侧看不到"未实测（G11） |
 | FR-012 不需要改任何指令文件就生效 | 静态：`nothing in the package asks you to edit an instruction file`（17 个随包文本文件里不出现 `AGENTS.md`/`CLAUDE.md`/`.cursorrules`，`client.js` 与 `index.js` 也不读写它们） |
 | FR-013 不声明版本否决字段 | `no dsh version gate can refuse a start` |
@@ -927,6 +927,9 @@ Done in 4.5s using pnpm v11.28.5
 | 点「复制源码」把源码原文写进剪贴板，界面出现可见回执 | `Set-Clipboard 'sentinel-before-copy'` → 点击 → `Get-Clipboard` 得到 `flowchart LR` / `  A[Agent 写出 mermaid 代码块] --> B[同一条消息里就地成图]` / `  B --> C[原文仍是文本，可复制可检索]`；按钮右侧出现「复制成功」（该文案来自宿主词条，见 G24③） | FR-005、FR-018 的"复制诚实" |
 | 卸载不会改写已渲染的消息，但**也不在运行中的窗口里消失** | `remove_bundle` 返回 `applied`、profile 依赖与 `node_modules` 都已移除；随后 8 秒内那条消息仍显示图与两个按钮（`find --role image` 仍为 1、`复制源码` 仍为 1），按 `Ctrl+R` 与 `F5` 之后画面也没有变化（我无法确认窗口是否真的重载过，只能说这两次按键没有让图消失） | FR-009 的后半**改为未取证**（见 G24①） |
 | **重启之后**，同一条消息变回纯代码块：无图、无插件按钮、原文完整 | 重启后同一会话（窗口标题仍是「DeepSeek Harness 可视化插件研究」）里：`find --role image` = **0**、`find --role button --name "复制源码"` = **0**、`find --role menubutton --name "查看源码"` = **0**；跳回第 21 轮截图可见 `代码块` 标题下的 `flowchart LR` / `A[Agent 写出 mermaid 代码块] --> B[同一条消息里就地成图]` / `B --> C[原文仍是文本，可复制可检索]`（`.tmp/livecheck/turn21-codeblock.png`） | **FR-009 / E10 成立，前提是重启**（时机见 G24①） |
+**再装回 `0.1.31` 并重启之后**，同一条消息重新就地成图，历史消息一个字都没改 | 装回（profile 依赖 `"@jiezhengj/dsh-dyslexia": "0.1.31"`、安装副本 `client.js` 770,108 字节、SHA256 前缀 `DFB1E3C57E09C0F2` 与仓库根逐字节相同）后重启，在「对话」标签上：`find --role image` = **1** 且 `name="图"`、尺寸 1157×124、`find --role button --name "复制源码"` = **1**、「查看源码」仍在无障碍树里是 `menubutton`（G24②）；截图 `.tmp/livecheck/figure-back.png` | **FR-010 / E11 成立，前提同样是重启**（与 G24① 同一规律） |
+
+> 记一次误判：装回后第一次数到 `role=image` = 0，不是因为图没回来，而是当时界面停在「轨迹」标签——那个视图里没有消息正文。计数必须在「对话」标签上做，这条写进 G24 的教训里。
 
 **以下四条来自 0.1.2**，保留是因为它们证明链路本身可用；0.1.3–0.1.31 改过渲染层（`role` 结构、`aria-roledescription` 的移除与重排版后重标、可见的复制反馈、空/非法 `children` 的处理、源码块的 `language-mermaid` 标记、外层盒子去掉名字），所以它们**不能**自动转移。
 
@@ -949,10 +952,10 @@ Done in 4.5s using pnpm v11.28.5
 
 1. **已做（2026-11-23 21:2x）**：`plugin_manager` 的 `remove_bundle @jiezhengj/dsh-dyslexia` 返回 `{"stage":"remove","changed":true,"application":"applied"}`（pnpm 输出 `- @jiezhengj/dsh-dyslexia 0.1.31`）；随后核对 profile：`package.json` 里 `dsh-dyslexia` 的依赖与 bundles 条目都没有了，`node_modules/@jiezhengj/dsh-dyslexia` 也不存在。运行中的窗口不受影响（G24①），这正是要靠重启来验的地方。
 2. **已完成（2026-11-23 21:19 重启）**：同一条含 ```mermaid 的消息显示为**纯代码块原文**——`role="image"`、`复制源码`、`查看源码` 三处计数都是 0，第 21 轮的截图里是一块带 `代码块` 标题的 `flowchart LR …`（`.tmp/livecheck/turn21-codeblock.png`），历史消息内容不变、无报错 —— E10 / G24① 的正面证据。
-3. **装回已完成（2026-11-23 21:2x）**：`install_bundle @jiezhengj/dsh-dyslexia@0.1.31` 返回 `applied`，profile 依赖 `"@jiezhengj/dsh-dyslexia": "0.1.31"`，安装副本 `client.js` 770,108 字节、SHA256 前缀 `DFB1E3C57E09C0F2` 与仓库根一致；**等用户再重启一次**。重启后同一条消息应重新出现图、图名「图」、两个按钮，且不需要改历史消息 —— E11 / `FR-010`。
-4. 两段都用 `agent-desktop find --role image` / `find --role button --name 复制源码` 的计数与截图记录，然后回写 E-LIVE（把"卸载后回退"的时机从"未取证"改成实测），同步 `tasks.md` 的 T079 与 G24①，并把 `quickstart.md` 与九份 README 里"卸载要重启"的措辞与实测对齐（若实测与现在写的一致，就不必再改）。
+3. **装回已完成（2026-11-23 21:2x）**：`install_bundle @jiezhengj/dsh-dyslexia@0.1.31` 返回 `applied`，profile 依赖 `"@jiezhengj/dsh-dyslexia": "0.1.31"`，安装副本 `client.js` 770,108 字节、SHA256 前缀 `DFB1E3C57E09C0F2` 与仓库根一致；然后等用户再重启一次。（第 4 步已证实这一步的预期成立：见下。）E11 / `FR-010`。
+4. **已完成（2026-11-23 21:25 重启后）**：切到「对话」标签后 `find --role image` = **1**、`name="图"`、尺寸 1157×124、`复制源码` = 1、「查看源码」仍是 `menubutton`；同一条历史消息没有被改过 —— E11 / `FR-010` 成立，时机同样是重启之后（G24①）。累计两段都用 `agent-desktop find --role image` / `find --role button --name 复制源码` 的计数与截图记录，然后回写 E-LIVE（把"卸载后回退"的时机从"未取证"改成实测），同步 `tasks.md` 的 T079 与 G24①，并把 `quickstart.md` 与九份 README 里"卸载要重启"的措辞与实测对齐（若实测与现在写的一致，就不必再改）。
 
-## E-GAPS 没有取证的部分（共 24 项）
+## E-GAPS 没有取证的部分（共 24 项；其中 G13 已于 0.1.31 核对完成、G24① 已实测，均标注在各自条目里）
 
 真机、设备与离线条件（都要求动手换条件，不能在 CI 里做）：
 
@@ -974,7 +977,7 @@ Done in 4.5s using pnpm v11.28.5
 
 - **G11 FR-011 的后半（停用插件后提示词段消失）**：只有 `apply` 注册段的静态证据与宿主半边契约，没有"停用后模型侧看不到"的实测（T027）。
 - **G12 FR-002 的真机面（不打开侧栏、不生成文件、不新增会话条目）**：插件在结构上不写文件、不碰宿主布局（静态可读），但没有一次真机上"看完这张图，磁盘与会话条目都没变"的核对。
-- **G13 当前版本（0.1.31）的重启后真机核对（T079）**：`E-LIVE` 的观察取自 **0.1.2**，且只有四件事——插件页的**中文**说明与插图、会话里就地成图（图名 `图：flowchart`、两个按钮）、卸载后同一条消息回退为代码块、重装后图与按钮立刻回来。**复制播报**（0.1.5 起才有）与**其余 7 种语言的插件页**从未在真机上看过，不能算已观察。0.1.3–0.1.31 改过 `view.js`、`i18n.js`、`entry.js`、`styles.js`、`index.js`（0.1.18 只改了文档与 README；0.1.19 改了 `styles.js` 的变量块；0.1.20 与 0.1.21 只改了测试与文档），这些观察不能自动转移。0.1.11 至 0.1.31 都已发布并装进 `desktop` profile，但**没有在重启后的宿主里逐项复核过**，所以算未取证。
+- **G13 当前版本（0.1.31）的重启后真机核对（T079）——已于 2026-11-23 21:2x 核对完成**：插件页中文说明与插图、会话里就地成图（图名 `图`、两个中文按钮）、复制写入剪贴板并出现可见回执、源码面板（用户手点）、卸载 + 重启后变回代码块、装回 + 重启后图回来且历史不动。**仍未看**：其余 7 种语言的插件页说明、回执文案是否用我们自己的措辞（并入 G24③）。原先 `E-LIVE` 的观察取自 **0.1.2**，且只有四件事——插件页的**中文**说明与插图、会话里就地成图（图名 `图：flowchart`、两个按钮）、卸载后同一条消息回退为代码块、重装后图与按钮立刻回来。**复制播报**（0.1.5 起才有）与**其余 7 种语言的插件页**从未在真机上看过，不能算已观察。0.1.3–0.1.31 改过 `view.js`、`i18n.js`、`entry.js`、`styles.js`、`index.js`（0.1.18 只改了文档与 README；0.1.19 改了 `styles.js` 的变量块；0.1.20 与 0.1.21 只改了测试与文档），这些观察不能自动转移。0.1.11 至 0.1.31 都已发布并装进 `desktop` profile，但**没有在重启后的宿主里逐项复核过**，所以算未取证。
 - **G14 真实窗口缩放时的引擎重绘（FR-018 的端到端面）**：0.1.10 把重排版交给引擎自己的 `ResizeObserver`（pele 内部），插件只负责"节点被换回来就重新命名"。夹具能证明"节点被换 → 立刻重新命名"，但**无法让引擎在无头浏览器里真的因窗口缩放而重绘**（无头环境第一帧之后不再派发帧与 ResizeObserver 通知）。真实窗口里"拖窄窗口 → 引擎重绘 → 名字回来"这条链只有机制级证据。
 - **G15 尚未覆盖的加固面（第十轮实现评审记录，第十七、十八轮复核后收窄）**：下面按五项编号（编号⑤是 `spec.md` SC-007 与两份契约引用的「G15 第五条」，别删）；其中③已查明有断言、撤回，仍算缺口的只有①、④、⑤，都不影响已发布行为——① `src/client/figure.js` 的 `outputLimit`（2 MiB 绘制输出上限）**只有静态锚点**（`both size limits reach the engine, each proven on its own` 按数值比较 `limit`/`maxEdges`/`outputLimit` 三项，并把 `FIGURE_LIMITS` 是否铺进 `pele.mount` 也钉住），**没有**任何夹具或真机观察让它真的触发一次（字符上限 `limit: 24 * 1024` 与边数上限 `maxEdges: 400` 自 0.1.19 起各有单独夹具，见 E-HARN 的 `a source over the size limit *` 与 `a picture with too many edges *` 六条，以及 E-PROBE 的 PS2、PS3）；② `index.js` 的 `apply` 幂等**已由断言守护**（0.1.29）：`the host half adds one section per context, not one per call` 在同一 `ctx` 上连调三次只允许一段、换一个 `ctx` 允许再一段；探针 PS23 把 `claimed.has/add` 换成 `void claimed` 后该条变红（`three applies on one context added 3 sections`，`check-bundle: 1 failed, 39 passed`，exit 1）；③ `src/client/entry.js` 里 `slots.inject(...)` 回调返回的 disposer 被丢掉这半句**不成立**：`the fence layer is gone once the host disposes` 正守着它（把 `entry.js` 的回调改成不返回 disposer，该断言就会变红），不再算缺口；④ `package.json` 的 `prepack` 只跑构建与 `check-bundle`，不跑夹具（依赖 CI 的五步兜住）；⑤ `package.json` 若加入 `engines.node` 等非 `dsh` 子键，`no dsh version gate can refuse a start` 不会变红（当前清单没有 `engines` 键，属「没有断言的清单形状面」）。
 - **G16 vendor 文本与换节点的无头局限（记录）**：`client.js` 里 vendor 许可注释含 `https://github.com/obsidianmd/pele`，属静态文本、无网络行为；「引擎换掉 `<svg>` 后重新命名」在无头环境里只能靠夹具重放（真实拖窄窗口的端到端见 G14）。绘制输出上限（`outputLimit` 2 MiB）仍按 G15 记；字符上限与边数上限在 0.1.19 起已有夹具，这里同样不重复。
@@ -988,7 +991,7 @@ Done in 4.5s using pnpm v11.28.5
 
 - **G23 三处「证据能证明到哪一步」的位置（第二十六轮实现评审 P2 记录，不是缺陷）**：①`client.js` banner 的 `sources sha256` 把 `name` 与 `version` 并进了哈希，所以只改版本号的发版（如 0.1.27、0.1.28）看起来也像"源码变了"——`verify/check-bundle.mjs` 用同一组输入重算，陈旧产物照样被挡住，受影响的是人拿 banner 做来源比对；②`check-bundle` 40 项全绿**不代表行为正确**：恒真守护只覆盖 `needed` 名单里的 26 个断言名（PS21 证明名单外的断言改成 `&& true` 不会红，见 G19），行为证据只来自 `run-harness` 的 229 项；③`children` getter 抛错有**双保险**——`view.js` 的 `safeRead` 守卫与 `FigureBoundary.render` 的 `catch` 任缺一条都不变红，但用户可见结果始终是"源码照常显示、消息不空"（探针 3 与探针 9 的对照），属覆盖精度而非缺陷。其中②在 0.1.27 起把四条源码检查的细节串补上「behaviour is asserted by the fixture」，避免被误读成行为担保；三条都不改产品行为。
 
-- **G24 0.1.31 真机核对暴露的三件事（2026-11-23，未修，先按事实记录）**：
+- **G24 0.1.31 真机核对暴露的三件事（2026-11-23，未修，先按事实记录；①已实测闭环、②由用户手点确认，③仍开）**：
   ①**卸载要重启才从界面消失（已实测，2026-11-23 21 时）**：`remove_bundle` 返回 `applied`、profile 依赖与 `node_modules` 都清理干净，但打开着的窗口继续显示图与两个按钮，`Ctrl+R`/`F5` 之后画面也没变化；**用户重启 DSH 后**，同一条消息立刻变回纯代码块（`role=image` 与两个按钮计数都为 0，原文完整，见 E-LIVE）。所以 `FR-009` 的「卸载后回退」成立，但时机是**重启之后**，不是「同一屏立刻」。`quickstart.md` 与九份 README 的措辞已按这个事实改过。
   ②**「查看源码」只能靠人点，自动化点不动**（这已是取舍，不是缺陷）：`aria-expanded` 让宿主把它映射成 `menubutton`，`agent-desktop` 的 `click`/`expand` 对它返回 `ACTION_FAILED ... DoDefaultAction` 与 `STALE_REF`（节点在读取活状态时失效），按 UIA bounds 换算的真实鼠标点击也没有让标签翻转。**2026-11-23 21 时由用户本人在窗口里点击确认：面板展开、按钮变成「隐藏源码」**，所以这条用户可见行为有真机证据，缺的只是「自动化能否复核它」。开合本身另有夹具（`[lang] the source toggle flips its word`、`the source toggle starts collapsed`、`the source toggle expands`）。
   ③**复制回执的文案来自宿主词条**：`translateFor` 先问宿主的 `t`，宿主的全局字典里有 `copied: 复制成功`，所以界面显示的是"复制成功"而不是我们 `i18n.js` 里的"已复制"。含义与语言都对，但说明**键名与宿主全局词条撞车时以宿主为准**；这一点从未在文档里写过。
