@@ -1644,3 +1644,47 @@ What the profile holds afterwards, read back from disk:
 | installed `package.json` version | `0.2.21` |
 
 This build changes what the checks can see and which files name the plugin, not what a reader sees in a session; the row, the picture and the toggle are the `0.2.16` observation, not re-observed for `0.2.20` or `0.2.21` here.
+## E-PUB · 0.2.22
+
+| field | value |
+|---|---|
+| commit | `8b59bb6` |
+| tag | `v0.2.22` |
+| workflow run | `45390404551` (success) |
+| shasum | `f94e6ba7da0ed8c66f4e2deedfac8324e533ed29` |
+| provenance logIndex | `4077300178` |
+| files | 33 |
+| registry | tarball answered 200 on poll 28 of the polling loop (10 s apart) |
+
+The two report lines of that run, copied from its log:
+
+```
+check-bundle: @jiezhengj/dsh-dyslexia@0.2.22 | client.js 788739 bytes | sources sha256:48d775593b0f3f08c92db8c05df9d882 | all 65 checks passed
+```
+
+```
+run-harness: @jiezhengj/dsh-dyslexia@0.2.22 | client.js 788739 bytes | sources sha256:48d775593b0f3f08c92db8c05df9d882 | all 306 checks passed (/usr/bin/google-chrome)
+```
+
+## E-INS · 0.2.22 install into the live profile
+
+```
+$ dsh plugin --profile desktop remove @jiezhengj/dsh-dyslexia
+- @jiezhengj/dsh-dyslexia 0.2.21
+
+$ dsh plugin --profile desktop add @jiezhengj/dsh-dyslexia@0.2.22
++ @jiezhengj/dsh-dyslexia 0.2.22
+```
+
+What the profile holds afterwards, read back from disk:
+
+| item | observed |
+|---|---|
+| `dependencies` entry | `"@jiezhengj/dsh-dyslexia": "0.2.22"` |
+| installed `client.js` | 788739 bytes, SHA-256 `ED90196BB40887A1A79D3451DF919CEB5A42C83E930BB397C66241460406E3BD` |
+| repository root `client.js` | same size and SHA-256 (`ED90196B…E3BD`) |
+| `locale/` | 8 files |
+| `docs/` | 9 files |
+| installed `package.json` version | `0.2.22` |
+
+This build changes what the checks can see and which files name the plugin, not what a reader sees in a session; the row, the picture and the toggle remain the `0.2.16` observation, not re-observed for `0.2.22`.

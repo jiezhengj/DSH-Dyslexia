@@ -229,7 +229,7 @@ has an assertion that executes the shape it protects.
 - [x] **T149** 译文不夹拉丁词：`zh`/`ja`/`ru` 的三句失败句不得出现 `[A-Za-z]{2,}`（探针 S7 红）。
 - [x] **T150** 九份 README 去掉"`0.1.32` 已安装"这种会被读成现状的句子。
 - [x] **T151** 文档与证据：`spec.md` / `plan.md` / `quickstart.md` / 本文件 / `checklists/implementation.md` 计数改 65 / 306 与七十一条；`evidence.md` 头注、三块、E-PROBE 加 S1b–S7、G24 新缺口。
-- [ ] **T152** 发版与装回：`v0.2.22` → Actions → registry → `install_bundle` → E-PUB/E-INS · 0.2.22。
+- [x] **T152** 发版与装回：commit `8b59bb6`、tag `v0.2.22`、run `45390404551`（CI 65 / 306）、shasum `f94e6ba7…ed29`、logIndex `4077300178`、33 文件；registry tarball 第 28 次轮询 200；`remove_bundle`（卸 0.2.21）后 `install_bundle @0.2.22` → 依赖 `"0.2.22"`、安装副本 788739 字节、SHA-256 `ED90196B…E3BD` 与仓库根一致、`locale/` 8、`docs/` 9。
 - [ ] **T153** 第十九轮两份独立评审（文档 + 实现）。
 
 ## Dependencies
