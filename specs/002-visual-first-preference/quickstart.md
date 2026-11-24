@@ -5,7 +5,7 @@
 ## 离线校验（不需要 DSH）
 
 ```bash
-node scripts/build-client.mjs      # 生成 client.js，打印字节数/字符数/引擎版本/sources 数与语法检查结果（版本号与指纹由 check-bundle 打印）
+node scripts/build-client.mjs      # 生成 client.js，打印一行 `包名@版本 -> client.js (字节, 字符, 引擎, sources 数, sources sha256, syntax ok)`（自 `0.2.18` 起自带版本与指纹）
 node verify/check-bundle.mjs       # 静态与源码级断言
 node verify/run-harness.mjs        # 无头浏览器行为断言
 node verify/run-harness.mjs --list # 逐条列出断言名（证据引用用）

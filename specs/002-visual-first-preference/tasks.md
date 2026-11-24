@@ -27,7 +27,7 @@
 - [x] **T011** `locale/*.json` 8 份的 `meta.title`/`meta.description` 换成 `research.md` D6 的译名。
 - [x] **T012** `docs/DETAIL*.md` 8 篇保持"唯一图片行"（静态检查禁止正文），新名字只进该图 alt 句；开关说明放 README，不放 DETAIL。
 - [x] **T013** 9 份 README：标题、首段、特性列表里的"只渲染"改成"渲染 + 可选视觉优先"，开关作为现有特性列表里的一条/一段（`README.<lang>.md:15`，`README.md:13-14`），不另立小节；8 份本地化 README 删掉"插件只声明会画图"的旧说法，各补一段说明插件会在图更省力时主动要图、设置 → 通用设置有开关。
-- [x] **T014** `package.json` 的 `description` 改成 `research.md` D6 的英文句子（逐字）：`Draws mermaid blocks right in the conversation and, when it helps, asks for a picture instead of a wall of text.`
+- [x] **T014** `package.json` 的 `description` 改成 `research.md` D6 的英文句子（逐字）：`Draws mermaid blocks right in the conversation and, when it helps, asks for a picture instead of a wall of text.`；`0.2.21`（T139）起前面加上标题，现为 `DSH — I'm dyslexic — Draws mermaid blocks right in the conversation and, when it helps, asks for a picture instead of a wall of text.`
 
 ## Phase 4：探针与证据
 
@@ -121,7 +121,7 @@
 - [x] **T078** `scripts/build-client.mjs` 的指纹纳入 `vendor/pele/pele.global.js`（`sourceFingerprintWith(engine)`），新增静态检查 `the fingerprint covers the engine bundle, not only the six client sources`；探针 P33 改 vendor 不重建 → 静态 `1 failed, 54 passed`。
 - [x] **T079** `a hostile host block still leaves the source text — <label>`（断言页面里有宿主源码），静态 `a host block that throws cannot empty the message` 改为切出 `SafeChildren.render()` 的结构断言（失败分支的第一个 return 必须是 `sourceFallback`，段内不得 `return null`）；探针 P34 让兜底返回 `null` → 浏览器 `1 failed, 293 passed`、静态同红。
 - [x] **T080** 新增静态检查 `the two host-side resources are handed to ctx.effect as disposables` 与 `the lockfile names the version the manifest ships`；探针 P35 删样式表的 `ctx.effect` 登记 → 静态 `2 failed, 53 passed`。
-- [x] **T081** `src/client/entry.js:167` 的 `\x07` 控制字符改回 `a`（注释现为 `// apply already returned when slots cannot inject or register, so this is`）。
+- [x] **T081** `src/client/entry.js:180`（`0.2.13` 树上是 `:167`）的 `\x07` 控制字符改回 `a`（注释现为 `// apply already returned when slots cannot inject or register, so this is`）。
 - [x] **T082** 九份 README 的安装句把「开关没在真机窗口观察过」限定为「**桌面**窗口」，并修 `README.zh.md` 安装句的语法。
 - [x] **T083** 文档同步到 `0.2.13`：`evidence.md` 头注与三块（55 / 294、`bec49f4e…`、`A22E6E3A…`）、P29 重写并新增 P33–P35、G12 的 `:672`→`:693`、G13 的 #44/`:897`→#47/`:963`、0.2.5 段的行号改 `:435`/`:1338-1341`/`:1345`/`:1341`；`spec.md`、`plan.md`、`quickstart.md`、`checklists/implementation.md`、`specs/001-mermaid-fence-render/spec.md` 的 `:401`→`:435`。
 - [ ] **T084** 第十轮两份独立评审（文档 / 实现）；两份 PASS 才把 feature 002 标记完成。
@@ -183,7 +183,7 @@ has an assertion that executes the shape it protects.
 - [x] **T116** `build-client.mjs` 的报告行自带版本与指纹（`@scope/name@version -> client.js (bytes, characters, engine, sources N, sources sha256:…, syntax ok)`），三块证据行从此都能自证来源。
 - [x] **T117** `evidence.md` 里属于 `0.2.13` 树的行号改为三处并列（harness `:1711`/`:1774`/`:1838`、check-bundle `:1528-1531`/`:1536`、check `#63` 为 `0.2.18` 值）。
 - [x] **T118** 探针树归属按轮次写清（P19/P20 `0.2.8`、P21–P23 `0.2.9`、P24–P27 `0.2.10`、P28–P30 `0.2.11`、P31/P32 `0.2.12`、P33–P35 `0.2.13`、P36a–P36h `0.2.14`、P37 `0.2.15`、M1–M6 `0.2.16`、M7–M8 `0.2.17`），M1 行的"第十三轮"改"第十二轮"。
-- [x] **T119** 探针算术统一：`quickstart.md`、`checklists/implementation.md`、`plan.md` 都改成同一口径（当时四十八条；`0.2.19` 起为五十二条、`0.2.20` 起为六十条、`0.2.21` 起为六十四条编号）。
+- [x] **T119** 探针算术统一：`quickstart.md`、`checklists/implementation.md`、`plan.md` 都改成同一口径（当时四十八条；`0.2.19` 起为五十三条、`0.2.20` 起为六十条、`0.2.21` 起为六十四条编号）。
 - [x] **T120** 其余文档更正：`plan.md:54` 缺口 `G11–G23`、`tasks.md` 的 Not done 补 G11/G23、T093 的 P37 红数改 `9 failed, 54 passed`、G9 的检查范围改 `check-bundle.mjs:450-477`、T010 的 harness 行号加"当时的 `0.2.3` 树"、`evidence.md` 的 E-BLD/E-CHK/E-HARN 三块由 `0.2.18` 单次运行整段重生成。
 - [x] **T121** 发版 `0.2.18` 并装回 `desktop`：commit `de7e0b5`、tag `v0.2.18`、run `45356279461`、shasum `a09212822af0612f0c315422a32be6a9eb3472cf`、logIndex `4073322883`；依赖 `"0.2.18"`、安装副本 788314 字节、`CF19A8E0…2187`、locale 8、docs 9、包内 0.2.18。
 - [x] **T122** 第十五轮两份独立评审：实现侧 **FAIL**（`review-impl-002ae`：守卫可被 `typeof CODE === 'string'` 绕过、网络黑名单可被 `window['fet' + 'ch']` 绕过、`require` 只匹配字面量、configForms 晚到只有浏览器套件看得见）；文档侧 **FAIL**（`review-docs-002ae`：18 条，全是版本/行号/算术/归属漂移）。两份 PASS 才把 feature 002 标记完成。

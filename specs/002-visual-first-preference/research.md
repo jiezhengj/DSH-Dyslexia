@@ -32,7 +32,7 @@
 
 ## D6 8 语种命名
 
-| 语言 | 标题 | 一句说明 |
+| 语言 | 标题 | 说明（`0.2.21` 起 `meta.description` 为「标题 — 本句」，由 `every interface language names the plugin the way it was promised` 断言） |
 | --- | --- | --- |
 | zh | DSH 我有阅读障碍 | 把会话里的 mermaid 代码块就地画成图，并在需要时鼓励 Agent 用图说话。 |
 | en | DSH — I'm dyslexic | Draws mermaid blocks right in the conversation and, when it helps, asks for a picture instead of a wall of text. |
