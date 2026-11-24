@@ -190,6 +190,54 @@ check('every interface language has its own plugin page', () => {
   return `${LANGUAGES.length} languages`
 })
 
+/* The headline promise of feature 002 is a name: 「我有阅读障碍」 said in the
+ * user's own language. It is quoted in four places per language — the plugin
+ * page title, the same sentence opening its description, the detail page's alt
+ * text, and the README the package ships — so all four are compared with one
+ * table here. Until this existed, replacing the Chinese title with 「DSH 图个
+ * 明白」 and the English README title with something else passed every suite. */
+const NAMING = {
+  zh: 'DSH 我有阅读障碍',
+  en: "DSH — I'm dyslexic",
+  ja: 'DSH 私はディスレクシアです',
+  es: 'DSH — Tengo dislexia',
+  fr: 'DSH — Je suis dyslexique',
+  de: 'DSH — Ich habe Legasthenie',
+  ru: 'DSH — У меня дислексия',
+  pt: 'DSH — Tenho dislexia',
+}
+
+check('every interface language names the plugin the way it was promised', () => {
+  const problems = []
+  for (const language of LANGUAGES) {
+    const expected = NAMING[language]
+    if (!expected) {
+      problems.push(`no promised name for ${language}`)
+      continue
+    }
+    const meta = readJson(`locale/${language}.json`).meta || {}
+    if (meta.title !== expected) problems.push(`locale/${language}.json title is ${JSON.stringify(meta.title)}`)
+    // The description has to open with the name, so the page reads as the user's
+    // own sentence rather than a blurb that happens to sit under a title.
+    if (!String(meta.description || '').startsWith(expected)) {
+      problems.push(`locale/${language}.json description does not open with the name`)
+    }
+    if (!String(meta.detail ? read(meta.detail) : '').includes(expected)) {
+      problems.push(`${meta.detail} does not carry the name`)
+    }
+    // README.md is the English landing page; every other language has its own file.
+    const readmes = language === 'en' ? ['README.md', 'README.en.md'] : [`README.${language}.md`]
+    for (const readme of readmes) {
+      const first = read(readme).split(/\r?\n/)[0].trim()
+      if (first !== `# ${expected}`) problems.push(`${readme} first line is ${JSON.stringify(first)}`)
+    }
+  }
+  const description = readJson('package.json').description || ''
+  if (!description.startsWith(NAMING.en)) problems.push('package.json description does not open with the name')
+  assert(problems.length === 0, problems.join('; '))
+  return `${LANGUAGES.length} languages, page titles, detail pages, README titles and the package description`
+})
+
 /* ------------------------------------------------------------ patch/locale */
 
 check('cordis.patch.yml inserts the plugin by package name', () => {
@@ -368,11 +416,21 @@ check('client.js never reaches the network', () => {
   ]
   // A URL can also be hidden as a pair of harmless-looking strings, so every
   // literal in those files is read: `'ht' + 'tps://…'` still contains `://`.
+  // A global reached through an alias (`const g = globalThis; g[k](…)`) is a
+  // network call the line-by-line bans above cannot see, so the plugin's own
+  // sources may not name these at all. `navigator` stays legal: the language
+  // and the clipboard are read through it, and the runtime spy in the harness
+  // records any call that leaves the machine.
+  const globalBans = [
+    [/\bglobalThis\b/, () => 'names globalThis'],
+    [/\bwindow\b/, () => 'names window'],
+    [/\bself\b/, () => 'names self'],
+  ]
   const textBans = [/https?:/, /:\/\//, /\bfetch\b/, /\brequire\b/, /XMLHttpRequest/, /WebSocket/, /sendBeacon/]
   for (const relative of sources) {
     const source = read(relative)
     const withoutComments = stripComments(source)
-    for (const [pattern, describe] of shapeBans) {
+    for (const [pattern, describe] of globalBans.concat(shapeBans)) {
       const hit = pattern.exec(withoutComments)
       assert(!hit, `${relative} ${describe(hit)} at ${hit ? withoutComments.slice(0, hit.index).split('\n').length : 0}`)
     }
@@ -1455,24 +1513,45 @@ check('both size limits reach the engine, each proven on its own', () => {
   return 'three limits passed to mount, two fixtures that cross one each'
 })
 
-check('a host that refuses undeclared services is not reported as a fault', () => {
-  // The host answers every undeclared read with `cannot get property "…" without
-  // inject`. That is the path this module plans for, so reporting it warned in
-  // every reader's console on every start — and nothing failed when the guard
-  // was removed. Both reads are guarded: `ctx.get` (a strict host refuses it the
-  // same way) and the property fallback.
+check('only the expected refusal stays quiet, and only for the service asked for', () => {
+  // The host answers an undeclared read with `cannot get property "…" without
+  // inject`, and that is the path this module plans for — reporting it warned in
+  // every console on every start. The filter is exercised rather than grepped:
+  // a sentence that merely borrows the same words about *another* service is a
+  // fault, and swallowing it would hide a real one.
   const entry = readCode('src/client/entry.js')
-  const guarded = (sentence, reportCall) => {
-    const at = entry.indexOf(sentence)
-    if (at === -1) return false
-    const lineEnd = entry.indexOf('\n', at)
-    const line = entry.slice(entry.lastIndexOf('\n', at), lineEnd === -1 ? undefined : lineEnd)
-    return /if \(!\/without inject\/\.test\(/.test(line) && line.indexOf(reportCall) !== -1
+  const refused = functionBody(entry, 'function refusedOptional(name, error) {')
+  const body = functionBody(entry, 'function optional(ctx, name) {')
+  assert(refused, 'entry.js has no refusedOptional() reader')
+  assert(body, 'entry.js has no optional() reader')
+  const reports = []
+  const optional = new Function('report', refused + '\n' + body + '\nreturn optional;')((label) => reports.push(label))
+  const refusal = (name) => new Error('cannot get property "' + name + '" without inject')
+  const strict = {
+    get(name) {
+      throw refusal(name)
+    },
+    get locale() {
+      throw refusal('locale')
+    },
   }
-  assert(entry.indexOf('/without inject/') !== -1, 'entry.js no longer recognises the refusal sentence')
-  assert(guarded("/without inject/.test(String(error && error.message))) report(name + ' via get'", "report(name + ' via get'"), 'the ctx.get refusal is reported as a fault')
-  assert(guarded("/without inject/.test(String(error && error.message))) report(name, error)", 'report(name, error)'), 'the property refusal is reported as a fault')
-  return 'both undeclared-service reads recognise the refusal sentence, and only other faults reach console.warn'
+  assert(optional(strict, 'locale') === undefined, 'a refusal left a value behind')
+  assert(reports.length === 0, 'the expected refusal was reported: ' + reports.join(', '))
+  const foreign = {
+    get() {
+      throw refusal('remote')
+    },
+  }
+  optional(foreign, 'locale')
+  assert(reports.length === 1 && reports[0] === 'locale via get', "another service's refusal was swallowed: " + reports.join(', '))
+  const broken = {
+    get() {
+      throw new Error('the service store is gone')
+    },
+  }
+  optional(broken, 'locale')
+  assert(reports.length === 2 && reports[1] === 'locale via get', 'a real fault was swallowed by the refusal filter')
+  return 'the expected refusal is silent; a borrowed sentence about another service and a real fault are reported'
 })
 
 check('a fence that failed comes back when its source changes', () => {
@@ -1740,12 +1819,21 @@ check('every class the row writes has a rule in the stylesheet', () => {
   const css = styles.replace(/\s+/g, ' ')
   const missing = [...names].filter((name) => !new RegExp('\\.' + name + '(?![\\w-])').test(css))
   assert(missing.length === 0, `no stylesheet rule for ${missing.join(', ')}`)
-  return `${names.size} classes, each with a rule`
+  // A state written by the row and styled nowhere is a promise the stylesheet
+  // makes and no code keeps (a refused write was announced but never coloured),
+  // so both halves are demanded — and named, because a loop over whatever
+  // happens to be written stays green when the write is deleted.
+  const states = [...settings.matchAll(/'(data-[a-z-]+)':/g)].map((hit) => hit[1])
+  assert(states.indexOf('data-failed') !== -1, 'the row never marks a refused write')
+  for (const state of states) {
+    assert(css.includes(`[${state}="true"]`), `settings.js writes ${state} and no rule styles it`)
+  }
+  return `${names.size} classes, each with a rule; ${states.length} data-state(s), each styled`
 })
 
 /* ---------------------------------------------------------------- report */
 
-const EXPECTED_CHECKS = 64
+const EXPECTED_CHECKS = 65
 if (notices.length + failures.length !== EXPECTED_CHECKS) {
   failures.push(
     `[FAIL] the suite has ${notices.length + failures.length} checks, expected ${EXPECTED_CHECKS}: a check was added or removed without updating this number`,

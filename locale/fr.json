@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "DSH — Je suis dyslexique",
-    "description": "Dessine les blocs mermaid dans la conversation et, quand c'est utile, demande un schéma plutôt qu'un mur de texte.",
+    "description": "DSH — Je suis dyslexique — Dessine les blocs mermaid dans la conversation et, quand c'est utile, demande un schéma plutôt qu'un mur de texte.",
     "detail": "docs/DETAIL.fr.md"
   }
 }

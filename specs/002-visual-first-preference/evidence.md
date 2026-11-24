@@ -1,8 +1,8 @@
 # Evidence — feature 002: the preference switch and the new name
 
-This file records what was actually observed while building feature 002. Each block is one run on one tree — E-PROBE is the exception, collecting one run per probe, the tree of each probe is named in the row itself (M1–M6 on `0.2.16`, M7–M8 on the `0.2.17` work tree, N1–N4 on `0.2.19`, Q1–Q7 on `0.2.20`, P19/P20 on `0.2.8`, P21–P23 on `0.2.9`, P24–P27 on `0.2.10`, P28–P30 on `0.2.11`, P31/P32 on `0.2.12`, P33–P35 on `0.2.13`, P36a–P36h on `0.2.14`, P37 on `0.2.15`, and the earlier F-group in the paragraph below; P24 and P30 were re-run on `0.2.11`, P29 on `0.2.13`); no block mixes trees silently. E-PUB/E-INS exist for every published version of this feature, `0.2.0` through `0.2.19` (the package also carries the earlier `0.1.x` line and one `0.0.0-stage` placeholder, which this file does not record); the current blocks are the `0.2.20` tree (64 static, 303 browser, one run copied line for line, build line included). The `0.2.1` blocks below (44 static, 251 browser) are kept as history; the `0.2.5` build line and the `0.2.5` check runs are summary lines in their own sections, not transcripts.
+This file records what was actually observed while building feature 002. Each block is one run on one tree — E-PROBE is the exception, collecting one run per probe, the tree of each probe is named in the row itself (M1–M6 on `0.2.16`, M7–M8 on the `0.2.17` work tree, N1–N4 on `0.2.19`, Q1–Q7 on `0.2.20`, R1–R4 on `0.2.21`, P19/P20 on `0.2.8`, P21–P23 on `0.2.9`, P24–P27 on `0.2.10`, P28–P30 on `0.2.11`, P31/P32 on `0.2.12`, P33–P35 on `0.2.13`, P36a–P36h on `0.2.14`, P37 on `0.2.15`, and the earlier F-group in the paragraph below; P24 and P30 were re-run on `0.2.11`, P29 on `0.2.13`); no block mixes trees silently. E-PUB/E-INS exist for every published version of this feature, `0.2.0` through `0.2.20` (the package also carries the earlier `0.1.x` line and one `0.0.0-stage` placeholder, which this file does not record); the current blocks are the `0.2.21` tree (65 static, 304 browser, one run copied line for line, build line included). The `0.2.1` blocks below (44 static, 251 browser) are kept as history; the `0.2.5` build line and the `0.2.5` check runs are summary lines in their own sections, not transcripts.
 
-**The current tree is `0.2.20`** (its first publish attempt, run `45368178961`, failed on a zoom assertion that depended on how fast the CI browser rebuilt the engine's controls; run `45368691600` published it, and E-PUB/E-INS are at the end of this file).
+**The current tree is `0.2.21`** — the seventeenth review round showed that the network guard could be walked around with one string-keyed global lookup, that nothing checked the eight promised names, that `optional()` swallowed any refusal that mentioned `without inject`, and that the refused-write state had neither a writer nor a rule. This block set is one run of the tree after those fixes; its E-PUB/E-INS are appended once the release is public, and the `0.2.20` records stay where they were.
 
 ## E-BLD · 0.2.1 build
 
@@ -344,7 +344,7 @@ The three browser assertions this round added are `a refused write keeps the val
 
 ## E-PROBE — the new checks can fail
 
-Each probe below breaks one protected behaviour in a working copy of the sources, rebuilds it, runs the suite that should see it, records the red line, and restores the copy. F1 and F9 were last run on the `0.2.3` tree (44 static, 260 browser); no probe was run on `0.2.4`, which `0.2.5` supersedes; F10–F13 ran on `0.2.5` (45 static, 274 browser), each in a fresh `%TEMP%` copy of the final tree, restored afterwards. So F1/F9's red lines and counts are `0.2.3` numbers, not the `0.2.5` tree's 45 / 274 (the `0.2.9` tree ran 49 static and 287 browser checks, the `0.2.10` tree 50 and 292, the `0.2.11` tree 51 and 292, the `0.2.12` tree 52 and 292, the `0.2.13` tree ran 55 static and 294, the `0.2.14` tree 62 and 299, the `0.2.15` tree ran 63 static and 299, the `0.2.17` tree 63 and 301, the `0.2.18` tree 63 and 301, the `0.2.19` tree 63 and 302, and this `0.2.20` tree runs 64 static and 303). `0.2.2` shipped 44 static and 252 browser checks, and F9's no-writer assertion did not exist there. F3–F8 are the earlier runs on the `0.2.1` tree (44 static, 251 browser) and were not re-run. The untouched `0.2.3` copy reported `all 44 checks passed` and `all 260 checks passed` before the breaks.
+Each probe below breaks one protected behaviour in a working copy of the sources, rebuilds it, runs the suite that should see it, records the red line, and restores the copy. F1 and F9 were last run on the `0.2.3` tree (44 static, 260 browser); no probe was run on `0.2.4`, which `0.2.5` supersedes; F10–F13 ran on `0.2.5` (45 static, 274 browser), each in a fresh `%TEMP%` copy of the final tree, restored afterwards. So F1/F9's red lines and counts are `0.2.3` numbers, not the `0.2.5` tree's 45 / 274 (the `0.2.9` tree ran 49 static and 287 browser checks, the `0.2.10` tree 50 and 292, the `0.2.11` tree 51 and 292, the `0.2.12` tree 52 and 292, the `0.2.13` tree ran 55 static and 294, the `0.2.14` tree 62 and 299, the `0.2.15` tree ran 63 static and 299, the `0.2.17` tree 63 and 301, the `0.2.18` tree 63 and 301, the `0.2.19` tree 63 and 302, the `0.2.20` tree 64 and 303, and this `0.2.21` tree runs 65 static and 304). `0.2.2` shipped 44 static and 252 browser checks, and F9's no-writer assertion did not exist there. F3–F8 are the earlier runs on the `0.2.1` tree (44 static, 251 browser) and were not re-run. The untouched `0.2.3` copy reported `all 44 checks passed` and `all 260 checks passed` before the breaks.
 
 | probe | change | result |
 |---|---|---|
@@ -419,84 +419,87 @@ After restoring and rebuilding, the `0.2.1` probe session passed again: `build-c
 
 Two fixture details are worth recording. Headless Chrome's virtual time does not advance the 120 ms CSS transition on the switch, so the paint assertion sets `style.transition = 'none'` on the switch before reading the computed colour (`verify/harness/index.html:1599` on the `0.2.5` tree, `:1634` on `0.2.7`). React 18 routes an event-handler throw to `window`'s `error` event rather than rethrowing it from `.click()`, so F13's fixture watches that event instead of expecting a throw at the call site (`verify/harness/index.html:1655-1667` on the `0.2.5` tree, `:1689-1702` on `0.2.7`).
 
-## E-BLD · 0.2.20 build
+## E-BLD · 0.2.21 build
 
 ```
-build-client: @jiezhengj/dsh-dyslexia@0.2.20 -> client.js (788314 bytes, 786797 characters, engine 1.13.0, sources 6, sources sha256:b6c1b8f2c46c49466ced702258d8ce19, syntax ok)
+build-client: @jiezhengj/dsh-dyslexia@0.2.21 -> client.js (788739 bytes, 787222 characters, engine 1.13.0, sources 6, sources sha256:77386c68342c34349408d3ce2a95c908, syntax ok)
 ```
 
-## E-CHK · 0.2.20 (64 static) — `node verify/check-bundle.mjs`, stdout and stderr, one run
+## E-CHK · 0.2.21 (65 static) — `node verify/check-bundle.mjs`, stdout and stderr, one run
+
+The plugin deliberately warns to stderr in these checks (each *the host half stays silent…* and loader case prints one warning); both streams are copied here, because the warnings are part of what a run looks like.
 
 ```
 dsh-dyslexia: loader Error: host changed the loader
-    at Object.load (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:413:60)
-    at evalmachine.<anonymous>:1617:29
-    at evalmachine.<anonymous>:1631:3
+    at Object.load (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:471:60)
+    at evalmachine.<anonymous>:1627:29
+    at evalmachine.<anonymous>:1641:3
     at Script.runInContext (node:vm:149:12)
     at Script.runInNewContext (node:vm:154:17)
     at runInNewContext (node:vm:310:38)
-    at loadChunk (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:402:3)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:413:3
+    at loadChunk (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:460:3)
+    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:471:3
     at check (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:23:20)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:412:1
+    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:470:1
 dsh-dyslexia: loader TypeError: Cannot read properties of undefined (reading 'load')
-    at evalmachine.<anonymous>:1617:29
-    at evalmachine.<anonymous>:1631:3
+    at evalmachine.<anonymous>:1627:29
+    at evalmachine.<anonymous>:1641:3
     at Script.runInContext (node:vm:149:12)
     at Script.runInNewContext (node:vm:154:17)
     at runInNewContext (node:vm:310:38)
-    at loadChunk (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:402:3)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:414:3
+    at loadChunk (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:460:3)
+    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:472:3
     at check (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:23:20)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:412:1
+    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:470:1
     at ModuleJob.run (node:internal/modules/esm/module_job:437:25)
 dsh-dyslexia: loader ReferenceError: window is not defined
-    at evalmachine.<anonymous>:1617:5
-    at evalmachine.<anonymous>:1631:3
+    at evalmachine.<anonymous>:1627:5
+    at evalmachine.<anonymous>:1641:3
     at Script.runInContext (node:vm:149:12)
     at Script.runInNewContext (node:vm:154:17)
     at runInNewContext (node:vm:310:38)
-    at loadChunk (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:402:3)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:415:3
+    at loadChunk (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:460:3)
+    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:473:3
     at check (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:23:20)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:412:1
+    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:470:1
     at ModuleJob.run (node:internal/modules/esm/module_job:437:25)
 dsh-dyslexia: prompt section skipped Error: signature changed
-    at Object.section (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:498:15)
+    at Object.section (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:556:15)
     at Module.apply (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/index.js:98:27)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:495:14
+    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:553:14
     at check (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:23:20)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:488:1
+    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:546:1
 dsh-dyslexia: module Error: react went feral
-    at Object.get (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1087:15)
+    at Object.get (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1145:15)
     at buildModule (evalmachine.<anonymous>:777:34)
-    at factory (evalmachine.<anonymous>:1621:18)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1094:18
+    at factory (evalmachine.<anonymous>:1631:18)
+    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1152:18
     at check (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:23:20)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1077:1
+    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1135:1
 dsh-dyslexia: settings unavailable Error: inject exploded
-    at Object.inject (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1196:15)
+    at Object.inject (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1254:15)
     at claimSettingsPage (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/index.js:130:9)
     at Module.apply (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/index.js:90:5)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1193:14
+    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1251:14
     at check (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:23:20)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1153:1
+    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1211:1
 dsh-dyslexia: prompt section skipped Error: the host refused the first attempt
-    at Object.section (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1250:35)
+    at Object.section (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1308:35)
     at Module.apply (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/index.js:98:27)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1255:12
+    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1313:12
     at check (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:23:20)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1220:1
-ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.2.20
+    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1278:1
+ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.2.21
 ok   package.json points at the repository npm trusts — git+https://github.com/jiezhengj/DSH-Dyslexia.git
 ok   package.json declares the bundle patch and the client half — platform web, no package inject
 ok   no dsh version gate can refuse a start — no engines.dsh, no dsh peers
 ok   published files leave the build sources out — 9 patterns
 ok   the required published files exist — 24 required files
 ok   every interface language has its own plugin page — 8 languages
+ok   every interface language names the plugin the way it was promised — 8 languages, page titles, detail pages, README titles and the package description
 ok   cordis.patch.yml inserts the plugin by package name — 3 lines
 ok   both locales carry metadata — en, zh
-ok   client.js is one loader chunk keyed by the package name — 788314 bytes
+ok   client.js is one loader chunk keyed by the package name — 788739 bytes
 ok   client.js requires react and nothing else — one require call, and it is react
 ok   client.js never reaches the network — no fetch, no XHR, no dynamic import, no remote URL, no string-keyed global lookup, no eval
 ok   client.js carries the vendored engine — Pele 1.13.0 inlined
@@ -525,9 +528,9 @@ ok   a refused settings write is not reported as saved — the resolved boolean 
 ok   a face that cannot answer still reads as on — missing field, missing getter, a throwing getter and a null snapshot all read as on
 ok   a host word is used only when it is a real translation — echoes, blanks, placeholders and non-strings are refused; a real sentence is used
 ok   every language carries the same complete sentences — 16 keys x 8 languages, no engine text in labels
-ok   client.js matches the sources it claims — b6c1b8f2c46c49466ced702258d8ce19, 788314 bytes rebuilt from the six sources
+ok   client.js matches the sources it claims — 77386c68342c34349408d3ce2a95c908, 788739 bytes rebuilt from the six sources
 ok   the fingerprint covers the engine bundle, not only the six client sources — 733369 characters of engine inside the digest
-ok   the lockfile names the version the manifest ships — package-lock.json and package.json both 0.2.20
+ok   the lockfile names the version the manifest ships — package-lock.json and package.json both 0.2.21
 ok   the two host-side resources are handed to ctx.effect as disposables — stylesheet and strings both registered as effects that return a disposer
 ok   the picture is the image, and the copy answer is announced — label is a noun, role="img" on the svg, copy result announced; behaviour is asserted by the fixture
 ok   host children react would refuse fall back to the source — objects, functions and mixed arrays fall back to the source text; behaviour is asserted by the fixture
@@ -542,7 +545,7 @@ ok   the host half adds one section per context, not one per call — three call
 ok   the host half stays silent when the host changed shape — five silent hosts (no warning), two refused sections (one warning each, naming the error)
 ok   the contract's colour variables are the ones that are wired — 10 engine variables, owned by engine and contract alike
 ok   both size limits reach the engine, each proven on its own — three limits passed to mount, two fixtures that cross one each
-ok   a host that refuses undeclared services is not reported as a fault — both undeclared-service reads recognise the refusal sentence, and only other faults reach console.warn
+ok   only the expected refusal stays quiet, and only for the service asked for — the expected refusal is silent; a borrowed sentence about another service and a real fault are reported
 ok   a fence that failed comes back when its source changes — a failed drawing is retried when the host hands over new source
 ok   a missing engine is told apart from a broken diagram — three causes, three sentences in 8 languages
 ok   an unsupported language falls back to english — a language the plugin does not speak gets english
@@ -550,12 +553,12 @@ ok   the settings page claim can be taken back — the opt-out runs inside ctx.e
 ok   a host without react gets a silent module, not nothing — a host whose react is missing receives a module that does nothing, not null
 ok   a new write clears the sentence the last one left — a second press starts silent, then says what happened
 ok   the fixtures assert what the fixes promise, and can fail — 43 assertions present, each with a condition that reads something
-ok   every class the row writes has a rule in the stylesheet — 7 classes, each with a rule
+ok   every class the row writes has a rule in the stylesheet — 7 classes, each with a rule; 1 data-state(s), each styled
 
-check-bundle: @jiezhengj/dsh-dyslexia@0.2.20 | client.js 788314 bytes | sources sha256:b6c1b8f2c46c49466ced702258d8ce19 | all 64 checks passed
+check-bundle: @jiezhengj/dsh-dyslexia@0.2.21 | client.js 788739 bytes | sources sha256:77386c68342c34349408d3ce2a95c908 | all 65 checks passed
 ```
 
-## E-HARN · 0.2.20 (303 browser) — `node verify/run-harness.mjs --list`
+## E-HARN · 0.2.21 (304 browser) — `node verify/run-harness.mjs --list`
 
 ```
 [ok] loading client.js registers one factory
@@ -865,7 +868,8 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.2.20 | client.js 788314 bytes | sources 
 [ok] a host whose services must be read through ctx.get still gets the row — 2 defs
 [ok] a host that refuses undeclared properties still gets the strings registered — [["dyslexia",8]]
 [ok] a host that refuses undeclared services is not warned about — []
-run-harness: @jiezhengj/dsh-dyslexia@0.2.20 | client.js 788314 bytes | sources sha256:b6c1b8f2c46c49466ced702258d8ce19 | all 303 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+[ok] nothing in this run reached the network — no call
+run-harness: @jiezhengj/dsh-dyslexia@0.2.21 | client.js 788739 bytes | sources sha256:77386c68342c34349408d3ce2a95c908 | all 304 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
 ## E-LIVE — the row and the new name on a running host (`0.2.6`, re-checked on `0.2.8`, `0.2.9` and `0.2.16`)
@@ -969,6 +973,11 @@ The release installed into the live profile is the code in this tree, but the ro
 
 What this does **not** cover is still open in E-GAPS: the desktop window (its settings live in a separate document this window offers no control for), the model's side of the switch (two prompts, one effect), and the 200% zoom layout.
 
+| R1 | `src/client/entry.js`: `apply` reaches `fetch` through `const g = globalThis; const k = 'fe' + 'tch'; g[k](url)` | `FAIL client.js never reaches the network — src/client/entry.js names globalThis at 108`, `check-bundle: 1 failed, 64 passed`, exit 1; `[bad] nothing in this run reached the network — fetch, fetch, fetch, …`, `run-harness: 1 failed, 303 passed`; on the `0.2.20` tree the same change left both suites green |
+| R2 | `locale/zh.json`: `meta.title` set to `DSH 图个明白`; `README.md` first line set to `# DSH — Mermaid, drawn for you` | `FAIL every interface language names the plugin the way it was promised — locale/zh.json title is "DSH 图个明白"; README.md first line is "# DSH — Mermaid, drawn for you"`, `check-bundle: 1 failed, 64 passed`, exit 1 |
+| R3 | `src/client/settings.js`: the status span stops writing `data-failed` | `FAIL every class the row writes has a rule in the stylesheet — the row never marks a refused write`, `check-bundle: 2 failed, 63 passed` (the second red line is the stale-chunk check, because the sources changed and `client.js` had not been rebuilt), exit 1 |
+| R4 | `src/client/entry.js`: `refusedOptional` returns `true` for every refusal | `FAIL only the expected refusal stays quiet, and only for the service asked for — another service's refusal was swallowed:`, `check-bundle: 1 failed, 64 passed`, exit 1 |
+
 ## E-GAPS — not proven here
 
 Twenty gaps are open here: G2–G8, G11–G23; G1 is discharged below in E-LIVE (web surface only), and G9 and G10 are discharged by `0.2.5`.
@@ -987,7 +996,7 @@ Twenty gaps are open here: G2–G8, G11–G23; G1 is discharged below in E-LIVE 
 | G10 | **Discharged in `0.2.5`**: four probes (F10–F13) ran on the `0.2.5` tree, each in a fresh `%TEMP%` copy, one per round-5 fix. The `0.2.4` tree itself was never probed — `0.2.5` carries its code plus the fixes, so it supersedes it. F1 and F9 have still not been re-run since `0.2.3`: F1's target (`index.js`) is unchanged since then, while F9's target line in `src/client/settings.js` still exists but that file changed twice after `0.2.3`; neither is a re-run. |
 | G11 | A write whose promise never settles is not covered: `src/client/settings.js:110-113` (`show()`) puts the requested value into the store before `injected.setValue` is awaited, so from the click until the host answers the row shows a value the host has not accepted; the fixtures only drive promises that resolve `true`, resolve `false`, reject, or throw out of `then`. A promise that never settles leaves the row on the requested value with no failure sentence, and no assertion covers that state. |
 | G12 | A face whose `getSnapshot` throws or is missing restores the row to the default `true`, not to the captured value: `readPreference(face)` (`src/client/settings.js:48-58`) returns `true` for a missing, unreadable, `getSnapshot`-less or raising face and never signals "unreadable"; `inject.readHostValue` is attached whenever a face exists (`src/client/settings.js:243-245`), and a row is mounted only when a face exists (`src/client/entry.js:176-177`), so `restore()` (`src/client/settings.js:127-138`) always re-reads the host for any mounted row, and the captured value only runs when `readHostValue` is absent — i.e. for no mounted row. On such a degraded face the row can show "on" without a saved write. The fallback itself is now covered: `a face that cannot answer still reads as on` (`verify/check-bundle.mjs:843`, check #36 on the `0.2.20` tree) executes `readPreference` against seven face shapes (no face, no `getSnapshot`, a snapshot without the field, `null`, a raise, `false`, `true`), and three fixtures mount the degraded shapes and read the switch (`a snapshot that carries no field still shows the switch on`, `a snapshot that is not an object still shows the switch on`, `a snapshot getter that throws still shows the switch on`). What is still unproven is the click path on such a face: no fixture clicks the switch while the face cannot answer. |
-| G13 | Documentation consistency across `README*.md`, `docs/DETAIL*.md` and `locale/<lang>.json` is not asserted. Nothing checks that `README.<lang>.md`'s first line equals `locale/<lang>.json`'s `meta.title`, nor that the DETAIL image alt sentence contains that title, so FR-012's 「说明页与随包 README MUST 使用同一说法」 is a MUST with no assertion: the locale-and-meta check only requires the meta fields, one image line and eight distinct titles, and check #48 (`verify/check-bundle.mjs:1113` on the `0.2.20` tree) only forbids instruction-file mentions. Verified by hand only (zh/en/de); read for this record: `README.en.md:1` is `# DSH — I'm dyslexic` (equal to `locale/en.json` `meta.title`), `README.de.md:1` is `# DSH — Ich habe Legasthenie` (equal to `locale/de.json` `meta.title`), and `docs/DETAIL.md:1`'s alt ends `… shown by the plugin DSH — I'm dyslexic`. This is a documentation-consistency gap, not a runtime defect: the shipped plugin never reads these files at runtime. |
+| G13 | The eight promised names are now asserted at the top of each file — `every interface language names the plugin the way it was promised` compares `locale/<lang>.json` `meta.title`, the first sentence of its `meta.description`, the `docs/DETAIL*.md` alt sentence, `README.<lang>.md`'s first line (plus `README.md` for English) and `package.json`'s `description` — but the body prose of the READMEs and detail pages is still only spot-read: nothing checks that the paragraphs below the title still describe this plugin correctly, or that a translation reads well. This is a documentation-consistency gap, not a runtime defect: the shipped plugin never reads these files at runtime. |
 | G14 | SC-005's timing half ("切换操作在 1 秒内反映到界面；写入失败时 1 秒内出现可见提示") is not asserted: no fixture measures elapsed time between the click and the repaint, so the sentence stands on the implementation's synchronous state update, not on a measurement. |
 | G15 | `wireSettingsRow` keeps a `if (!slots) return false` that neither suite can observe: `apply` already returns before it calls that path when `slots` cannot inject or register, so removing it changes nothing in either suite. The deeper `typeof slots.register` guard was removed as dead code for the same reason; this row records that the remaining check is unobservable rather than proven. |
 | G16 | Two client-side invariants are caught only by the browser suite, while the static suite stays green when they break: the direction of the store snapshot (`a pending write shows the requested value before the host answers`) and the host-pushed value (`a value the host pushes reaches the switch without a write`). The `useVisualFirst` branch is not one of them: F14 reds the static check `the settings row reads the hook the host builds, not an object it never sends` too. The pair of suites is the evidence; neither half alone is. |

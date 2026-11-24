@@ -31,7 +31,7 @@
 
 ## Phase 4：探针与证据
 
-- [x] **T015** 探针（当时十二条；quickstart 现在列六十条编号、逐条记录：F14/F15、P19–P37、M7–M8、N1–N4、Q1–Q7 是后续追加的）：F1 两档提示词、F3 默认 true、F4 dispose 路径、F5 写失败回退、F6 只写一次、F7 `aria-checked` 绑定、F8 命名空间、F9 无 setter 宿主——逐条破坏 → 重建 → 跑两套 → 录下红行 → 还原，把输出行原文记进 `evidence.md`。F1 与 F9 最后一次在 `0.2.3` 工作树上重跑（F9 用 `a host whose face has no setter hands the row no writer at all` 断言）；`0.2.5` 上重跑的是新增的 F10–F13（每条在 `%TEMP%` 的新副本里破坏、跑完还原），`0.2.4` 树本身从未被探针跑过，见 `evidence.md` G10（已由 `0.2.5` 关闭）。F3–F8 是 `0.2.1` 树上的记录。F2（段文本改回冻结字符串）在这个函数断言存在前两套都抓不到，现在由第 22 条静态检查捕获，单列为历史说明。
+- [x] **T015** 探针（当时十二条；quickstart 现在列六十四条编号、逐条记录：F14/F15、P19–P37、M7–M8、N1–N4、Q1–Q7、R1–R4 是后续追加的）：F1 两档提示词、F3 默认 true、F4 dispose 路径、F5 写失败回退、F6 只写一次、F7 `aria-checked` 绑定、F8 命名空间、F9 无 setter 宿主——逐条破坏 → 重建 → 跑两套 → 录下红行 → 还原，把输出行原文记进 `evidence.md`。F1 与 F9 最后一次在 `0.2.3` 工作树上重跑（F9 用 `a host whose face has no setter hands the row no writer at all` 断言）；`0.2.5` 上重跑的是新增的 F10–F13（每条在 `%TEMP%` 的新副本里破坏、跑完还原），`0.2.4` 树本身从未被探针跑过，见 `evidence.md` G10（已由 `0.2.5` 关闭）。F3–F8 是 `0.2.1` 树上的记录。F2（段文本改回冻结字符串）在这个函数断言存在前两套都抓不到，现在由第 22 条静态检查捕获，单列为历史说明。
 - [ ] **T016** `specs/002-visual-first-preference/evidence.md`：E-BLD · 0.2.1、E-CHK 与 E-HARN 是 `0.2.1` 树那次运行的输出原样照抄（`0.2.5` 的构建行单列为 `E-BLD · 0.2.5`；`0.2.5` 的检查只有 E-CHK/E-HARN 的汇总行，无逐条输出）；E-CHK 是该次运行的完整 stdout（44 条 `ok` 行加末行汇总），故意触发的 `warn` 与堆栈行走 stderr（52 行），不混入 stdout；F10–F13 的探针行已按 `0.2.5` 记录；未取证项单列。E1–E14 端到端逐条记录未做，见 `evidence.md` G6。
 - [ ] **T017** `spec.md`/`plan.md`/`data-model.md`/`contracts/*` 与本清单的计数、断言名、版本号与实际一致（交叉核对每个反引号名都存在）；本轮已对齐 `0.2.5` 的版本号、45/274 计数与所引夹具行号；未逐条核对全部反引号名，故未勾。
 
@@ -183,7 +183,7 @@ has an assertion that executes the shape it protects.
 - [x] **T116** `build-client.mjs` 的报告行自带版本与指纹（`@scope/name@version -> client.js (bytes, characters, engine, sources N, sources sha256:…, syntax ok)`），三块证据行从此都能自证来源。
 - [x] **T117** `evidence.md` 里属于 `0.2.13` 树的行号改为三处并列（harness `:1711`/`:1774`/`:1838`、check-bundle `:1528-1531`/`:1536`、check `#63` 为 `0.2.18` 值）。
 - [x] **T118** 探针树归属按轮次写清（P19/P20 `0.2.8`、P21–P23 `0.2.9`、P24–P27 `0.2.10`、P28–P30 `0.2.11`、P31/P32 `0.2.12`、P33–P35 `0.2.13`、P36a–P36h `0.2.14`、P37 `0.2.15`、M1–M6 `0.2.16`、M7–M8 `0.2.17`），M1 行的"第十三轮"改"第十二轮"。
-- [x] **T119** 探针算术统一：`quickstart.md`、`checklists/implementation.md`、`plan.md` 都改成同一口径（当时四十八条；`0.2.19` 起为五十二条、`0.2.20` 起为六十条编号）。
+- [x] **T119** 探针算术统一：`quickstart.md`、`checklists/implementation.md`、`plan.md` 都改成同一口径（当时四十八条；`0.2.19` 起为五十二条、`0.2.20` 起为六十条、`0.2.21` 起为六十四条编号）。
 - [x] **T120** 其余文档更正：`plan.md:54` 缺口 `G11–G23`、`tasks.md` 的 Not done 补 G11/G23、T093 的 P37 红数改 `9 failed, 54 passed`、G9 的检查范围改 `check-bundle.mjs:450-477`、T010 的 harness 行号加"当时的 `0.2.3` 树"、`evidence.md` 的 E-BLD/E-CHK/E-HARN 三块由 `0.2.18` 单次运行整段重生成。
 - [x] **T121** 发版 `0.2.18` 并装回 `desktop`：commit `de7e0b5`、tag `v0.2.18`、run `45356279461`、shasum `a09212822af0612f0c315422a32be6a9eb3472cf`、logIndex `4073322883`；依赖 `"0.2.18"`、安装副本 788314 字节、`CF19A8E0…2187`、locale 8、docs 9、包内 0.2.18。
 - [x] **T122** 第十五轮两份独立评审：实现侧 **FAIL**（`review-impl-002ae`：守卫可被 `typeof CODE === 'string'` 绕过、网络黑名单可被 `window['fet' + 'ch']` 绕过、`require` 只匹配字面量、configForms 晚到只有浏览器套件看得见）；文档侧 **FAIL**（`review-docs-002ae`：18 条，全是版本/行号/算术/归属漂移）。两份 PASS 才把 feature 002 标记完成。
@@ -209,6 +209,16 @@ has an assertion that executes the shape it protects.
 
 - [ ] **T130** 第十六轮两份独立评审；两份 PASS 才把 feature 002 标记完成。
 
+## Phase 20: the seventeenth round
+
+- [x] **T137** 运行期网络间谍：`verify/harness/index.html` 在加载 `client.js` 之前替换 `fetch`/`XMLHttpRequest`/`WebSocket`/`EventSource`/`Worker`/`Image`/`navigator.sendBeacon` 并把每次调用记进 `window.__netCalls`；汇总前断言 `nothing in this run reached the network`（`EXPECTED_CHECKS` 303 → 304）。探针 R1 让插件经 `const g=globalThis; const k='fe'+'tch'` 真的发出请求：静态 `FAIL client.js never reaches the network — src/client/entry.js names globalThis at 108` + `check-bundle: 1 failed, 64 passed`，浏览器 `[bad] nothing in this run reached the network — fetch, fetch, …` + `run-harness: 1 failed, 303 passed`。
+- [x] **T138** 源码级全局禁令：静态检查在插件自有源码（`index.js`、`src/client/*.js`）的剥注释代码上禁止 `globalThis`、`window`、`self`（`navigator` 仍允许，运行时间谍负责真正的调用）。
+- [x] **T139** 命名断言：`NAMING` 表 + `every interface language names the plugin the way it was promised`（`EXPECTED_CHECKS` 64 → 65）；八个 `locale/<lang>.json` 的 `description` 与 `package.json` 的 `description` 改成"标题 — 原句"。探针 R2（zh 标题改「DSH 图个明白」、`README.md` 首行改英文）：`FAIL … locale/zh.json title is "DSH 图个明白"; README.md first line is "# DSH — Mermaid, drawn for you"`、`check-bundle: 1 failed, 64 passed`。
+- [x] **T140** `data-failed`：`settings.js` 的状态 span 现在写 `'data-failed': state === 'failed' ? 'true' : 'false'`；类名检查扩展为"每个写出的 `data-*` 都要有样式规则"并显式要求 `data-failed` 存在。探针 R3：`FAIL every class the row writes has a rule in the stylesheet — the row never marks a refused write`、`2 failed, 63 passed`（另一条是陈旧产物）。
+- [x] **T141** `optional()` 的吞异常收窄：新增 `refusedOptional(name, error)`（消息须含 `/without inject/` 且含该服务名），旧 grep 检查换成执行式 `only the expected refusal stays quiet, and only for the service asked for`。探针 R4（`return true`）：`FAIL … another service's refusal was swallowed:`、`1 failed, 64 passed`。
+- [x] **T142** 文档与证据：`spec.md` Status 按 `0.2.21` 重写（65 / 304、788739 字节、`77386c68…`、二十二个版本、六十四条探针编号）、FR-012 指向新检查；`plan.md` / `quickstart.md` / `checklists/implementation.md` / 本文件计数与枚举同步；`evidence.md` 头注、E-BLD/E-CHK/E-HARN 三块（`0.2.21` 单次运行）、E-PROBE 前言与 R1–R4 四行、G13 改写。
+- [ ] **T143** 上一版之后的复评：发版 `0.2.21`、装回 `desktop`，再请两份独立评审（两份都 PASS 才把 feature 002 标记完成）。
+
 ## Dependencies
 
 - Phase 2 依赖 T002/T003（段文本两档）先用静态断言钉住契约，再写客户端。
@@ -229,7 +239,7 @@ has an assertion that executes the shape it protects.
 | Host half: `Config` with `visualFirst` (default on, `.volatile()`, asserted since `0.2.12`), two-tier briefing, `claimSettingsPage` (asserted since `0.2.11`) | done, 64 static checks |
 | Client half: settings row on `settings.general.item`, `configForms` read/write, revert on refusal | done, 64 static and 303 browser checks on the `0.2.20` tree (`0.2.13` shipped 55 / 294, `0.2.12` shipped 52 / 292 (`0.2.7` shipped the same code with two shape-only static checks, `0.2.6` shipped 280) (`0.2.5` shipped 274, `0.2.4` 271, `0.2.3` 260, `0.2.2` 252); the row reads the hook prop the host builds (`useVisualFirst`) and keeps the store path for hosts that send `hooks`; no disabled state, no timer; a refused write restores the host's current value |
 | Eight-language rename (locale, DETAIL alt line, 8 READMEs, index, package description) | done; DETAIL keeps exactly one image line (its alt sentence carries the new name) |
-| Evidence | `evidence.md` (this feature): `0.2.20` build and 64 / 303, sixty probe ids in recorded runs (F1–F15, P19–P37, M1–M8, N1–N4, Q1–Q7), E-LIVE records the row
+| Evidence | `evidence.md` (this feature): `0.2.21` build and 65 / 304, sixty-four probe ids in recorded runs (F1–F15, P19–P37, M1–M8, N1–N4, Q1–Q7, R1–R4), E-LIVE records the row
 | Not done | SC-005's one-second timing (G14), the desktop window's settings entry (the row was observed through `dsh web`; the desktop build opens settings as a separate document that this window offers no control for — G1 records the limit), the host write path to `settings.update` seen directly (G2 records what was observed instead), 200%/360px layout assertion for the row (G3), pixel comparison (G5), E1–E14 end-to-end rows (G6), SC-001 five sample requests (G7), schemastery import failure path (G8), live-host injection of malformed contexts (G4), degraded-face click path (G12), README/DETAIL wording consistency (G13), the unobservable `slots` guard (G15), invariants only the browser suite sees (G16), the 43 checks one missing attribute hides (G17), the silenced strict-inject warning (G18), a `Config` getter that throws (G19), what volatile persistence means (G20), an in-place upgrade (G21: every install removes the old version first, so FR-013's upgrade without migration is never observed), four behaviours guarded only by the source shape (G22), a write whose promise never settles (G11), and in-place versus remount on a language change (G23) |
 
 **2026-11-24：** T021 的两项评审曾均 PASS（实现 `review-impl-002f`、文档 `review-docs-002m`），但那是在没有真机观察的前提下——按用户建议用 `dsh web` 起独立 profile 复现后，`0.2.5` 的设置行在真实设置页里渲染为空（T024），`0.2.6` 修好三处并补了 2 条静态检查、6 条夹具与 2 条探针（T025–T027），真机观察写进 `evidence.md` 的 E-LIVE（T028），G1 关闭（限 Web 界面）。发版与再评审见 T029/T030。

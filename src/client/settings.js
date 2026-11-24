@@ -217,7 +217,7 @@ function RowBody(props) {
     children.push(
       React.createElement(
         'span',
-        { className: 'dsh-dyslexia-row-state', role: 'status', 'aria-live': 'polite', key: 'state' },
+        { className: 'dsh-dyslexia-row-state', role: 'status', 'aria-live': 'polite', 'data-failed': state === 'failed' ? 'true' : 'false', key: 'state' },
         say(state === 'saved' ? 'settingSaved' : 'settingFailed'),
       ),
     )

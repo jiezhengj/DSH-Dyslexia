@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "DSH 我有阅读障碍",
-    "description": "把会话里的 mermaid 代码块就地画成图，并在需要时鼓励 Agent 用图说话。",
+    "description": "DSH 我有阅读障碍 — 把会话里的 mermaid 代码块就地画成图，并在需要时鼓励 Agent 用图说话。",
     "detail": "docs/DETAIL.zh.md"
   }
 }

@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "DSH 私はディスレクシアです",
-    "description": "会話の mermaid コードブロックをその場で図にし、必要なら図で語るよう働きかけます。",
+    "description": "DSH 私はディスレクシアです — 会話の mermaid コードブロックをその場で図にし、必要なら図で語るよう働きかけます。",
     "detail": "docs/DETAIL.ja.md"
   }
 }

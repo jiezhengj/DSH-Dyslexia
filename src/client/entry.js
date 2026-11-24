@@ -51,6 +51,16 @@ function report(scope, error) {
  * requirement. The direct property is the fallback for a host that has no
  * `ctx.get`, where reading it is what the old code did.
  */
+/**
+ * True only for the one refusal this module expects: the host saying it will not
+ * hand out *this* service without an inject declaration. A message that merely
+ * contains the same words about another service stays a reportable fault.
+ */
+function refusedOptional(name, error) {
+  const message = String(error && error.message)
+  return /without inject/.test(message) && message.indexOf('"' + name + '"') !== -1
+}
+
 function optional(ctx, name) {
   if (typeof ctx.get === 'function') {
     try {
@@ -60,7 +70,7 @@ function optional(ctx, name) {
       // Same sentence, same meaning: a strict host answers `ctx.get` for an
       // optional service the way it answers the property read, so both paths
       // filter it out and neither turns a designed absence into a warning.
-      if (!/without inject/.test(String(error && error.message))) report(name + ' via get', error)
+      if (!refusedOptional(name, error)) report(name + ' via get', error)
     }
   }
   try {
@@ -70,7 +80,7 @@ function optional(ctx, name) {
     // It is the expected path here, not a fault: the caller drops only the
     // optional surface that needed the service. Reporting it put two warnings in
     // every reader's console (seen 2026-11-24 in a web session).
-    if (!/without inject/.test(String(error && error.message))) report(name, error)
+    if (!refusedOptional(name, error)) report(name, error)
     return undefined
   }
 }
