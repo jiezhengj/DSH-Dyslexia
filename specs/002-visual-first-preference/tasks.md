@@ -31,7 +31,7 @@
 
 ## Phase 4：探针与证据
 
-- [x] **T015** 探针（当时十二条；quickstart 现在列三十三个编号、四十次记录：F14/F15、P19–P37 是后续追加的）：F1 两档提示词、F3 默认 true、F4 dispose 路径、F5 写失败回退、F6 只写一次、F7 `aria-checked` 绑定、F8 命名空间、F9 无 setter 宿主——逐条破坏 → 重建 → 跑两套 → 录下红行 → 还原，把输出行原文记进 `evidence.md`。F1 与 F9 最后一次在 `0.2.3` 工作树上重跑（F9 用 `a host whose face has no setter hands the row no writer at all` 断言）；`0.2.5` 上重跑的是新增的 F10–F13（每条在 `%TEMP%` 的新副本里破坏、跑完还原），`0.2.4` 树本身从未被探针跑过，见 `evidence.md` G10（已由 `0.2.5` 关闭）。F3–F8 是 `0.2.1` 树上的记录。F2（段文本改回冻结字符串）在这个函数断言存在前两套都抓不到，现在由第 22 条静态检查捕获，单列为历史说明。
+- [x] **T015** 探针（当时十二条；quickstart 现在列四十三个编号、四十余次记录：F14/F15、P19–P37、M7–M8 是后续追加的）：F1 两档提示词、F3 默认 true、F4 dispose 路径、F5 写失败回退、F6 只写一次、F7 `aria-checked` 绑定、F8 命名空间、F9 无 setter 宿主——逐条破坏 → 重建 → 跑两套 → 录下红行 → 还原，把输出行原文记进 `evidence.md`。F1 与 F9 最后一次在 `0.2.3` 工作树上重跑（F9 用 `a host whose face has no setter hands the row no writer at all` 断言）；`0.2.5` 上重跑的是新增的 F10–F13（每条在 `%TEMP%` 的新副本里破坏、跑完还原），`0.2.4` 树本身从未被探针跑过，见 `evidence.md` G10（已由 `0.2.5` 关闭）。F3–F8 是 `0.2.1` 树上的记录。F2（段文本改回冻结字符串）在这个函数断言存在前两套都抓不到，现在由第 22 条静态检查捕获，单列为历史说明。
 - [ ] **T016** `specs/002-visual-first-preference/evidence.md`：E-BLD · 0.2.1、E-CHK 与 E-HARN 是 `0.2.1` 树那次运行的输出原样照抄（`0.2.5` 的构建行单列为 `E-BLD · 0.2.5`；`0.2.5` 的检查只有 E-CHK/E-HARN 的汇总行，无逐条输出）；E-CHK 是该次运行的完整 stdout（44 条 `ok` 行加末行汇总），故意触发的 `warn` 与堆栈行走 stderr（52 行），不混入 stdout；F10–F13 的探针行已按 `0.2.5` 记录；未取证项单列。E1–E14 端到端逐条记录未做，见 `evidence.md` G6。
 - [ ] **T017** `spec.md`/`plan.md`/`data-model.md`/`contracts/*` 与本清单的计数、断言名、版本号与实际一致（交叉核对每个反引号名都存在）；本轮已对齐 `0.2.5` 的版本号、45/274 计数与所引夹具行号；未逐条核对全部反引号名，故未勾。
 
@@ -148,7 +148,7 @@ has an assertion that executes the shape it protects.
 - [x] **T092** `src/client/entry.js` 的 `optional()` 让 `ctx.get` 抛错路径也按 `/without inject/` 过滤（两条路径对称；见 E-PROBE 与 G18）。
 - [x] **T093** `index.js` 把 `claimed.has/add` 移到 `systemPrompt.section` 守卫之后，宿主后补服务时仍能给简报；新增静态检查 `a context is claimed only once a section is registered`（62 → 63），探针 P37 让它变红（`1 failed, 62 passed`）。
 - [x] **T094** `evidence.md`：头注与当前树改为 `0.2.15`（63 / 299、788059 字节、`sources cac1e7ab…`、file `6307775D…`）、把 `0.2.14` 的三个块换成 `0.2.15` 的 E-BLD/E-CHK/E-HARN、P36e/P36g 的 "Green before 0.2.14" 纠正为"静态未覆盖/已被旧检查覆盖"、G18 重写、新增 G22（四条只被源码形状守护的行为）、新增 P37 行、缺口计数改十九项（G2–G8、G11–G22）。
-- [x] **T095** `spec.md`（十六版、`0.2.0`–`0.2.15`、63/299、`cac1e7ab…`、G11–G22、FR-002 指 G21、SC-001 指 G7、SC-006 指 E14/G6）、`plan.md`（工作树 0.2.15、缺口 G11–G22）、`quickstart.md`（63/299、三十三个探针编号/四十次记录）、`tasks.md`（T015、T085 的"七条"）同步。
+- [x] **T095**（`0.2.15`→`0.2.16` 时）`spec.md`（十六版、`0.2.0`–`0.2.15`、63/299、`cac1e7ab…`、G11–G22、FR-002 指 G21、SC-001 指 G7、SC-006 指 E14/G6）、`plan.md`（工作树 0.2.15、缺口 G11–G22）、`quickstart.md`（63/299、当时三十三个探针编号/四十次记录）、`tasks.md`（T015、T085 的"七条"）同步。
 - [x] **T096** 九份 README 与 `checklists/implementation.md` 把"真机检查来自 `0.1.31` 与 `0.1.32`"改成"`0.1.31` 真机验证过；`0.1.32` 已安装，其复制回执的实机复核仍待（001 的 T331）"，并把 `0.2.9` 的复核限定为"控制台是否安静"。
 - [x] **T097** 发版 `0.2.15`：commit `736f044`、tag `v0.2.15`、run [`45340201093`](https://github.com/jiezhengj/DSH-Dyslexia/actions/runs/45340201093)、shasum `93d96ef30e167130684c18cc39f8e9b95c9436d5`、logIndex `4071160901`、33 文件。
 - [x] **T098** 装回 `desktop`：卸 0.2.14、装 0.2.15，依赖 `"0.2.15"`，安装副本 788059 字节 / `6307775D…` 与仓库逐字节相同，`locale/` 8、`docs/` 9。
@@ -162,9 +162,20 @@ has an assertion that executes the shape it protects.
 - [x] **T103** 裸 chunk 的 `includes` 改读 `stripComments(chunk)`（引擎守卫、槽位守卫两处），探针 M6（把 `pele.mount` 判断删掉、只留同名注释）现在红：`FAIL an engine that fails to load leaves the picture to the host — the layer does not check the engine before drawing`。
 - [x] **T104** 证据与 README 的诚实度：P37 行改成实测（把 `claimed.add(ctx)` 整行移到守卫之前 → `9 failed, 54 passed`，首行 `FAIL the host half can be loaded and apply once — host half added 0 sections on load`，浏览器套件仍全绿）；E-LIVE 标题标「未在 `0.2.15` 重跑」并补一句说明；九份 README 的「一次 Web 观察」改成三次（`0.2.6`/`0.2.8`/`0.2.9`）；G3 的窄栏措辞改成「夹具确实在 360px 舞台里渲染，但没有断言它不溢出，也没有 200% 字号」。
 - [x] **T105** 发 `0.2.16`（63 静态 / 299 浏览器、`sources sha256:7e984e47…`、788059 字节）、发布会话 `45345541218`（shasum `48e20e14…`、logIndex `4071895779`、33 文件）、注册表 tarball 第 29 次轮询 200、卸 0.2.15 装 0.2.16（依赖 `"0.2.16"`、安装副本 788059 字节、SHA-256 `2AB27E73…8A1F` 与仓库根逐字节相同、`locale/` 8、`docs/` 9）、E-PUB/E-INS 已补。
-- [ ] **T106** 第十三轮两份独立评审；两份 PASS 才把 feature 002 标记完成。
+- [x] **T106** 第十三轮实现评审（`review-impl-002ac`）：**FAIL**（2 P0 + 1 P1 + 1 P2）——偏好段从未与 002 契约文本逐字比对、无条件措辞清单过窄、FR-017 无断言、`spec.md`/`evidence.md` 头注仍写 0.2.15 指纹、`slots.register` 无兜底；修进 `0.2.17`（Phase 16）。文档评审（`review-docs-002ac`）仍在跑。
 
 - [x] **T107** 用一次性 profile（`webcheck4`，用完删除）在运行中的 Web 界面复核已发布的 `0.2.16`：设置页有标签、说明、`switch [checked=true]`，点开后写 `cordis.patch.yml` 的 `visualFirst: false` 并显示「已保存」，控制台没有任何 `dsh-dyslexia:` 行（当场写一条 `console.warn('probe-marker-456')` 证明捕获是活的）。观察写进 `evidence.md` 的 E-LIVE 新小节；九份 README 与 `checklists/implementation.md` 的「三次观察」随之改为四次。
+
+## Phase 16：第十三轮的发现与 `0.2.17`
+
+- [x] **T108** 偏好段必须与 002 的契约文本逐字一致：`verify/check-bundle.mjs` 新增 `recordedPreferenceText()`，读 `specs/002-visual-first-preference/contracts/host-prompt.md` 的第二个 `text` 围栏并 `trim()`，断言 `extra === recordedPreference`；探针 M7（改一个词）红行 `FAIL the switch adds the preference on top of the capability, and nothing else — the preference is not feature 002's text any more: …`、`check-bundle: 1 failed, 62 passed`。
+- [x] **T109** 无条件措辞清单从 5 条扩到 13 条（`always`、`every answer/reply/response/time`、`each answer/reply/time`、`at all times`、`without exception`、`no matter what`、`unconditionally`、`must `）；探针 M8（追加 `Always use a picture, even for a single word.`）红行 `… the preference is unconditional: always`、`1 failed, 62 passed`。
+- [x] **T110** FR-017 加夹具（两档语言各钉一次）：`the row label / hint follows the interface language without remounting`（`verify/harness/index.html`，`EXPECTED_CHECKS` 299 → 301）。
+- [x] **T111** `src/client/entry.js` 的 `slots.inject(SETTINGS_SLOT, …)` 包 try/catch（失败只丢行、fence 照画，`report('settings row', error)`）。
+- [x] **T112** 冻结语言三种变体都无法让 T110 的断言变红，说明该路径是重挂载而非原地更新；按"没断言的行为不能写成已验证"的规矩登记 **G23**，并把 `spec.md` 的 FR-017 改成读者可见的承诺。
+- [x] **T113** 证据与计数同步到 `0.2.17`（E-BLD/E-CHK/E-HARN 由单次运行重生成、头注、E-GAPS 二十项、`spec.md`/`plan.md`/`quickstart.md`）。
+- [ ] **T114** 发版 `0.2.17` 并装回 `desktop`（未勾；E-PUB/E-INS 待填）。
+- [ ] **T115** 第十四轮两份独立评审；两份 PASS 才把 feature 002 标记完成。
 
 ## Dependencies
 
@@ -184,9 +195,9 @@ has an assertion that executes the shape it protects.
 | area | state |
 |---|---|
 | Host half: `Config` with `visualFirst` (default on, `.volatile()`, asserted since `0.2.12`), two-tier briefing, `claimSettingsPage` (asserted since `0.2.11`) | done, 63 static checks |
-| Client half: settings row on `settings.general.item`, `configForms` read/write, revert on refusal | done, 63 static and 299 browser checks on the `0.2.16` tree (`0.2.13` shipped 55 / 294, `0.2.12` shipped 52 / 292 (`0.2.7` shipped the same code with two shape-only static checks, `0.2.6` shipped 280) (`0.2.5` shipped 274, `0.2.4` 271, `0.2.3` 260, `0.2.2` 252); the row reads the hook prop the host builds (`useVisualFirst`) and keeps the store path for hosts that send `hooks`; no disabled state, no timer; a refused write restores the host's current value |
+| Client half: settings row on `settings.general.item`, `configForms` read/write, revert on refusal | done, 63 static and 301 browser checks on the `0.2.17` tree (`0.2.13` shipped 55 / 294, `0.2.12` shipped 52 / 292 (`0.2.7` shipped the same code with two shape-only static checks, `0.2.6` shipped 280) (`0.2.5` shipped 274, `0.2.4` 271, `0.2.3` 260, `0.2.2` 252); the row reads the hook prop the host builds (`useVisualFirst`) and keeps the store path for hosts that send `hooks`; no disabled state, no timer; a refused write restores the host's current value |
 | Eight-language rename (locale, DETAIL alt line, 8 READMEs, index, package description) | done; DETAIL keeps exactly one image line (its alt sentence carries the new name) |
-| Evidence | `evidence.md` (this feature): `0.2.16` build and 63 / 299, thirty-three probe ids in forty recorded runs (F1, F3–F15, P19–P37), E-LIVE records the row
+| Evidence | `evidence.md` (this feature): `0.2.17` build and 63 / 301, forty-three probe rows in forty recorded runs (F1–F15, P19–P37, M7–M8), E-LIVE records the row
 | Not done | SC-005's one-second timing (G14), the desktop window's settings entry (the row was observed through `dsh web`; the desktop build opens settings as a separate document that this window offers no control for — G1 records the limit), the host write path to `settings.update` seen directly (G2 records what was observed instead), 200%/360px layout assertion for the row (G3), pixel comparison (G5), E1–E14 end-to-end rows (G6), SC-001 five sample requests (G7), schemastery import failure path (G8), live-host injection of malformed contexts (G4), degraded-face click path (G12), README/DETAIL wording consistency (G13), the unobservable `slots` guard (G15), invariants only the browser suite sees (G16), the 43 checks one missing attribute hides (G17), the silenced strict-inject warning (G18), a `Config` getter that throws (G19), what volatile persistence means (G20), an in-place upgrade (G21: every install removes the old version first, so FR-013's upgrade without migration is never observed), and four behaviours guarded only by the source shape (G22) |
 
 **2026-11-24：** T021 的两项评审曾均 PASS（实现 `review-impl-002f`、文档 `review-docs-002m`），但那是在没有真机观察的前提下——按用户建议用 `dsh web` 起独立 profile 复现后，`0.2.5` 的设置行在真实设置页里渲染为空（T024），`0.2.6` 修好三处并补了 2 条静态检查、6 条夹具与 2 条探针（T025–T027），真机观察写进 `evidence.md` 的 E-LIVE（T028），G1 关闭（限 Web 界面）。发版与再评审见 T029/T030。

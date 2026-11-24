@@ -436,6 +436,17 @@ function recordedCapabilitySentences() {
   return sentences
 }
 
+// The preference paragraph is a promise too: feature 002's contract records the
+// exact three sentences, so a word changed in `index.js` has to turn this red.
+function recordedPreferenceText() {
+  const contract = read('specs/002-visual-first-preference/contracts/host-prompt.md')
+  const blocks = contract.match(/```text\n([\s\S]*?)\n```/g) || []
+  assert(blocks.length >= 2, `feature 002's contract records ${blocks.length} text blocks, expected two`)
+  const inner = /```text\n([\s\S]*?)\n```/.exec(blocks[1])
+  assert(inner !== null, 'the preference block in feature 002\'s contract is not fenced text')
+  return inner[1].trim()
+}
+
 check('the capability briefing is what it was before the switch', () => {
   assert(hostModule !== null, 'the host half never loaded')
   assert(hostModule.name === 'dsh-dyslexia', 'module name mismatch')
@@ -474,9 +485,32 @@ check('the switch adds the preference on top of the capability, and nothing else
   assert(extra.length > 0, 'the switch is on and nothing was added')
   assert(extra.includes('Do not add a picture'), 'the preference does not say when not to draw')
   assert(extra.includes('mermaid'), 'the preference does not say how to draw')
-  const unconditional = ['every answer', 'always draw', 'always answer', 'must draw', 'must use a diagram']
-  unconditional.forEach((phrase) => assert(!extra.toLowerCase().includes(phrase), `the preference is unconditional: ${phrase}`))
-  return `${extra.split(/\s+/).length} words of preference, ${closed.split(/\s+/).length} of capability`
+  // Unconditional wording is banned in any natural form, not just the five the
+  // first version of this check listed: "Always use a picture, even for a single
+  // word." passed the old guard and still says every answer needs a drawing.
+  const lower = extra.toLowerCase()
+  const unconditional = [
+    'always',
+    'every answer',
+    'every reply',
+    'every response',
+    'every time',
+    'each answer',
+    'each reply',
+    'each time',
+    'at all times',
+    'without exception',
+    'no matter what',
+    'unconditionally',
+    'must ',
+  ]
+  unconditional.forEach((phrase) => assert(!lower.includes(phrase), `the preference is unconditional: ${phrase}`))
+  const recordedPreference = recordedPreferenceText()
+  assert(
+    extra === recordedPreference,
+    `the preference is not feature 002's text any more: ${JSON.stringify(extra)}`,
+  )
+  return `${extra.split(/\s+/).length} words of preference (feature 002's three sentences, verbatim), ${closed.split(/\s+/).length} of capability`
 })
 
 check('the switch is on for an empty configuration', () => {

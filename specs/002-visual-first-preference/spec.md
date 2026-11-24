@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-23
 
-**Status**: Implemented in `0.2.0` and corrected through `0.2.16`; the published tree is `0.2.16` (the tenth review's eight behaviours that no suite could falsify are now assertions), and seventeen versions of this feature are published (`0.2.0`–`0.2.16`) — the package as a whole carries 51 versions, of which these seventeen are this feature's. `0.2.5` registered the settings row and rendered nothing where a reader would look; `0.2.6` fixed the three causes (the host hands `hooks` over as hook props, the store needs `getSnapshot`, `ctx.locale` throws under strict `inject`) and was the first build whose row was seen in a running host; `0.2.7`–`0.2.15` each turned evidence that could not fail into an assertion that does, one review round at a time — the red lines are in `evidence.md` E-PROBE (F14, F15, P19–P37). This tree: 63 static and 299 browser checks, `client.js` 788059 bytes / 786542 characters, sources sha256 `cac1e7ab0fd5deb75586b1e8577f07f4`. Evidence lives in `evidence.md`: its `0.2.15` E-BLD/E-CHK/E-HARN blocks are one run of this tree copied line for line, E-PUB/E-INS exist for every published version of this feature, and E-GAPS lists what is not proven (G2–G8 and G11–G22 open; G1 discharged for the web surface only, because the desktop window of this build offers no reachable settings control; G9 and G10 discharged by `0.2.5`).
+**Status**: Implemented in `0.2.0` and corrected through `0.2.17`; the published tree is `0.2.17` (the tenth review's eight behaviours that no suite could falsify are now assertions), and eighteen versions of this feature are published (`0.2.0`–`0.2.17`) — the package as a whole carries 52 versions, of which these eighteen are this feature's. `0.2.5` registered the settings row and rendered nothing where a reader would look; `0.2.6` fixed the three causes (the host hands `hooks` over as hook props, the store needs `getSnapshot`, `ctx.locale` throws under strict `inject`) and was the first build whose row was seen in a running host; `0.2.7`–`0.2.15` each turned evidence that could not fail into an assertion that does, one review round at a time — the red lines are in `evidence.md` E-PROBE (F14, F15, P19–P37, M7–M8). This tree: 63 static and 301 browser checks, `client.js` 788314 bytes / 786797 characters, sources sha256 `91f138aa9db9da2310e3736835b3f88c`. Evidence lives in `evidence.md`: its `0.2.17` E-BLD/E-CHK/E-HARN blocks are one run of this tree copied line for line, E-PUB/E-INS exist for every published version of this feature, and E-GAPS lists what is not proven (G2–G8 and G11–G23 open; G1 discharged for the web surface only, because the desktop window of this build offers no reachable settings control; G9 and G10 discharged by `0.2.5`).
 
 **Input**: User description: "插件可以有个简单的设置面板，里面有个开关：仅仅是在会话里更好地渲染 mermaid，还是同时更积极地用图形化的方式表达和输出。名称改为 DSH 我有阅读障碍（其他语种按语义翻译）。如果 Agent 并不积极地用图形化的方式输出，渲染再完美也没有意义。"
 
@@ -111,7 +111,7 @@ feature 001 交付的是**渲染能力**：会话里出现 `mermaid` 代码块�
 - **FR-014**: 插件 MUST NOT 要求读者编辑任何指令文件来获得上述行为（沿用 feature 001 的约束）。
 - **FR-015**: 偏好段落 MUST 用判据表达，禁止"每次""必须"这类无条件要求；关闭开关后 MUST 完全不带该段。
 - **FR-016**: 开关行 MUST 与设置面板既有行使用同一套视觉语言（同一左对齐基线、同一标题字号与字重、同一说明字号与次要色、同一行内边距与分隔方式），不得出现第三方控件的默认外观；本插件自绘的 `button.dsh-dyslexia-switch` 是唯一例外（几何与配色由 `contracts/settings-row.md` 规定），它与宿主开关的像素级一致性从未对比，见 E-GAPS 的 G5。
-- **FR-017**: 开关行 MUST 在 8 种界面语言、系统字体放大到 200%、以及手机竖屏宽度下都不截断、不重叠、不横向溢出；语言切换时标题与说明 MUST 原地更新。
+- **FR-017**: 开关行 MUST 在 8 种界面语言、系统字体放大到 200%、以及手机竖屏宽度下都不截断、不重叠、不横向溢出；界面语言切换后，标题与说明 MUST 用新语言显示（宿主重渲染该行时即生效；「原地更新」与「整行重挂载」在本夹具中不可区分，见 E-GAPS G23）。
 
 ### Key Entities
 
@@ -144,4 +144,4 @@ feature 001 交付的是**渲染能力**：会话里出现 `mermaid` 代码块�
 
 ## 完成状态
 
-**待复评（2026-11-24）。** 前十轮独立评审（每轮一份文档、一份实现）在 `0.2.0`–`0.2.13` 上都抓到过问题，逐轮修法与红行记在 `evidence.md` 的 E-PROBE；第八轮的发现（`.volatile()` 从未被断言、槽名检查可被同文诱饵骗过、九份 README 落后于真机观察）修进 `0.2.12`，第九轮的发现（`SafeChildren` 兜底只有一句 grep 证明、引擎字节不在指纹里、`package-lock` 版本落后、`entry.js` 注释里藏了一个控制字符、九份 README 的安装句仍写「开关没在真机窗口观察」）修进 `0.2.13`。第十一轮在 `0.2.14` 上运行（T091：实现 PASS、文档 FAIL）；第十二轮在 `0.2.15` 上运行（T099，进行中）。各轮评审任务尚未全部勾选（T030/T045/T054/T062/T069/T084/T099）；两份 PASS 之前，本条目的状态是「已实现、未通过评审」。
+**待复评（2026-11-24）。** 前十轮独立评审（每轮一份文档、一份实现）在 `0.2.0`–`0.2.13` 上都抓到过问题，逐轮修法与红行记在 `evidence.md` 的 E-PROBE；第八轮的发现（`.volatile()` 从未被断言、槽名检查可被同文诱饵骗过、九份 README 落后于真机观察）修进 `0.2.12`，第九轮的发现（`SafeChildren` 兜底只有一句 grep 证明、引擎字节不在指纹里、`package-lock` 版本落后、`entry.js` 注释里藏了一个控制字符、九份 README 的安装句仍写「开关没在真机窗口观察」）修进 `0.2.13`。第十一轮在 `0.2.14` 上运行（T091：实现 PASS、文档 FAIL）；第十二轮在 `0.2.15` 上运行（T099：实现 FAIL、文档评审进行中），其发现（偏好段与 002 契约文本从未逐字比对、无条件措辞清单过窄、FR-017 无断言、`slots.register` 无兜底）修进 `0.2.17`（T106）。各轮评审任务尚未全部勾选（T030/T045/T054/T062/T069/T084/T099/T106/T114）；两份 PASS 之前，本条目的状态是「已实现、未通过评审」。

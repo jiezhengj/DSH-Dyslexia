@@ -1,4 +1,4 @@
-/*! @jiezhengj/dsh-dyslexia 0.2.16 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:7e984e470550cfe58ad02d65d94c7b4a */
+/*! @jiezhengj/dsh-dyslexia 0.2.17 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:91f138aa9db9da2310e3736835b3f88c */
 ;(function () {
   function reportLoadFailure(scope, error) {
     try { console.error('dsh-dyslexia: ' + scope, error) } catch (_error) {}
@@ -1585,18 +1585,25 @@ function wireSettingsRow(ctx) {
       'dsh-dyslexia: settings value',
     )
   }
-  slots.inject(SETTINGS_SLOT, () =>
-    slots.register(
-      {
-        name: SETTINGS_SLOT,
-        id: SETTINGS_ROW_ID,
-        order: SETTINGS_ROW_ORDER,
-        locale: LOCALE_NAMESPACE,
-        inject: () => row.inject,
-      },
-      row.component,
-    ),
-  )
+  // A host whose slot service changed shape may throw here; the fence keeps
+  // drawing either way, and the row is the only surface that is lost.
+  try {
+    slots.inject(SETTINGS_SLOT, () =>
+      slots.register(
+        {
+          name: SETTINGS_SLOT,
+          id: SETTINGS_ROW_ID,
+          order: SETTINGS_ROW_ORDER,
+          locale: LOCALE_NAMESPACE,
+          inject: () => row.inject,
+        },
+        row.component,
+      ),
+    )
+  } catch (error) {
+    report('settings row', error)
+    return false
+  }
   return true
 }
 

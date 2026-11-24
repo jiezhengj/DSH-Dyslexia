@@ -1,6 +1,6 @@
 # Evidence — feature 002: the preference switch and the new name
 
-This file records what was actually observed while building feature 002. Each block is one run on one tree — E-PROBE is the exception, collecting one run per probe, the tree of each probe is named in the list just below the table; F1, F9, F14, F15, P24, P30 and P29 also name it inside their row (P24 and P30 were re-run on `0.2.11`, P29 on `0.2.13`); no block mixes trees silently. E-PUB/E-INS exist for every published version of this feature, `0.2.0` through `0.2.16` (the package also carries the earlier `0.1.x` line and one `0.0.0-stage` placeholder, which this file does not record); the current blocks are the `0.2.15` tree (63 static, 299 browser). The `0.2.1` blocks below (44 static, 251 browser) are kept as history; the `0.2.5` build line and the `0.2.5` check runs are summary lines in their own sections, not transcripts. **The current tree is `0.2.15`**, committed as `736f044`, tagged `v0.2.15`, published by run `45340201093` and installed (E-PUB/E-INS below): 63 static and 299 browser checks, `client.js` 788059 bytes / 786542 characters, sources sha256 `cac1e7ab0fd5deb75586b1e8577f07f4`, file SHA-256 `6307775D8FF991D113039602C53442778BD434976DD05DFE47F5DD3219926398`. It replaced `0.2.14` (62 static / 299 browser, `client.js` 787768 bytes, sources sha256 `486b90e17026855e9e7d9e769845d106`, file SHA-256 `B1B3039E5B937AA9E69B4C0C6C8728A20CAA0CF36090B158F06DB1FFBFAC0F23`), which replaced `0.2.13` (55 static / 294 browser, `client.js` 787768 bytes, sources sha256 `bec49f4eeba79400e467078384088f38`, file SHA-256 `A22E6E3AA23E14CF927CF62E61E7EBD70307AEF5DDAB4615930DEE39771B70DF`), which replaced `0.2.12` (52 static / 292 browser, `client.js` 787768 bytes, sources sha256 `838eef8dcc57b574bd405b70689df2e9`, file SHA-256 `C58A4DD653B5973C7B60E3F8EE2658989E74EEEB6BD27192DA24B25540652F2C`), which replaced `0.2.11` (51 static / 292 browser, `client.js` 787768 bytes, sources sha256 `25576ab91ac35a54cd3ec710e0e2ba93`, file SHA-256 `14C6514A5D504676C04137D943A0D6B791A1441548C1160B6149280451A35975`), which replaced `0.2.10` (50 static / 292 browser, `client.js` 787768 bytes, sources sha256 `25fe69385f7372015944ae0b18386c31`), which replaced `0.2.9` (49 static / 287 browser, `client.js` 787688 bytes, sources sha256 `b6c17c26e57f7d50cd2ed86a9002ad28`), which replaced `0.2.8` (47 / 283, `client.js` 787325 bytes, sources sha256 `a82c554f992a9871b4b8dcdff8499f7b`). E-PROBE records F3–F8 on `0.2.1`, F1/F9 on the `0.2.3` tree, F10–F13 on `0.2.5`, F14 on `0.2.6`, F15 on `0.2.7`, P19/P20 on `0.2.8`, P21–P23 on `0.2.9`, P24–P27 on `0.2.10`, P28–P30 on `0.2.11`, P31/P32 on `0.2.12`, P29's re-run with P33–P35 on `0.2.13`, P36's eight cases on `0.2.14`, and P37 on `0.2.15`; the `0.2.4` tree itself was never probed, and `0.2.5` supersedes it (G10 discharged).
+This file records what was actually observed while building feature 002. Each block is one run on one tree — E-PROBE is the exception, collecting one run per probe, the tree of each probe is named in the list just below the table; F1, F9, F14, F15, P24, P30 and P29 also name it inside their row (P24 and P30 were re-run on `0.2.11`, P29 on `0.2.13`); no block mixes trees silently. E-PUB/E-INS exist for every published version of this feature, `0.2.0` through `0.2.17` (the package also carries the earlier `0.1.x` line and one `0.0.0-stage` placeholder, which this file does not record); the current blocks are the `0.2.17` tree (63 static, 301 browser). The `0.2.1` blocks below (44 static, 251 browser) are kept as history; the `0.2.5` build line and the `0.2.5` check runs are summary lines in their own sections, not transcripts. **The current tree is `0.2.17`** (commit and publish recorded in E-PUB/E-INS below once the release lands): 63 static and 301 browser checks, `client.js` 788314 bytes / 786797 characters, sources sha256 `91f138aa9db9da2310e3736835b3f88c`, file SHA-256 `543BBC001E9E92A95E6C033E4BBD5B1AA418B2A4574181478AB90D3D25053A41`. It replaced `0.2.14` (62 static / 299 browser, `client.js` 787768 bytes, sources sha256 `486b90e17026855e9e7d9e769845d106`, file SHA-256 `B1B3039E5B937AA9E69B4C0C6C8728A20CAA0CF36090B158F06DB1FFBFAC0F23`), which replaced `0.2.13` (55 static / 294 browser, `client.js` 787768 bytes, sources sha256 `bec49f4eeba79400e467078384088f38`, file SHA-256 `A22E6E3AA23E14CF927CF62E61E7EBD70307AEF5DDAB4615930DEE39771B70DF`), which replaced `0.2.12` (52 static / 292 browser, `client.js` 787768 bytes, sources sha256 `838eef8dcc57b574bd405b70689df2e9`, file SHA-256 `C58A4DD653B5973C7B60E3F8EE2658989E74EEEB6BD27192DA24B25540652F2C`), which replaced `0.2.11` (51 static / 292 browser, `client.js` 787768 bytes, sources sha256 `25576ab91ac35a54cd3ec710e0e2ba93`, file SHA-256 `14C6514A5D504676C04137D943A0D6B791A1441548C1160B6149280451A35975`), which replaced `0.2.10` (50 static / 292 browser, `client.js` 787768 bytes, sources sha256 `25fe69385f7372015944ae0b18386c31`), which replaced `0.2.9` (49 static / 287 browser, `client.js` 787688 bytes, sources sha256 `b6c17c26e57f7d50cd2ed86a9002ad28`), which replaced `0.2.8` (47 / 283, `client.js` 787325 bytes, sources sha256 `a82c554f992a9871b4b8dcdff8499f7b`). E-PROBE records F3–F8 on `0.2.1`, F1/F9 on the `0.2.3` tree, F10–F13 on `0.2.5`, F14 on `0.2.6`, F15 on `0.2.7`, P19/P20 on `0.2.8`, P21–P23 on `0.2.9`, P24–P27 on `0.2.10`, P28–P30 on `0.2.11`, P31/P32 on `0.2.12`, P29's re-run with P33–P35 on `0.2.13`, P36's eight cases on `0.2.14`, and P37 on `0.2.15`; the `0.2.4` tree itself was never probed, and `0.2.5` supersedes it (G10 discharged).
 
 ## E-BLD · 0.2.1 build
 
@@ -387,6 +387,8 @@ Each probe below breaks one protected behaviour in a working copy of the sources
 | P36g | `scripts/build-client.mjs`: the no-React branch `return { apply: function () {}, inject: [] }` replaced by `return null` | `FAIL a host without react gets a silent module, not nothing — …`, `2 failed, 60 passed` (plus the byte-level stale line, since the builder is not a client source). The static suite already caught this on `0.2.13` (`1 failed, 54 passed`): the new check repeats what `a factory that cannot build never throws at the host` proved. |
 | P36h | `src/client/settings.js`: the `setState('idle')` before a write removed | `FAIL a new write clears the sentence the last one left — a new write no longer resets the sentence`, `2 failed, 60 passed`. Green before `0.2.14`. |
 | P37 | `index.js`: `claimed.add(ctx)` moved from after the `systemPrompt.section` guard to just before it (one line moved, nothing else) | `FAIL the host half can be loaded and apply once — host half added 0 sections on load`, then eight more host-half checks, `check-bundle: 9 failed, 54 passed`, exit 1; the browser suite stays green (`all 299 checks passed`) because it exercises the client half, not the host half. Run on the `0.2.15` tree; the position was unasserted before it. |
+| M7 | `index.js`: one word of the preference changed (`long stretches` → `long passages`) | `FAIL the switch adds the preference on top of the capability, and nothing else — the preference is not feature 002's text any more: "The reader finds long passages …"`, `check-bundle: 1 failed, 62 passed` |
+| M8 | `index.js`: `'Always use a picture, even for a single word.'` appended to the preference | `FAIL the switch adds the preference on top of the capability, and nothing else — the preference is unconditional: always`, `check-bundle: 1 failed, 62 passed` |
 **This probe was first recorded on `0.2.6` as `1 failed, 47 passed` for a break that left both suites green** — a 47-item suite cannot report 1 failed and 47 passed, and deleting only the store method was not seen by anything: the substring check was satisfied by `face.getSnapshot()` elsewhere in the file and no fixture built a host hook out of the plugin's own store. `0.2.7` retargets the static check at the `createValueStore` body and adds two fixtures that mount a `useSyncExternalStore` hook made from the store the module hands over.
 
 
@@ -398,16 +400,16 @@ After restoring and rebuilding, the `0.2.1` probe session passed again: `build-c
 
 Two fixture details are worth recording. Headless Chrome's virtual time does not advance the 120 ms CSS transition on the switch, so the paint assertion sets `style.transition = 'none'` on the switch before reading the computed colour (`verify/harness/index.html:1599` on the `0.2.5` tree, `:1634` on `0.2.7`). React 18 routes an event-handler throw to `window`'s `error` event rather than rethrowing it from `.click()`, so F13's fixture watches that event instead of expecting a throw at the call site (`verify/harness/index.html:1655-1667` on the `0.2.5` tree, `:1689-1702` on `0.2.7`).
 
-## E-BLD · 0.2.16 build
+## E-BLD · 0.2.17 build
 
-```text
-build-client: @jiezhengj/dsh-dyslexia -> client.js (788059 bytes, 786542 characters, engine 1.13.0, sources 6, syntax ok)
+```
+build-client: @jiezhengj/dsh-dyslexia -> client.js (788314 bytes, 786797 characters, engine 1.13.0, sources 6, syntax ok)
 ```
 
-## E-CHK · 0.2.16 static and behavioural checks (63)
+## E-CHK · 0.2.17 (63 static checks)
 
-```text
-ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.2.16
+```
+ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.2.17
 ok   package.json points at the repository npm trusts — git+https://github.com/jiezhengj/DSH-Dyslexia.git
 ok   package.json declares the bundle patch and the client half — platform web, no package inject
 ok   no dsh version gate can refuse a start — no engines.dsh, no dsh peers
@@ -416,7 +418,7 @@ ok   the required published files exist — 24 required files
 ok   every interface language has its own plugin page — 8 languages
 ok   cordis.patch.yml inserts the plugin by package name — 3 lines
 ok   both locales carry metadata — en, zh
-ok   client.js is one loader chunk keyed by the package name — 788059 bytes
+ok   client.js is one loader chunk keyed by the package name — 788314 bytes
 ok   client.js requires react and nothing else — react
 ok   client.js never reaches the network — no fetch, no XHR, no dynamic import, no remote URL
 ok   client.js carries the vendored engine — Pele 1.13.0 inlined
@@ -430,7 +432,7 @@ ok   the host half can be loaded and apply once — one section on a healthy hos
 ok   host apply survives a host that changed shape — six hostile hosts, no throw, no section
 ok   the section hands the host a function, not a frozen string — one registration, three reads, the text follows the value
 ok   the capability briefing is what it was before the switch — 85 words, all four sentences match feature 001's contract, order 9000, name ui:dsh-dyslexia
-ok   the switch adds the preference on top of the capability, and nothing else — 70 words of preference, 85 of capability
+ok   the switch adds the preference on top of the capability, and nothing else — 70 words of preference (feature 002's three sentences, verbatim), 85 of capability
 ok   the switch is on for an empty configuration — visualFirst defaults to true
 ok   a host that hands over no configuration still gets the full briefing — no config means the default, not an empty briefing
 ok   the engine type is exposed the way client.js expects — PeleError, detectType, enableZoom, forgetTextWidths, mount, parse, register, registered, render, supports
@@ -445,9 +447,9 @@ ok   a refused settings write is not reported as saved — the resolved boolean 
 ok   a face that cannot answer still reads as on — missing field, missing getter, a throwing getter and a null snapshot all read as on
 ok   a host word is used only when it is a real translation — echoes, blanks, placeholders and non-strings are refused; a real sentence is used
 ok   every language carries the same complete sentences — 16 keys x 8 languages, no engine text in labels
-ok   client.js matches the sources it claims — 7e984e470550cfe58ad02d65d94c7b4a, 788059 bytes rebuilt from the six sources
+ok   client.js matches the sources it claims — 91f138aa9db9da2310e3736835b3f88c, 788314 bytes rebuilt from the six sources
 ok   the fingerprint covers the engine bundle, not only the six client sources — 733369 characters of engine inside the digest
-ok   the lockfile names the version the manifest ships — package-lock.json and package.json both 0.2.16
+ok   the lockfile names the version the manifest ships — package-lock.json and package.json both 0.2.17
 ok   the two host-side resources are handed to ctx.effect as disposables — stylesheet and strings both registered as effects that return a disposer
 ok   the picture is the image, and the copy answer is announced — label is a noun, role="img" on the svg, copy result announced; behaviour is asserted by the fixture
 ok   host children react would refuse fall back to the source — objects, functions and mixed arrays fall back to the source text; behaviour is asserted by the fixture
@@ -470,12 +472,14 @@ ok   the settings page claim can be taken back — the opt-out runs inside ctx.e
 ok   a host without react gets a silent module, not nothing — a host whose react is missing receives a module that does nothing, not null
 ok   a new write clears the sentence the last one left — a second press starts silent, then says what happened
 ok   the fixtures assert what the fixes promise, and can fail — 43 assertions present, each with a condition that reads something
-check-bundle: @jiezhengj/dsh-dyslexia@0.2.16 | client.js 788059 bytes | sources sha256:7e984e470550cfe58ad02d65d94c7b4a | all 63 checks passed
+check-bundle: @jiezhengj/dsh-dyslexia@0.2.17 | client.js 788314 bytes | sources sha256:91f138aa9db9da2310e3736835b3f88c | all 63 checks passed
 ```
 
-## E-HARN · 0.2.16 browser checks (299) — `node verify/run-harness.mjs --list`
+## E-HARN · 0.2.17 (301 browser checks)
 
-```text
+Verbatim `--list` output of one run on this tree:
+
+```
 [ok] loading client.js registers one factory
 [ok] the module exposes apply
 [ok] the module asks for slots only — slots
@@ -760,6 +764,8 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.2.16 | client.js 788059 bytes | sources 
 [ok] [ru] the settings row hint is that language's own sentence — Когда рисунок объясняет лучше абзаца, модель рисует его, а в тексте оставляет только то, чего на рисунке не видно.
 [ok] [pt] the settings row label is that language's own sentence — Preferir imagens ao texto
 [ok] [pt] the settings row hint is that language's own sentence — Quando uma imagem explica melhor que um parágrafo, o modelo desenha e deixa no texto só o que a imagem não mostra.
+[ok] the row label follows the interface language without remounting — 优先用图，而不是成段文字 -> Prefer pictures to prose
+[ok] the row hint follows the interface language without remounting — When a picture carries the answer better than a paragraph, the model draws one and keeps the text to what the picture cannot show.
 [ok] the switch starts off when the host already says off — false
 [ok] a host whose face has no setter hands the row no writer at all — setValue is undefined
 [ok] a host whose face has no setter keeps the switch and says the write failed — aria-checked=true status=保存失败，开关保持原来的状态。 set=undefined threw=no
@@ -779,7 +785,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.2.16 | client.js 788059 bytes | sources 
 [ok] a host whose services must be read through ctx.get still gets the row — 2 defs
 [ok] a host that refuses undeclared properties still gets the strings registered — [["dyslexia",8]]
 [ok] a host that refuses undeclared services is not warned about — []
-run-harness: @jiezhengj/dsh-dyslexia@0.2.16 | client.js 788059 bytes | sources sha256:7e984e470550cfe58ad02d65d94c7b4a | all 299 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+run-harness: @jiezhengj/dsh-dyslexia@0.2.17 | client.js 788314 bytes | sources sha256:91f138aa9db9da2310e3736835b3f88c | all 301 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
 ## E-LIVE — the row and the new name on a running host (`0.2.6`, re-checked on `0.2.8`, `0.2.9` and `0.2.16`)
@@ -885,7 +891,7 @@ What this does **not** cover is still open in E-GAPS: the desktop window (its se
 
 ## E-GAPS — not proven here
 
-Nineteen gaps are open here: G2–G8, G11–G22; G1 is discharged below in E-LIVE (web surface only), and G9 and G10 are discharged by `0.2.5`.
+Twenty gaps are open here: G2–G8, G11–G23; G1 is discharged below in E-LIVE (web surface only), and G9 and G10 are discharged by `0.2.5`.
 
 | gap | what is missing |
 |---|---|
@@ -911,6 +917,7 @@ Nineteen gaps are open here: G2–G8, G11–G22; G1 is discharged below in E-LIV
 | G20 | What persistence means for this Config is unasserted: the click writes `cordis.patch.yml`, as E-LIVE observed on `0.2.8`, but no suite reads that file, so a host that kept volatile fields in memory only would drop the preference on restart unnoticed. What *is* asserted since `0.2.12` is the other half — that the field is volatile at all (`the preference field is volatile, so the settings form can show it`; probe P31), because the host's form projects volatile fields only and a plain boolean would make the switch disappear. |
 | G21 | No in-place upgrade has ever been observed: every install in E-INS runs `remove_bundle` first and then `install_bundle`, so FR-013's 「升级 MUST NOT 需要迁移动作或重装」 is asserted only by the package's identity (same name, entry id, file names, config key) — never by watching one version replace another without removal. |
 | G22 | Four behaviours are guarded by a source-shape check only, because the path that would exercise them does not run on this machine: the `ctx.get`-raises branch of `optional()` (`src/client/entry.js`), `FigureBoundary.componentDidUpdate` in `src/client/view.js` (recovery goes through the hook status path), the `missing.code = ENGINE_UNAVAILABLE` assignment (P36c), and the `setState('idle')` before a write (P36h). Each reds a static check when removed; none has a fixture that reaches it, so a rewrite that kept the string and changed the behaviour would stay green. |
+| G23 | Whether the settings row updates **in place** when the interface language changes, or is remounted, is not separable in this harness: three freezing probes (a `useState` initialiser, a module-level cache, and a `window.__frozen` latch) all left the row speaking the new language, which means the host's value push remounts the row in the fixture. The assertion added in `0.2.17` (`the row label follows the interface language without remounting`, `verify/harness/index.html`) therefore pins the reader-visible promise — after the language changes the row speaks that language — but cannot tell an in-place re-render from a remount. The reviewer's probe that froze `say` at mount did not turn it red for the same reason. |
 
 ## E-PUB · 0.2.0 publish
 

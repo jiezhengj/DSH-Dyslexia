@@ -1903,6 +1903,64 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             }
             langHost.dispose()
           }
+          // feature 002, FR-017: the interface language may change while the row
+          // stays mounted. The label and the hint are chosen on every render, so a
+          // row that froze its words at mount has to turn this red.
+          const morphState = { value: { visualFirst: true } }
+          const morphListeners = new Set()
+          const morphFace = {
+            getSnapshot() {
+              return { value: { visualFirst: morphState.value.visualFirst } }
+            },
+            subscribe(listener) {
+              morphListeners.add(listener)
+              return () => morphListeners.delete(listener)
+            },
+            set(field, value) {
+              morphState.value[field] = value
+              morphListeners.forEach((listener) => listener())
+              return Promise.resolve()
+            },
+          }
+          const morphHost = makeContext({})
+          morphHost.ctx.configForms = {
+            get(namespace) {
+              return namespace === 'dsh-dyslexia' ? morphFace : null
+            },
+          }
+          document.documentElement.lang = 'zh'
+          module.apply(morphHost.ctx)
+          const morphDef = morphHost.defs.find((entry) => entry.def && entry.def.name === 'settings.general.item')
+          const morphView = morphDef ? mount(morphDef.component, morphDef.def.inject()) : null
+          if (morphView) await tick(50)
+          const labelNow = () => {
+            const node = morphView ? morphView.stage.querySelector('.dsh-dyslexia-row-label') : null
+            return node ? node.textContent : 'no label'
+          }
+          const hintNow = () => {
+            const node = morphView ? morphView.stage.querySelector('.dsh-dyslexia-row-hint') : null
+            return node ? node.textContent : 'no hint'
+          }
+          const labelBefore = labelNow()
+          document.documentElement.lang = 'en'
+          morphState.value.visualFirst = false
+          morphListeners.forEach((listener) => listener())
+          await tick(60)
+          expect(
+            labelBefore === SETTING_LABELS.zh && labelNow() === SETTING_LABELS.en,
+            'the row label follows the interface language without remounting',
+            `${labelBefore} -> ${labelNow()}`,
+          )
+          expect(
+            hintNow() === SETTING_HINTS.en,
+            'the row hint follows the interface language without remounting',
+            hintNow(),
+          )
+          if (morphView) {
+            morphView.root.unmount()
+            morphView.stage.remove()
+          }
+          morphHost.dispose()
           document.documentElement.lang = 'zh'
 
           // A host that already says "off" must show "off" on first paint.

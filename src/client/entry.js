@@ -185,17 +185,24 @@ function wireSettingsRow(ctx) {
       'dsh-dyslexia: settings value',
     )
   }
-  slots.inject(SETTINGS_SLOT, () =>
-    slots.register(
-      {
-        name: SETTINGS_SLOT,
-        id: SETTINGS_ROW_ID,
-        order: SETTINGS_ROW_ORDER,
-        locale: LOCALE_NAMESPACE,
-        inject: () => row.inject,
-      },
-      row.component,
-    ),
-  )
+  // A host whose slot service changed shape may throw here; the fence keeps
+  // drawing either way, and the row is the only surface that is lost.
+  try {
+    slots.inject(SETTINGS_SLOT, () =>
+      slots.register(
+        {
+          name: SETTINGS_SLOT,
+          id: SETTINGS_ROW_ID,
+          order: SETTINGS_ROW_ORDER,
+          locale: LOCALE_NAMESPACE,
+          inject: () => row.inject,
+        },
+        row.component,
+      ),
+    )
+  } catch (error) {
+    report('settings row', error)
+    return false
+  }
   return true
 }
