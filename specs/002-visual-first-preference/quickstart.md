@@ -5,7 +5,7 @@
 ## 离线校验（不需要 DSH）
 
 ```bash
-node scripts/build-client.mjs      # 生成 client.js，打印版本/字节/指纹
+node scripts/build-client.mjs      # 生成 client.js，打印字节数/字符数/引擎版本/sources 数与语法检查结果（版本号与指纹由 check-bundle 打印）
 node verify/check-bundle.mjs       # 静态与源码级断言
 node verify/run-harness.mjs        # 无头浏览器行为断言
 node verify/run-harness.mjs --list # 逐条列出断言名（证据引用用）
@@ -39,7 +39,7 @@ node verify/run-harness.mjs --list # 逐条列出断言名（证据引用用）
 
 ## 探针（证明断言会失败）
 
-对每个关键断言做一次"故意破坏 → 重建 → 跑 → 确认变红 → 还原"；已跑十二条（F1、F3–F13），输出行记在 `evidence.md` 的 E-PROBE：
+对每个关键断言做一次"故意破坏 → 重建 → 跑 → 确认变红 → 还原"；已跑十四条（F1、F3–F15），输出行记在 `evidence.md` 的 E-PROBE：
 
 1. **F1 两档提示词**：让 `briefing` 无视开关、总是拼上偏好段 → `the section hands the host a function, not a frozen string`、`the capability briefing is what it was before the switch`、`the switch adds the preference on top of the capability, and nothing else` 报红。
 2. **F3 默认值**：把 `.default(true)` 改成 `.default(false)` → `the switch is on for an empty configuration` 报红。

@@ -791,23 +791,24 @@ desktop trigger is not.
 
 ## E-GAPS — not proven here
 
-Ten gaps are open here: G2–G8 and G11–G13; G1 is discharged below in E-LIVE, and G9 and G10 are discharged by `0.2.5`.
+Eleven gaps are open here: G2–G8, G11–G14; G1 is discharged below in E-LIVE (web surface only), and G9 and G10 are discharged by `0.2.5`.
 
 | gap | what is missing |
 |---|---|
 | G1 | **Discharged in `0.2.6`** — see E-LIVE: on the running host (same DSH build, `dsh web` on a throwaway profile, plugin `0.2.6`) the row rendered in Settings → General with the Chinese label, the hint and a switch reading the host's value, and a click wrote through to `cordis.patch.yml`. Getting there found a real defect that no fixture had caught (the row looked for `props.hooks` while the host sends `useVisualFirst`), which is why the gap was worth keeping open. Not proven in the **desktop** window: its settings surface opens as a separate document and no trigger was reachable in this build (see E-LIVE). |
 | G2 | The host's own `settings.update` call was not observed directly; what was observed is its effect: after the click the profile's `cordis.patch.yml` carried `visualFirst: false`, and after the second click `visualFirst: true`. |
 | G3 | The row label is asserted in the fixture in all eight languages (`the row label is our own sentence, not a host key — 优先用图，而不是成段文字` for zh, plus one label assertion per other language after this review pass). No narrow-layout assertion exists: neither suite renders the row at 360px or at 200% font size. No assertion compares a non-English string with its English counterpart word for word. |
-| G4 | The renamed names were not seen in a live window (plugin page, settings row); 8 titles are proven in the locale files and by assertion. |
+| G4 | The renamed names were not seen in a live **desktop** window — this build offers no reachable settings control there. The web surface saw both: the plugin page heading `DSH 我有阅读障碍` and the settings row label (E-LIVE). The 8 titles are also proven in the locale files and by assertion. |
 | G5 | No screenshot comparison against host rows (SC-008); the row uses host tokens and matches the neighbour row structure by construction, not by pixels. |
-| G6 | The E1–E14 end-to-end rows in `quickstart.md` were not run against a live host; no live window was observed for this feature. |
+| G6 | The E1–E14 end-to-end rows in `quickstart.md` were not run against a live host. The web surface was observed for this feature (E-LIVE); no live **desktop** window showed it. |
 | G7 | SC-001's five sample requests were not run: no model was asked to answer them with the switch on, so the briefing's effect on real answers is untested. |
 | G8 | `@deepseek-ai/schemastery` is a static import in `index.js`; if the package cannot resolve, the plugin fails to load at import time. There is no graceful degradation, and this failure path was not exercised. |
 | G9 | **Discharged in `0.2.5`**: `the capability briefing is what it was before the switch` (`verify/check-bundle.mjs:401-429`) parses the four `MERMAID_RENDER_PROMPT` sentences read-only out of `specs/001-mermaid-fence-render/contracts/host-prompt.md` and asserts exact equality (`text === recorded.join(' ')`) as well as one `includes` per sentence, so one changed word in `index.js` goes red (F12). Still unproven: a comparison with a running feature 001 build — the reference is 001's recorded contract, and no 001 binary was kept. |
 | G10 | **Discharged in `0.2.5`**: four probes (F10–F13) ran on the `0.2.5` tree, each in a fresh `%TEMP%` copy, one per round-5 fix. The `0.2.4` tree itself was never probed — `0.2.5` carries its code plus the fixes, so it supersedes it. F1 and F9 have still not been re-run since `0.2.3`: F1's target (`index.js`) is unchanged since then, while F9's target line in `src/client/settings.js` still exists but that file changed twice after `0.2.3`; neither is a re-run. |
-| G11 | A write whose promise never settles is not covered: `src/client/settings.js:86-87` puts the requested value into the store before `injected.setValue` is awaited, so from the click until the host answers the row shows a value the host has not accepted; the fixtures only drive promises that resolve `true`, resolve `false`, reject, or throw out of `then`. A promise that never settles leaves the row on the requested value with no failure sentence, and no assertion covers that state. |
+| G11 | A write whose promise never settles is not covered: `src/client/settings.js:110-112` (`show()`) puts the requested value into the store before `injected.setValue` is awaited, so from the click until the host answers the row shows a value the host has not accepted; the fixtures only drive promises that resolve `true`, resolve `false`, reject, or throw out of `then`. A promise that never settles leaves the row on the requested value with no failure sentence, and no assertion covers that state. |
 | G12 | A face whose `getSnapshot` throws or is missing restores the row to the default `true`, not to the captured value: `readPreference(face)` (`src/client/settings.js:48-58`) returns `true` for a missing, unreadable, `getSnapshot`-less or raising face and never signals "unreadable"; `inject.readHostValue` is attached whenever a face exists (`src/client/settings.js:243-245`), and a row is mounted only when a face exists (`src/client/entry.js:167-168`), so `restore()` (`src/client/settings.js:127-138`) always re-reads the host for any mounted row, and the captured value only runs when `readHostValue` is absent — i.e. for no mounted row. On such a degraded face the row can show "on" without a saved write. No assertion covers this because no fixture mounts a face without a readable snapshot. |
-| G13 | Documentation consistency across `README*.md`, `docs/DETAIL*.md` and `locale/<lang>.json` is not asserted. Nothing checks that `README.<lang>.md`'s first line equals `locale/<lang>.json`'s `meta.title`, nor that the DETAIL image alt sentence contains that title, so FR-012's 「说明页与随包 README MUST 使用同一说法」 is a MUST with no assertion: check #7 (`verify/check-bundle.mjs:135-157`) only requires the meta fields, one image line and eight distinct titles, and check #38 (`:712-737`) only forbids instruction-file mentions. Verified by hand only (zh/en); read for this record: `README.en.md:1` is `# DSH — I'm dyslexic` (equal to `locale/en.json` `meta.title`), `README.de.md:1` is `# DSH — Ich habe Legasthenie` (equal to `locale/de.json` `meta.title`), and `docs/DETAIL.md:1`'s alt ends `… shown by the plugin DSH — I'm dyslexic`. This is a documentation-consistency gap, not a runtime defect: the shipped plugin never reads these files at runtime. |
+| G13 | Documentation consistency across `README*.md`, `docs/DETAIL*.md` and `locale/<lang>.json` is not asserted. Nothing checks that `README.<lang>.md`'s first line equals `locale/<lang>.json`'s `meta.title`, nor that the DETAIL image alt sentence contains that title, so FR-012's 「说明页与随包 README MUST 使用同一说法」 is a MUST with no assertion: check #7 (`verify/check-bundle.mjs:135-157`) only requires the meta fields, one image line and eight distinct titles, and check #40 (`:765-779`) only forbids instruction-file mentions. Verified by hand only (zh/en/de); read for this record: `README.en.md:1` is `# DSH — I'm dyslexic` (equal to `locale/en.json` `meta.title`), `README.de.md:1` is `# DSH — Ich habe Legasthenie` (equal to `locale/de.json` `meta.title`), and `docs/DETAIL.md:1`'s alt ends `… shown by the plugin DSH — I'm dyslexic`. This is a documentation-consistency gap, not a runtime defect: the shipped plugin never reads these files at runtime. |
+| G14 | SC-005's timing half ("切换操作在 1 秒内反映到界面；写入失败时 1 秒内出现可见提示") is not asserted: no fixture measures elapsed time between the click and the repaint, so the sentence stands on the implementation's synchronous state update, not on a measurement. |
 
 ## E-PUB publish
 
@@ -926,17 +927,22 @@ npm notice publish Provenance statement published to transparency log: https://s
 
 ## E-PUB · 0.2.7
 
-- commit and tag filled in below once pushed; the run that published it is named in the same commit's evidence line
+- commit `a9a2bc9` ("0.2.7: make the getSnapshot regression visible"), tag `v0.2.7` ("0.2.7: make the getSnapshot regression visible"), both pushed to `main`
+- GitHub Actions run `45305735507`, conclusion `success`, workflow `publish`, head branch `v0.2.7`
 - CI lines from that run (the same bytes this tree measures; only the browser path differs):
 
 ```
 check-bundle: @jiezhengj/dsh-dyslexia@0.2.7 | client.js 787325 bytes | sources sha256:a08cd79acf40084829e270e0564b1b85 | all 47 checks passed
 run-harness: @jiezhengj/dsh-dyslexia@0.2.7 | client.js 787325 bytes | sources sha256:a08cd79acf40084829e270e0564b1b85 | all 283 checks passed (/usr/bin/google-chrome)
+npm notice shasum: d424a48f8e0c3650f8c62281c3818dca59f715b1
+npm notice total files: 33
+npm notice publish Provenance statement published to transparency log: https://search.sigstore.dev/?logIndex=4064162219
 ```
 
 ## E-INS · 0.2.7
 
-- installed into the live `desktop` profile after `remove_bundle` returned `- @jiezhengj/dsh-dyslexia 0.2.6`; `install_bundle @jiezhengj/dsh-dyslexia@0.2.7` answered `application: applied`, `version: 0.2.7`
+- registry `https://registry.npmjs.org/@jiezhengj/dsh-dyslexia/0.2.7` answered `version: 0.2.7`, `shasum: d424a48f8e0c3650f8c62281c3818dca59f715b1`; the tarball answered HEAD 200 on poll 29 of 40 (10 s apart), i.e. about five minutes after the run, slower than `0.2.6`
+- installed into the live `desktop` profile after `remove_bundle` returned `- @jiezhengj/dsh-dyslexia 0.2.6`; `install_bundle @jiezhengj/dsh-dyslexia@0.2.7` answered `application: applied`, `version: 0.2.7` (pnpm `+ @jiezhengj/dsh-dyslexia 0.2.7`), and the profile `package.json` dependency reads `"@jiezhengj/dsh-dyslexia": "0.2.7"`
 - the installed copy's `client.js` is 787325 bytes and hashes to `496b5c4133d726fa928c69661afecac2452ae215bd86074363857529599ca913`, identical to the repository copy; `locale/` 8 files, `docs/` 9 entries, package version `0.2.7`
 
 Nothing in this release changes what a reader sees: `client.js` is the `0.2.6` code plus its version banner. What changed is the guard rail — the two fixtures and the retargeted static check that make the `getSnapshot` regression visible (F15).
