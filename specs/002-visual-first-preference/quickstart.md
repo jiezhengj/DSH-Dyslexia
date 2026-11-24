@@ -39,7 +39,7 @@ node verify/run-harness.mjs --list # 逐条列出断言名（证据引用用）
 
 ## 探针（证明断言会失败）
 
-对每个关键断言做一次"故意破坏 → 重建 → 跑 → 确认变红 → 还原"；已跑十四条（F1、F3–F15），输出行记在 `evidence.md` 的 E-PROBE：
+对每个关键断言做一次"故意破坏 → 重建 → 跑 → 确认变红 → 还原"；已跑十五条（F1、F3–F15，以及 P19–P23 五条针对检查本身的探针），输出行记在 `evidence.md` 的 E-PROBE：
 
 1. **F1 两档提示词**：让 `briefing` 无视开关、总是拼上偏好段 → `the section hands the host a function, not a frozen string`、`the capability briefing is what it was before the switch`、`the switch adds the preference on top of the capability, and nothing else` 报红。
 2. **F3 默认值**：把 `.default(true)` 改成 `.default(false)` → `the switch is on for an empty configuration` 报红。
@@ -54,5 +54,9 @@ node verify/run-harness.mjs --list # 逐条列出断言名（证据引用用）
 10. **F11 宿主推送的值**：删掉 `entry.js` 里的 `face.subscribe` effect → `a refused write that resolves false puts the switch back and says so` 与 `a value the host pushes reaches the switch without a write` 报红（`run-harness: 2 failed, 272 passed`）。
 11. **F12 能力段逐字比对**：把 `index.js` 能力段里的 `in place inside the conversation.` 改成 `in place within the conversation.` → `the capability briefing is what it was before the switch` 报红（`check-bundle: 1 failed, 44 passed`）。
 12. **F13 thenable 抛错**：把 `pending.then(...)` 移到 `try` 之外 → `a thenable that throws out of then cannot break the click` 报红（`run-harness: 1 failed, 273 passed`）。
+
+13. **F14 宿主钩子形态**：删掉 `VisualFirstRow` 里的 `useVisualFirst` 分支 → `a host that passes hooks as hook props still gets a visible row`、`the switch follows the value the host hook reports`、`clicking the switch writes through the writer the host gave it`、`the switch then shows the value the host now holds` 报红（`run-harness: 4 failed, 276 passed`）。
+14. **F15 值仓库的宿主接口**：删掉 `createValueStore` 的 `getSnapshot()` → `the settings row reads the hook the host builds, not an object it never sends` 与两条夹具报红（`check-bundle: 1 failed, 46 passed`、`run-harness: 2 failed, 281 passed`）。
+15. **P19–P23 检查自身的可证伪性**：分别把 `if (typeof ctx.get === 'function')` 改成 `if (false)`、把 `if (accepted)` 改成 `if (true)`、让缺字段回落 `false`、把回显守卫取反、删掉乐观帧 —— 每条都让对应断言变红，红行见 `evidence.md` 的 E-PROBE。
 
 F2（段 `text` 从函数改回冻结字符串）在这个函数断言存在前两套都抓不到；现在由第 22 条静态检查 `the section hands the host a function, not a frozen string` 捕获，因此不单列为一条可复现探针。

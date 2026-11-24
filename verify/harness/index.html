@@ -1956,9 +1956,17 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             },
             set(field, value) {
               hookSets.push([field, value])
-              hookState.value[field] = value
-              hookListeners.forEach((listener) => listener())
-              return Promise.resolve(true)
+              // A real host answers over the bridge: the switch has to show what
+              // the reader asked for while that answer is on its way, so the
+              // fixture must not settle synchronously (it did, which hid the
+              // optimistic frame entirely).
+              return new Promise((resolve) => {
+                setTimeout(() => {
+                  hookState.value[field] = value
+                  hookListeners.forEach((listener) => listener())
+                  resolve(true)
+                }, 30)
+              })
             },
           }
           function useVisualFirst(selector) {
@@ -1999,7 +2007,17 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           )
           if (hookToggle) {
             hookToggle.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true }))
-            await tick(60)
+            // Before the host answers, the switch must already show what the
+            // reader asked for; otherwise a slow bridge leaves the control on the
+            // old value and the click looks ignored.
+            await tick(6)
+            const pendingToggle = hookView.stage.querySelector('button[role="switch"]')
+            expect(
+              !!pendingToggle && pendingToggle.getAttribute('aria-checked') === 'false',
+              'a pending write shows the requested value before the host answers',
+              pendingToggle ? `aria-checked=${pendingToggle.getAttribute('aria-checked')}` : 'no switch',
+            )
+            await tick(80)
           }
           expect(
             hookSets.length === 1 && hookSets[0][0] === 'visualFirst' && hookSets[0][1] === false,
@@ -2014,6 +2032,59 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           )
           hookView.root.unmount()
           hookView.stage.remove()
+
+          // A snapshot that carries no field means "default", and the default is
+          // on. `readHostValue` has to answer `true` for the same reason: a
+          // refused write puts the switch back to what the host would show.
+          const degradedShapes = [
+            ['a snapshot that carries no field', () => ({ value: {} }), true],
+            ['a snapshot that is not an object', () => null, true],
+            ['a snapshot getter that throws', () => { throw new Error('snapshot unavailable') }, true],
+          ]
+          for (const [label, snapshotOf, expectedOn] of degradedShapes) {
+            const degradedFace = {
+              getSnapshot() {
+                return snapshotOf()
+              },
+              subscribe() {
+                return () => undefined
+              },
+              set() {
+                return new Promise((resolve) => resolve(false))
+              },
+            }
+            const degradedHost = makeContext({})
+            degradedHost.ctx.configForms = { get: () => degradedFace }
+            let degradedThrew = null
+            try {
+              module.apply(degradedHost.ctx)
+            } catch (error) {
+              degradedThrew = error
+            }
+            const degradedDef = degradedHost.defs.find((entry) => entry.def && entry.def.name === 'settings.general.item')
+            let degradedToggle = null
+            let degradedView = null
+            if (degradedDef) {
+              degradedView = mount(
+                degradedDef.component,
+                typeof degradedDef.def.inject === 'function' ? degradedDef.def.inject() : {},
+              )
+              await tick(60)
+              degradedToggle = degradedView.stage.querySelector('button[role="switch"]')
+            }
+            expect(
+              degradedThrew === null &&
+                !!degradedToggle &&
+                degradedToggle.getAttribute('aria-checked') === String(expectedOn),
+              label + ' still shows the switch on',
+              degradedToggle ? `aria-checked=${degradedToggle.getAttribute('aria-checked')}` : 'no switch',
+            )
+            if (degradedView) {
+              degradedView.root.unmount()
+              degradedView.stage.remove()
+            }
+            degradedHost.dispose()
+          }
 
           // A host whose strict cordis refuses a service this module never
           // declared still draws the picture and still gets the row: `ctx.get`

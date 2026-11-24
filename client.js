@@ -1,4 +1,4 @@
-/*! @jiezhengj/dsh-dyslexia 0.2.8 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:a82c554f992a9871b4b8dcdff8499f7b */
+/*! @jiezhengj/dsh-dyslexia 0.2.9 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:b6c17c26e57f7d50cd2ed86a9002ad28 */
 ;(function () {
   function reportLoadFailure(scope, error) {
     try { console.error('dsh-dyslexia: ' + scope, error) } catch (_error) {}
@@ -1463,7 +1463,11 @@ function optional(ctx, name) {
   try {
     return ctx[name]
   } catch (error) {
-    report(name, error)
+    // A strict host answers every undeclared read with exactly this sentence.
+    // It is the expected path here, not a fault: the caller drops only the
+    // optional surface that needed the service. Reporting it put two warnings in
+    // every reader's console (seen 2026-11-24 in a web session).
+    if (!/without inject/.test(String(error && error.message))) report(name, error)
     return undefined
   }
 }

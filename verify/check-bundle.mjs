@@ -47,14 +47,31 @@ function stripComments(text) {
     .replace(/(^|[^:])\/\/[^\n]*/g, '$1 ')
 }
 
+/**
+ * Cuts one function out of a source file by counting braces.
+ *
+ * Braces inside a string do not count: `isResolved` ends with `indexOf('{{')`,
+ * and a naive counter never came back to zero, so the function could not be
+ * executed (found while making the echo guard falsifiable).
+ */
 function functionBody(source, signature) {
   const start = source.indexOf(signature)
   if (start < 0) return null
   const open = source.indexOf('{', start)
   if (open < 0) return null
   let depth = 0
+  let quote = null
   for (let i = open; i < source.length; i += 1) {
     const ch = source[i]
+    if (quote) {
+      if (ch === '\\') i += 1
+      else if (ch === quote) quote = null
+      continue
+    }
+    if (ch === "'" || ch === '"' || ch === '`') {
+      quote = ch
+      continue
+    }
     if (ch === '{') depth += 1
     else if (ch === '}') {
       depth -= 1
@@ -631,6 +648,62 @@ check('a refused settings write is not reported as saved', () => {
   return 'the resolved boolean reaches the branch: true saves, false or a skipped write reverts and says so'
 })
 
+check('a face that cannot answer still reads as on', () => {
+  // The default is on, and three shapes have to agree: a snapshot that carries
+  // no field, one that is not an object, and a getter that throws. Only grepping
+  // for `? true :` stayed green when the fallback was flipped to `false`, which
+  // would show the switch off on a host whose prompt section is on.
+  const settings = readCode('src/client/settings.js')
+  const body = functionBody(settings, 'function readPreference(face) {')
+  assert(body, 'settings.js has no readPreference()')
+  const readPreference = new Function('report', body + '\nreturn readPreference;')(() => {})
+  const shapes = [
+    ['no face at all', null, true],
+    ['no getSnapshot', {}, true],
+    ['a snapshot that carries no field', { getSnapshot: () => ({ value: {} }) }, true],
+    ['a snapshot that is not an object', { getSnapshot: () => null }, true],
+    [
+      'a getter that throws',
+      {
+        getSnapshot() {
+          throw new Error('snapshot unavailable')
+        },
+      },
+      true,
+    ],
+    ['a snapshot that says off', { getSnapshot: () => ({ value: { visualFirst: false } }) }, false],
+    ['a snapshot that says on', { getSnapshot: () => ({ value: { visualFirst: true } }) }, true],
+  ]
+  for (const [label, face, expected] of shapes) {
+    const actual = readPreference(face)
+    assert(actual === expected, `${label} read as ${actual}, expected ${expected}`)
+  }
+  return 'missing field, missing getter, a throwing getter and a null snapshot all read as on'
+})
+
+check('a host word is used only when it is a real translation', () => {
+  // A namespace-less host answers with the key itself; treating that as a
+  // translation is how `copySource` once reached a button. The guard is executed
+  // here: inverting its test left a plain substring search green.
+  const source = readCode('src/client/i18n.js')
+  const body = functionBody(source, 'function isResolved(value, key) {')
+  assert(body, 'i18n.js has no isResolved()')
+  const isResolved = new Function(body + '\nreturn isResolved;')()
+  const cases = [
+    ['a real translation', '复制源码', 'copySource', true],
+    ['the key echoed back', 'copySource', 'copySource', false],
+    ['the namespaced key echoed back', 'dyslexia.copySource', 'copySource', false],
+    ['a blank answer', '   ', 'copySource', false],
+    ['an unfilled placeholder', 'Copy {{what}}', 'copySource', false],
+    ['a non-string answer', 5, 'copySource', false],
+  ]
+  for (const [label, value, key, expected] of cases) {
+    const actual = isResolved(value, key)
+    assert(actual === expected, `${label} was accepted as a translation (${String(actual)})`)
+  }
+  return 'echoes, blanks, placeholders and non-strings are refused; a real sentence is used'
+})
+
 check('every language carries the same complete sentences', () => {
   const source = readCode('src/client/i18n.js')
   const keys = [
@@ -1186,7 +1259,7 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
 
 /* ---------------------------------------------------------------- report */
 
-const EXPECTED_CHECKS = 47
+const EXPECTED_CHECKS = 49
 if (notices.length + failures.length !== EXPECTED_CHECKS) {
   failures.push(
     `[FAIL] the suite has ${notices.length + failures.length} checks, expected ${EXPECTED_CHECKS}: a check was added or removed without updating this number`,

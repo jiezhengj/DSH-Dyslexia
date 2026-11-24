@@ -1,6 +1,6 @@
 # Evidence — feature 002: the preference switch and the new name
 
-This file records what was actually observed while building feature 002. Each block is one run on one tree — E-PROBE is the exception, collecting one run per probe and naming each group's tree in its intro; no block mixes trees silently. E-PUB/E-INS exist for every published version, `0.2.0` through `0.2.8`; every version that was cut has both blocks. The `0.2.1` blocks below (E-BLD · 0.2.1, E-CHK and E-HARN of that tree: 44 static, 251 browser) are kept as history; the `0.2.5` build line and the `0.2.5` check runs are summary lines in their own sections, not transcripts. **The current tree is `0.2.8`**, committed, released and installed — the same tree this file's current blocks measured: 47 static and 283 browser checks, `client.js` 787325 bytes / 785808 characters, sources sha256 `a82c554f992a9871b4b8dcdff8499f7b`, file SHA-256 `35397283cd5f8f89ec9469c503176922bdf49c57551d5d8c4e40a49dfd5a24fd`. The tree `0.2.8` replaced in the profile is `0.2.7` (47 static and 283 browser checks, `client.js` 787325 bytes, sources sha256 `a08cd79acf40084829e270e0564b1b85`); `0.2.7` replaced `0.2.6` (47 / 280, sources sha256 `b69ddecef48b3acc5a9b51e2a1a27bc1`). E-PROBE records F3–F8 on `0.2.1`, F1/F9 on the `0.2.3` tree, F10–F13 on `0.2.5`, F14 on `0.2.6`, F15 on `0.2.7`, and P19/P20 on `0.2.8`; the `0.2.4` tree itself was never probed, and `0.2.5` supersedes it (G10 discharged).
+This file records what was actually observed while building feature 002. Each block is one run on one tree — E-PROBE is the exception, collecting one run per probe and naming each group's tree in its intro; no block mixes trees silently. E-PUB/E-INS exist for every published version, `0.2.0` through `0.2.9`; every version that was cut has both blocks. The `0.2.1` blocks below (E-BLD · 0.2.1, E-CHK and E-HARN of that tree: 44 static, 251 browser) are kept as history; the `0.2.5` build line and the `0.2.5` check runs are summary lines in their own sections, not transcripts. **The current tree is `0.2.9`**, committed, released and installed — the same tree this file's current blocks measured: 49 static and 287 browser checks, `client.js` 787688 bytes / 786171 characters, sources sha256 `b6c17c26e57f7d50cd2ed86a9002ad28`, file SHA-256 `95DEBB6B71946111B5371B3480C3F19B09DE35516A10EF007747CAA88D9C9981`. `0.2.8` (47 static / 283 browser, `client.js` 787325 bytes, sources sha256 `a82c554f992a9871b4b8dcdff8499f7b`, file SHA-256 `35397283cd5f8f89ec9469c503176922bdf49c57551d5d8c4e40a49dfd5a24fd`) is the tree it replaced. The tree `0.2.8` replaced in the profile is `0.2.7` (47 static and 283 browser checks, `client.js` 787325 bytes, sources sha256 `a08cd79acf40084829e270e0564b1b85`); `0.2.7` replaced `0.2.6` (47 / 280, sources sha256 `b69ddecef48b3acc5a9b51e2a1a27bc1`). E-PROBE records F3–F8 on `0.2.1`, F1/F9 on the `0.2.3` tree, F10–F13 on `0.2.5`, F14 on `0.2.6`, F15 on `0.2.7`, P19/P20 on `0.2.8`, and P21–P23 on `0.2.9`; the `0.2.4` tree itself was never probed, and `0.2.5` supersedes it (G10 discharged).
 
 ## E-BLD · 0.2.1 build
 
@@ -12,7 +12,7 @@ build-client: @jiezhengj/dsh-dyslexia -> client.js (780550 bytes, 779035 charact
 
 ## E-BLD · 0.2.5 build
 
-The current `0.2.5` tree; `client.js` on disk measures 783360 bytes and 781845 characters, the pair this line prints:
+The `0.2.5` tree; `client.js` on disk measured 783360 bytes and 781845 characters, the pair this line prints:
 
 ```
 build-client: @jiezhengj/dsh-dyslexia -> client.js (783360 bytes, 781845 characters, engine 1.13.0, sources 6, syntax ok)
@@ -356,7 +356,7 @@ The three browser assertions this round added are `a refused write keeps the val
 
 ## E-PROBE — the new checks can fail
 
-Each probe below breaks one protected behaviour in a working copy of the sources, rebuilds it, runs the suite that should see it, records the red line, and restores the copy. F1 and F9 were last run on the `0.2.3` tree (44 static, 260 browser); no probe was run on `0.2.4`, which `0.2.5` supersedes; F10–F13 ran on `0.2.5` (45 static, 274 browser), each in a fresh `%TEMP%` copy of the final tree, restored afterwards. So F1/F9's red lines and counts are `0.2.3` numbers, not the current tree's 45 / 274. `0.2.2` shipped 44 static and 252 browser checks, and F9's no-writer assertion did not exist there. F3–F8 are the earlier runs on the `0.2.1` tree (44 static, 251 browser) and were not re-run. The untouched `0.2.3` copy reported `all 44 checks passed` and `all 260 checks passed` before the breaks.
+Each probe below breaks one protected behaviour in a working copy of the sources, rebuilds it, runs the suite that should see it, records the red line, and restores the copy. F1 and F9 were last run on the `0.2.3` tree (44 static, 260 browser); no probe was run on `0.2.4`, which `0.2.5` supersedes; F10–F13 ran on `0.2.5` (45 static, 274 browser), each in a fresh `%TEMP%` copy of the final tree, restored afterwards. So F1/F9's red lines and counts are `0.2.3` numbers, not the `0.2.5` tree's 45 / 274 (the `0.2.9` tree runs 49 static and 287 browser checks). `0.2.2` shipped 44 static and 252 browser checks, and F9's no-writer assertion did not exist there. F3–F8 are the earlier runs on the `0.2.1` tree (44 static, 251 browser) and were not re-run. The untouched `0.2.3` copy reported `all 44 checks passed` and `all 260 checks passed` before the breaks.
 
 | probe | change | result |
 |---|---|---|
@@ -377,6 +377,9 @@ Each probe below breaks one protected behaviour in a working copy of the sources
 | F13 | `src/client/settings.js`: the `pending.then(...)` chain moved outside the `try` | `[bad] a thenable that throws out of then cannot break the click — threw=no uncaught=Script error. aria-checked=false host=true status=none`, `run-harness: 1 failed, 273 passed`, exit 1 |
 | P19 | `src/client/entry.js`: `if (typeof ctx.get === 'function') {` → `if (false) {` | `FAIL a service the plugin never declared is read through ctx.get — ctx.get was not consulted for locale`, `check-bundle: 2 failed, 45 passed`, exit 1 (the other failure is the stale-chunk line, which any source change produces). **On the `0.2.7` tree this break left the static suite green** — the check only grepped for `function optional(`/`optional(ctx, 'locale')` — so `0.2.8` executes the sliced reader: `optional({ get: (name) => 'via-get:' + name, get locale() { throw } }, 'locale')` must answer `via-get:locale`, and a host without `ctx.get` must still answer from the property. |
 | P20 | `src/client/settings.js`: `if (accepted) {` → `if (true) {` (a refusal reported as saved) | `FAIL a refused settings write is not reported as saved — the settle handler does not branch on what the host answered`, `check-bundle: 2 failed, 45 passed`, exit 1. **On the `0.2.7` tree this break also left the static suite green** (it only grepped for `result === true` elsewhere in the file); `0.2.8` slices the `settle` handler and requires `if (accepted)`, the failure sentence and `restore(before)` inside it. |
+| P21 | `src/client/settings.js`: `return value === undefined ? true : value !== false` → `? false :` (a snapshot without the field read as off) | `FAIL a face that cannot answer still reads as on — a snapshot that carries no field read as false, expected true`, `check-bundle: 1 failed, 48 passed`, exit 1; and in the browser `[bad] a snapshot that carries no field still shows the switch on — aria-checked=false`, `[bad] a snapshot that is not an object still shows the switch on — aria-checked=false`, `run-harness: 2 failed, 285 passed` |
+| P22 | `src/client/i18n.js`: `if (trimmed.indexOf(key) !== -1)` → `=== -1` (the echoed key accepted as a translation) | `FAIL host key echo falls back to bundled strings — i18n.js accepts the key echoed back`, `FAIL a host word is used only when it is a real translation — a real translation was accepted as a translation (false)`, `check-bundle: 2 failed, 47 passed`; browser `[bad] a host t that echoes the key still shows words — dyslexia.showSource | …`, `[bad] no internal key reaches the eye — leaked: syntaxError`, `run-harness: 5 failed, 282 passed` |
+| P23 | `src/client/settings.js`: `const value = shown === null ? props.value === true : shown` → `const value = props.value === true` (the requested value no longer shows while the host decides) | `[bad] a pending write shows the requested value before the host answers — aria-checked=true`, `run-harness: 1 failed, 286 passed`, exit 1; the static suite stayed green, which is why the browser assertion was added |
 
 The function-form break (F2) was not caught by the suites before the function check existed: a frozen `text` string kept every earlier check green, and only `the section hands the host a function, not a frozen string` sees it. That is why the check was added; in the E-CHK order it is #22 of the 44 checks.
 
@@ -384,21 +387,18 @@ After restoring and rebuilding, the `0.2.1` probe session passed again: `build-c
 
 Two fixture details are worth recording. Headless Chrome's virtual time does not advance the 120 ms CSS transition on the switch, so the paint assertion sets `style.transition = 'none'` on the switch before reading the computed colour (`verify/harness/index.html:1599` on the `0.2.5` tree, `:1634` on `0.2.7`). React 18 routes an event-handler throw to `window`'s `error` event rather than rethrowing it from `.click()`, so F13's fixture watches that event instead of expecting a throw at the call site (`verify/harness/index.html:1655-1667` on the `0.2.5` tree, `:1689-1702` on `0.2.7`).
 
-## E-BLD · 0.2.8 build
+## E-BLD · 0.2.9 build
+
+The `0.2.9` tree (the tree E-CHK and E-HARN below quote), built once:
 
 ```
-build-client: @jiezhengj/dsh-dyslexia -> client.js (787325 bytes, 785808 characters, engine 1.13.0, sources 6, syntax ok)
+build-client: @jiezhengj/dsh-dyslexia -> client.js (787688 bytes, 786171 characters, engine 1.13.0, sources 6, syntax ok)
 ```
 
-## E-CHK/E-HARN · 0.2.8 (47 static, 283 browser)
-
-Both blocks below are the complete output of one run of this tree: the first is the full stdout of
-`node verify/check-bundle.mjs`, the second the full stdout of `node verify/run-harness.mjs --list` (a plain
-run prints only the summary line). The `FAIL`/`warn` lines the checks trigger on purpose go to stderr and
-are named where they matter, not pasted here.
+## E-CHK/E-HARN · 0.2.9 (49 static, 287 browser)
 
 ```
-ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.2.8
+ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.2.9
 ok   package.json points at the repository npm trusts — git+https://github.com/jiezhengj/DSH-Dyslexia.git
 ok   package.json declares the bundle patch and the client half — platform web, no package inject
 ok   no dsh version gate can refuse a start — no engines.dsh, no dsh peers
@@ -407,7 +407,7 @@ ok   the required published files exist — 24 required files
 ok   every interface language has its own plugin page — 8 languages
 ok   cordis.patch.yml inserts the plugin by package name — 3 lines
 ok   both locales carry metadata — en, zh
-ok   client.js is one loader chunk keyed by the package name — 787325 bytes
+ok   client.js is one loader chunk keyed by the package name — 787688 bytes
 ok   client.js requires react and nothing else — react
 ok   client.js never reaches the network — no fetch, no XHR, no dynamic import, no remote URL
 ok   client.js carries the vendored engine — Pele 1.13.0 inlined
@@ -431,8 +431,10 @@ ok   host key echo falls back to bundled strings — key echo, blanks, placehold
 ok   the settings row reads the hook the host builds, not an object it never sends — useVisualFirst and the store form both wired, the store itself carries getSnapshot and subscribe
 ok   a service the plugin never declared is read through ctx.get — the reader asked ctx.get first and fell back to the property, for locale and configForms alike
 ok   a refused settings write is not reported as saved — the resolved boolean reaches the branch: true saves, false or a skipped write reverts and says so
+ok   a face that cannot answer still reads as on — missing field, missing getter, a throwing getter and a null snapshot all read as on
+ok   a host word is used only when it is a real translation — echoes, blanks, placeholders and non-strings are refused; a real sentence is used
 ok   every language carries the same complete sentences — 16 keys x 8 languages, no engine text in labels
-ok   client.js matches the sources it claims — a82c554f992a9871b4b8dcdff8499f7b, 787325 bytes rebuilt from the six sources
+ok   client.js matches the sources it claims — b6c17c26e57f7d50cd2ed86a9002ad28, 787688 bytes rebuilt from the six sources
 ok   the picture is the image, and the copy answer is announced — label is a noun, role="img" on the svg, copy result announced; behaviour is asserted by the fixture
 ok   host children react would refuse fall back to the source — objects, functions and mixed arrays fall back to the source text; behaviour is asserted by the fixture
 ok   every drawing the engine swaps in is named again — the engine owns re-layout; every swapped drawing node and its zoom buttons are renamed, strings follow the language; behaviour is asserted by the fixture
@@ -446,7 +448,7 @@ ok   the contract's colour variables are the ones that are wired — 10 engine v
 ok   both size limits reach the engine, each proven on its own — three limits passed to mount, two fixtures that cross one each
 ok   the fixtures assert what the fixes promise, and can fail — 43 assertions present, each with a condition that reads something
 
-check-bundle: @jiezhengj/dsh-dyslexia@0.2.8 | client.js 787325 bytes | sources sha256:a82c554f992a9871b4b8dcdff8499f7b | all 47 checks passed
+check-bundle: @jiezhengj/dsh-dyslexia@0.2.9 | client.js 787688 bytes | sources sha256:b6c17c26e57f7d50cd2ed86a9002ad28 | all 49 checks passed
 ```
 
 ```
@@ -732,15 +734,19 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.2.8 | client.js 787325 bytes | sources s
 [ok] a configForms face that answers nothing adds no row — 1 defs
 [ok] a host that passes hooks as hook props still gets a visible row — row
 [ok] the switch follows the value the host hook reports — aria-checked=true
+[ok] a pending write shows the requested value before the host answers — aria-checked=false
 [ok] clicking the switch writes through the writer the host gave it — [["visualFirst",false]]
 [ok] the switch then shows the value the host now holds — aria-checked=false
+[ok] a snapshot that carries no field still shows the switch on — aria-checked=true
+[ok] a snapshot that is not an object still shows the switch on — aria-checked=true
+[ok] a snapshot getter that throws still shows the switch on — aria-checked=true
 [ok] a host that refuses undeclared services is still served without a throw — quiet
 [ok] a host whose services must be read through ctx.get still gets the row — 2 defs
 [ok] a host that refuses undeclared properties still gets the strings registered — [["dyslexia",8]]
-run-harness: @jiezhengj/dsh-dyslexia@0.2.8 | client.js 787325 bytes | sources sha256:a82c554f992a9871b4b8dcdff8499f7b | all 283 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+run-harness: @jiezhengj/dsh-dyslexia@0.2.9 | client.js 787688 bytes | sources sha256:b6c17c26e57f7d50cd2ed86a9002ad28 | all 287 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
-## E-LIVE — the row and the new name on a running host (`0.2.6`)
+## E-LIVE — the row and the new name on a running host (`0.2.6`, re-checked on `0.2.8`)
 
 What was run: the shipped desktop build (`@deepseek-ai/dsh-desktop` `0.2.2-rc.5`) with the web surface, on a
 throwaway profile so nothing in the reader's own profile was touched:
@@ -757,7 +763,7 @@ below belong to that page alone).
 | plugin page | `button "查看 DSH 我有阅读障碍"`, heading `DSH 我有阅读障碍`, `StaticText "v0.2.6"`, `StaticText "@jiezhengj/dsh-dyslexia@0.2.6"`, and the preview image whose accessible name is the sentence `会话中的一条消息把 mermaid 代码块就地画成了示意图，图下方是「查看源码」与「复制源码」两个按钮，由插件「DSH 我有阅读障碍」呈现` |
 | Settings → General | `StaticText "优先用图，而不是成段文字"`, `StaticText "当一张图比一段话更好懂时，模型会画图，文字只留图讲不清的部分。"`, `switch "优先用图，而不是成段文字" [checked=true]` — placed between the host's 性能与用量 row and its Session Log row, i.e. in the slot it registered for |
 | the write | clicking the switch flipped it to `checked=false` and showed `role="status"` with `StaticText "已保存"`; the throwaway profile's `cordis.patch.yml` then carried `- id: dsh-dyslexia … config: visualFirst: false`. Clicking again flipped it back to `checked=true`, wrote `visualFirst: true`, and the value survived closing and reopening the settings dialog |
-| console | no `dsh-dyslexia:` warning at all on this build (`0.2.5` logged `locale … without inject`; `ctx.get` is the read now) |
+| console | `0.2.5`: one `dsh-dyslexia: locale … without inject` warning. `0.2.6`: none. `0.2.8`: two warnings (`locale`, `configForms`), each ending in `without inject` — see the re-check below, which is what `0.2.9` silences |
 
 **The defect this found, and what `0.2.6` changes.** On the running host the row registered but rendered
 nothing: our module logged no warning, the settings page logged `TypeError: w.getSnapshot is not a function`
@@ -793,6 +799,25 @@ with `4 failed, 276 passed`.
 path is recorded as "not reachable in this build", not as "works". The web surface runs the same client bundle
 against the same host services, so the row, the label and the write path are proven for the plugin; only the
 desktop trigger is not.
+
+### the `0.2.8` re-check — persistence, uninstall, and the warnings this build left
+
+Same method, second throwaway profile (`webcheck2`, again `--from-default-profile web`, `plugin add` of the
+published `0.2.8`), one `dsh web` process per step:
+
+| step | what was seen |
+|---|---|
+| how the panel is reached | the sidebar has no 设置 button; `button "账号菜单"` (labelled 更多) opens a menu whose first entry is `menuitem "设置"`, and the menu text names the shortcut `Ctrl+Alt+,` |
+| row, first look | `StaticText "优先用图，而不是成段文字"`, its hint sentence, `switch … [checked=true]`, between the host's 性能与用量 and 上传 Session Log rows |
+| click | `[checked=false]`, `role="status"` `StaticText "已保存"`, and `webcheck2\cordis.patch.yml` gained `- id: dsh-dyslexia … config: visualFirst: false` |
+| restart | the process was stopped and started again on the same profile: the settings panel showed `switch … [checked=false]`, so the preference survived a restart |
+| uninstall | `plugin remove @jiezhengj/dsh-dyslexia`, restart: the row is gone (the host's 上传 Session Log row is now the last one) — the feature leaves nothing behind |
+| console | two of our own warnings: `dsh-dyslexia: locale { … without inject }` and `dsh-dyslexia: configForms { … without inject }` |
+
+The warnings are the strict-inject path working as designed: `optional()` tries `ctx.get(name)`, does not find
+`locale`/`configForms` that way on this host, falls back to the bare property, is refused, and reports the
+refusal. Nothing is broken — but a plugin that logs an expected refusal on every boot teaches readers to ignore
+its log. `0.2.9` stops reporting `cannot get property "…" without inject` and keeps reporting everything else.
 
 ## E-GAPS — not proven here
 
@@ -842,7 +867,7 @@ The first two tag pushes (`45194558416`, `45194732082`) failed and published not
 
 Both `client.js` rows are unverified because that hash was never recorded for 0.2.0: `client.js` embeds the version, so the fingerprint hashes it. The 780550 bytes are not 0.2.1's alone: the `0.2.0` CI lines above also measured `client.js 780550 bytes` (only its `sources sha256` differed, `db71eb3381be5f8bbd6a8701f8f9ea06`), the size being shared because `0.2.0` and `0.2.1` are the same length. What was wrong here was the SHA256: it belongs to the `0.2.1` artifact, not to `0.2.0`'s.
 
-The 0.2.0 rows above stay as history. 0.2.1 followed the feature-002 review and was not documentation-only: besides the wording corrections it added the function-form check to `verify/check-bundle.mjs` (#22) and rebuilt `client.js` with it. It was published (run `45204279829`, shasum `b5c03c272b89f53f2416a5140c29b212b5f55b7a`, logIndex `4053240981`) and installed (E-PUB/E-INS 0.2.1 below); E-CHK and E-HARN in this file are that tree. 0.2.2 is the later code change recorded in E-PUB · 0.2.2 and E-INS · 0.2.2 above (the E-PUB · 0.2.2 and E-INS · 0.2.2 sections above); the counts near the top of this file belong to the `0.2.1` and `0.2.4` trees, not to `0.2.2`.
+The 0.2.0 rows above stay as history. 0.2.1 followed the feature-002 review and was not documentation-only: besides the wording corrections it added the function-form check to `verify/check-bundle.mjs` (#22) and rebuilt `client.js` with it. It was published (run `45204279829`, shasum `b5c03c272b89f53f2416a5140c29b212b5f55b7a`, logIndex `4053240981`) and installed (E-PUB/E-INS 0.2.1 below); E-CHK and E-HARN in this file are that tree. 0.2.2 is the later code change recorded in E-PUB · 0.2.2 and E-INS · 0.2.2 above (the E-PUB · 0.2.2 and E-INS · 0.2.2 sections above); the counts near the top of this file belong to the `0.2.1` and `0.2.5` trees, not to `0.2.2`.
 
 ## E-PUB publish, 0.2.1
 

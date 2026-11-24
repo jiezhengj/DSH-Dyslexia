@@ -75,6 +75,18 @@
 - [x] **T044** 发版 `0.2.8`：commit `6edaef3` → tag `v0.2.8` → Actions run `45310290797` success（shasum `ab9f82fbec6c6553b3f0031586785af0417ac52e`、logIndex `4065743074`、33 files）→ registry 第 29 次轮询可下载→ `remove_bundle` 卸 0.2.7 → `install_bundle @0.2.8` applied（profile 依赖 `"0.2.8"`、安装副本 787325 字节 / `35397283…24FD`）→ E-PUB/E-INS 已填。
 - [ ] **T045** 第四轮两份独立评审，两份 PASS 才把 feature 002 标记完成。
 
+## Phase 9：让乐观帧与退化 face 有断言，并让预期拒绝闭嘴（0.2.9）
+
+- [x] **T046** 第四轮实现评审的两个 P0：`settings.js` 的乐观帧（`shown`，点击后先显示请求值、等宿主答复）与「快照缺字段按开处理」都没有断言——`hookFace.set` 同步生效时，把 `const value = shown === null ? props.value === true : shown` 改成 `props.value === true`、或把缺字段回落改成 `false`，两套检查都仍全绿。
+- [x] **T047** 夹具修法（`verify/harness/index.html`，283 → 287）：`hookFace.set` 改成 `new Promise` + `setTimeout(…, 30)`，点击后 `tick(6)` 断言 `a pending write shows the requested value before the host answers`（`aria-checked === 'false'`），再 `tick(80)`；新增三种退化 face（`() => ({ value: {} })`、`() => null`、抛错）各断言开关仍在且按开显示。
+- [x] **T048** 静态检查修法（`verify/check-bundle.mjs`，47 → 49）：`functionBody()` 改成字符串感知的花括号扫描（`'{{'` 不再让计数失衡），新增两条**执行**实现的检查——`a face that cannot answer still reads as on`（`readPreference` 的 7 种形状）与 `a host word is used only when it is a real translation`（`isResolved` 的 6 种输入）。
+- [x] **T049** 探针：P21（缺字段回落 `false`）→ 静态 `1 failed, 48 passed`、浏览器 `2 failed, 285 passed`；P22（回显守卫取反）→ 静态 `2 failed, 47 passed`、浏览器 `5 failed, 282 passed`；P23（删乐观帧）→ 浏览器 `1 failed, 286 passed`（静态仍绿，故这条由浏览器负责）。
+- [x] **T050** `src/client/entry.js` 的 `optional()` 不再报告 strict cordis 的 `cannot get property "…" without inject`（预期路径），其余错误照旧上报；依据是 `0.2.8` 真机复核时控制台留下的 `dsh-dyslexia: locale` 与 `dsh-dyslexia: configForms` 两条警告。
+- [x] **T051** 真机复核 `0.2.8`（第二个 throwaway profile `webcheck2`）：设置行、点击写入 `cordis.patch.yml`、**重启后仍为关闭**、**卸载后行消失**、控制台两条我们自己的警告；入口是 `账号菜单`（更多）→ `menuitem "设置"`，菜单里标出快捷键 `Ctrl+Alt+,`。
+- [x] **T052** 文档：`evidence.md` 头注改 `0.2.9`、E-BLD/E-CHK/E-HARN 用 `0.2.9` 单次运行输出整段重写、E-PROBE 补 P21–P23、E-LIVE 增加 `0.2.8` 复核小节（重启保持、卸载回退、两条警告）并把 console 行改成按版本记录、`spec.md` Status 与完成段改 `0.2.9`、`plan.md`/`quickstart.md` 计数改 49 / 287、quickstart 探针列表补 F14/F15/P19–P23。
+- [ ] **T053** 发版 `0.2.9`：重建 → 两套全绿 → commit → tag `v0.2.9` → Actions 发布 → 装回 `desktop` → 补 E-PUB/E-INS。
+- [ ] **T054** 第五轮两份独立评审，两份 PASS 才把 feature 002 标记完成。
+
 ## Dependencies
 
 - Phase 2 依赖 T002/T003（段文本两档）先用静态断言钉住契约，再写客户端。
@@ -95,7 +107,7 @@
 | Host half: `Config` with `visualFirst` (default on, `.volatile()`), two-tier briefing, `claimSettingsPage` | done, 47 static checks |
 | Client half: settings row on `settings.general.item`, `configForms` read/write, revert on refusal | done, 283 browser checks in the published `0.2.8` (`0.2.7` shipped the same code with two shape-only static checks, `0.2.6` shipped 280) (`0.2.5` shipped 274, `0.2.4` 271, `0.2.3` 260, `0.2.2` 252); the row reads the hook prop the host builds (`useVisualFirst`) and keeps the store path for hosts that send `hooks`; no disabled state, no timer; a refused write restores the host's current value |
 | Eight-language rename (locale, DETAIL alt line, 8 READMEs, index, package description) | done; DETAIL keeps exactly one image line (its alt sentence carries the new name) |
-| Evidence | `evidence.md` (this feature): `0.2.8` build and 47 / 283, fourteen falsifiability probes (F1, F3–F15), E-LIVE records the row and the switch in a running host; gaps G2–G8 and G11–G14 open, G1 discharged by `0.2.6` (web surface only), G9/G10 by `0.2.5` |
+| Evidence | `evidence.md` (this feature): `0.2.9` build and 49 / 287, fourteen falsifiability probes (F1, F3–F15), E-LIVE records the row and the switch in a running host; gaps G2–G8 and G11–G14 open, G1 discharged by `0.2.6` (web surface only), G9/G10 by `0.2.5` |
 | Not done | SC-005's one-second timing (G14), the desktop window's settings entry (the row was observed through `dsh web`; the desktop build opens settings as a separate document that this window offers no control for — G1 records the limit), the host write path to `settings.update` seen directly (G2 records what was observed instead), 200%/360px layout assertion for the row (G3), pixel comparison (G5), E1–E14 end-to-end rows (G6), SC-001 five sample requests (G7), schemastery import failure path (G8) |
 
 **2026-11-24：** T021 的两项评审曾均 PASS（实现 `review-impl-002f`、文档 `review-docs-002m`），但那是在没有真机观察的前提下——按用户建议用 `dsh web` 起独立 profile 复现后，`0.2.5` 的设置行在真实设置页里渲染为空（T024），`0.2.6` 修好三处并补了 2 条静态检查、6 条夹具与 2 条探针（T025–T027），真机观察写进 `evidence.md` 的 E-LIVE（T028），G1 关闭（限 Web 界面）。发版与再评审见 T029/T030。

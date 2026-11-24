@@ -63,7 +63,11 @@ function optional(ctx, name) {
   try {
     return ctx[name]
   } catch (error) {
-    report(name, error)
+    // A strict host answers every undeclared read with exactly this sentence.
+    // It is the expected path here, not a fault: the caller drops only the
+    // optional surface that needed the service. Reporting it put two warnings in
+    // every reader's console (seen 2026-11-24 in a web session).
+    if (!/without inject/.test(String(error && error.message))) report(name, error)
     return undefined
   }
 }
