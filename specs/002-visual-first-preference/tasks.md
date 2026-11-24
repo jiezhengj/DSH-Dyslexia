@@ -196,7 +196,7 @@ has an assertion that executes the shape it protects.
 - [x] **T126** configForms 晚到有了两条形状不同的断言（`a host that gains configForms after apply still gets the settings row`、`a row that arrives late is published, ordered and localised like an early one`），静态侧补 `ctx.inject(['configForms']` 与 `wireOnce(child)`（探针 N4）。
 - [x] **T127** 第十五轮文档 18 条逐条修：`spec.md` 的轮次归属与版本数、`plan.md`/`quickstart.md`/`tasks.md` 的探针算术与树标注、`evidence.md` 的 P28–P35 拆树与 `450-477`、`contracts/host-prompt.md` 与 `data-model.md` 的 13 条无条件措辞、`research.md` 的自绘常量说明。
 - [x] **T128** 证据按 `0.2.19` 单次运行重生成（E-BLD/E-CHK/E-HARN，63/302、`sources sha256:46c72540…`、文件 `D2C571A9…`），头注版本链补 `0.2.19 → 0.2.18 → 0.2.17 → 0.2.16 → 0.2.15`，E-PROBE 加 N1–N4 四行。
-- [ ] **T129** 发版 `0.2.19` 并装回 `desktop`。
+- [x] **T129** 发版 `0.2.19` 并装回 `desktop`：commit `34a1376`、tag `v0.2.19`、run `45363329816`（success）、shasum `db0e3ec765f67b6320881fee7ac450d110766595`、logIndex `4074152601`、33 文件；装回后依赖 `"0.2.19"`、安装副本 `client.js` 788314 字节、SHA-256 `D2C571A9…AAEA` 与仓库根一致、`locale/` 8、`docs/` 9、包内 0.2.19。
 - [ ] **T130** 第十六轮两份独立评审；两份 PASS 才把 feature 002 标记完成。
 
 ## Dependencies

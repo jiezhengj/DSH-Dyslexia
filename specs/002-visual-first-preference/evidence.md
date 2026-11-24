@@ -1488,9 +1488,51 @@ $ plugin_manager install_bundle @jiezhengj/dsh-dyslexia@0.2.18
 | --- | --- |
 | `profiles/desktop/package.json` dependency | `"@jiezhengj/dsh-dyslexia": "0.2.18"` |
 | installed `client.js` size | 788,314 bytes (same as the repository root) |
-| installed `client.js` SHA-256 | `D2C571A9C54650981520B4B040954F593978975EC3BD3865F0CCB2EB4B96AAEA` (identical to the repository root) |
+| installed `client.js` SHA-256 | `CF19A8E078AAFF5F7A43F131C0456380D030A0A36462A7E433879B765FD12187` (identical to the repository root) |
 | `locale/` and `docs/` | 8 and 9 files |
 | installed `package.json` version | `0.2.18` |
 
 This release changes what the evidence says, not what a reader sees: the build line now names its own version
 and fingerprint, the probe tables name their trees, and the same `src/` produces the same chunk.
+
+## E-PUB · 0.2.19
+
+| Field | Value |
+| --- | --- |
+| commit | `34a1376` |
+| tag | `v0.2.19` |
+| workflow run | `45363329816` (success) |
+| tarball shasum | `db0e3ec765f67b6320881fee7ac450d110766595` |
+| provenance | transparency log index `4074152601` |
+| packed files | 33 |
+
+```
+check-bundle: @jiezhengj/dsh-dyslexia@0.2.19 | client.js 788314 bytes | sources sha256:46c72540aca269e6220283206e48f722 | all 63 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.2.19 | client.js 788314 bytes | sources sha256:46c72540aca269e6220283206e48f722 | all 302 checks passed (/usr/bin/google-chrome)
+npm notice shasum: db0e3ec765f67b6320881fee7ac450d110766595
+npm notice total files: 33
+```
+
+The registry copy of the tarball became available on the 29th poll (10 s apart), the same wait as every release
+before it.
+
+## E-INS · 0.2.19
+
+```
+$ plugin_manager remove_bundle @jiezhengj/dsh-dyslexia   # was 0.2.18
+- @jiezhengj/dsh-dyslexia 0.2.18
+$ plugin_manager install_bundle @jiezhengj/dsh-dyslexia@0.2.19
++ @jiezhengj/dsh-dyslexia 0.2.19
+```
+
+| Checked | Observed |
+| --- | --- |
+| `profiles/desktop/package.json` dependency | `"@jiezhengj/dsh-dyslexia": "0.2.19"` |
+| installed `client.js` size | 788,314 bytes (same as the repository root) |
+| installed `client.js` SHA-256 | `D2C571A9C54650981520B4B040954F593978975EC3BD3865F0CCB2EB4B96AAEA` (identical to the repository root) |
+| `locale/` and `docs/` | 8 and 9 files |
+| installed `package.json` version | `0.2.19` |
+
+This release changes what the checks can see, not what a reader sees: the network and `require` guards read
+identifiers instead of substrings, the fixture guard rejects constant comparisons, and the late-arriving
+`configForms` wiring is now watched by both suites.
