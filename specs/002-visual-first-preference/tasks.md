@@ -217,7 +217,8 @@ has an assertion that executes the shape it protects.
 - [x] **T140** `data-failed`：`settings.js` 的状态 span 现在写 `'data-failed': state === 'failed' ? 'true' : 'false'`；类名检查扩展为"每个写出的 `data-*` 都要有样式规则"并显式要求 `data-failed` 存在。探针 R3：`FAIL every class the row writes has a rule in the stylesheet — the row never marks a refused write`、`2 failed, 63 passed`（另一条是陈旧产物）。
 - [x] **T141** `optional()` 的吞异常收窄：新增 `refusedOptional(name, error)`（消息须含 `/without inject/` 且含该服务名），旧 grep 检查换成执行式 `only the expected refusal stays quiet, and only for the service asked for`。探针 R4（`return true`）：`FAIL … another service's refusal was swallowed:`、`1 failed, 64 passed`。
 - [x] **T142** 文档与证据：`spec.md` Status 按 `0.2.21` 重写（65 / 304、788739 字节、`77386c68…`、二十二个版本、六十四条探针编号）、FR-012 指向新检查；`plan.md` / `quickstart.md` / `checklists/implementation.md` / 本文件计数与枚举同步；`evidence.md` 头注、E-BLD/E-CHK/E-HARN 三块（`0.2.21` 单次运行）、E-PROBE 前言与 R1–R4 四行、G13 改写。
-- [ ] **T143** 上一版之后的复评：发版 `0.2.21`、装回 `desktop`，再请两份独立评审（两份都 PASS 才把 feature 002 标记完成）。
+- [x] **T143** 发版与装回：commit `0919094`、tag `v0.2.21`、run `45378714542`（CI 65 / 304）、shasum `895bc5d0…f76c`、logIndex `4076356669`、33 文件；registry tarball 第 29 次轮询 200；`remove_bundle`（卸 0.2.20）→ `install_bundle @0.2.21`，依赖 `"0.2.21"`、安装副本 788739 字节 / `5B27B049…51A8` 与仓库根一致、`locale/` 8、`docs/` 9；E-PUB/E-INS · 0.2.21 已写入 `evidence.md`。
+- [ ] **T144** 第十八轮两份独立评审：文档（一致性/诚实性/行号）与实现（可证伪性，含对网络间谍与命名检查的新绕过尝试）；两份都 PASS 才把 feature 002 标记完成。
 
 ## Dependencies
 
