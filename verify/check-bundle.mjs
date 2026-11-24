@@ -423,7 +423,11 @@ check('client.js never reaches the network', () => {
     [/\[\s*\[/, () => 'indexes with a computed key'],
     [/\bString\s*\.\s*fromCharCode\b|\batob\b/, () => 'builds a string from character codes'],
     [/setAttribute\s*\(\s*['"](?:src|href)['"]/, () => 'writes a URL onto an element'],
-  ]
+
+    [/\bcreateElement\s*\(\s*['"](?:object|video|audio|source|embed|track|frame|portal)['"]/, () => 'creates a media element that loads by itself'],
+    [/\bsetAttribute\s*\(\s*['"](?:data|poster|srcset|action|formaction)['"]/, () => 'writes a URL onto an element'],
+    [/@import/, () => 'imports a stylesheet'],
+    [/\burl\s*\(/, () => 'loads a stylesheet resource'],  ]
   // A URL can also be hidden as a pair of harmless-looking strings, so every
   // literal in those files is read: `'ht' + 'tps://…'` still contains `://`.
   // A global reached through an alias (`const g = globalThis; g[k](…)`) is a
@@ -449,7 +453,7 @@ check('client.js never reaches the network', () => {
       const hit = pattern.exec(withoutComments)
       assert(!hit, `${relative} ${describe(hit)} at ${hit ? withoutComments.slice(0, hit.index).split('\n').length : 0}`)
     }
-    const literals = withoutComments.match(/'[^'\n]*'|"[^"\n]*"/g) || []
+    const literals = withoutComments.match(/'[^'\n]*'|"[^"\n]*"|`[^`]*`/g) || []
     for (const literal of literals) {
       for (const pattern of textBans) {
         assert(!pattern.test(literal), `${relative} carries a network token in a literal: ${literal.slice(0, 40)}`)
@@ -1690,6 +1694,32 @@ check('a new write clears the sentence the last one left', () => {
   return 'a second press starts silent, then says what happened'
 })
 
+check('the engine is asked for the direction and the size it needs', () => {
+  const figure = readCode('src/client/figure.js')
+  const wanted = [
+    [/autoDirection:\s*true/, 'the engine is not told to lay the diagram out by itself'],
+    [/directionBreakpoint:\s*640/, 'the width where the direction flips is not 640'],
+    [/padding:\s*8/, 'the padding around the drawing is not 8'],
+    [/responsive:\s*true/, 'the drawing is not told to follow its column'],
+    [/zoom:\s*\{\s*controls:\s*true,\s*maxScale:\s*4,\s*labels\s*\}/, 'the zoom controls are not asked for with their labels'],
+    [/fontSize:\s*figureFontSize\(doc\)/, 'the font size is not read from the page'],
+  ]
+  const missing = wanted.filter(([pattern]) => !pattern.test(figure)).map(([, why]) => why)
+  assert(missing.length === 0, missing.join('; '))
+  return `${wanted.length} engine options pinned to the values the contract promises`
+})
+
+check('the network spy records every call, without a filter', () => {
+  const harness = readFileSync(join(ROOT, 'verify', 'harness', 'index.html'), 'utf8')
+  const note = functionBody(harness.slice(harness.indexOf('window.__netCalls = []')), 'const note = (name) => {')
+  const pushes = harness.split('__netCalls.push').length - 1
+  assert(pushes === 1, `the fixture pushes into the call log ${pushes} times, so a filter can hide one`)
+  assert(/window\.__netSeen\s*\+=\s*1/.test(note), 'the spy keeps no count of its own')
+  assert(/window\.__netCalls\.push\(name\)/.test(note), 'the spy keeps a call log of its own')
+  assert(!/\bif\b|\btest\s*\(|\.filter\s*\(|\.some\s*\(/.test(note), 'the spy only records some calls')
+  return 'one unconditional push, one independent count'
+})
+
 check('the fixtures assert what the fixes promise, and can fail', () => {
   // Comments are stripped before scanning: a decoy name inside a `//` comment, or
   // an emptied assertion body, must not keep this check green.
@@ -1803,6 +1833,11 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
       '\\?\\s*[^:]*:\\s*(?:true|false)\\b',
     ].join('|'),
   )
+  // An identifier bound to a literal in the same file is a constant whatever its
+  // case, so `const alive = true; expect(!!alive === true, ...)` is caught too.
+  const literalBound = [...new Set([...harness.matchAll(/\bconst\s+([A-Za-z_$][\w$]*)\s*=\s*(?:true|false|null|-?\d+(?:\.\d+)?|'[^']*'|"[^"]*"|`[^`]*`)\s*(?![+\-*/%]|&&|\|\|)/g)].map((hit) => hit[1]))]
+    .filter((name) => !/^(?:CODE|LANGS|LANGS_|EXACT)/.test(name))
+    .map((name) => name.replace(/[$]/g, '\\$'))
   const hollow = needed.filter((name) => {
     const at = harness.indexOf(name)
     const open = harness.lastIndexOf('expect(', at)
@@ -1819,7 +1854,15 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
       selfComparison(head) ||
       // `!!CONST === true` and `[CONST].length > 0` read a fixture constant and are
       // true whatever the product does; the negations and arrays around a real read stay.
-      /^(?:!!?\s*[A-Z][A-Z0-9_$]*\s*(?:===|!==)|\[\s*[A-Z][A-Z0-9_$]*\s*\](?:\s*\.\s*length)?\s*(?:===|!==|>=|<=|>|<))/.test(head) ||
+      // The name does not have to be upper case: any identifier this file binds to a
+      // literal is a constant too, so `const alive = true` joins the list.
+      /^(?:!!?\s*[A-Za-z_$][\w$]*\s*(?:===|!==)|\[\s*[A-Za-z_$][\w$]*\s*\](?:\s*\.\s*length)?\s*(?:===|!==|>=|<=|>|<))/.test(head) ||
+      literalBound.some(
+        (name) =>
+          new RegExp(
+            '^(?:!!?\\s*' + name + '\\s*(?:===|!==)|\\[\\s*' + name + '\\s*\\](?:\\s*\\.\\s*length)?\\s*(?:===|!==|>=|<=|>|<)|typeof\\s+' + name + '\\s*(?:===|!==))',
+          ).test(head),
+      ) ||
       constantBranch.test(head) ||
       constantOnly(head)
     )
@@ -1848,9 +1891,11 @@ check('every class the row writes has a rule in the stylesheet', () => {
   // The attribute name alone proves nothing: a marker written as a constant is a
   // dead selector. The value has to be the state, so the refusal colours itself.
   assert(
-    /'\s*data-failed\s*'\s*:\s*state\s*===/.test(settings),
+    /'\s*data-failed\s*'\s*:\s*state\s*===\s*'failed'\s*\?\s*'true'\s*:\s*'false'/.test(settings),
     'the refused marker never follows the state',
   )
+  assert(settings.indexOf("'aria-live': 'polite'") !== -1, 'the status sentence is never announced')
+  assert(settings.indexOf("role: 'status'") !== -1 || settings.indexOf('role: "status"') !== -1, 'the status sentence is not a status region')
   for (const state of states) {
     assert(css.includes(`[${state}="true"]`), `settings.js writes ${state} and no rule styles it`)
   }
@@ -1859,7 +1904,7 @@ check('every class the row writes has a rule in the stylesheet', () => {
 
 /* ---------------------------------------------------------------- report */
 
-const EXPECTED_CHECKS = 65
+const EXPECTED_CHECKS = 67
 if (notices.length + failures.length !== EXPECTED_CHECKS) {
   failures.push(
     `[FAIL] the suite has ${notices.length + failures.length} checks, expected ${EXPECTED_CHECKS}: a check was added or removed without updating this number`,

@@ -67,8 +67,10 @@
       // inferred from source text: every socket-shaped API is replaced before
       // the chunk is loaded, so any use is recorded (and refused) here.
       window.__netCalls = []
+      window.__netSeen = 0
       ;(function spyNetwork() {
         const note = (name) => {
+          window.__netSeen += 1
           window.__netCalls.push(name)
         }
         window.fetch = function () {
@@ -122,7 +124,12 @@
         }
         const attribute = Element.prototype.setAttribute
         Element.prototype.setAttribute = function (name, value) {
-          if (/^(?:src|href)$/i.test(String(name))) note('element ' + String(name))
+          if (
+            /^(?:src|href|data|poster|srcset|action)$/i.test(String(name)) &&
+            /^(?:https?:)?\/\//i.test(String(value))
+          ) {
+            note('element ' + String(name))
+          }
           return attribute.apply(this, arguments)
         }
         const imageSrc = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src')
@@ -352,6 +359,10 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
               const marker = view.stage.querySelector('.dsh-dyslexia-source code')
               expect(!!marker && /(^| )language-mermaid( |$)/.test(marker.className), `[${lang}] the expanded source keeps its fence language`, marker ? marker.className : 'no marker')
               expect(view.stage.querySelector('[role="presentation"]') !== null, `[${lang}] the mount point is presentational`)
+              toggle.click()
+              await tick(30)
+              expect(toggle.getAttribute('aria-expanded') === 'false', `[${lang}] a second click closes the panel it opened`)
+              expect(buttonsIn(view.stage)[0] === exact.show, `[${lang}] the button says show again once closed`, buttonsIn(view.stage)[0])
             } else {
               bad(`[${lang}] the actions bar is missing`)
             }
@@ -1699,6 +1710,11 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             'a saved write says so in the status sentence',
             savedStatus ? savedStatus.textContent : 'no status',
           )
+          expect(
+            !!savedStatus && savedStatus.getAttribute('data-failed') === 'false',
+            'a saved write does not mark the row as failed',
+            savedStatus ? String(savedStatus.getAttribute('data-failed')) : 'no status',
+          )
           // A rejected write must put the switch back and say the value did
           // not change; showing the intended value would be a lie.
           settingsFailNext = true
@@ -1719,6 +1735,11 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             !!failedStatus && failedStatus.textContent === SETTINGS_FAILED,
             'a rejected write explains itself in the status sentence',
             failedStatus ? failedStatus.textContent : 'no status',
+          )
+          expect(
+            !!failedStatus && failedStatus.getAttribute('data-failed') === 'true',
+            'a refused write marks the row as failed',
+            failedStatus ? String(failedStatus.getAttribute('data-failed')) : 'no status',
           )
           // A refusal is a fulfilled `false`, not a rejection: the host answered
           // and said no. The switch must go back to the value in effect and the
@@ -2417,13 +2438,18 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           (() => {
             if (window.__netSpyArmed !== true) return false
             const before = window.__netCalls.length
+            const beforeSeen = window.__netSeen
             try {
               window.fetch('data:,probe')
             } catch (error) {
               // a spy that throws instead of recording is not armed either
             }
-            const recorded = window.__netCalls.length === before + 1 && window.__netCalls[before] === 'fetch'
+            const recorded =
+              window.__netCalls.length === before + 1 &&
+              window.__netCalls[before] === 'fetch' &&
+              window.__netSeen === beforeSeen + 1
             window.__netCalls.splice(before, 1)
+            window.__netSeen -= 1
             return recorded
           })(),
           'the network spy is armed and records a call',
@@ -2468,6 +2494,26 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
         } catch (error) {
           bad('fixture aborted', String(error && error.stack ? error.stack.split('\n')[0] : error))
         }
+
+        // A stylesheet import or a media element loads with no call at all, so
+        // the document itself is checked for a remote resource after the run.
+        const remote = []
+        Array.prototype.forEach.call(
+          document.querySelectorAll('style, object, video, audio, source, embed, track, iframe, img, link, script'),
+          (element) => {
+            const text = element.tagName === 'STYLE' ? element.textContent || '' : ''
+            if (/@import|url\(\s*['"]?(?:https?:)?\/\//i.test(text)) remote.push('STYLE text')
+            Array.prototype.forEach.call(element.attributes, (attribute) => {
+              if (
+                /^(?:src|href|data|poster|srcset)$/i.test(attribute.name) &&
+                /^(?:https?:)?\/\//i.test(attribute.value)
+              ) {
+                remote.push(element.tagName + ' ' + attribute.name)
+              }
+            })
+          },
+        )
+        expect(remote.length === 0, 'no element in this run loads a remote resource', remote.join(', ') || 'none')
 
         // Recorded by the spies installed before the chunk was loaded, so this
         // covers the whole run: load, apply, every render and every teardown.
