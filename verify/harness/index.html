@@ -105,6 +105,38 @@
             return false
           }
         }
+        // Code built at run time and URLs written onto elements are the two
+        // routes a piece-built call takes; both are recorded here so a run
+        // cannot reach the network and pass.
+        window.__codeCalls = []
+        const noteCode = (name) => {
+          window.__codeCalls.push(name)
+        }
+        window.Function = function () {
+          noteCode('Function')
+          throw new Error('the fixture does not build code from strings')
+        }
+        window.eval = function () {
+          noteCode('eval')
+          throw new Error('the fixture does not evaluate strings')
+        }
+        const attribute = Element.prototype.setAttribute
+        Element.prototype.setAttribute = function (name, value) {
+          if (/^(?:src|href)$/i.test(String(name))) note('element ' + String(name))
+          return attribute.apply(this, arguments)
+        }
+        const imageSrc = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src')
+        if (imageSrc && imageSrc.set) {
+          Object.defineProperty(HTMLImageElement.prototype, 'src', {
+            configurable: true,
+            get: imageSrc.get,
+            set(value) {
+              note('image src')
+              return imageSrc.set.call(this, value)
+            },
+          })
+        }
+        window.__netSpyArmed = true
       })()
     </script>
     <script src="../../client.js"></script>
@@ -2379,6 +2411,31 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             'a host that refuses undeclared services is still served without a throw',
             strictThrew ? String(strictThrew.message) : 'quiet',
           )
+        // If the spy above is removed or disabled the next fixture turns red,
+        // because it makes one real call and expects it to be recorded.
+        expect(
+          (() => {
+            if (window.__netSpyArmed !== true) return false
+            const before = window.__netCalls.length
+            try {
+              window.fetch('data:,probe')
+            } catch (error) {
+              // a spy that throws instead of recording is not armed either
+            }
+            const recorded = window.__netCalls.length === before + 1 && window.__netCalls[before] === 'fetch'
+            window.__netCalls.splice(before, 1)
+            return recorded
+          })(),
+          'the network spy is armed and records a call',
+          window.__netCalls.length === 0 ? 'spy answered nothing' : window.__netCalls.join(', '),
+        )
+
+        expect(
+          window.__codeCalls.length === 0,
+          'nothing in this run built code at run time',
+          window.__codeCalls.join(', '),
+        )
+
           expect(
             strictHost.defs.some((entry) => entry.def && entry.def.name === 'settings.general.item'),
             'a host whose services must be read through ctx.get still gets the row',

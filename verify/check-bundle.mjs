@@ -222,9 +222,13 @@ check('every interface language names the plugin the way it was promised', () =>
     if (!String(meta.description || '').startsWith(expected)) {
       problems.push(`locale/${language}.json description does not open with the name`)
     }
-    if (!String(meta.detail ? read(meta.detail) : '').includes(expected)) {
-      problems.push(`${meta.detail} does not carry the name`)
-    }
+    const detail = String(meta.detail ? read(meta.detail) : '')
+    if (!detail.includes(expected)) problems.push(`${meta.detail} does not carry the name`)
+    // The drawing's alt text is what a reader who cannot see the page hears, so
+    // the promise is checked on the sentence that is actually read aloud.
+    const alt = /!\[([^\]]*)\]\(/.exec(detail)
+    if (!alt) problems.push(`${meta.detail} has no image with alt text`)
+    else if (!alt[1].includes(expected)) problems.push(`${meta.detail} alt text is ${JSON.stringify(alt[1])}`)
     // README.md is the English landing page; every other language has its own file.
     const readmes = language === 'en' ? ['README.md', 'README.en.md'] : [`README.${language}.md`]
     for (const readme of readmes) {
@@ -398,11 +402,12 @@ check('client.js never reaches the network', () => {
   const withoutNamespaces = code.replace(/www\.w3\.org[^"'\s]*/g, '')
   const found = /https?:\/\/[^\s"'`]*/.exec(withoutNamespaces)
   assert(!found, `client.js reaches a URL: ${found && found[0]}`)
-  // The chunk carries 733 KB of vendored engine, so a global lookup written as a
-  // string key (`window['fetch']`) is hunted in the plugin's own sources, where a
-  // file is small enough to read and every one of them is code this repository
-  // owns. Concatenating the key (`window['fet' + 'ch']`) does not help either: the
-  // bracket form itself is refused.
+  // The chunk carries 733 KB of vendored engine, so the plugin's own sources are the
+  // place where every file is small enough to read and every one of them is code this
+  // repository owns. A name can be spelled in pieces, so the bans read the shapes a
+  // piece-built call still has to take: a call through a computed member, a window
+  // pulled out of the document, a string built from character codes, and a URL
+  // written onto an element as an attribute.
   const sources = ['index.js', 'src/client/entry.js', 'src/client/view.js', 'src/client/settings.js', 'src/client/figure.js', 'src/client/i18n.js', 'src/client/styles.js']
   const shapeBans = [
     [/\b(window|globalThis|self|navigator|document|this)\s*\[/, (m) => `is indexed with a bracket`],
@@ -413,6 +418,11 @@ check('client.js never reaches the network', () => {
     [/\.src\s*=/, () => 'assigns an element URL'],
     [/\bimport\s*\(/, () => 'uses a dynamic import'],
     [/(?:[A-Za-z0-9_$)\]])\s*\[\s*['"]/, () => 'indexes with a string key'],
+    [/\]\s*\(/, () => 'calls through a computed member'],
+    [/(?:defaultView|ownerDocument|contentWindow)\s*\[/, () => 'indexes a window out of the document'],
+    [/\[\s*\[/, () => 'indexes with a computed key'],
+    [/\bString\s*\.\s*fromCharCode\b|\batob\b/, () => 'builds a string from character codes'],
+    [/setAttribute\s*\(\s*['"](?:src|href)['"]/, () => 'writes a URL onto an element'],
   ]
   // A URL can also be hidden as a pair of harmless-looking strings, so every
   // literal in those files is read: `'ht' + 'tps://…'` still contains `://`.
@@ -430,6 +440,11 @@ check('client.js never reaches the network', () => {
   for (const relative of sources) {
     const source = read(relative)
     const withoutComments = stripComments(source)
+    // The reading font size is the one thing the row needs a window for. Any other
+    // use of `defaultView` hands the page a global to call, which is how a call
+    // built from pieces used to reach the network while both suites stayed green.
+    const withoutFont = withoutComments.replace(/defaultView\s*\.\s*getComputedStyle\b/g, '')
+    assert(!/\bdefaultView\b/.test(withoutFont), `${relative} reaches a window through defaultView`)
     for (const [pattern, describe] of globalBans.concat(shapeBans)) {
       const hit = pattern.exec(withoutComments)
       assert(!hit, `${relative} ${describe(hit)} at ${hit ? withoutComments.slice(0, hit.index).split('\n').length : 0}`)
@@ -1623,6 +1638,8 @@ check('a missing engine is told apart from a broken diagram', () => {
       collisions.push(`${language}: missing sentence`)
     } else if (new Set(sentences).size !== 3) {
       collisions.push(`${language}: two causes share one sentence`)
+    } else if (/^(zh|ja|ru)$/.test(language) && sentences.some((sentence) => /[A-Za-z]{2,}/.test(sentence))) {
+      collisions.push(`${language}: a Latin word sits inside a translated sentence`)
     }
   }
   assert(collisions.length === 0, collisions.join('; '))
@@ -1800,6 +1817,9 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
       !mentionsFixtureName(head) ||
       !comparesOrQueries(head) ||
       selfComparison(head) ||
+      // `!!CONST === true` and `[CONST].length > 0` read a fixture constant and are
+      // true whatever the product does; the negations and arrays around a real read stay.
+      /^(?:!!?\s*[A-Z][A-Z0-9_$]*\s*(?:===|!==)|\[\s*[A-Z][A-Z0-9_$]*\s*\](?:\s*\.\s*length)?\s*(?:===|!==|>=|<=|>|<))/.test(head) ||
       constantBranch.test(head) ||
       constantOnly(head)
     )
@@ -1825,6 +1845,12 @@ check('every class the row writes has a rule in the stylesheet', () => {
   // happens to be written stays green when the write is deleted.
   const states = [...settings.matchAll(/'(data-[a-z-]+)':/g)].map((hit) => hit[1])
   assert(states.indexOf('data-failed') !== -1, 'the row never marks a refused write')
+  // The attribute name alone proves nothing: a marker written as a constant is a
+  // dead selector. The value has to be the state, so the refusal colours itself.
+  assert(
+    /'\s*data-failed\s*'\s*:\s*state\s*===/.test(settings),
+    'the refused marker never follows the state',
+  )
   for (const state of states) {
     assert(css.includes(`[${state}="true"]`), `settings.js writes ${state} and no rule styles it`)
   }
