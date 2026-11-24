@@ -1,6 +1,6 @@
 # Evidence — feature 002: the preference switch and the new name
 
-This file records what was actually observed while building feature 002. Each block is one run on one tree — E-PROBE is the exception, collecting one run per probe and naming each group's tree in its intro; no block mixes trees silently. E-PUB/E-INS exist for all six published versions — `0.2.0`, `0.2.1`, `0.2.2`, `0.2.3`, `0.2.4` and `0.2.5` — and for no unpublished tree: every version that was cut has both blocks, and `0.2.5` is one of them (commit `0be17fe`, tag `v0.2.5`, run `45240437544`, installed into the live `desktop` profile — see "E-PUB · 0.2.5" and "E-INS · 0.2.5" below). E-BLD · 0.2.1, E-CHK and E-HARN quote the `0.2.1` tree only (44 static, 251 browser; the `0.2.5` build line is the one other block, `E-BLD · 0.2.5` below, and the `0.2.5` check runs are summary lines in "E-CHK/E-HARN · 0.2.5" below, not transcripts; E-CHK is the complete stdout of that run — 44 `ok` lines plus the summary — while the 52 deliberately triggered `warn`/stack lines went to stderr). The current tree is `0.2.5`, committed, released and installed — the same tree this file's runs measured: 45 static and 274 browser checks, `client.js` 783360 bytes / 781845 characters, sources sha256 `2b5728286c556d8dbaaa349cc9fb8ec5`, file SHA-256 `279c33781ef551e3d3bbb0aabf3d37a681fd5da4f4738c29c724b596667a8766`. The tree `0.2.5` replaced in the profile is `0.2.4` (45 static and 271 browser checks, `client.js` 781963 bytes, sources sha256 `9f13d80f0230257569dd0e525c6eb048`). E-PROBE records F3–F8 on `0.2.1`, F1/F9 on the `0.2.3` tree, and F10–F13 on the `0.2.5` tree; the `0.2.4` tree itself was never probed, and `0.2.5` supersedes it (G10 discharged).
+This file records what was actually observed while building feature 002. Each block is one run on one tree — E-PROBE is the exception, collecting one run per probe and naming each group's tree in its intro; no block mixes trees silently. E-PUB/E-INS exist for all seven published versions — `0.2.0`, `0.2.1`, `0.2.2`, `0.2.3`, `0.2.4`, `0.2.5` and `0.2.6` — and for no unpublished tree: every version that was cut has both blocks, and `0.2.6` is one of them (commit `c3520c2`, tag `v0.2.6`, run `45302814465`, installed into the live `desktop` profile — see "E-PUB · 0.2.6" and "E-INS · 0.2.6" below). E-BLD · 0.2.1, E-CHK and E-HARN quote the `0.2.1` tree only (44 static, 251 browser; the `0.2.5` build line is the one other block, `E-BLD · 0.2.5` below, and the `0.2.5` check runs are summary lines in "E-CHK/E-HARN · 0.2.5" below, not transcripts; E-CHK is the complete stdout of that run — 44 `ok` lines plus the summary — while the 52 deliberately triggered `warn`/stack lines went to stderr). The current tree is `0.2.6`, committed, released and installed — the same tree this file's runs measured: 47 static and 280 browser checks, `client.js` 787325 bytes / 785808 characters, sources sha256 `b69ddecef48b3acc5a9b51e2a1a27bc1`, file SHA-256 `63b5517e3074f37d44cb8f63eb84593426f3b451b1fe3951336a125e16d6d786`. The tree `0.2.6` replaced in the profile is `0.2.5` (45 static and 274 browser checks, `client.js` 783360 bytes, sources sha256 `2b5728286c556d8dbaaa349cc9fb8ec5`). E-PROBE records F3–F8 on `0.2.1`, F1/F9 on the `0.2.3` tree, and F10–F13 on the `0.2.5` tree; the `0.2.4` tree itself was never probed, and `0.2.5` supersedes it (G10 discharged).
 
 ## E-BLD · 0.2.1 build
 
@@ -900,3 +900,24 @@ run-harness: @jiezhengj/dsh-dyslexia@0.2.5 | client.js 783360 bytes | sources sh
 - `remove_bundle @jiezhengj/dsh-dyslexia` removed `0.2.4` (pnpm printed `- @jiezhengj/dsh-dyslexia 0.2.4`), then `install_bundle @jiezhengj/dsh-dyslexia@0.2.5` returned `application: applied`, `version: 0.2.5` (pnpm `+ @jiezhengj/dsh-dyslexia 0.2.5`, and it added a `minimumReleaseAgeExclude` line for this version)
 - installed copy at `C:\Users\jiezhengj\.dsh\profiles\desktop\node_modules\@jiezhengj\dsh-dyslexia`: `package.json` version `0.2.5`; `client.js` 783360 bytes, SHA-256 `279C33781EF551E3D3BBB0AABF3D37A681FD5DA4F4738C29C724B596667A8766`, identical to the repository copy; `locale/` 8 files; `docs/` 9 entries; the profile `package.json` dependency reads `"@jiezhengj/dsh-dyslexia": "0.2.5"`
 - this is a code release: a window that was already open keeps the `0.2.4` chunk until the app restarts, so the live window has still not shown this build — T020 and G1 stay open
+
+## E-PUB · 0.2.6
+
+- commit `c3520c2` ("0.2.6: the settings row the host actually renders"), tag `v0.2.6` ("0.2.6: the settings row the host actually renders"), both pushed to `main`
+- GitHub Actions run `45302814465`, conclusion `success`, workflow `publish`, head branch `v0.2.6`
+- CI lines from that run (the same bytes this tree measures; only the browser path differs):
+
+```
+check-bundle: @jiezhengj/dsh-dyslexia@0.2.6 | client.js 787325 bytes | sources sha256:b69ddecef48b3acc5a9b51e2a1a27bc1 | all 47 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.2.6 | client.js 787325 bytes | sources sha256:b69ddecef48b3acc5a9b51e2a1a27bc1 | all 280 checks passed (/usr/bin/google-chrome)
+npm notice shasum: 1deccbbf61f9068c22ff418980fb16d960bf5e4b
+npm notice total files: 33
+npm notice publish Provenance statement published to transparency log: https://search.sigstore.dev/?logIndex=4063373865
+```
+
+## E-INS · 0.2.6
+
+- registry `https://registry.npmjs.org/@jiezhengj/dsh-dyslexia/0.2.6` answered `version: 0.2.6`, `shasum: 1deccbbf61f9068c22ff418980fb16d960bf5e4b`; the tarball `dsh-dyslexia-0.2.6.tgz` answered HEAD 200 on the first poll (20 s apart), so this release copied faster than the earlier ones
+- `remove_bundle @jiezhengj/dsh-dyslexia` removed `0.2.5` (pnpm printed `- @jiezhengj/dsh-dyslexia 0.2.5`), then `install_bundle @jiezhengj/dsh-dyslexia@0.2.6` returned `application: applied`, `version: 0.2.6` (pnpm `+ @jiezhengj/dsh-dyslexia 0.2.6`)
+- installed copy at `C:\Users\jiezhengj\.dsh\profiles\desktop\node_modules\@jiezhengj\dsh-dyslexia`: `package.json` version `0.2.6`; `client.js` 787325 bytes, SHA-256 `63B5517E3074F37D44CB8F63EB84593426F3B451B1FE3951336A125E16D6D786`, identical to the repository copy; `locale/` 8 files; `docs/` 9 entries; the profile `package.json` dependency reads `"@jiezhengj/dsh-dyslexia": "0.2.6"`
+- this is a code release: a window that was already open keeps the `0.2.5` chunk until the app restarts. The settings row was observed for this same code through `dsh web` on a throwaway profile (E-LIVE); the desktop window's own settings entry stays unreachable in this host build, which G1 records

@@ -51,7 +51,7 @@
 - [x] **T026** `src/client/entry.js` 新增 `optional(ctx, name)`（`ctx.get(name)` 优先，退回 `ctx[name]`，都拿不到则 `report` 后返回 `undefined`），`locale`/`slots`/`configForms` 全部改走它；设置行改为两条注册路径（`ctx.inject(['configForms'], child => wireOnce(child))` 与直接 `wireOnce(ctx)`），先拿到 face 的一方生效，`wireSettingsRow` 返回布尔。
 - [x] **T027** 验证：`verify/check-bundle.mjs` 新增 `the settings row reads the hook the host builds, not an object it never sends` 与 `a service the plugin never declared is read through ctx.get`（`EXPECTED_CHECKS` 45 → 47）；`verify/harness/index.html` 新增 6 条夹具（钩子 prop 宿主、store 缺 `getSnapshot`、`ctx.get` 路径、钩子宿主上的点击回写与回显），`EXPECTED_CHECKS` 274 → 280；探针 F14（删 `useVisualFirst` 分支 → 4 红）、F15（删 `getSnapshot()` → 1 红）记入 `evidence.md` E-PROBE。
 - [x] **T028** 真机复核（同一个 `webcheck` 实例，`plugin add @0.2.6` 后重启 `dsh web`）：设置页出现标签、说明与 `switch [checked=true]`，位于"性能与用量"与"上传 Session Log"之间；点击变 `checked=false` 并出现 `role="status"` 的 `已保存`，`cordis.patch.yml` 写入 `visualFirst: false`；再点回 `true`；关开设置值保持；插件页标题「DSH 我有阅读障碍」、`v0.2.6`、图片 alt 为详情页那句中文；控制台无我们自己的告警。记录见 `evidence.md` E-LIVE，G1 关闭（限 Web 界面）。
-- [ ] **T029** 发版 `0.2.6`：commit → tag `v0.2.6` → GitHub Actions → registry 装回 `desktop` profile → E-PUB/E-INS 补 0.2.6 行 → 清理 `webcheck` profile 与 `dsh web` 进程。
+- [x] **T029** 发版 `0.2.6`：commit `c3520c2`、tag `v0.2.6`、GitHub Actions run `45302814465` success（CI 47 / 280，`sources sha256:b69ddecef48b3acc5a9b51e2a1a27bc1`，shasum `1deccbbf61f9068c22ff418980fb16d960bf5e4b`、33 files、logIndex `4063373865`）→ registry 装回 `desktop` profile（卸 0.2.5、装 0.2.6，安装副本 787325 字节、SHA-256 `63B5517E3074F37D44CB8F63EB84593426F3B451B1FE3951336A125E16D6D786` 与仓库根逐字节相同、`locale/` 8、`docs/` 9）→ E-PUB/E-INS 补 0.2.6 行 → 清理 `webcheck` profile 与本次起的 `dsh web` 进程。
 - [ ] **T030** 再次起两份独立评审（文档 / 实现），两份 PASS 才把 feature 002 标记完成。
 
 ## Dependencies
@@ -71,8 +71,8 @@
 
 | area | state |
 |---|---|
-| Host half: `Config` with `visualFirst` (default on, `.volatile()`), two-tier briefing, `claimSettingsPage` | done, 45 static checks |
-| Client half: settings row on `settings.general.item`, `configForms` read/write, revert on refusal | done, 274 browser checks in the published `0.2.5` (`0.2.4` shipped 271, `0.2.3` 260, `0.2.2` 252); no disabled state, no timer; a refused write restores the host's current value |
+| Host half: `Config` with `visualFirst` (default on, `.volatile()`), two-tier briefing, `claimSettingsPage` | done, 47 static checks |
+| Client half: settings row on `settings.general.item`, `configForms` read/write, revert on refusal | done, 280 browser checks in the published `0.2.6` (`0.2.5` shipped 274, `0.2.4` 271, `0.2.3` 260, `0.2.2` 252); the row reads the hook prop the host builds (`useVisualFirst`) and keeps the store path for hosts that send `hooks`; no disabled state, no timer; a refused write restores the host's current value |
 | Eight-language rename (locale, DETAIL alt line, 8 READMEs, index, package description) | done; DETAIL keeps exactly one image line (its alt sentence carries the new name) |
 | Evidence | `evidence.md` (this feature): `0.2.6` build and 47 / 280, fourteen falsifiability probes (F1, F3–F15), E-LIVE records the row and the switch in a running host; gaps G2–G8 and G11–G13 open, G1 discharged by `0.2.6` (web surface only), G9/G10 by `0.2.5` |
 | Not done | the desktop window's settings entry (the row was observed through `dsh web`; the desktop build opens settings as a separate document that this window offers no control for — G1 records the limit), the host write path to `settings.update` seen directly (G2 records what was observed instead), 200%/360px layout assertion for the row (G3), pixel comparison (G5), E1–E14 end-to-end rows (G6), SC-001 five sample requests (G7), schemastery import failure path (G8) |
