@@ -11,7 +11,7 @@ node verify/run-harness.mjs        # 无头浏览器行为断言
 node verify/run-harness.mjs --list # 逐条列出断言名（证据引用用）
 ```
 
-期望：三项全绿（`0.2.8` 工作树上是 47 条静态、283 条浏览器断言）；`build-client` 只打印 `(787325 bytes, 785808 characters, engine 1.13.0, sources 6, syntax ok)` 这一行，版本/字节/指纹行由两条 `verify` 命令输出（形如 `包名@版本 | client.js 字节 | sources sha256`），可直接粘贴进证据。
+期望：三项全绿（`0.2.10` 工作树上是 50 条静态、292 条浏览器断言）；`build-client` 只打印 `(787768 bytes, 786251 characters, engine 1.13.0, sources 6, syntax ok)` 这一行，版本/字节/指纹行由两条 `verify` 命令输出（形如 `包名@版本 | client.js 字节 | sources sha256`），可直接粘贴进证据。
 
 ## 端到端验证（需要 DSH）
 
@@ -39,7 +39,7 @@ node verify/run-harness.mjs --list # 逐条列出断言名（证据引用用）
 
 ## 探针（证明断言会失败）
 
-对每个关键断言做一次"故意破坏 → 重建 → 跑 → 确认变红 → 还原"；已跑十五条（F1、F3–F15，以及 P19–P23 五条针对检查本身的探针），输出行记在 `evidence.md` 的 E-PROBE：
+对每个关键断言做一次"故意破坏 → 重建 → 跑 → 确认变红 → 还原"；已跑二十三条（F1、F3–F15，以及 P19–P27 九条针对检查本身的探针），输出行记在 `evidence.md` 的 E-PROBE：
 
 1. **F1 两档提示词**：让 `briefing` 无视开关、总是拼上偏好段 → `the section hands the host a function, not a frozen string`、`the capability briefing is what it was before the switch`、`the switch adds the preference on top of the capability, and nothing else` 报红。
 2. **F3 默认值**：把 `.default(true)` 改成 `.default(false)` → `the switch is on for an empty configuration` 报红。

@@ -108,8 +108,15 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
         // (or a locale/slot registration) returns is a disposer, and stopping the
         // fiber runs them in reverse. Without that, a fixture can never show
         // whether the plugin cleans up after itself.
+        // The two slots this plugin touches. `slots.inject(ownerKey, fn)` runs
+        // `fn` only while the host has that slot's owner declaration; a wrong
+        // key therefore leaves the row pending forever, with no error anywhere.
+        // The fake host below mirrors that: an unknown key never fires.
+        const SLOT_NAMES = ['conversation.chat.markdown.fence', 'settings.general.item']
+
         function makeContext(options) {
           const defs = []
+          const injectedSlots = []
           const disposers = []
           const calls = { effects: 0, layersDropped: 0, stringsDropped: 0 }
           const pendingInjections = []
@@ -124,7 +131,8 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
               }
             },
             inject(name, fn) {
-              const disposer = fn()
+              injectedSlots.push(name)
+              const disposer = SLOT_NAMES.indexOf(name) === -1 ? null : fn()
               const drop = () => {
                 if (typeof disposer === 'function') disposer()
               }
@@ -167,6 +175,7 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             ctx,
             defs,
             calls,
+            injectedSlots,
             provide(name, value) {
               ctx[name] = value
               for (let index = pendingInjections.length - 1; index >= 0; index -= 1) {
@@ -199,6 +208,25 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
 
         function buttonsIn(stage) {
           return Array.prototype.slice.call(stage.querySelectorAll('button')).map((button) => button.textContent)
+        }
+
+        // The client reports what it had to drop on `console.warn`. A lean host
+        // (no slots, no configForms, no face) is an expected shape, not a fault,
+        // so dropping a surface there must be silent; a guard that disappears
+        // turns the drop into a throw and then into a warning, which this
+        // captures and the fixtures below refuse to accept.
+        function captureWarnings(run) {
+          const seen = []
+          const original = console.warn
+          console.warn = function () {
+            seen.push(Array.prototype.map.call(arguments, (part) => String(part)).join(' '))
+          }
+          try {
+            run()
+          } finally {
+            console.warn = original
+          }
+          return seen
         }
 
         /* ------------------------------------------------ module and layer */
@@ -1365,6 +1393,11 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             'a host with configForms takes the row without throwing',
             settingsThrew ? String(settingsThrew.message) : 'quiet',
           )
+          expect(
+            settingsHost.injectedSlots.indexOf('settings.general.item') !== -1,
+            'the row is claimed through the slot the host names',
+            settingsHost.injectedSlots.join(','),
+          )
           const settingsDefs = settingsHost.defs.filter(
             (entry) => entry.def && entry.def.name === 'settings.general.item',
           )
@@ -1381,6 +1414,54 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             'the row carries its id, order and locale',
             `${settingsDef.id} ${settingsDef.order} ${settingsDef.locale}`,
           )
+          // A host with no `slots` cannot draw a fence at all, so that one says
+          // so out loud; the two lean shapes that still leave the picture
+          // working lose only the switch and must stay silent. A guard that
+          // disappears from `wireSettingsRow` turns the drop into a throw and the
+          // throw into a second warning, which both of these catch.
+          const noSlotsHost = makeContext({})
+          delete noSlotsHost.ctx.slots
+          const noSlotsWarnings = captureWarnings(() => module.apply(noSlotsHost.ctx))
+          expect(
+            noSlotsWarnings.length === 1 && /slots service unavailable/.test(noSlotsWarnings[0]),
+            'a host with no slots service is told once that nothing can be drawn',
+            noSlotsWarnings.join(' | ') || 'silent',
+          )
+          // `slots` that can inject but cannot register, with a face that reads:
+          // the fence layer fails on its own, and the row must not add a second
+          // failure of its own. The guards inside `wireSettingsRow` are what keep
+          // this to one warning.
+          const oldSlotsHost = makeContext({})
+          const partialSlots = { inject: (name, run) => run() }
+          oldSlotsHost.ctx.slots = partialSlots
+          oldSlotsHost.ctx.get = (name) => (name === 'slots' ? partialSlots : undefined)
+          oldSlotsHost.ctx.configForms = {
+            get: (namespace) => (namespace === 'dsh-dyslexia' ? settingsFace : null),
+          }
+          const oldSlotsWarnings = captureWarnings(() => module.apply(oldSlotsHost.ctx))
+          expect(
+            oldSlotsWarnings.length === 1 && /^dsh-dyslexia: slots/.test(oldSlotsWarnings[0]),
+            'an older slots service that cannot register is reported once',
+            oldSlotsWarnings.join(' | ') || 'silent',
+          )
+          const leanHosts = [
+            ['a host with no configForms', () => makeContext({})],
+            ['a host whose face lookup finds nothing', () => {
+              const host = makeContext({})
+              host.ctx.configForms = { get: () => null }
+              return host
+            }],
+          ]
+          for (const [label, build] of leanHosts) {
+            const host = build()
+            const warnings = captureWarnings(() => module.apply(host.ctx))
+            expect(
+              warnings.length === 0,
+              label + ' stays quiet',
+              warnings.length === 0 ? 'no warning' : warnings.join(' | '),
+            )
+          }
+
           const Row = settingsDefs[0] && settingsDefs[0].component
           const rowInject = typeof settingsDef.inject === 'function' ? settingsDef.inject() : {}
 

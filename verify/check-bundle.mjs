@@ -595,6 +595,27 @@ check('the settings row reads the hook the host builds, not an object it never s
   return 'useVisualFirst and the store form both wired, the store itself carries getSnapshot and subscribe'
 })
 
+check('the row is claimed through the slot name the host declares', () => {
+  // `slots.inject(ownerKey, fn)` runs `fn` only while the host has that slot's
+  // owner declaration. A mutated key left the callback pending forever and both
+  // suites stayed green, because nothing looked at the first argument.
+  const settings = readCode('src/client/settings.js')
+  const entry = readCode('src/client/entry.js')
+  assert(
+    /const SETTINGS_SLOT = 'settings\.general\.item'/.test(settings),
+    'settings.js does not name the general settings slot',
+  )
+  assert(
+    entry.includes('slots.inject(SETTINGS_SLOT, () =>'),
+    'entry.js does not claim the row through SETTINGS_SLOT',
+  )
+  assert(
+    entry.includes('name: SETTINGS_SLOT,') && entry.includes('id: SETTINGS_ROW_ID,'),
+    'the registered row does not carry the same slot name it was claimed under',
+  )
+  return 'claimed and registered under settings.general.item'
+})
+
 check('a service the plugin never declared is read through ctx.get', () => {
   // The host's cordis is strict: `ctx.locale` throws under a context whose inject
   // lists only `slots`, and the row was never registered because of it. So the
@@ -1259,7 +1280,7 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
 
 /* ---------------------------------------------------------------- report */
 
-const EXPECTED_CHECKS = 49
+const EXPECTED_CHECKS = 50
 if (notices.length + failures.length !== EXPECTED_CHECKS) {
   failures.push(
     `[FAIL] the suite has ${notices.length + failures.length} checks, expected ${EXPECTED_CHECKS}: a check was added or removed without updating this number`,

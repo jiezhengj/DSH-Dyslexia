@@ -10,7 +10,7 @@
 - [x] **T002** `index.js` 新增 `Config`（`z.object({ visualFirst: z.boolean().default(true).volatile() })`）与 `apply(ctx, config)`；`@deepseek-ai/schemastery` 在模块顶部静态 import——该包无法解析时插件在 import 阶段就失败，没有降级（见 `evidence.md` G8）。
 - [x] **T003** 把 `MERMAID_RENDER_PROMPT` 拆成 `CAPABILITY_TEXT` + `PREFERENCE_TEXT`，段 `text` 改为函数：`visualFirst` 为真时两段拼接，否则只出能力段（逐字等于 001）。
 - [x] **T004** 在宿主没有 `settings` 服务时不调用 `configure`；有则 `ctx.inject(['settings'], child => child.effect(() => child.settings.configure({ auto: false }, ctx.fiber)))`，避免宿主生成多余设置页。
-- [x] **T005** `verify/check-bundle.mjs` 新增静态断言：`Config` 含 `visualFirst`、`.default(true)`、`.volatile()`；偏好段字符串存在且只在真分支出现；两张禁止措辞表分别不出现（能力段：`always`/`must use`/`you should`/`every answer`/`prefer`；偏好段：`every answer`/`always draw`/`always answer`/`must draw`/`must use a diagram`）；段名/order 未变。静态检查当时为 **45** 条（`0.2.7` 起为 47 条），其中第 22 条是 `the section hands the host a function, not a frozen string`（当时 #44 是 `both size limits reach the engine, each proven on its own`、第 45 条是 `the fixtures assert what the fixes promise, and can fail`；现在是 #46/#47）。
+- [x] **T005** `verify/check-bundle.mjs` 新增静态断言：`Config` 含 `visualFirst`、`.default(true)`、`.volatile()`；偏好段字符串存在且只在真分支出现；两张禁止措辞表分别不出现（能力段：`always`/`must use`/`you should`/`every answer`/`prefer`；偏好段：`every answer`/`always draw`/`always answer`/`must draw`/`must use a diagram`）；段名/order 未变。静态检查当时为 **45** 条（`0.2.7` 起 47 条，`0.2.10` 起 50 条），其中第 22 条是 `the section hands the host a function, not a frozen string`（当时 #44 是 `both size limits reach the engine, each proven on its own`、第 45 条是 `the fixtures assert what the fixes promise, and can fail`；`0.2.10` 的 50 项套件里它们是第 49 与第 50 条）。
   - 证据：`check-bundle` 通过行 + 对应断言名。
 
 ## Phase 2：客户端设置行
@@ -31,7 +31,7 @@
 
 ## Phase 4：探针与证据
 
-- [x] **T015** 探针（当时十二条，quickstart 现在列十四条：F14/F15 是 0.2.6/0.2.7 追加的）：F1 两档提示词、F3 默认 true、F4 dispose 路径、F5 写失败回退、F6 只写一次、F7 `aria-checked` 绑定、F8 命名空间、F9 无 setter 宿主——逐条破坏 → 重建 → 跑两套 → 录下红行 → 还原，把输出行原文记进 `evidence.md`。F1 与 F9 最后一次在 `0.2.3` 工作树上重跑（F9 用 `a host whose face has no setter hands the row no writer at all` 断言）；`0.2.5` 上重跑的是新增的 F10–F13（每条在 `%TEMP%` 的新副本里破坏、跑完还原），`0.2.4` 树本身从未被探针跑过，见 `evidence.md` G10（已由 `0.2.5` 关闭）。F3–F8 是 `0.2.1` 树上的记录。F2（段文本改回冻结字符串）在这个函数断言存在前两套都抓不到，现在由第 22 条静态检查捕获，单列为历史说明。
+- [x] **T015** 探针（当时十二条；quickstart 现在列二十三条：F14/F15 与 P19–P27 是后续追加的）：F1 两档提示词、F3 默认 true、F4 dispose 路径、F5 写失败回退、F6 只写一次、F7 `aria-checked` 绑定、F8 命名空间、F9 无 setter 宿主——逐条破坏 → 重建 → 跑两套 → 录下红行 → 还原，把输出行原文记进 `evidence.md`。F1 与 F9 最后一次在 `0.2.3` 工作树上重跑（F9 用 `a host whose face has no setter hands the row no writer at all` 断言）；`0.2.5` 上重跑的是新增的 F10–F13（每条在 `%TEMP%` 的新副本里破坏、跑完还原），`0.2.4` 树本身从未被探针跑过，见 `evidence.md` G10（已由 `0.2.5` 关闭）。F3–F8 是 `0.2.1` 树上的记录。F2（段文本改回冻结字符串）在这个函数断言存在前两套都抓不到，现在由第 22 条静态检查捕获，单列为历史说明。
 - [ ] **T016** `specs/002-visual-first-preference/evidence.md`：E-BLD · 0.2.1、E-CHK 与 E-HARN 是 `0.2.1` 树那次运行的输出原样照抄（`0.2.5` 的构建行单列为 `E-BLD · 0.2.5`；`0.2.5` 的检查只有 E-CHK/E-HARN 的汇总行，无逐条输出）；E-CHK 是该次运行的完整 stdout（44 条 `ok` 行加末行汇总），故意触发的 `warn` 与堆栈行走 stderr（52 行），不混入 stdout；F10–F13 的探针行已按 `0.2.5` 记录；未取证项单列。E1–E14 端到端逐条记录未做，见 `evidence.md` G6。
 - [ ] **T017** `spec.md`/`plan.md`/`data-model.md`/`contracts/*` 与本清单的计数、断言名、版本号与实际一致（交叉核对每个反引号名都存在）；本轮已对齐 `0.2.5` 的版本号、45/274 计数与所引夹具行号；未逐条核对全部反引号名，故未勾。
 
@@ -87,6 +87,17 @@
 - [x] **T053** 发版 `0.2.9`：commit `dcf9293` → tag `v0.2.9` → Actions run `45314418891` success（shasum `8a1204246b01652a6c84756a2878e9ae0d695d85`、logIndex `4066763564`、33 files）→ registry 第 29 次轮询可下载 → `remove_bundle` 卸 0.2.8 → `install_bundle @0.2.9` applied（profile 依赖 `"0.2.9"`、安装副本 787688 字节 / `95DEBB6B…9981`）→ E-PUB/E-INS 已填。
 - [ ] **T054** 第五轮两份独立评审，两份 PASS 才把 feature 002 标记完成。
 
+## Phase 10 — 0.2.10: the owner key, and guards whose failures were invisible
+
+- [x] **T055** 夹具：`makeContext` 的 `slots.inject(name, fn)` 只在 `SLOT_NAMES = ['conversation.chat.markdown.fence', 'settings.general.item']` 里执行 `fn()`，并记录 `injectedSlots`（未知 owner key 永不触发，镜像真实宿主）；新增 `captureWarnings(run)` 收集 `console.warn`。
+- [x] **T056** 夹具：`the row is claimed through the slot the host names`、`a host with no slots service is told once that nothing can be drawn`、`a host with no configForms stays quiet`、`a host whose face lookup finds nothing stays quiet`、`an older slots service that cannot register is reported once`（最后一组让 `ctx.get('slots')` 也返回那份不完整的服务，否则守卫不可观测）。
+- [x] **T057** 静态检查：`the row is claimed through the slot name the host declares`（`SETTINGS_SLOT`、`slots.inject(SETTINGS_SLOT, () =>`、`name: SETTINGS_SLOT,`、`id: SETTINGS_ROW_ID,`）→ 静态 49 → **50**；`EXPECTED_CHECKS` 同步，`run-harness` 的两套期望同步到 **292**。
+- [x] **T058** 源码：`wireSettingsRow` 里不可达的 `typeof slots.inject/register` 守卫删掉（`apply` 在 `slots` 不能注入/注册时已提前返回），只留 `if (!slots) return false`；残留的不可观测性记进 E-GAPS **G15**。
+- [x] **T059** 探针：**P24** 把 `SETTINGS_SLOT` 改成 `settings.general.item-x` → 静态 `FAIL the row is claimed through the slot name the host declares — settings.js does not name the general settings slot`（`1 failed, 49 passed`）、浏览器四条红；**P25** 去掉 face 守卫 → `[bad] a host whose face lookup finds nothing stays quiet — dsh-dyslexia: settings row TypeError: Cannot read properties of null (reading 'subscribe')`；**P26** 去掉 `configForms` 守卫 → `[bad] a host with no configForms stays quiet — … TypeError: Cannot read properties of undefined (reading 'get')`；**P27** 去掉 `slots` 守卫（改为 `if (false)`）在修好夹具后仍绿——因为 `apply` 已提前返回，故该守卫按死代码删除（记进 G15）。
+- [x] **T060** 文档：`evidence.md` 头注与 E-BLD/E-CHK/E-HARN 改用 `0.2.10` 单次运行输出（50 / 292、787768 字节、sources `25fe6938…`、file `1E51881A…`）、E-PROBE 补 P24–P27、E-GAPS 改「Twelve gaps…G2–G8、G11–G16」并新增 G15/G16、G12/G13 按新证据改写；`spec.md` 的 Status 与「待复评」两段改写为当前口径；`plan.md`/`quickstart.md`/`tasks.md` 的计数与探针数同步（50/292、二十三条）。
+- [ ] **T061** 版本升 `0.2.10` → 提交 → tag `v0.2.10` → 发布 → 装回 `desktop` → 补 E-PUB/E-INS。
+- [ ] **T062** 第六轮两份独立评审（文档 + 实现），两份 PASS 才把 feature 002 标记完成。
+
 ## Dependencies
 
 - Phase 2 依赖 T002/T003（段文本两档）先用静态断言钉住契约，再写客户端。
@@ -104,10 +115,10 @@
 
 | area | state |
 |---|---|
-| Host half: `Config` with `visualFirst` (default on, `.volatile()`), two-tier briefing, `claimSettingsPage` | done, 47 static checks |
-| Client half: settings row on `settings.general.item`, `configForms` read/write, revert on refusal | done, 283 browser checks in the published `0.2.8` (`0.2.7` shipped the same code with two shape-only static checks, `0.2.6` shipped 280) (`0.2.5` shipped 274, `0.2.4` 271, `0.2.3` 260, `0.2.2` 252); the row reads the hook prop the host builds (`useVisualFirst`) and keeps the store path for hosts that send `hooks`; no disabled state, no timer; a refused write restores the host's current value |
+| Host half: `Config` with `visualFirst` (default on, `.volatile()`), two-tier briefing, `claimSettingsPage` | done, 50 static checks |
+| Client half: settings row on `settings.general.item`, `configForms` read/write, revert on refusal | done, 292 browser checks in the published `0.2.10` (`0.2.7` shipped the same code with two shape-only static checks, `0.2.6` shipped 280) (`0.2.5` shipped 274, `0.2.4` 271, `0.2.3` 260, `0.2.2` 252); the row reads the hook prop the host builds (`useVisualFirst`) and keeps the store path for hosts that send `hooks`; no disabled state, no timer; a refused write restores the host's current value |
 | Eight-language rename (locale, DETAIL alt line, 8 READMEs, index, package description) | done; DETAIL keeps exactly one image line (its alt sentence carries the new name) |
-| Evidence | `evidence.md` (this feature): `0.2.9` build and 49 / 287, fourteen falsifiability probes (F1, F3–F15), E-LIVE records the row and the switch in a running host; gaps G2–G8 and G11–G14 open, G1 discharged by `0.2.6` (web surface only), G9/G10 by `0.2.5` |
+| Evidence | `evidence.md` (this feature): `0.2.10` build and 50 / 292, twenty-three falsifiability probes (F1, F3–F15, P19–P27), E-LIVE records the row and the switch in a running host; gaps G2–G8 and G11–G14 open, G1 discharged by `0.2.6` (web surface only), G9/G10 by `0.2.5` |
 | Not done | SC-005's one-second timing (G14), the desktop window's settings entry (the row was observed through `dsh web`; the desktop build opens settings as a separate document that this window offers no control for — G1 records the limit), the host write path to `settings.update` seen directly (G2 records what was observed instead), 200%/360px layout assertion for the row (G3), pixel comparison (G5), E1–E14 end-to-end rows (G6), SC-001 five sample requests (G7), schemastery import failure path (G8) |
 
 **2026-11-24：** T021 的两项评审曾均 PASS（实现 `review-impl-002f`、文档 `review-docs-002m`），但那是在没有真机观察的前提下——按用户建议用 `dsh web` 起独立 profile 复现后，`0.2.5` 的设置行在真实设置页里渲染为空（T024），`0.2.6` 修好三处并补了 2 条静态检查、6 条夹具与 2 条探针（T025–T027），真机观察写进 `evidence.md` 的 E-LIVE（T028），G1 关闭（限 Web 界面）。发版与再评审见 T029/T030。

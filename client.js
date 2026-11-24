@@ -1,4 +1,4 @@
-/*! @jiezhengj/dsh-dyslexia 0.2.9 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:b6c17c26e57f7d50cd2ed86a9002ad28 */
+/*! @jiezhengj/dsh-dyslexia 0.2.10 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:25fe69385f7372015944ae0b18386c31 */
 ;(function () {
   function reportLoadFailure(scope, error) {
     try { console.error('dsh-dyslexia: ' + scope, error) } catch (_error) {}
@@ -1564,8 +1564,10 @@ function apply(ctx) {
  * cannot write still gets a row, and the row itself treats the click as failed.
  */
 function wireSettingsRow(ctx) {
+  // pply already returned when slots cannot inject or register, so this is
+  // only the second call path's own check; anything deeper would be dead code.
   const slots = optional(ctx, 'slots')
-  if (!slots || typeof slots.inject !== 'function' || typeof slots.register !== 'function') return false
+  if (!slots) return false
   const configForms = optional(ctx, 'configForms')
   if (!configForms || typeof configForms.get !== 'function') return false
   const face = configForms.get(SETTINGS_NAMESPACE)

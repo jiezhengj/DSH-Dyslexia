@@ -164,8 +164,10 @@ function apply(ctx) {
  * cannot write still gets a row, and the row itself treats the click as failed.
  */
 function wireSettingsRow(ctx) {
+  // pply already returned when slots cannot inject or register, so this is
+  // only the second call path's own check; anything deeper would be dead code.
   const slots = optional(ctx, 'slots')
-  if (!slots || typeof slots.inject !== 'function' || typeof slots.register !== 'function') return false
+  if (!slots) return false
   const configForms = optional(ctx, 'configForms')
   if (!configForms || typeof configForms.get !== 'function') return false
   const face = configForms.get(SETTINGS_NAMESPACE)
