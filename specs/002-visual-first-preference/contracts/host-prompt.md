@@ -24,7 +24,8 @@ The reader finds long stretches of prose hard work. When a flow, a structure, a 
 
 - 偏好段（仅开关打开时追加的那一段）不得出现 `every answer`、`always draw`、`always answer`、`must draw`、`must use a diagram`；`the switch adds the preference on top of the capability, and nothing else` 对这五条做大小写不敏感的子串断言。
 - 能力段（开关关闭时输出的那一段）不得出现 `always`、`must use`、`you should`、`every answer`、`prefer`；`the capability briefing is what it was before the switch` 对这五条做大小写不敏感的子串断言。
-- 这两张表不是对任意 `must` / `each reply` 的守护：能力段里的 `must`（“the block must stay readable alone”）是允许的，裸 `each reply` 也没有断言；判据是否足够具体仍靠人工核对。
+- 偏好段（开关打开时新增的那一段）不得出现无条件措辞：`always`、`every answer`、`every reply`、`every response`、`every time`、`each answer`、`each reply`、`each time`、`at all times`、`without exception`、`no matter what`、`unconditionally`、`must `（13 条，尾随空格也算判定的一部分）；`the preference is not feature 002's text any more` 先逐条断言，再把这一段与 `contracts/host-prompt.md` 里记录的契约文本逐字比对（`extra === recordedPreference`）。
+- 这两张表守护的是上面列出的整词/短语：能力段里不带限定的 `must`（“the block must stay readable alone”）是允许的；偏好段的 13 条连裸 `must ` 与 `each reply` 都算。判据是否足够具体仍靠人工核对。
 - 不得要求读者改任何指令文件。
 - 不得声称图能替代源码（源码必须可复制、可检索）。
 

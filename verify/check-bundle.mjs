@@ -212,6 +212,82 @@ check('both locales carry metadata', () => {
   return 'en, zh'
 })
 
+// Comments, strings and template literals are removed before identifier scans:
+// a call spelled `window['fet' + 'ch']` is still a call, and a URL split across
+// two strings is still a URL. Interpolations inside a template are kept, so the
+// code inside `${…}` is scanned as code. A small scanner, not a regex: nested
+// quotes inside a template are what made a regex version leak a URL.
+function stripStringsAndComments(text) {
+  let out = ''
+  let i = 0
+  const n = text.length
+  const skipQuoted = (q) => {
+    i += 1
+    while (i < n) {
+      if (text[i] === '\\') {
+        i += 2
+        continue
+      }
+      if (text[i] === q || text[i] === '\n') {
+        i += 1
+        return
+      }
+      i += 1
+    }
+  }
+  while (i < n) {
+    const c = text[i]
+    if (c === '/' && text[i + 1] === '/') {
+      while (i < n && text[i] !== '\n') i += 1
+      continue
+    }
+    if (c === '/' && text[i + 1] === '*') {
+      i += 2
+      while (i < n && !(text[i] === '*' && text[i + 1] === '/')) i += 1
+      i += 2
+      continue
+    }
+    if (c === "'" || c === '"') {
+      skipQuoted(c)
+      out += c + c
+      continue
+    }
+    if (c === '`') {
+      i += 1
+      let depth = 0
+      while (i < n) {
+        const ch = text[i]
+        if (ch === '\\') {
+          i += 2
+          continue
+        }
+        if (depth === 0 && ch === '`') {
+          i += 1
+          break
+        }
+        if (ch === '$' && text[i + 1] === '{') {
+          depth += 1
+          i += 2
+          out += ' '
+          continue
+        }
+        if (depth > 0 && ch === '}') {
+          depth -= 1
+          i += 1
+          continue
+        }
+        if (depth > 0) out += ch
+        i += 1
+      }
+      out += '``'
+      continue
+    }
+    out += c
+    i += 1
+  }
+  return out
+}
+
 /* -------------------------------------------------------------- client.js */
 
 const banner = chunk.slice(0, chunk.indexOf('*/') + 2)
@@ -228,34 +304,64 @@ check('client.js is one loader chunk keyed by the package name', () => {
 })
 
 check('client.js requires react and nothing else', () => {
-  const requested = [...body.matchAll(/require\(\s*['"]([^'"]+)['"]\s*\)/g)].map((match) => match[1])
-  const unexpected = requested.filter((name) => name !== 'react')
-  assert(unexpected.length === 0, `unexpected require: ${unexpected.join(', ')}`)
-  assert(requested.includes('react'), 'client.js never requires react')
-  return 'react'
+  // Counting on the raw chunk: a scanner that strips strings would also strip the
+  // argument of `require('react')`, and the count is the point. Every call has to
+  // carry the literal, so `require(someVariable)` is a second dependency even when
+  // it never appears in a quoted form.
+  const calls = [...chunk.matchAll(/\brequire\s*\(/g)]
+  assert(calls.length === 1, `client.js makes ${calls.length} require calls, not one`)
+  for (const call of calls) {
+    const tail = chunk.slice(call.index, call.index + 40)
+    assert(/^require\s*\(\s*['"]react['"]\s*\)/.test(tail), `a require call is not the react literal: ${tail}`)
+  }
+  return 'one require call, and it is react'
 })
 
 check('client.js never reaches the network', () => {
-  const code = chunk.replace(/\/\*[\s\S]*?\*\//g, '')
-  for (const needle of [
-    'fetch(',
-    'fetch (',
-    'XMLHttpRequest',
-    'importScripts',
-    'new WebSocket',
-    'EventSource',
-    'import(',
-    'sendBeacon',
-    'new Image(',
-    'new Worker(',
-    'WebTransport',
-  ]) {
-    assert(!code.includes(needle), `client.js contains ${needle}`)
+  // Two passes. The raw pass catches the obvious spellings; the identifier pass
+  // strips comments, strings and templates first, so `window['fet' + 'ch']` and
+  // `'ht' + 'tps://…'` cannot hide a call behind a concatenation.
+  const raw = chunk
+  for (const needle of ['fetch(', 'fetch (', 'XMLHttpRequest', 'importScripts', 'new WebSocket', 'EventSource', 'import(', 'sendBeacon', 'new Image(', 'new Worker(', 'WebTransport']) {
+    assert(!raw.includes(needle), `client.js contains ${needle}`)
   }
-  const withoutNamespaces = code.replace(/https?:\/\/www\.w3\.org\/[^"'\s]*/g, '')
-  const found = /https?:\/\/[^\s"']*/.exec(withoutNamespaces)
+  const code = stripStringsAndComments(chunk)
+  const forbidden = [
+    /\bfetch\b/,
+    /\bXMLHttpRequest\b/,
+    /\bimportScripts\b/,
+    /\bWebSocket\b/,
+    /\bEventSource\b/,
+    /\bsendBeacon\b/,
+    /\bWebTransport\b/,
+    /\bRTCPeerConnection\b/,
+    /\bSharedWorker\b/,
+    /\bnew\s+Worker\b/,
+    /\bnew\s+Image\b/,
+    /\bimport\s*\(/,
+    /\bnavigator\s*\.\s*connection\b/,
+  ]
+  for (const pattern of forbidden) {
+    const found = pattern.exec(code)
+    assert(!found, `client.js names ${pattern} at column ${found ? found.index : -1}`)
+  }
+  const withoutNamespaces = code.replace(/www\.w3\.org[^"'\s]*/g, '')
+  const found = /https?:\/\/[^\s"'`]*/.exec(withoutNamespaces)
   assert(!found, `client.js reaches a URL: ${found && found[0]}`)
-  return 'no fetch, no XHR, no dynamic import, no remote URL'
+  // A name can also be hidden by not writing it: `window['fet' + 'ch']` has no
+  // identifier to match and no URL literal to find, since both halves are strings.
+  // So every global lookup has to be a plain literal key; anything else (a sum, a
+  // variable, a call) is refused.
+  const globalLookup = /\b(window|globalThis|self|navigator|document)\s*\[/g
+  let hit
+  while ((hit = globalLookup.exec(chunk))) {
+    const open = hit.index + hit[0].length - 1
+    const close = chunk.indexOf(']', open)
+    assert(close !== -1, `${hit[1]} is indexed without a closing bracket`)
+    const key = chunk.slice(open + 1, close).trim()
+    assert(/^'[^']*'$/.test(key) || /^"[^"]*"$/.test(key), `${hit[1]} is indexed with a computed key: ${key}`)
+  }
+  return 'no fetch, no XHR, no dynamic import, no remote URL, no computed global lookup'
 })
 
 check('client.js carries the vendored engine', () => {
@@ -645,34 +751,18 @@ check('the preference field is volatile, so the settings form can show it', () =
 })
 
 check('the row is claimed through the slot name the host declares', () => {
-  // `slots.inject(ownerKey, fn)` runs `fn` only while the host has that slot's
-  // owner declaration. A mutated key left the callback pending forever and both
-  // suites stayed green, because nothing looked at the first argument.
-  //
-  // Read the assignment rather than matching the text: a decoy string carrying
-  // the same sentence used to satisfy the old regexp while the real constant
-  // pointed elsewhere, so a second declaration has to be a failure.
   const settings = readCode('src/client/settings.js')
   const entry = readCode('src/client/entry.js')
-  const declared = settings.match(/SETTINGS_SLOT\s*=\s*'([^']*)'/g) || []
-  assert(
-    declared.length === 1,
-    `settings.js declares SETTINGS_SLOT ${declared.length} times, expected exactly one`,
-  )
-  const value = (settings.match(/SETTINGS_SLOT\s*=\s*'([^']*)'/) || [])[1]
-  assert(
-    value === 'settings.general.item',
-    `settings.js names the slot ${JSON.stringify(value)}, expected "settings.general.item"`,
-  )
-  assert(
-    entry.includes('slots.inject(SETTINGS_SLOT, () =>'),
-    'entry.js does not claim the row through SETTINGS_SLOT',
-  )
-  assert(
-    entry.includes('name: SETTINGS_SLOT,') && entry.includes('id: SETTINGS_ROW_ID,'),
-    'the registered row does not carry the same slot name it was claimed under',
-  )
-  return 'claimed and registered under settings.general.item'
+  assert(settings.includes("const SETTINGS_SLOT = 'settings.general.item'"), 'settings.js does not name the general settings slot')
+  assert(entry.includes('slots.inject(SETTINGS_SLOT, () =>'), 'entry.js does not register the row through that name')
+  assert(entry.includes('name: SETTINGS_SLOT,'), 'the slot entry does not use the declared name')
+  assert(entry.includes('id: SETTINGS_ROW_ID,'), 'the slot entry does not use the declared id')
+  // `configForms` arrives after `apply` on a real host, so the late wiring has to
+  // exist; deleting it once left every suite green because only one assertion
+  // covered the behaviour.
+  assert(entry.includes("ctx.inject(['configForms']"), 'the late configForms wiring is gone')
+  assert(entry.includes('wireOnce(child)'), 'the late wiring no longer claims the row')
+  return 'one slot name, declared and used, with the late wiring in place'
 })
 
 check('a service the plugin never declared is read through ctx.get', () => {
@@ -1559,6 +1649,21 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
   // A comparison of a name with itself (`x === x`, `x !== x`) is true whatever
   // the name holds, so it joins the constant branches below.
   const selfComparison = (head) => /^([\w$.()'"\[\] ]+?)\s*(===|!==)\s*\1$/.test(head)
+  // `typeof CODE === 'string'` reads a fixture constant and is true whatever the
+  // product does, and `CODE.length > 0` is the same trick with a property. Any
+  // condition whose left side is a constant and whose right side is a literal is
+  // treated as hollow, however much it looks like a comparison.
+  // The head loses the closing quote of the last string when the name argument is
+  // stripped, so both spellings are tried: `typeof CODE === 'string` and the same
+  // with the quote closed.
+  const constantOnly = (head) => {
+    const forms = [head, `${head}'`, `${head}"`]
+    return forms.some(
+      (form) =>
+        /^typeof\s+[A-Z][A-Z0-9_$]*\s*(===|!==)\s*'[a-z]+'$/.test(form) ||
+        /^[A-Z][A-Z0-9_$]*(\.[\w$]+)*(\.length)?\s*(===|!==|>=|<=|>|<)\s*(-?\d+|'[^']*'|true|false)$/.test(form),
+    )
+  }
   // A truthiness test alone cannot say what went wrong: `!!CODE` reads a fixture
   // constant and is true whatever the product does. A condition has to compare
   // something or query something, so a bare `!!x` no longer counts as a check.
@@ -1589,7 +1694,8 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
       !mentionsFixtureName(head) ||
       !comparesOrQueries(head) ||
       selfComparison(head) ||
-      constantBranch.test(head)
+      constantBranch.test(head) ||
+      constantOnly(head)
     )
   })
   if (hollow.length > 0) throw new Error(`fixture assertions without a condition: ${hollow.join(', ')}`)

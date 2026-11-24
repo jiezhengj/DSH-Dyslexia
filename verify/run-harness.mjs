@@ -134,7 +134,7 @@ if (!stamped || stamped[1] !== fresh) {
   )
   process.exit(1)
 }
-const EXPECTED_CHECKS = 301
+const EXPECTED_CHECKS = 302
 if (EXPECTED_CHECKS > 0 && passed !== EXPECTED_CHECKS) {
   process.stderr.write(
     `\nrun-harness: suite reported ${passed} checks, expected ${EXPECTED_CHECKS}: a check was added or removed\n`,

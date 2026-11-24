@@ -2101,6 +2101,19 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             'a host that gains configForms after apply still gets the settings row',
             `${lateBefore.length} before, ${lateDefs.length} after`,
           )
+          // A second reading of the same wiring, in a shape a single assertion can
+          // miss: the row has to be publishable, ordered and localised, not merely
+          // present. Deleting the late wiring once left this suite green.
+          expect(
+            lateDefs.length === 1 &&
+              lateDefs[0].def.order === 62 &&
+              lateDefs[0].def.locale === 'dyslexia' &&
+              typeof lateDefs[0].component === 'function',
+            'a row that arrives late is published, ordered and localised like an early one',
+            lateDefs.length === 1
+              ? `order=${lateDefs[0].def.order} locale=${lateDefs[0].def.locale} component=${typeof lateDefs[0].component}`
+              : `${lateDefs.length} rows`,
+          )
           lateHost.dispose()
 
           // A face that answers null is the same as no face at all.

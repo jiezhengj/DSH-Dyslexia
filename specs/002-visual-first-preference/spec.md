@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-23
 
-**Status**: Implemented in `0.2.0` and corrected through `0.2.18`; the published tree is `0.2.18` (the tenth review's eight behaviours that no suite could falsify are now assertions), and nineteen versions of this feature are published (`0.2.0`–`0.2.18`) — the package as a whole carries 52 versions, of which these nineteen are this feature's. `0.2.5` registered the settings row and rendered nothing where a reader would look; `0.2.6` fixed the three causes (the host hands `hooks` over as hook props, the store needs `getSnapshot`, `ctx.locale` throws under strict `inject`) and was the first build whose row was seen in a running host; `0.2.7`–`0.2.17` each turned evidence that could not fail into an assertion that does, one review round at a time — the red lines are in `evidence.md` E-PROBE (F14, F15, P19–P37, M1–M8). This tree: 63 static and 301 browser checks, `client.js` 788314 bytes / 786797 characters, sources sha256 `f258984ca46233bbc30fb4a1f5fc68d6`. Evidence lives in `evidence.md`: its `0.2.18` E-BLD/E-CHK/E-HARN blocks are one run of this tree copied line for line, build line included, E-PUB/E-INS exist for every published version of this feature, and E-GAPS lists what is not proven (G2–G8 and G11–G23 open; G1 discharged for the web surface only, because the desktop window of this build offers no reachable settings control; G9 and G10 discharged by `0.2.5`).
+**Status**: Implemented in `0.2.0` and corrected through `0.2.19`; the published tree is `0.2.18`, and `0.2.19` is the work tree this record describes (the fourteenth review's eleven documentation findings and a build line that names its own version and fingerprint), and nineteen versions of this feature are published (`0.2.0`–`0.2.18`), with `0.2.19` about to join them — the package as a whole carries 52 real versions plus one `0.0.0-stage` placeholder, of which these nineteen are this feature's. `0.2.5` registered the settings row and rendered nothing where a reader would look; `0.2.6` fixed the three causes (the host hands `hooks` over as hook props, the store needs `getSnapshot`, `ctx.locale` throws under strict `inject`) and was the first build whose row was seen in a running host; `0.2.7`–`0.2.17` each turned evidence that could not fail into an assertion that does, one review round at a time (the tenth round's eight behaviours that no suite could falsify became assertions in `0.2.14`; the red lines are in `evidence.md` E-PROBE, F14, F15, P19–P37, M1–M8). This tree: 63 static and 302 browser checks, `client.js` 788314 bytes / 786797 characters, sources sha256 `46c72540aca269e6220283206e48f722`. Evidence lives in `evidence.md`: its `0.2.19` E-BLD/E-CHK/E-HARN blocks are one run of this tree copied line for line, build line included, E-PUB/E-INS exist for every published version of this feature, and E-GAPS lists what is not proven (G2–G8 and G11–G23 open; G1 discharged for the web surface only, because the desktop window of this build offers no reachable settings control; G9 and G10 discharged by `0.2.5`).
 
 **Input**: User description: "插件可以有个简单的设置面板，里面有个开关：仅仅是在会话里更好地渲染 mermaid，还是同时更积极地用图形化的方式表达和输出。名称改为 DSH 我有阅读障碍（其他语种按语义翻译）。如果 Agent 并不积极地用图形化的方式输出，渲染再完美也没有意义。"
 
@@ -100,7 +100,7 @@ feature 001 交付的是**渲染能力**：会话里出现 `mermaid` 代码块�
 - **FR-003**: 开关打开时，模型可见的指令 MUST 含偏好段落：说明何时用图更省力（流程、结构、对比、多步骤、状态迁移等），并明确简单问题仍用文字。
 - **FR-004**: 开关关闭时，模型可见的指令 MUST NOT 含该偏好段落，只保留渲染能力说明；渲染行为与 feature 001 一致。
 - **FR-005**: 切换 MUST 在不需要重启、不需要重装的情况下对下一条消息生效。
-- **FR-006**: 选择 MUST 持久保存，应用重启后保持。
+- **FR-006**: 选择 MUST 持久保存，应用重启后保持（持久化本身由 `evidence.md` G20 的写入断言覆盖；「重启后保持」目前只有 E-LIVE 的一次观察）。
 - **FR-007**: 开关显示的状态 MUST 在宿主给出答案之后等于实际生效值；一次写入从点击到落定之间，行允许先显示读者请求的值（`src/client/settings.js:110-113` 的 `show()` 在 `injected.setValue` 之前就把值写进 store，此时宿主尚未接受），落定后按宿主答案显示；被外部改动时界面 MUST 跟随更新，无需刷新页面。宿主永不回答的写入不在本条保证内（见 `evidence.md` G11）。
 - **FR-008**: 写入失败（resolve `false`、reject，或 thenable 的 `then` 抛错）MUST 以可见方式告知读者，并把开关恢复为宿主当前值：`restore()`（`src/client/settings.js:127-138`）经 `inject.readHostValue()` → `readPreference(face)`（`:48-58`）重读宿主快照。`readHostValue` 只要有 face 就会挂上（`:243-245`），而设置行只在有 face 时注册（`src/client/entry.js:176-177`），所以任何已挂载的行都会真正重读宿主，点击前捕获的值只在 `readHostValue` 缺席时生效——即没有已挂载行的时候（该捕获值还可能已被另一个窗口改过）。退化情形：face 缺 `getSnapshot`、`getSnapshot` 抛错或快照不可读时，`readPreference` 返回默认 `true`，从不表示读不到，行因此回到 `true` 而不是捕获值，可能在没有保存写入的情况下显示为打开（`evidence.md` G12）；MUST NOT 停在读者点出而宿主未接受的值上。
 - **FR-009**: 宿主缺少配置/设置能力时，插件 MUST 继续提供渲染；开关缺席 MUST NOT 使应用无法启动或会话无法使用。
@@ -124,7 +124,7 @@ feature 001 交付的是**渲染能力**：会话里出现 `mermaid` 代码块�
 ### Measurable Outcomes
 
 - **SC-001**: 开关打开后，面对固定 5 个"用图更省力"的样板请求，至少 3 个回答里出现可渲染的图；关闭时同一批样板仍至少 1 个出现图（能力未丧失，只是不再被鼓励）。（**未取证**：需要真实模型会话，见 E-GAPS 的 G7。）
-- **SC-002**: 切换开关后第一条新消息即反映新状态，读者不需要重启、重装或改任何文件（0 次重启）。
+- **SC-002**: 切换开关后第一条新消息即反映新状态，读者不需要重启、重装或改任何文件（0 次重启）。**未取证**：见 `evidence.md` E-GAPS 的 G6 与 E4 一节。
 - **SC-003**: 重启应用后，开关状态与重启前一致（对比 1 次：`0.2.8` 的 Web 复核，E-LIVE 的 restart 行，一致）。
 - **SC-004**: 8 种界面语言下，开关标题、说明与插件名全部是该语言的译文，未翻译键数量为 0。
 - **SC-005**: 切换操作在 1 秒内反映到界面；写入失败时 1 秒内出现可见提示，且显示值与实际生效值一致。（这一条**没有计时断言**：夹具只检查状态与提示是否出现，不测耗时——见 `evidence.md` G14。）
@@ -144,4 +144,4 @@ feature 001 交付的是**渲染能力**：会话里出现 `mermaid` 代码块�
 
 ## 完成状态
 
-**待复评（2026-11-24）。** 前十轮独立评审（每轮一份文档、一份实现）在 `0.2.0`–`0.2.13` 上都抓到过问题，逐轮修法与红行记在 `evidence.md` 的 E-PROBE；第八轮的发现（`.volatile()` 从未被断言、槽名检查可被同文诱饵骗过、九份 README 落后于真机观察）修进 `0.2.12`，第九轮的发现（`SafeChildren` 兜底只有一句 grep 证明、引擎字节不在指纹里、`package-lock` 版本落后、`entry.js` 注释里藏了一个控制字符、九份 README 的安装句仍写「开关没在真机窗口观察」）修进 `0.2.13`。第十一轮在 `0.2.14` 上运行（T091：实现 PASS、文档 FAIL）；第十二轮在 `0.2.15` 上运行（T099：两份均 FAIL），其发现（偏好段与 002 契约文本从未逐字比对、无条件措辞清单过窄、FR-017 无断言、`slots.register` 无兜底）修进 `0.2.17`（T106）。各轮评审任务尚未全部勾选（T030/T045/T054/T062/T069/T084/T115）；两份 PASS 之前，本条目的状态是「已实现、未通过评审」。
+**待复评（2026-11-24）。** 前十轮独立评审（每轮一份文档、一份实现）在 `0.2.0`–`0.2.13` 上都抓到过问题，逐轮修法与红行记在 `evidence.md` 的 E-PROBE；第八轮的发现（`.volatile()` 从未被断言、槽名检查可被同文诱饵骗过、九份 README 落后于真机观察）修进 `0.2.12`，第九轮的发现（`SafeChildren` 兜底只有一句 grep 证明、引擎字节不在指纹里、`package-lock` 版本落后、`entry.js` 注释里藏了一个控制字符、九份 README 的安装句仍写「开关没在真机窗口观察」）修进 `0.2.13`。第十一轮在 `0.2.14` 上运行（T091：实现 PASS、文档 FAIL）；第十二轮在 `0.2.15` 上运行（T099：两份均 FAIL），其发现（引擎句子无断言、拒绝路径不可观测、条件守卫可被真值判断骗过、注释诱饵）修进 `0.2.16`（T100–T104）；第十三轮在 `0.2.16` 上运行（T106：两份均 FAIL），其发现（偏好段与 002 契约文本从未逐字比对、无条件措辞清单过窄、FR-017 无断言、`slots.register` 无兜底）修进 `0.2.17`（T107–T114）；第十四轮在 `0.2.17` 上运行（T115：实现 PASS、文档 FAIL），其十一条文档发现与自证构建行修进 `0.2.18`（T116–T121）。各轮评审任务尚未全部勾选（T030/T045/T054/T062/T069/T084/T122）；两份 PASS 之前，本条目的状态是「已实现、未通过评审」。

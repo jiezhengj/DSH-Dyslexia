@@ -11,7 +11,7 @@ node verify/run-harness.mjs        # 无头浏览器行为断言
 node verify/run-harness.mjs --list # 逐条列出断言名（证据引用用）
 ```
 
-期望：三项全绿（`0.2.18` 工作树上是 63 条静态、301 条浏览器断言）；`build-client` 打印 `build-client: @jiezhengj/dsh-dyslexia@0.2.18 -> client.js (788314 bytes, 786797 characters, engine 1.13.0, sources 6, sources sha256:91f138aa9db9da2310e3736835b3f88c, syntax ok)` 这一行（自 `0.2.18` 起这一行也带版本与指纹），两条 `verify` 命令各打印一行 `包名@版本 | client.js 字节 | sources sha256` —— 三行都可直接粘贴进证据。
+期望：三项全绿（`0.2.19` 工作树上是 63 条静态、302 条浏览器断言）；`build-client` 打印 `build-client: @jiezhengj/dsh-dyslexia@0.2.19 -> client.js (788314 bytes, 786797 characters, engine 1.13.0, sources 6, sources sha256:46c72540aca269e6220283206e48f722, syntax ok)` 这一行（自 `0.2.18` 起这一行也带版本与指纹），两条 `verify` 命令各打印一行 `包名@版本 | client.js 字节 | sources sha256` —— 三行都可直接粘贴进证据。
 
 ## 端到端验证（需要 DSH）
 
@@ -39,7 +39,7 @@ node verify/run-harness.mjs --list # 逐条列出断言名（证据引用用）
 
 ## 探针（证明断言会失败）
 
-对每个关键断言做一次"故意破坏 → 重建 → 跑 → 确认变红 → 还原"；已跑四十八条探针（F1、F3–F15 十四条；P19–P37 二十六条，其中 P36 拆成 a–h；`0.2.16` 的 M1–M6 与 `0.2.17` 追加的 M7–M8 共八条），E-PROBE 表四十九行（含 F2 这条历史记录（P24–P37 明细见 E-PROBE 表，P36 拆成 P36a–P36h 八次记录）：P24 把 `SETTINGS_SLOT` 改名（宿主永不认领的 owner key）、P25 删 `if (!face) return false`、P26 删 configForms 守卫、P27 删 `if (!slots) return false`（无可观测红线，保留为防御）、P28 删 `claimSettingsPage(ctx)` 调用、P29 改源码不重建（陈旧产物）、P30 删行内的 `role: 'switch'`（夹具中断，43 条不再执行）、P31 去掉 `.volatile()`（静态 2 红、浏览器不动）、P32 改名 `SETTINGS_SLOT` 并加一句同文诱饵（静态 2 红）、P33 改 `vendor/pele/pele.global.js` 不重建（旧指纹看不见，静态 1 红）、P34 让边界兜底 `return null`（页面级断言红，静态也红）、P35 删样式表的 `ctx.effect` 登记（静态 2 红）、M7 改偏好段一个词（静态 1 红）、M8 追加无条件句（静态 1 红）。），输出行记在 `evidence.md` 的 E-PROBE：
+对每个关键断言做一次"故意破坏 → 重建 → 跑 → 确认变红 → 还原"；已跑四十八条探针：F1、F3–F15 十四条，P19–P37 二十六条（P36 拆成 P36a–P36h），`0.2.16` 的 M1–M6 与 `0.2.17` 的 M7–M8 共八条。E-PROBE 表四十九行，多出的一行是不计入四十八条的 F2 历史记录。P24–P37 的明细见 E-PROBE 表：P24 把 `SETTINGS_SLOT` 改名（宿主永不认领的 owner key）、P25 删 `if (!face) return false`、P26 删 configForms 守卫、P27 删 `if (!slots) return false`（无可观测红线，保留为防御）、P28 删 `claimSettingsPage(ctx)` 调用、P29 改源码不重建（陈旧产物）、P30 删行内的 `role: 'switch'`（夹具中断，43 条不再执行）、P31 去掉 `.volatile()`（静态 2 红、浏览器不动）、P32 改名 `SETTINGS_SLOT` 并加一句同文诱饵（静态 2 红）、P33 改 `vendor/pele/pele.global.js` 不重建（旧指纹看不见，静态 1 红）、P34 让边界兜底 `return null`（页面级断言红，静态也红）、P35 删样式表的 `ctx.effect` 登记（静态 2 红）、M7 改偏好段一个词（静态 1 红）、M8 追加无条件句（静态 1 红）。），输出行记在 `evidence.md` 的 E-PROBE：
 
 1. **F1 两档提示词**：让 `briefing` 无视开关、总是拼上偏好段 → `the section hands the host a function, not a frozen string`、`the capability briefing is what it was before the switch`、`the switch adds the preference on top of the capability, and nothing else` 报红。
 2. **F3 默认值**：把 `.default(true)` 改成 `.default(false)` → `the switch is on for an empty configuration` 报红。
