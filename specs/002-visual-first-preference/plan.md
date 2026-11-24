@@ -51,7 +51,7 @@ specs/002-visual-first-preference/
 ├── research.md
 ├── data-model.md
 ├── quickstart.md
-├── evidence.md                 # 构建/检查/探针输出与未取证项（G2–G8、G11–G17 未取证；G1 的 Web 部分由 0.2.6 的 E-LIVE 关闭（桌面窗口仍不可达），G9/G10 由 0.2.5 关闭；0.2.7 只加固守护，不改变读者所见）
+├── evidence.md                 # 构建/检查/探针输出与未取证项（G2–G8、G11–G20 未取证；G1 的 Web 部分由 0.2.6 的 E-LIVE 关闭（桌面窗口仍不可达），G9/G10 由 0.2.5 关闭；0.2.7 只加固守护，不改变读者所见）
 ├── contracts/
 │   ├── plugin-config.md        # 配置项与宿主侧读取契约
 │   ├── settings-row.md         # 设置行的槽契约、DOM/可访问性契约
@@ -106,7 +106,7 @@ verify/
 1. 宿主：`Config` + 两档提示词段 + 降级；静态断言先行。
 2. 客户端：`settings.js` + 文案 + 样式；夹具先行（假 `configForms`、假 `t`、8 语言、写失败）。
 3. 改名：`locale/*.json`、`docs/DETAIL*.md`、9 份 README、`package.json` description。
-4. 探针：二十五条（F1、F3–F15、P19–P29）逐条破坏受保护行为，确认断言会红。
+4. 探针：二十六条（F1、F3–F15、P19–P30）逐条破坏受保护行为，确认断言会红。
 5. 文档与证据：spec/plan/data-model/contracts/quickstart/evidence 同步；发版、装回、双评审。
 
 ## Complexity Tracking

@@ -39,7 +39,7 @@ node verify/run-harness.mjs --list # 逐条列出断言名（证据引用用）
 
 ## 探针（证明断言会失败）
 
-对每个关键断言做一次"故意破坏 → 重建 → 跑 → 确认变红 → 还原"；已跑二十五条（F1、F3–F15，以及 P19–P30 十二条针对检查本身的探针（P24–P30 明细见 E-PROBE 表）：P24 把 `SETTINGS_SLOT` 改名（宿主永不认领的 owner key）、P25 删 `if (!face) return false`、P26 删 configForms 守卫、P27 删 `if (!slots) return false`（无可观测红线，保留为防御）、P28 删 `claimSettingsPage(ctx)` 调用、P29 改源码不重建（陈旧产物）、P30 删行内的 `role: 'switch'`（夹具中断，43 条不再执行）。），输出行记在 `evidence.md` 的 E-PROBE：
+对每个关键断言做一次"故意破坏 → 重建 → 跑 → 确认变红 → 还原"；已跑二十六条（F1、F3–F15，以及 P19–P30 十二条针对检查本身的探针（P24–P30 明细见 E-PROBE 表）：P24 把 `SETTINGS_SLOT` 改名（宿主永不认领的 owner key）、P25 删 `if (!face) return false`、P26 删 configForms 守卫、P27 删 `if (!slots) return false`（无可观测红线，保留为防御）、P28 删 `claimSettingsPage(ctx)` 调用、P29 改源码不重建（陈旧产物）、P30 删行内的 `role: 'switch'`（夹具中断，43 条不再执行）。），输出行记在 `evidence.md` 的 E-PROBE：
 
 1. **F1 两档提示词**：让 `briefing` 无视开关、总是拼上偏好段 → `the section hands the host a function, not a frozen string`、`the capability briefing is what it was before the switch`、`the switch adds the preference on top of the capability, and nothing else` 报红。
 2. **F3 默认值**：把 `.default(true)` 改成 `.default(false)` → `the switch is on for an empty configuration` 报红。
