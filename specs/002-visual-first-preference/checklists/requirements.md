@@ -35,6 +35,6 @@
 - FR-002（默认打开）与 Constitution 原则 I 的旧措辞（"能力与偏好分离"）冲突，已在 Assumptions 写明：原则 I 修订为"默认带偏好，但界面上可见可关"，Constitution 升 2.0.0。
 - SC-001 的"至少 3/5"是模型行为指标，需要固定样板请求与离线判读口径，计划阶段须给出可重复的测法与"未取证"的登记方式。
 - SC-005 的"1 秒"沿用 feature 001 对界面反馈的口径（无独立计时装置时以观察与夹具断言为准，缺口须登记）。
-- SC-001（G7）、SC-005 的 1 秒计时（G14）、SC-008（G5）、SC-009（G3）尚无取证，因此 Feature Readiness 的"满足可度量结果"一项保持未勾。
+- SC-001（G7）、SC-005 的 1 秒计时（G14）、SC-006（E14/G6，停用再启用后开关回到关闭前的值）、SC-008（G5）、SC-009（G3）尚无取证，因此 Feature Readiness 的"满足可度量结果"一项保持未勾。
 - 关闭态提示词已与 feature 001 契约逐字比对（静态检查 `the capability briefing is what it was before the switch`），G9 关闭；探针 F10–F13 已在 `0.2.5` 上重跑，F14 在 `0.2.6` 上跑过、F15 在 `0.2.6` 上记录无效并已在 `0.2.7` 重跑，F3–F8 是 `0.2.1` 树上的记录，F1/F9 最后一次运行在 `0.2.3` 树上、此后未再重跑，G10 关闭（`0.2.4` 树本身从未被探针跑过）。
 - `spec.md:104-105`（FR-007/FR-008）刻意引用 `src/client/settings.js:110-113`、`injected.setValue`、`inject.readHostValue()` 与 `readPreference(face)`，把 pending/restore 规则写成可核对的条件；因此「No implementation details」两条不勾。

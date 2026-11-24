@@ -1291,6 +1291,86 @@ check('both size limits reach the engine, each proven on its own', () => {
   return 'three limits passed to mount, two fixtures that cross one each'
 })
 
+check('a host that refuses undeclared services is not reported as a fault', () => {
+  // The host answers every undeclared read with `cannot get property "…" without
+  // inject`. That is the path this module plans for, so reporting it warned in
+  // every reader's console on every start — and nothing failed when the guard
+  // was removed.
+  const entry = readCode('src/client/entry.js')
+  const at = entry.indexOf('/without inject/')
+  assert(at !== -1, 'entry.js no longer recognises the refusal sentence')
+  const lineEnd = entry.indexOf('\n', at)
+  const line = entry.slice(entry.lastIndexOf('\n', at), lineEnd === -1 ? undefined : lineEnd)
+  assert(/if \(!\/without inject\/\.test\(/.test(line), 'the refusal is no longer guarded before it is reported')
+  assert(/report\(name, error\)/.test(line), 'the drop is no longer reported at all')
+  return 'a refusal is recognised by its sentence, and only other faults reach console.warn'
+})
+
+check('a fence that failed comes back when its source changes', () => {
+  // Without this, one bad edit left the message failed for good: the reader
+  // fixed the text and the layer never retried.
+  const view = readCode('src/client/view.js')
+  const body = functionBody(view, 'componentDidUpdate(previous) {')
+  assert(body, 'view.js has no componentDidUpdate()')
+  assert(/this\.state\.failed && before !== now/.test(body), 'the boundary no longer notices a new source')
+  assert(/setState\(\{ failed: false \}\)/.test(body), 'the failed state is never cleared')
+  return 'a failed drawing is retried when the host hands over new source'
+})
+
+check('a missing engine is told apart from a broken diagram', () => {
+  // Three causes, three sentences. Deleting the code or the message test turned
+  // a missing engine into "the diagram is broken", and no suite noticed.
+  const figure = readCode('src/client/figure.js')
+  assert(/missing\.code = ENGINE_UNAVAILABLE/.test(figure), 'the missing-engine error carries no code')
+  assert(/error\.code === ENGINE_UNAVAILABLE\)\s*return 'unavailable'/.test(figure), 'that code is not read back')
+  assert(/\/parse\|syntax\|lexical\|invalid\/i\.test\(message\)/.test(figure), 'the engine message no longer decides the sentence')
+  return 'missing engine, syntax error and any other failure stay distinguishable'
+})
+
+check('an unsupported language falls back to english', () => {
+  // A reader whose host speaks a language this plugin does not know must get
+  // english, not whichever neighbour happened to be first in the table.
+  const i18n = readCode('src/client/i18n.js')
+  assert(/LANGUAGE_CODES\.indexOf\(base\) === -1 \? 'en' : base/.test(i18n), 'the fallback language is not english')
+  return 'a language the plugin does not speak gets english'
+})
+
+check('the settings page claim can be taken back', () => {
+  // `configure({ auto: false })` has to run inside `ctx.effect`, otherwise a
+  // disposed plugin keeps the page it claimed while it was loaded.
+  const host = readCode('index.js')
+  assert(
+    /child\.effect\(\(\) => child\.settings\.configure\(\{ auto: false \}, ctx\.fiber\)\)/.test(host),
+    'configure is called outside an effect, so the claim is never released',
+  )
+  return 'the opt-out runs inside ctx.effect, so it is released when the plugin goes'
+})
+
+check('a host without react gets a silent module, not nothing', () => {
+  // The loader factory is the only door the host has. Returning null there would
+  // crash on `.apply`, and no fixture loads the chunk with a failing require.
+  const stub = 'if (!React) return { apply: function () {}, inject: [] }'
+  const builder = readFileSync(join(ROOT, 'scripts', 'build-client.mjs'), 'utf8')
+  assert(builder.includes(stub), 'the builder no longer emits the react-less stub')
+  const chunk = readCode('client.js')
+  assert(chunk.includes(stub), 'the shipped chunk has no react-less stub')
+  return 'a host whose react is missing receives a module that does nothing, not null'
+})
+
+check('a new write clears the sentence the last one left', () => {
+  // Pressing the switch again after "Saved" has to start silent; otherwise the
+  // old answer stands next to a write that has not been answered yet.
+  const settings = readCode('src/client/settings.js')
+  const body = functionBody(settings, 'function choose(next) {')
+  assert(body, 'settings.js has no choose()')
+  const reset = body.indexOf("setState('idle')")
+  const write = body.indexOf('injected.setValue(next)')
+  assert(reset !== -1, 'a new write no longer resets the sentence')
+  assert(write !== -1, 'the write call moved out of choose()')
+  assert(reset < write, 'the sentence is reset after the write starts, so the old one lingers')
+  return 'a second press starts silent, then says what happened'
+})
+
 check('the fixtures assert what the fixes promise, and can fail', () => {
   // Comments are stripped before scanning: a decoy name inside a `//` comment, or
   // an emptied assertion body, must not keep this check green.
@@ -1399,7 +1479,7 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
 
 /* ---------------------------------------------------------------- report */
 
-const EXPECTED_CHECKS = 55
+const EXPECTED_CHECKS = 62
 if (notices.length + failures.length !== EXPECTED_CHECKS) {
   failures.push(
     `[FAIL] the suite has ${notices.length + failures.length} checks, expected ${EXPECTED_CHECKS}: a check was added or removed without updating this number`,

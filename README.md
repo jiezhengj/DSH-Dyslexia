@@ -54,7 +54,7 @@ Gap ids (`G…`) refer to feature 001's E-GAPS in `specs/001-mermaid-fence-rende
 ## Install
 
 Install `@jiezhengj/dsh-dyslexia` in the DeepSeek Harness Plugins page. It draws figures in the conversation; the renderer was live-checked on plugin `0.1.31` and `0.1.32`, and the switch itself has not been operated in a **desktop** window yet (it has been seen working on the web surface, feature 002's E-LIVE) (see feature 002's E-GAPS, G1/G6). Uninstalling takes effect after restarting the app: a running window keeps the figure and both buttons it has already loaded, and history is untouched (see feature 001's E-GAPS, G24①); enabling and disabling go through the host's own plugin mechanism and need no config edit, but **those two steps have not been observed separately** (see feature 001's E-GAPS, G20). A version change needs the app restarted before the new client code is loaded.
-在 DeepSeek Harness 的插件页安装 `@jiezhengj/dsh-dyslexia`。它会在会话里画图；渲染器在插件 `0.1.31` 与 `0.1.32` 上做过真机检查，而这个开关还没有在真机窗口里观察过（见 feature 002 的 E-GAPS，G1/G6）。卸载要重启应用后才生效：打开着的窗口会继续显示已经画出的图与两个按钮，历史消息不变（见 feature 001 的 E-GAPS 里的 G24①）；启用与停用走宿主自己的插件机制、不需要改配置，但**这两步还没有单独的真机观察**（见 feature 001 的 E-GAPS 里的 G20）。更换版本需要重启应用才会加载新的客户端代码。
+在 DeepSeek Harness 的插件页安装 `@jiezhengj/dsh-dyslexia`。它会在会话里画图；渲染器在插件 `0.1.31` 与 `0.1.32` 上做过真机检查，这个开关在 **Web 界面**上观察过它工作（插件 `0.2.8`，见 feature 002 的 E-LIVE），还没有在**桌面**窗口里操作过（见 E-GAPS 的 G1/G6）。卸载要重启应用后才生效：打开着的窗口会继续显示已经画出的图与两个按钮，历史消息不变（见 feature 001 的 E-GAPS 里的 G24①）；启用与停用走宿主自己的插件机制、不需要改配置，但**这两步还没有单独的真机观察**（见 feature 001 的 E-GAPS 里的 G20）。更换版本需要重启应用才会加载新的客户端代码。
 
 - Source: https://github.com/jiezhengj/DSH-Dyslexia
 

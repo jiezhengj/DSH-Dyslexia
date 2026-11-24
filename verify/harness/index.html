@@ -320,6 +320,21 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           const en = seen.en
           const untranslated = LANGS.filter((lang) => lang !== 'en' && seen[lang] === en)
           expect(untranslated.length === 0, 'every interface language actually translates', untranslated.join(','))
+          // A host language this plugin does not speak falls back to english.
+          // Defaulting to a neighbour language stayed green until now.
+          const previousLang = document.documentElement.lang
+          document.documentElement.lang = 'zz'
+          const unknownLanguage = mount(Layer, { code: CODE, streaming: false, children: hostBlock(CODE) })
+          await tick(90)
+          const unknownButtons = buttonsIn(unknownLanguage.stage)
+          expect(
+            unknownButtons.indexOf(EXACT.en.copy) !== -1 && unknownButtons.indexOf(EXACT.en.show) !== -1,
+            'a language the plugin does not speak falls back to english',
+            JSON.stringify(unknownButtons),
+          )
+          unknownLanguage.root.unmount()
+          unknownLanguage.stage.remove()
+          document.documentElement.lang = previousLang
 
           /* ------------------------------- the fence language comes from the host */
           const otherFence = mount(Layer, { code: CODE, lang: 'mmd', streaming: false, children: hostBlock(CODE) })
@@ -540,6 +555,24 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           await tick(80)
           expect(orphan.stage.textContent.indexOf(BAD) !== -1, 'a broken diagram without host children still shows its source')
           orphan.root.unmount()
+          // A fence that failed is retried when the host hands over new source.
+          // Without the retry one bad edit left the message failed for good.
+          const recoveryStage = document.createElement('div')
+          recoveryStage.className = 'stage'
+          document.getElementById('mount').appendChild(recoveryStage)
+          const recoveryRoot = ReactDOM.createRoot(recoveryStage)
+          recoveryRoot.render(React.createElement(Layer, { code: BAD, streaming: false, children: hostBlock(BAD) }))
+          await tick(80)
+          expect(!!recoveryStage.querySelector('.dsh-dyslexia-note'), 'a failed fence says why before it is fixed')
+          recoveryRoot.render(React.createElement(Layer, { code: CODE, streaming: false, children: hostBlock(CODE) }))
+          await tick(140)
+          expect(
+            !!recoveryStage.querySelector('.dsh-dyslexia-figure svg') && !recoveryStage.querySelector('.dsh-dyslexia-note'),
+            'a fence that failed draws again when its source changes',
+            recoveryStage.textContent.slice(0, 40),
+          )
+          recoveryRoot.unmount()
+          recoveryStage.remove()
           orphan.stage.remove()
 
           const htmlDescriptor = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML')
@@ -566,6 +599,14 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           if (drawThrowView) {
             expect(!!drawThrowView.stage.querySelector('.dsh-dyslexia-note'), 'a throwing engine leaves a sentence')
             expect(drawThrowView.stage.textContent.indexOf(CODE) !== -1, 'a throwing engine keeps the host block')
+            const throwNote = drawThrowView.stage.querySelector('.dsh-dyslexia-note')
+            // A broken diagram and a failed engine are different accidents and
+            // must not read as the same sentence; collapsing them stayed green.
+            expect(
+              !!brokenNote && !!throwNote ? brokenNote.textContent !== throwNote.textContent : false,
+              'a syntax error and a failed engine get different sentences',
+              `syntax=${brokenNote ? brokenNote.textContent : 'none'} engine=${throwNote ? throwNote.textContent : 'none'}`,
+            )
             drawThrowView.root.unmount()
             drawThrowView.stage.remove()
           } else {
@@ -2218,6 +2259,27 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             'a host that refuses undeclared properties still gets the strings registered',
             JSON.stringify(strictLocaleCalls),
           )
+          // The refusal is this host's expected answer, so dropping the surface
+          // must be silent: a regression warned on every start of the app.
+          const quietHost = makeContext({ noLocale: true })
+          Object.defineProperty(quietHost.ctx, 'locale', {
+            configurable: true,
+            get() {
+              throw new Error('cannot get property "locale" without inject')
+            },
+          })
+          quietHost.ctx.get = function get(name) {
+            if (name === 'locale') return strictLocale
+            if (name === 'configForms') return { get: () => settingsFace }
+            return undefined
+          }
+          const strictWarnings = captureWarnings(() => module.apply(quietHost.ctx))
+          expect(
+            strictWarnings.filter((line) => line.indexOf('without inject') !== -1).length === 0,
+            'a host that refuses undeclared services is not warned about',
+            JSON.stringify(strictWarnings),
+          )
+          quietHost.dispose()
           strictHost.dispose()
         } catch (error) {
           bad('fixture aborted', String(error && error.stack ? error.stack.split('\n')[0] : error))

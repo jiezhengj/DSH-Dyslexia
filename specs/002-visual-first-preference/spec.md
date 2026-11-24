@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-23
 
-**Status**: Implemented in `0.2.0` and corrected through `0.2.13`; the published version is now `0.2.13`, and fourteen versions are published (`0.2.0`–`0.2.13`). `0.2.5` registered the settings row and rendered nothing where a reader would look; `0.2.6` fixed the three causes (the host hands `hooks` over as hook props, the store needs `getSnapshot`, `ctx.locale` throws under strict `inject`) and was the first build whose row was seen in a running host; `0.2.7`–`0.2.13` each turned evidence that could not fail into an assertion that does, one review round at a time — the red lines are in `evidence.md` E-PROBE (F14, F15, P19–P35). This tree: 55 static and 294 browser checks, `client.js` 787768 bytes / 786251 characters, sources sha256 `bec49f4eeba79400e467078384088f38`. Evidence lives in `evidence.md`: its `0.2.13` E-BLD/E-CHK/E-HARN blocks are one run of this tree copied line for line, E-PUB/E-INS exist for every published version, and E-GAPS lists what is not proven (G2–G8 and G11–G20 open; G1 discharged for the web surface only, because the desktop window of this build offers no reachable settings control; G9 and G10 discharged by `0.2.5`).
+**Status**: Implemented in `0.2.0` and corrected through `0.2.14`; the working tree is `0.2.14` (the tenth review's eight behaviours that no suite could falsify are now assertions), and fourteen versions of this feature are published (`0.2.0`–`0.2.13`) — the package as a whole carries 49 versions, of which these fourteen are this feature's. `0.2.5` registered the settings row and rendered nothing where a reader would look; `0.2.6` fixed the three causes (the host hands `hooks` over as hook props, the store needs `getSnapshot`, `ctx.locale` throws under strict `inject`) and was the first build whose row was seen in a running host; `0.2.7`–`0.2.13` each turned evidence that could not fail into an assertion that does, one review round at a time — the red lines are in `evidence.md` E-PROBE (F14, F15, P19–P35). This tree: 62 static and 299 browser checks, `client.js` 787768 bytes / 786251 characters, sources sha256 `486b90e17026855e9e7d9e769845d106`. Evidence lives in `evidence.md`: its `0.2.14` E-BLD/E-CHK/E-HARN blocks are one run of this tree copied line for line, E-PUB/E-INS exist for every published version of this feature, and E-GAPS lists what is not proven (G2–G8 and G11–G21 open; G1 discharged for the web surface only, because the desktop window of this build offers no reachable settings control; G9 and G10 discharged by `0.2.5`).
 
 **Input**: User description: "插件可以有个简单的设置面板，里面有个开关：仅仅是在会话里更好地渲染 mermaid，还是同时更积极地用图形化的方式表达和输出。名称改为 DSH 我有阅读障碍（其他语种按语义翻译）。如果 Agent 并不积极地用图形化的方式输出，渲染再完美也没有意义。"
 
@@ -107,10 +107,10 @@ feature 001 交付的是**渲染能力**：会话里出现 `mermaid` 代码块�
 - **FR-010**: 开关 MUST 可键盘操作，并在无障碍信息里表现为"开关"角色、带界面语言名称与当前开/关状态；切换结果 MUST 被播报。键盘触发本身是浏览器原生的 `role="switch"` 行为，夹具只断言角色、名称、`aria-checked` 与可聚焦性（见 `evidence.md` G6）。
 - **FR-011**: 开关的标题与说明 MUST 在 8 种界面语言里都有译文，且不含未翻译的键名或英文占位。
 - **FR-012**: 插件标题与说明 MUST 在 8 种界面语言里改为"我有阅读障碍"的当地说法；说明页与随包 README MUST 使用同一说法（这一句没有断言，只在 zh/en/de 上人工核对过，见 `evidence.md` G13）。
-- **FR-013**: 改名 MUST NOT 改变包名、入口 id、安装路径、配置项标识与消息格式；升级 MUST NOT 需要迁移动作或重装。
+- **FR-013**: 改名 MUST NOT 改变包名、入口 id、安装路径、配置项标识与消息格式；升级 MUST NOT 需要迁移动作或重装。（**未取证**：每次安装都是先 `remove_bundle` 再重装，原地升级从未观察过，见 E-GAPS 的 G21。）
 - **FR-014**: 插件 MUST NOT 要求读者编辑任何指令文件来获得上述行为（沿用 feature 001 的约束）。
 - **FR-015**: 偏好段落 MUST 用判据表达，禁止"每次""必须"这类无条件要求；关闭开关后 MUST 完全不带该段。
-- **FR-016**: 开关行 MUST 与设置面板既有行使用同一套视觉语言（同一左对齐基线、同一标题字号与字重、同一说明字号与次要色、同一行内边距与分隔方式），不得出现自绘按钮、独立配色或第三方控件的默认外观。
+- **FR-016**: 开关行 MUST 与设置面板既有行使用同一套视觉语言（同一左对齐基线、同一标题字号与字重、同一说明字号与次要色、同一行内边距与分隔方式），不得出现第三方控件的默认外观；本插件自绘的 `button.dsh-dyslexia-switch` 是唯一例外（几何与配色由 `contracts/settings-row.md` 规定），它与宿主开关的像素级一致性从未对比，见 E-GAPS 的 G5。
 - **FR-017**: 开关行 MUST 在 8 种界面语言、系统字体放大到 200%、以及手机竖屏宽度下都不截断、不重叠、不横向溢出；语言切换时标题与说明 MUST 原地更新。
 
 ### Key Entities
@@ -125,7 +125,7 @@ feature 001 交付的是**渲染能力**：会话里出现 `mermaid` 代码块�
 
 - **SC-001**: 开关打开后，面对固定 5 个"用图更省力"的样板请求，至少 3 个回答里出现可渲染的图；关闭时同一批样板仍至少 1 个出现图（能力未丧失，只是不再被鼓励）。
 - **SC-002**: 切换开关后第一条新消息即反映新状态，读者不需要重启、重装或改任何文件（0 次重启）。
-- **SC-003**: 重启应用后，开关状态与重启前一致（对比 1 次：`0.2.8` 的 Web 复核，`evidence.md:878`，一致）。
+- **SC-003**: 重启应用后，开关状态与重启前一致（对比 1 次：`0.2.8` 的 Web 复核，E-LIVE 的 restart 行，一致）。
 - **SC-004**: 8 种界面语言下，开关标题、说明与插件名全部是该语言的译文，未翻译键数量为 0。
 - **SC-005**: 切换操作在 1 秒内反映到界面；写入失败时 1 秒内出现可见提示，且显示值与实际生效值一致。（这一条**没有计时断言**：夹具只检查状态与提示是否出现，不测耗时——见 `evidence.md` G14。）
 - **SC-006**: 关闭插件后，历史消息回到纯文本代码块呈现，开关行消失；重新启用后开关回到关闭前的值（沿用 feature 001 的可逆性）。
@@ -144,4 +144,4 @@ feature 001 交付的是**渲染能力**：会话里出现 `mermaid` 代码块�
 
 ## 完成状态
 
-**待复评（2026-11-24）。** 前九轮独立评审（每轮一份文档、一份实现）在 `0.2.0`–`0.2.12` 上都抓到过问题，逐轮修法与红行记在 `evidence.md` 的 E-PROBE；第八轮的发现（`.volatile()` 从未被断言、槽名检查可被同文诱饵骗过、九份 README 落后于真机观察）修进 `0.2.12`，第九轮的发现（`SafeChildren` 兜底只有一句 grep 证明、引擎字节不在指纹里、`package-lock` 版本落后、`entry.js` 注释里藏了一个控制字符、九份 README 的安装句仍写「开关没在真机窗口观察」）修进 `0.2.13`。各轮评审任务本身尚未全部勾选（T045/T054/T062/T069/T077/T084）——第十轮在 `0.2.13` 上运行；两份 PASS 之前，本条目的状态是「已实现、未通过评审」。
+**待复评（2026-11-24）。** 前九轮独立评审（每轮一份文档、一份实现）在 `0.2.0`–`0.2.12` 上都抓到过问题，逐轮修法与红行记在 `evidence.md` 的 E-PROBE；第八轮的发现（`.volatile()` 从未被断言、槽名检查可被同文诱饵骗过、九份 README 落后于真机观察）修进 `0.2.12`，第九轮的发现（`SafeChildren` 兜底只有一句 grep 证明、引擎字节不在指纹里、`package-lock` 版本落后、`entry.js` 注释里藏了一个控制字符、九份 README 的安装句仍写「开关没在真机窗口观察」）修进 `0.2.13`。各轮评审任务本身尚未全部勾选（T030/T045/T054/T062/T069/T084）——第十轮在 `0.2.13` 上运行；两份 PASS 之前，本条目的状态是「已实现、未通过评审」。
