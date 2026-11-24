@@ -116,7 +116,7 @@
 - [x] **T073** 探针 P29 重做并写清改的是什么（`src/client/styles.js` 追加一行注释、不重建）：静态 `1 failed, 51 passed`、浏览器 `client.js is stale: rebuild it (chunk 25576ab9…, sources c740d04e…)`、exit 1；`evidence.md` 的 P29 行补上静态同红与新的 `sources` 指纹。
 - [x] **T074** 九份 README（索引 + 8 语言）的"验证"条目补上 Web 界面真机观察（插件 `0.2.8`：标签与说明、开关、点击写 `cordis.patch.yml`、重启后保持），未测试范围收窄为"在桌面窗口里操作开关"。
 - [x] **T075** 文档同步：`evidence.md` 的 E-BLD/E-CHK/E-HARN 换成 `0.2.12` 单次运行输出（52 / 292）、G20 改写（持久化仍未断言，volatile 自 `0.2.12` 起有断言）；`spec.md` 十三版 `0.2.0`–`0.2.12`、`0.2.7`–`0.2.12`、P19–P32、52 静态与 `sources 838eef8d…`；`plan.md`、`quickstart.md` 的计数与探针描述。
-- [ ] **T076** 发布 `0.2.12`：提交 → tag → GitHub Actions → registry 轮询 → `remove_bundle` 后 `install_bundle` → 回填 E-PUB/E-INS。
+- [x] **T076** 发布 `0.2.12`：提交 `4964cb4` → tag `v0.2.12` → GitHub Actions run `45328884899`（`success`，shasum `a85192f5…`、logIndex `4069471531`、33 文件）→ registry tarball 第 29 次轮询 HEAD 200 → `remove_bundle`（卸 `0.2.11`）后 `install_bundle @0.2.12`（`applied`、依赖 `"0.2.12"`、安装副本 787768 字节 / `C58A4DD6…2F2C`）→ 回填 E-PUB · 0.2.12 与 E-INS · 0.2.12。
 - [ ] **T077** 第九轮两份独立评审（文档 / 实现）；两份 PASS 才把 feature 002 标记完成。
 
 ## Dependencies
