@@ -51,7 +51,7 @@ specs/002-visual-first-preference/
 ├── research.md
 ├── data-model.md
 ├── quickstart.md
-├── evidence.md                 # 构建/检查/探针输出与未取证项（G2–G8、G11–G22 未取证；G1 的 Web 部分由 0.2.6 的 E-LIVE 关闭（桌面窗口仍不可达），G9/G10 由 0.2.5 关闭；0.2.7 只加固守护，不改变读者所见）
+├── evidence.md                 # 构建/检查/探针输出与未取证项（G2–G8、G11–G23 未取证；G1 的 Web 部分由 0.2.6 的 E-LIVE 关闭（桌面窗口仍不可达），G9/G10 由 0.2.5 关闭；0.2.7 只加固守护，不改变读者所见）
 ├── contracts/
 │   ├── plugin-config.md        # 配置项与宿主侧读取契约
 │   ├── settings-row.md         # 设置行的槽契约、DOM/可访问性契约
