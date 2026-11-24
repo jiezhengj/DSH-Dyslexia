@@ -1258,3 +1258,44 @@ run-harness: @jiezhengj/dsh-dyslexia@0.2.13 | client.js 787768 bytes | sources s
 | package version inside the installed copy | `0.2.13` |
 
 What readers see is unchanged from `0.2.12`: the settings row, the switch and the drawings are the same. What this build adds is evidence — the engine bytes now enter the fingerprint, the boundary fallback is asserted at the page, the stylesheet is handed to `ctx.effect` as a disposable, and the lockfile follows the manifest.
+
+## E-PUB · 0.2.14
+
+| what | value |
+| --- | --- |
+| commit | `a0e0622` |
+| tag | `v0.2.14` |
+| workflow run | [`45335447932`](https://github.com/jiezhengj/DSH-Dyslexia/actions/runs/45335447932) — success |
+| tarball shasum | `5b1375bc3b1a985075044bd50d89a8cac5bba3f2` |
+| provenance | `logIndex=4070347435` |
+| packed files | 33 |
+| registry integrity | `sha512-4lyxgfA90RBhYFByMSkAhgrmbut31LURNiEK/uuwKSLZuSYVKh+joODMl0ix43H9y9xxZiPAgGT607clFkbrQA==` |
+
+The workflow printed, in this order:
+
+```console
+check-bundle: @jiezhengj/dsh-dyslexia@0.2.14 | client.js 787768 bytes | sources sha256:486b90e17026855e9e7d9e769845d106 | all 62 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.2.14 | client.js 787768 bytes | sources sha256:486b90e17026855e9e7d9e769845d106 | all 299 checks passed (/usr/bin/google-chrome)
+npm notice shasum: 5b1375bc3b1a985075044bd50d89a8cac5bba3f2
+npm notice total files: 33
+npm notice publish Provenance statement published to transparency log: https://search.sigstore.dev/?logIndex=4070347435
+```
+
+The registry needed 29 polls (`Invoke-WebRequest -Method Head`, 10 s apart) before the tarball answered 200; the version document was already readable when it did.
+
+## E-INS · 0.2.14
+
+| step | observation |
+| --- | --- |
+| `remove_bundle @jiezhengj/dsh-dyslexia` | `stage remove`, `changed true`, pnpm reported `- @jiezhengj/dsh-dyslexia 0.2.13` |
+| `install_bundle @jiezhengj/dsh-dyslexia@0.2.14` | `stage enable`, `changed true`, `version 0.2.14`, pnpm `+ @jiezhengj/dsh-dyslexia 0.2.14` (and added the version to `minimumReleaseAgeExclude`) |
+| profile dependency | `"@jiezhengj/dsh-dyslexia": "0.2.14"` |
+| installed `client.js` | 787768 bytes |
+| installed `client.js` SHA-256 | `B1B3039E5B937AA9E69B4C0C6C8728A20CAA0CF36090B158F06DB1FFBFAC0F23` |
+| repository `client.js` SHA-256 | the same value |
+| `locale/` | 8 language files |
+| `docs/` | 9 files (8 DETAIL + `preview.svg`) |
+| package version inside the installed copy | `0.2.14` |
+
+Nothing a reader sees changed from `0.2.13`: the row, the switch and the drawings are the same code. What changed is that eight behaviours no suite could falsify now fail a check when they break (P36a–P36h), and three claims that were never observed — FR-013's upgrade without migration, FR-016's no-self-drawn-control rule, and the switch's visual parity — are written down as gaps (G21, G5) instead of as facts.
+

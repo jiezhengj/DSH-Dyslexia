@@ -126,6 +126,23 @@
 - [x] **T083** 文档同步到 `0.2.13`：`evidence.md` 头注与三块（55 / 294、`bec49f4e…`、`A22E6E3A…`）、P29 重写并新增 P33–P35、G12 的 `:672`→`:693`、G13 的 #44/`:897`→#47/`:963`、0.2.5 段的行号改 `:435`/`:1338-1341`/`:1345`/`:1341`；`spec.md`、`plan.md`、`quickstart.md`、`checklists/implementation.md`、`specs/001-mermaid-fence-render/spec.md` 的 `:401`→`:435`。
 - [ ] **T084** 第十轮两份独立评审（文档 / 实现）；两份 PASS 才把 feature 002 标记完成。
 
+## Phase 13: the tenth implementation review, and `0.2.14`
+
+`review-impl-002z` broke 39 things in a copy of the tree; 31 turned at least one suite red, eight turned none:
+an unconditional `report()` on a host that refuses undeclared services, a failed fence that never retried, a
+missing engine told apart from a broken diagram, a syntax sentence merged with the generic failure sentence, an
+unsupported language falling back to German, a settings claim that could not be released, a host without React
+handed nothing instead of a silent module, and a copy sentence that outlived the write it described. Each now
+has an assertion that executes the shape it protects.
+
+- [x] **T085** 十条静态检查补至 62：`a host that refuses undeclared services is not reported as a fault`（执行 `entry.js` 的 `optional()`，严格宿主下静默、普通宿主下回退）、`a fence that failed comes back when its source changes`（`view.js` 的 `getDerivedStateFromError` + `componentDidUpdate` 结构）、`a missing engine is told apart from a broken diagram`（切出 `figure.js` 的 `classify`，引擎缺失带 `code`）、`an unsupported language falls back to english`（执行 `fallbackLanguage`）、`the settings page claim can be taken back`（`index.js` 的 `ctx.effect` 包住 `configure`）、`a host without react gets a silent module, not nothing`（切片含 `apply` 与 `inject`）、`a new write clears the sentence the last one left`（写前 `setState('idle')`）。
+- [x] **T086** 夹具补至 299：严格宿主静默、失败栅栏换源后重画、语法错误与引擎失败句子不同、未知语言回落到英文；`a new write clears the sentence the last one left` 试过五次都无法在 settings 主序列末尾稳定复现（`toggle` 被重渲染成游离节点、`disabled` 互扰），改为只由静态检查守。
+- [x] **T087** P36a–P36h 八条探针，逐条记录红行与计数（`1 failed, 61 passed` / `2 failed, 60 passed`），并注明"Green before `0.2.14`"。
+- [x] **T088** 内联脚本加 `node --check` 闸：抽出 `<script>` 到 `.tmp/harness-main.js` 后 `node --check`，抓到与 0.2.9 同名的 `pendingStatus` 重复声明，改名 `clearedStatus`。
+- [x] **T089** 发版 `0.2.14`：commit `a0e0622`、tag `v0.2.14`、run [`45335447932`](https://github.com/jiezhengj/DSH-Dyslexia/actions/runs/45335447932)、shasum `5b1375bc3b1a985075044bd50d89a8cac5bba3f2`、logIndex `4070347435`、33 文件。
+- [x] **T090** 装回 `desktop`：卸 0.2.13、装 0.2.14，依赖 `"0.2.14"`，安装副本 787768 字节 / `B1B3039E…AC0F23` 与仓库逐字节相同，`locale/` 8、`docs/` 9。
+- [ ] **T091** 第十一轮两份独立评审（文档 / 实现）。两份 PASS 才把 feature 002 标记完成。
+
 ## Dependencies
 
 - Phase 2 依赖 T002/T003（段文本两档）先用静态断言钉住契约，再写客户端。
@@ -143,10 +160,10 @@
 
 | area | state |
 |---|---|
-| Host half: `Config` with `visualFirst` (default on, `.volatile()`, asserted since `0.2.12`), two-tier briefing, `claimSettingsPage` (asserted since `0.2.11`) | done, 55 static checks |
-| Client half: settings row on `settings.general.item`, `configForms` read/write, revert on refusal | done, 55 static and 294 browser checks on the `0.2.13` tree (`0.2.12` shipped 52 / 292 (`0.2.7` shipped the same code with two shape-only static checks, `0.2.6` shipped 280) (`0.2.5` shipped 274, `0.2.4` 271, `0.2.3` 260, `0.2.2` 252); the row reads the hook prop the host builds (`useVisualFirst`) and keeps the store path for hosts that send `hooks`; no disabled state, no timer; a refused write restores the host's current value |
+| Host half: `Config` with `visualFirst` (default on, `.volatile()`, asserted since `0.2.12`), two-tier briefing, `claimSettingsPage` (asserted since `0.2.11`) | done, 62 static checks |
+| Client half: settings row on `settings.general.item`, `configForms` read/write, revert on refusal | done, 62 static and 299 browser checks on the `0.2.14` tree (`0.2.13` shipped 55 / 294, `0.2.12` shipped 52 / 292 (`0.2.7` shipped the same code with two shape-only static checks, `0.2.6` shipped 280) (`0.2.5` shipped 274, `0.2.4` 271, `0.2.3` 260, `0.2.2` 252); the row reads the hook prop the host builds (`useVisualFirst`) and keeps the store path for hosts that send `hooks`; no disabled state, no timer; a refused write restores the host's current value |
 | Eight-language rename (locale, DETAIL alt line, 8 READMEs, index, package description) | done; DETAIL keeps exactly one image line (its alt sentence carries the new name) |
-| Evidence | `evidence.md` (this feature): `0.2.13` build and 55 / 294, thirty-one falsifiability probes (F1, F3–F15, P19–P35), E-LIVE records the row
-| Not done | SC-005's one-second timing (G14), the desktop window's settings entry (the row was observed through `dsh web`; the desktop build opens settings as a separate document that this window offers no control for — G1 records the limit), the host write path to `settings.update` seen directly (G2 records what was observed instead), 200%/360px layout assertion for the row (G3), pixel comparison (G5), E1–E14 end-to-end rows (G6), SC-001 five sample requests (G7), schemastery import failure path (G8), live-host injection of malformed contexts (G4), degraded-face click path (G12), README/DETAIL wording consistency (G13), the unobservable `slots` guard (G15), invariants only the browser suite sees (G16), the 43 checks one missing attribute hides (G17), the silenced strict-inject warning (G18), a `Config` getter that throws (G19), what volatile persistence means (G20) |
+| Evidence | `evidence.md` (this feature): `0.2.14` build and 62 / 299, thirty-two falsifiability probes (F1, F3–F15, P19–P36), E-LIVE records the row
+| Not done | SC-005's one-second timing (G14), the desktop window's settings entry (the row was observed through `dsh web`; the desktop build opens settings as a separate document that this window offers no control for — G1 records the limit), the host write path to `settings.update` seen directly (G2 records what was observed instead), 200%/360px layout assertion for the row (G3), pixel comparison (G5), E1–E14 end-to-end rows (G6), SC-001 five sample requests (G7), schemastery import failure path (G8), live-host injection of malformed contexts (G4), degraded-face click path (G12), README/DETAIL wording consistency (G13), the unobservable `slots` guard (G15), invariants only the browser suite sees (G16), the 43 checks one missing attribute hides (G17), the silenced strict-inject warning (G18), a `Config` getter that throws (G19), what volatile persistence means (G20), an in-place upgrade (G21: every install removes the old version first, so FR-013's upgrade without migration is never observed) |
 
 **2026-11-24：** T021 的两项评审曾均 PASS（实现 `review-impl-002f`、文档 `review-docs-002m`），但那是在没有真机观察的前提下——按用户建议用 `dsh web` 起独立 profile 复现后，`0.2.5` 的设置行在真实设置页里渲染为空（T024），`0.2.6` 修好三处并补了 2 条静态检查、6 条夹具与 2 条探针（T025–T027），真机观察写进 `evidence.md` 的 E-LIVE（T028），G1 关闭（限 Web 界面）。发版与再评审见 T029/T030。
