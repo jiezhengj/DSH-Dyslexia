@@ -170,7 +170,11 @@ if (invokedDirectly) {
     fail(`client.js does not compile: ${error.message}`)
   }
   writeFileSync(OUTPUT, built.chunk)
+  // The report line names the tree it reports on: without the version and the
+  // fingerprint, a pasted build line cannot be tied to a source state, and the
+  // evidence blocks that quote it would be unverifiable on their own.
+  const fingerprint = /sources sha256:([0-9a-f]{32})/.exec(built.chunk)
   process.stdout.write(
-    `build-client: ${built.manifest.name} -> client.js (${Buffer.byteLength(built.chunk, 'utf8')} bytes, ${built.chunk.length} characters, engine ${built.engineVersion}, sources ${SOURCES.length}, syntax ok)\n`,
+    `build-client: ${built.manifest.name}@${built.manifest.version} -> client.js (${Buffer.byteLength(built.chunk, 'utf8')} bytes, ${built.chunk.length} characters, engine ${built.engineVersion}, sources ${SOURCES.length}, sources sha256:${fingerprint === null ? 'unknown' : fingerprint[1]}, syntax ok)\n`,
   )
 }

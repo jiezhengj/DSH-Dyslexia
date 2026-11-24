@@ -11,7 +11,7 @@ node verify/run-harness.mjs        # 无头浏览器行为断言
 node verify/run-harness.mjs --list # 逐条列出断言名（证据引用用）
 ```
 
-期望：三项全绿（`0.2.17` 工作树上是 63 条静态、301 条浏览器断言）；`build-client` 只打印 `(788314 bytes, 786797 characters, engine 1.13.0, sources 6, syntax ok)` 这一行，版本/字节/指纹行由两条 `verify` 命令输出（形如 `包名@版本 | client.js 字节 | sources sha256`），可直接粘贴进证据。
+期望：三项全绿（`0.2.17` 工作树上是 63 条静态、301 条浏览器断言）；`build-client` 打印 `build-client: @jiezhengj/dsh-dyslexia@0.2.17 -> client.js (788314 bytes, 786797 characters, engine 1.13.0, sources 6, sources sha256:91f138aa9db9da2310e3736835b3f88c, syntax ok)` 这一行（自 `0.2.18` 起这一行也带版本与指纹），两条 `verify` 命令各打印一行 `包名@版本 | client.js 字节 | sources sha256` —— 三行都可直接粘贴进证据。
 
 ## 端到端验证（需要 DSH）
 
