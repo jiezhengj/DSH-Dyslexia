@@ -164,6 +164,8 @@ has an assertion that executes the shape it protects.
 - [x] **T105** 发 `0.2.16`（63 静态 / 299 浏览器、`sources sha256:7e984e47…`、788059 字节）、发布会话 `45345541218`（shasum `48e20e14…`、logIndex `4071895779`、33 文件）、注册表 tarball 第 29 次轮询 200、卸 0.2.15 装 0.2.16（依赖 `"0.2.16"`、安装副本 788059 字节、SHA-256 `2AB27E73…8A1F` 与仓库根逐字节相同、`locale/` 8、`docs/` 9）、E-PUB/E-INS 已补。
 - [ ] **T106** 第十三轮两份独立评审；两份 PASS 才把 feature 002 标记完成。
 
+- [x] **T107** 用一次性 profile（`webcheck4`，用完删除）在运行中的 Web 界面复核已发布的 `0.2.16`：设置页有标签、说明、`switch [checked=true]`，点开后写 `cordis.patch.yml` 的 `visualFirst: false` 并显示「已保存」，控制台没有任何 `dsh-dyslexia:` 行（当场写一条 `console.warn('probe-marker-456')` 证明捕获是活的）。观察写进 `evidence.md` 的 E-LIVE 新小节；九份 README 与 `checklists/implementation.md` 的「三次观察」随之改为四次。
+
 ## Dependencies
 
 - Phase 2 依赖 T002/T003（段文本两档）先用静态断言钉住契约，再写客户端。
