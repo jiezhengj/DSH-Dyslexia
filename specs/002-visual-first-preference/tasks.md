@@ -204,7 +204,7 @@ has an assertion that executes the shape it protects.
 - [x] **T132** 夹具守卫：`constantOnly` 增加"常量 + 字符串方法链 + 与字面量比较"的形态，堵住 `CODE.toLowerCase().length > 0`；`verify/harness/index.html` 增加 `the row lays itself out as the stylesheet promises`（`getComputedStyle(row).display === 'flex' && alignItems === 'flex-start'`），`EXPECTED_CHECKS` 302 → 303。
 - [x] **T133** 七条新探针 Q1–Q7 在 `0.2.20` 树上逐条破坏 → 重建 → 跑 → 录红行 → 还原：Q1 `window['fetch']('ht' + 'tps://…')`、Q2 `(0, eval)`、Q3 `document['createElement']('img').src =`、Q4 `(this || window)['fet' + 'ch']`、Q5 `window['require']`、Q6 夹具条件换 `CODE.toLowerCase().length > 0`、Q7 CSS 规则改名，七条全部变红（Q7 同时在浏览器侧红）。
 - [x] **T134** 文档与证据：`spec.md` Status 与待复评段按 `0.2.20` 重写（64 / 303、788314 字节、`b6c1b8f2…`、二十个版本、六十条探针编号），`plan.md` 当前工作树、`quickstart.md` 的期望行与探针清单、`checklists/implementation.md` 的探针算术、`tasks.md` T015 的口径同步；`evidence.md` 头注与 Q1–Q7 七行、E-BLD/E-CHK/E-HARN 三块用 `0.2.20` 单次运行输出整段重写。
-- [ ] **T135** 发版 `0.2.20` 并装回 `desktop`，把 E-PUB/E-INS 的 0.2.20 行补进 `evidence.md`。
+- [x] **T135** 发版 `0.2.20` 并装回 `desktop`：第一次运行 `45368178961` 在浏览器套件上失败（`[bad] every zoom button is reachable once the picture is zoomed — 1/3 after zoom`，夹具改成轮询引擎重建控件），修好后 commit `4fbcf2e`、tag `v0.2.20`、run `45368691600`（success）、shasum `2368d97ec9747d334850388baebae274b140f0f5`、logIndex `4075013338`、33 文件；装回后依赖 `"0.2.20"`、安装副本 788314 字节 / `012E3687…9122` 与仓库根逐字节相同；E-PUB/E-INS 的 0.2.20 行已写入 `evidence.md`。
 - [ ] **T136** 第十七轮两份独立评审；两份 PASS 才把 feature 002 标记完成。
 
 - [ ] **T130** 第十六轮两份独立评审；两份 PASS 才把 feature 002 标记完成。
