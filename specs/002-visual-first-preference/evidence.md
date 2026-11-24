@@ -814,6 +814,14 @@ published `0.2.8`), one `dsh web` process per step:
 | uninstall | `plugin remove @jiezhengj/dsh-dyslexia`, restart: the row is gone (the host's 上传 Session Log row is now the last one) — the feature leaves nothing behind |
 | console | two of our own warnings: `dsh-dyslexia: locale { … without inject }` and `dsh-dyslexia: configForms { … without inject }` |
 
+### the `0.2.9` re-check — the refusals are gone from the log
+
+A third throwaway profile (`webcheck3`, `plugin add` of the published `0.2.9`), one `dsh web` process, the page
+driven with `agent-browser`: the settings panel listed `switch "优先用图，而不是成段文字" [checked=true]` and the
+page console carried **no** `dsh-dyslexia:` line at all. The capture was live rather than empty — a marker
+written from the console (`console.warn('probe-marker-123')`) showed up as the only entry. So the row still
+registers through the strict host while the two expected refusals no longer reach the log.
+
 The warnings are the strict-inject path working as designed: `optional()` tries `ctx.get(name)`, does not find
 `locale`/`configForms` that way on this host, falls back to the bare property, is refused, and reports the
 refusal. Nothing is broken — but a plugin that logs an expected refusal on every boot teaches readers to ignore
