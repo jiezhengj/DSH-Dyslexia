@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-23
 
-**Status**: Implemented in `0.2.0` and corrected through `0.2.10`; the published version is now `0.2.10`, and ten versions are published (`0.2.0`–`0.2.10`). `0.2.5` registered the settings row and rendered nothing where a reader would look; `0.2.6` fixed the three causes (the host hands `hooks` over as hook props, the store needs `getSnapshot`, `ctx.locale` throws under strict `inject`) and was the first build whose row was seen in a running host; `0.2.7`–`0.2.10` each turned evidence that could not fail into an assertion that does, one review round at a time — the red lines are in `evidence.md` E-PROBE (F14, F15, P19–P27). This tree: 50 static and 292 browser checks, `client.js` 787768 bytes / 786251 characters, sources sha256 `25fe69385f7372015944ae0b18386c31`. Evidence lives in `evidence.md`: its E-BLD/E-CHK/E-HARN blocks are one run of this tree copied line for line, E-PUB/E-INS exist for every published version, and E-GAPS lists what is not proven (G2–G8 and G11–G16 open; G1 discharged for the web surface only, because the desktop window of this build offers no reachable settings control; G9 and G10 discharged by `0.2.5`).
+**Status**: Implemented in `0.2.0` and corrected through `0.2.11`; the published version is now `0.2.11`, and twelve versions are published (`0.2.0`–`0.2.11`). `0.2.5` registered the settings row and rendered nothing where a reader would look; `0.2.6` fixed the three causes (the host hands `hooks` over as hook props, the store needs `getSnapshot`, `ctx.locale` throws under strict `inject`) and was the first build whose row was seen in a running host; `0.2.7`–`0.2.11` each turned evidence that could not fail into an assertion that does, one review round at a time — the red lines are in `evidence.md` E-PROBE (F14, F15, P19–P29). This tree: 51 static and 292 browser checks, `client.js` 787768 bytes / 786251 characters, sources sha256 `25fe69385f7372015944ae0b18386c31`. Evidence lives in `evidence.md`: its E-BLD/E-CHK/E-HARN blocks are one run of this tree copied line for line, E-PUB/E-INS exist for every published version, and E-GAPS lists what is not proven (G2–G8 and G11–G16 open; G1 discharged for the web surface only, because the desktop window of this build offers no reachable settings control; G9 and G10 discharged by `0.2.5`).
 
 **Input**: User description: "插件可以有个简单的设置面板，里面有个开关：仅仅是在会话里更好地渲染 mermaid，还是同时更积极地用图形化的方式表达和输出。名称改为 DSH 我有阅读障碍（其他语种按语义翻译）。如果 Agent 并不积极地用图形化的方式输出，渲染再完美也没有意义。"
 
@@ -102,9 +102,9 @@ feature 001 交付的是**渲染能力**：会话里出现 `mermaid` 代码块�
 - **FR-005**: 切换 MUST 在不需要重启、不需要重装的情况下对下一条消息生效。
 - **FR-006**: 选择 MUST 持久保存，应用重启后保持。
 - **FR-007**: 开关显示的状态 MUST 在宿主给出答案之后等于实际生效值；一次写入从点击到落定之间，行允许先显示读者请求的值（`src/client/settings.js:110-113` 的 `show()` 在 `injected.setValue` 之前就把值写进 store，此时宿主尚未接受），落定后按宿主答案显示；被外部改动时界面 MUST 跟随更新，无需刷新页面。宿主永不回答的写入不在本条保证内（见 `evidence.md` G11）。
-- **FR-008**: 写入失败（resolve `false`、reject，或 thenable 的 `then` 抛错）MUST 以可见方式告知读者，并把开关恢复为宿主当前值：`restore()`（`src/client/settings.js:127-138`）经 `inject.readHostValue()` → `readPreference(face)`（`:48-58`）重读宿主快照。`readHostValue` 只要有 face 就会挂上（`:243-245`），而设置行只在有 face 时注册（`src/client/entry.js:167-168`），所以任何已挂载的行都会真正重读宿主，点击前捕获的值只在 `readHostValue` 缺席时生效——即没有已挂载行的时候（该捕获值还可能已被另一个窗口改过）。退化情形：face 缺 `getSnapshot`、`getSnapshot` 抛错或快照不可读时，`readPreference` 返回默认 `true`，从不表示读不到，行因此回到 `true` 而不是捕获值，可能在没有保存写入的情况下显示为打开（`evidence.md` G12）；MUST NOT 停在读者点出而宿主未接受的值上。
+- **FR-008**: 写入失败（resolve `false`、reject，或 thenable 的 `then` 抛错）MUST 以可见方式告知读者，并把开关恢复为宿主当前值：`restore()`（`src/client/settings.js:127-138`）经 `inject.readHostValue()` → `readPreference(face)`（`:48-58`）重读宿主快照。`readHostValue` 只要有 face 就会挂上（`:243-245`），而设置行只在有 face 时注册（`src/client/entry.js:173-174`），所以任何已挂载的行都会真正重读宿主，点击前捕获的值只在 `readHostValue` 缺席时生效——即没有已挂载行的时候（该捕获值还可能已被另一个窗口改过）。退化情形：face 缺 `getSnapshot`、`getSnapshot` 抛错或快照不可读时，`readPreference` 返回默认 `true`，从不表示读不到，行因此回到 `true` 而不是捕获值，可能在没有保存写入的情况下显示为打开（`evidence.md` G12）；MUST NOT 停在读者点出而宿主未接受的值上。
 - **FR-009**: 宿主缺少配置/设置能力时，插件 MUST 继续提供渲染；开关缺席 MUST NOT 使应用无法启动或会话无法使用。
-- **FR-010**: 开关 MUST 可键盘操作，并在无障碍信息里表现为"开关"角色、带界面语言名称与当前开/关状态；切换结果 MUST 被播报。
+- **FR-010**: 开关 MUST 可键盘操作，并在无障碍信息里表现为"开关"角色、带界面语言名称与当前开/关状态；切换结果 MUST 被播报。键盘触发本身是浏览器原生的 `role="switch"` 行为，夹具只断言角色、名称、`aria-checked` 与可聚焦性（见 `evidence.md` G6）。
 - **FR-011**: 开关的标题与说明 MUST 在 8 种界面语言里都有译文，且不含未翻译的键名或英文占位。
 - **FR-012**: 插件标题与说明 MUST 在 8 种界面语言里改为"我有阅读障碍"的当地说法；说明页与随包 README MUST 使用同一说法（这一句没有断言，只在 zh/en/de 上人工核对过，见 `evidence.md` G13）。
 - **FR-013**: 改名 MUST NOT 改变包名、入口 id、安装路径、配置项标识与消息格式；升级 MUST NOT 需要迁移动作或重装。
@@ -125,13 +125,13 @@ feature 001 交付的是**渲染能力**：会话里出现 `mermaid` 代码块�
 
 - **SC-001**: 开关打开后，面对固定 5 个"用图更省力"的样板请求，至少 3 个回答里出现可渲染的图；关闭时同一批样板仍至少 1 个出现图（能力未丧失，只是不再被鼓励）。
 - **SC-002**: 切换开关后第一条新消息即反映新状态，读者不需要重启、重装或改任何文件（0 次重启）。
-- **SC-003**: 重启应用后，开关状态与重启前一致（对比 2 次，均一致）。
+- **SC-003**: 重启应用后，开关状态与重启前一致（对比 1 次：`0.2.8` 的 Web 复核，`evidence.md:813`，一致）。
 - **SC-004**: 8 种界面语言下，开关标题、说明与插件名全部是该语言的译文，未翻译键数量为 0。
 - **SC-005**: 切换操作在 1 秒内反映到界面；写入失败时 1 秒内出现可见提示，且显示值与实际生效值一致。（这一条**没有计时断言**：夹具只检查状态与提示是否出现，不测耗时——见 `evidence.md` G14。）
 - **SC-006**: 关闭插件后，历史消息回到纯文本代码块呈现，开关行消失；重新启用后开关回到关闭前的值（沿用 feature 001 的可逆性）。
-- **SC-007**: 只用键盘可完成"聚焦 → 切换 → 读到新状态"三步，读屏或无辅助工具的无障碍树中角色、名称、状态齐备。
+- **SC-007**: 只用键盘可完成"聚焦 → 切换 → 读到新状态"三步，读屏或无辅助工具的无障碍树中角色、名称、状态齐备。键盘触发未被夹具驱动（只断言角色、名称、状态与可聚焦性，见 `evidence.md` G6）。
 - **SC-008**: 开关行与相邻官方设置在截图级对比中同属一套视觉语言：标题基线对齐、说明字号与次要色一致、行距与分隔方式一致（逐项对照，允许 1px 级差异）。
-- **SC-009**: 8 种界面语言 × 200% 字体放大 × 360px 栏宽共 24 种组合下，开关行不截断、不重叠、不产生横向滚动。
+- **SC-009**: 8 种界面语言（200% 字体放大、360px 栏宽为固定条件）共 8 种组合下，开关行不截断、不重叠、不产生横向滚动。
 
 ## Assumptions
 
@@ -144,4 +144,4 @@ feature 001 交付的是**渲染能力**：会话里出现 `mermaid` 代码块�
 
 ## 完成状态
 
-**待复评（2026-11-24）。** 五轮独立评审（每轮一份文档、一份实现）都在 `0.2.0`–`0.2.9` 上抓到过问题，逐轮修法与红行记在 `evidence.md` 的 E-PROBE：0.2.6 修好「设置行在真实宿主里渲染为空」的三个原因；0.2.7 把只匹配源码形状的 `getSnapshot` 检查改成瞄函数体、并加两条用插件自己 store 造宿主钩子的夹具；0.2.8 让「未声明服务经 `ctx.get` 读取」与「写入被拒不算已保存」两条检查真正执行实现；0.2.9 让乐观帧、缺字段回落、缺 `getSnapshot` 三类退化都有断言；0.2.10 让设置槽的 owner key（`slots.inject` 的第一个参数）有断言，并把三处守卫的告警通道纳入观测（宿主无 `slots` 时只报一次，无 `configForms` 或查不到 face 时保持安静）。当前 `0.2.10`：50 静态 / 292 浏览器，`client.js` 787768 字节。**feature 002 尚未完成**：开放的复评是 T054，未勾集合为 T016/T017/T020/T021/T030/T045/T054（真机桌面窗口不可达、证据逐条核对未做）。未取证项以 `evidence.md` 的 E-GAPS 为准（G2–G8、G11–G16）；**G1** 已由 E-LIVE 关闭（`0.2.6` 首次观察，`0.2.8` 复核重启保持与卸载回退，`0.2.9` 复核日志静音），但仅限 Web 界面。
+**待复评（2026-11-24）。** 前五轮独立评审（每轮一份文档、一份实现；第 4、5 轮的任务条目尚未勾）中，已确证的每一轮都在 `0.2.0`–`0.2.10` 上抓到过问题，逐轮修法与红行记在 `evidence.md` 的 E-PROBE：0.2.6 修好「设置行在真实宿主里渲染为空」的三个原因；0.2.7 把只匹配源码形状的 `getSnapshot` 检查改成瞄函数体、并加两条用插件自己 store 造宿主钩子的夹具；0.2.8 让「未声明服务经 `ctx.get` 读取」与「写入被拒不算已保存」两条检查真正执行实现；0.2.9 让乐观帧、缺字段回落、缺 `getSnapshot` 三类退化都有断言；0.2.10 让设置槽的 owner key（`slots.inject` 的第一个参数）有断言，并把三处守卫的告警通道纳入观测（宿主无 `slots` 时只报一次，无 `configForms` 或查不到 face 时保持安静）；`0.2.11` 把「设置页用 `auto: false` 认领恰好一次」变成断言，并让 `run-harness` 真的能发现陈旧产物（源改了不重建会红）。当前 `0.2.11`：51 静态 / 292 浏览器，`client.js` 787768 字节。**feature 002 尚未完成**：开放的复评是 T062/T069，未勾集合为 T016/T017/T020/T021/T030/T045/T054/T062/T069（真机桌面窗口不可达、证据逐条核对未做）。未取证项以 `evidence.md` 的 E-GAPS 为准（G2–G8、G11–G16）；**G1** 已由 E-LIVE 关闭（`0.2.6` 首次观察，`0.2.8` 复核重启保持与卸载回退，`0.2.9` 复核日志静音），但仅限 Web 界面。

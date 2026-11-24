@@ -15,6 +15,7 @@ import { spawnSync } from 'node:child_process'
 import { existsSync, readFileSync, statSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import { buildChunk } from '../scripts/build-client.mjs'
 
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)))
 const PAGE = join(ROOT, 'verify', 'harness', 'index.html')
@@ -114,11 +115,25 @@ if (failed > 0) {
 }
 
 // The summary line names the tree it came from, so a pasted run cannot belong to
-// a different commit than the one it claims. The fingerprint is the same one the
-// builder stamps into client.js, so a suite run against a stale chunk shows it.
+// a different commit than the one it claims. The fingerprint in it is the one
+// baked into client.js, so it only proves what the chunk says; the sources are
+// rebuilt here and compared, which is what actually catches a stale chunk.
 const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'))
 const chunk = readFileSync(join(ROOT, 'client.js'), 'utf8')
 const stamped = /sources sha256:([0-9a-f]{32})/.exec(chunk)
+let fresh = null
+try {
+  fresh = /sources sha256:([0-9a-f]{32})/.exec(buildChunk(ROOT).chunk)[1]
+} catch (error) {
+  process.stderr.write(`\nrun-harness: the sources do not build: ${(error && error.message) || error}\n`)
+  process.exit(1)
+}
+if (!stamped || stamped[1] !== fresh) {
+  process.stderr.write(
+    `\nrun-harness: client.js is stale: rebuild it (chunk ${stamped ? stamped[1] : 'unstamped'}, sources ${fresh})\n`,
+  )
+  process.exit(1)
+}
 const EXPECTED_CHECKS = 292
 if (EXPECTED_CHECKS > 0 && passed !== EXPECTED_CHECKS) {
   process.stderr.write(

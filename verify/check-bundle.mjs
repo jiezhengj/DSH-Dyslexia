@@ -934,6 +934,59 @@ check('the host half registers exactly one capability section', () => {
   return `${section.name}, order ${section.order}, ${text.trim().split(/\s+/).length} words`
 })
 
+check('the settings page is claimed with auto off, once per context', () => {
+  // Without this call DSH would also auto-generate a page for the plugin's Config,
+  // so the reader would meet two pages for one setting. Nothing else looks at it.
+  const calls = []
+  const host = {
+    systemPrompt: { section: () => () => undefined },
+    fiber: 'the-context-fiber',
+    inject(services, callback) {
+      assert(Array.isArray(services) && services.includes('settings'), `inject asked for ${JSON.stringify(services)}`)
+      callback({
+        effect(setup) {
+          const stop = setup()
+          return typeof stop === 'function' ? stop : () => undefined
+        },
+        settings: {
+          configure(options, owner) {
+            calls.push([options, owner])
+          },
+        },
+      })
+    },
+  }
+  hostHalf.apply(host)
+  assert(calls.length === 1, `${calls.length} configure calls for one context`)
+  const [options, owner] = calls[0]
+  assert(options && options.auto === false, `configure got ${JSON.stringify(options)}`)
+  assert(owner === host.fiber, 'configure was not given the context fibre')
+
+  const asked = []
+  hostHalf.apply({
+    systemPrompt: { section: () => () => undefined },
+    inject(services, callback) {
+      asked.push(services)
+      callback({ effect(setup) { setup() } })
+    },
+  })
+  assert(asked.length === 1 && calls.length === 1, 'a host without a settings service still configured a page')
+
+  let threw = null
+  try {
+    hostHalf.apply({
+      systemPrompt: { section: () => () => undefined },
+      inject() {
+        throw new Error('inject exploded')
+      },
+    })
+  } catch (error) {
+    threw = error
+  }
+  assert(threw === null, `a throwing inject escaped apply: ${threw && threw.message}`)
+  return `configure(${JSON.stringify(options)}) on the calling context`
+})
+
 check('the host half adds one section per context, not one per call', () => {
   const sections = []
   const ctx = {
@@ -1280,7 +1333,7 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
 
 /* ---------------------------------------------------------------- report */
 
-const EXPECTED_CHECKS = 50
+const EXPECTED_CHECKS = 51
 if (notices.length + failures.length !== EXPECTED_CHECKS) {
   failures.push(
     `[FAIL] the suite has ${notices.length + failures.length} checks, expected ${EXPECTED_CHECKS}: a check was added or removed without updating this number`,
