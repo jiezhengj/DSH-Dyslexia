@@ -63,7 +63,17 @@
 - [x] **T035** 重跑探针并记录真实红行：删 store 的 `getSnapshot()` → `FAIL the settings row reads the hook the host builds, not an object it never sends — the value store does not carry the getSnapshot/subscribe pair a host hook is built from`、`check-bundle: 1 failed, 46 passed`，以及 `[bad] … get=function getSnapshot=undefined subscribe=function`、`[bad] a hook built from that store draws the switch — no switch`、`run-harness: 2 failed, 281 passed`；`optional(ctx,'locale')` → `ctx.locale` → `FAIL … locale is still read as a bare property` 与 `[bad] a host that refuses undeclared properties still gets the strings registered — []`。
 - [x] **T036** 文档：`evidence.md` 的 E-BLD/E-CHK/E-HARN 三块用 `0.2.7` 单次运行重写、头注与版本链改 `0.2.7`、F15 行改为真实红行并注明"`0.2.6` 上记录的那行是错的"、G12 的行号改到当前文件、E-PUB/E-INS 追加 0.2.7；`plan.md`/`quickstart.md`/`spec.md`/`tasks.md` 的计数与版本同步。
 - [x] **T037** 发版 `0.2.7`：commit `a9a2bc9` → tag `v0.2.7` → Actions run `45305735507` success（shasum `d424a48f8e0c3650f8c62281c3818dca59f715b1`、logIndex `4064162219`、33 files）→ registry 第 29 次轮询可下载 → `remove_bundle` 卸 0.2.6 → `install_bundle @0.2.7` applied（profile 依赖 `"0.2.7"`、安装副本 787325 字节 / `496B5C41…A913`）→ E-PUB/E-INS 已补；随后的文档更正 commit `12e6cd1` 只动 `specs/`。
-- [ ] **T038** 再次起两份独立评审（文档 / 实现），两份 PASS 才把 feature 002 标记完成。
+- [x] **T038** 第三轮评审：`review-docs-002s` 判 FAIL（5 处行号引用落到旧树），`review-impl-002s` 判 FAIL 并给出两条 P0——`a service the plugin never declared is read through ctx.get` 与 `a refused settings write is not reported as saved` 只检查源码形状，把 `entry.js` 的 `if (typeof ctx.get === 'function')` 改成 `if (false)`、把 `settings.js` 的 `if (accepted)` 改成 `if (true)` 后静态套件仍全绿（真实故障与假证据）。行号问题已按 `fc30f95` 修正；两条 P0 的处理见 Phase 8。
+
+## Phase 8：让两条只认形状的静态检查真能红（0.2.8）
+
+- [x] **T039** `verify/check-bundle.mjs` 新增 `functionBody(source, signature)`（按花括号配平切出函数体），`a service the plugin never declared is read through ctx.get` 改为**执行**切出的 `optional()`：严格宿主（`ctx.get` 返回 `via-get:<name>`、`ctx.locale`/`ctx.configForms` 的 getter 抛 `cannot get property … without inject`）必须得到 `via-get:locale` / `via-get:configForms`，无 `ctx.get` 的宿主必须回退到属性值；保留 `optional(ctx, 'locale')` 与禁止裸 `ctx.locale` 的形状断言。
+- [x] **T040** `a refused settings write is not reported as saved` 改为切出 `const settle = (accepted) => {…}` 并断言其中有 `if (accepted)`、`setState('failed')`、`restore(before)`，同时保留 `(result) => settle(result === true || result === undefined)` 与 `() => settle(false)` 两条流断言。
+- [x] **T041** 探针（原地破坏→跑→立刻还原，`git status` 只留检查文件的改动）：P19 把 `ctx.get` 分支改成 `if (false)` → `FAIL a service the plugin never declared is read through ctx.get — ctx.get was not consulted for locale`、`check-bundle: 2 failed, 45 passed`、exit 1；P20 把 `if (accepted)` 改成 `if (true)` → `FAIL a refused settings write is not reported as saved — the settle handler does not branch on what the host answered`、`check-bundle: 2 failed, 45 passed`、exit 1。（两条在 `0.2.7` 树上破坏后静态套件都是全绿，这就是 P0。）
+- [x] **T042** 版本升 `0.2.8`、重建（`787325 bytes, 785808 characters, engine 1.13.0, sources 6, syntax ok`，`sources sha256:a82c554f992a9871b4b8dcdff8499f7b`、文件 SHA-256 `35397283cd5f8f89ec9469c503176922bdf49c57551d5d8c4e40a49dfd5a24fd`），两套与 `0.2.7` 同为 47 / 283 全绿。
+- [x] **T043** `evidence.md`：头注改 `0.2.8` 与九个版本、E-BLD/E-CHK/E-HARN 三块用 `0.2.8` 单次运行输出整段重写、F14 行补上当时漏记的静态红行、把"F14 与 F15 都在 `0.2.6` 树上跑过"的错误说法改成 F14 在 `0.2.6`、F15 在 `0.2.7`、新增 P19/P20 两行（并写明它们在 `0.2.7` 上曾全绿）、E-PUB/E-INS 补 `0.2.8` 占位块。
+- [ ] **T044** 发版 `0.2.8`：commit → tag `v0.2.8` → GitHub Actions → registry 装回 `desktop` → E-PUB/E-INS 填实测。
+- [ ] **T045** 第四轮两份独立评审，两份 PASS 才把 feature 002 标记完成。
 
 ## Dependencies
 
@@ -83,9 +93,9 @@
 | area | state |
 |---|---|
 | Host half: `Config` with `visualFirst` (default on, `.volatile()`), two-tier briefing, `claimSettingsPage` | done, 47 static checks |
-| Client half: settings row on `settings.general.item`, `configForms` read/write, revert on refusal | done, 283 browser checks in the published `0.2.7` (`0.2.6` shipped 280) (`0.2.5` shipped 274, `0.2.4` 271, `0.2.3` 260, `0.2.2` 252); the row reads the hook prop the host builds (`useVisualFirst`) and keeps the store path for hosts that send `hooks`; no disabled state, no timer; a refused write restores the host's current value |
+| Client half: settings row on `settings.general.item`, `configForms` read/write, revert on refusal | done, 283 browser checks in the published `0.2.8` (`0.2.7` shipped the same code with two shape-only static checks, `0.2.6` shipped 280) (`0.2.5` shipped 274, `0.2.4` 271, `0.2.3` 260, `0.2.2` 252); the row reads the hook prop the host builds (`useVisualFirst`) and keeps the store path for hosts that send `hooks`; no disabled state, no timer; a refused write restores the host's current value |
 | Eight-language rename (locale, DETAIL alt line, 8 READMEs, index, package description) | done; DETAIL keeps exactly one image line (its alt sentence carries the new name) |
-| Evidence | `evidence.md` (this feature): `0.2.7` build and 47 / 283, fourteen falsifiability probes (F1, F3–F15), E-LIVE records the row and the switch in a running host; gaps G2–G8 and G11–G14 open, G1 discharged by `0.2.6` (web surface only), G9/G10 by `0.2.5` |
+| Evidence | `evidence.md` (this feature): `0.2.8` build and 47 / 283, fourteen falsifiability probes (F1, F3–F15), E-LIVE records the row and the switch in a running host; gaps G2–G8 and G11–G14 open, G1 discharged by `0.2.6` (web surface only), G9/G10 by `0.2.5` |
 | Not done | SC-005's one-second timing (G14), the desktop window's settings entry (the row was observed through `dsh web`; the desktop build opens settings as a separate document that this window offers no control for — G1 records the limit), the host write path to `settings.update` seen directly (G2 records what was observed instead), 200%/360px layout assertion for the row (G3), pixel comparison (G5), E1–E14 end-to-end rows (G6), SC-001 five sample requests (G7), schemastery import failure path (G8) |
 
 **2026-11-24：** T021 的两项评审曾均 PASS（实现 `review-impl-002f`、文档 `review-docs-002m`），但那是在没有真机观察的前提下——按用户建议用 `dsh web` 起独立 profile 复现后，`0.2.5` 的设置行在真实设置页里渲染为空（T024），`0.2.6` 修好三处并补了 2 条静态检查、6 条夹具与 2 条探针（T025–T027），真机观察写进 `evidence.md` 的 E-LIVE（T028），G1 关闭（限 Web 界面）。发版与再评审见 T029/T030。

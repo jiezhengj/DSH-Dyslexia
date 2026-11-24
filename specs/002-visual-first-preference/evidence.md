@@ -1,6 +1,6 @@
 # Evidence — feature 002: the preference switch and the new name
 
-This file records what was actually observed while building feature 002. Each block is one run on one tree — E-PROBE is the exception, collecting one run per probe and naming each group's tree in its intro; no block mixes trees silently. E-PUB/E-INS exist for all eight published versions — `0.2.0`–`0.2.7` — and for no unpublished tree: every version that was cut has both blocks, and `0.2.7` is one of them (see "E-PUB · 0.2.7" and "E-INS · 0.2.7" below). E-BLD · 0.2.1, E-CHK and E-HARN quote the `0.2.1` tree only (44 static, 251 browser; the `0.2.5` build line is the one other block, `E-BLD · 0.2.5` below, and the `0.2.5` check runs are summary lines in "E-CHK/E-HARN · 0.2.5" below, not transcripts; E-CHK is the complete stdout of that run — 44 `ok` lines plus the summary — while the 52 deliberately triggered `warn`/stack lines went to stderr). The current tree is `0.2.7`, committed, released and installed — the same tree this file's runs measured: 47 static and 283 browser checks, `client.js` 787325 bytes / 785808 characters, sources sha256 `a08cd79acf40084829e270e0564b1b85`, file SHA-256 `496b5c4133d726fa928c69661afecac2452ae215bd86074363857529599ca913`. The tree `0.2.7` replaced in the profile is `0.2.6` (47 static and 280 browser checks, `client.js` 787325 bytes, sources sha256 `b69ddecef48b3acc5a9b51e2a1a27bc1`). E-PROBE records F3–F8 on `0.2.1`, F1/F9 on the `0.2.3` tree, and F10–F13 on the `0.2.5` tree; the `0.2.4` tree itself was never probed, and `0.2.5` supersedes it (G10 discharged).
+This file records what was actually observed while building feature 002. Each block is one run on one tree — E-PROBE is the exception, collecting one run per probe and naming each group's tree in its intro; no block mixes trees silently. E-PUB/E-INS exist for every published version, `0.2.0` through `0.2.8`; every version that was cut has both blocks. The `0.2.1` blocks below (E-BLD · 0.2.1, E-CHK and E-HARN of that tree: 44 static, 251 browser) are kept as history; the `0.2.5` build line and the `0.2.5` check runs are summary lines in their own sections, not transcripts. **The current tree is `0.2.8`**, committed, released and installed — the same tree this file's current blocks measured: 47 static and 283 browser checks, `client.js` 787325 bytes / 785808 characters, sources sha256 `a82c554f992a9871b4b8dcdff8499f7b`, file SHA-256 `35397283cd5f8f89ec9469c503176922bdf49c57551d5d8c4e40a49dfd5a24fd`. The tree `0.2.8` replaced in the profile is `0.2.7` (47 static and 283 browser checks, `client.js` 787325 bytes, sources sha256 `a08cd79acf40084829e270e0564b1b85`); `0.2.7` replaced `0.2.6` (47 / 280, sources sha256 `b69ddecef48b3acc5a9b51e2a1a27bc1`). E-PROBE records F3–F8 on `0.2.1`, F1/F9 on the `0.2.3` tree, F10–F13 on `0.2.5`, F14 on `0.2.6`, F15 on `0.2.7`, and P19/P20 on `0.2.8`; the `0.2.4` tree itself was never probed, and `0.2.5` supersedes it (G10 discharged).
 
 ## E-BLD · 0.2.1 build
 
@@ -372,29 +372,33 @@ Each probe below breaks one protected behaviour in a working copy of the sources
 | F10 | `src/client/settings.js`: `restore` puts back the value captured before the click and never asks the face again | `[bad] a refused write keeps the value the host took while it was pending — aria-checked=false host=true status=保存失败，开关保持原来的状态。`, `run-harness: 1 failed, 273 passed`, exit 1 |
 | F11 | `src/client/entry.js`: drop the `face.subscribe` effect, so a value the host pushes never reaches the store | `[bad] a refused write that resolves false puts the switch back and says so — sets=[["visualFirst",false],["visualFirst",true],["visualFirst",true]] aria-checked=true host=true status=保存失败，开关保持原来的状态。`, `[bad] a value the host pushes reaches the switch without a write — aria-checked=true paint rgb(74, 108, 247) -> rgb(74, 108, 247)`, `run-harness: 2 failed, 272 passed`, exit 1 |
 | F12 | `index.js`: one word changed in the capability sentence (`in place inside the conversation.` → `in place within the conversation.`) | `FAIL the capability briefing is what it was before the switch — the off-state briefing no longer carries feature 001's sentence: …`, `check-bundle: 1 failed, 44 passed`, exit 1 |
-| F14 | `src/client/settings.js`: the `useVisualFirst` branch removed, back to reading only `props.hooks` | `[bad] a host that passes hooks as hook props still gets a visible row — nothing rendered`, `[bad] the switch follows the value the host hook reports — no switch`, `[bad] clicking the switch writes through the writer the host gave it — []`, `[bad] the switch then shows the value the host now holds — no switch`, `run-harness: 4 failed, 276 passed`, exit 1 |
+| F14 | `src/client/settings.js`: the `useVisualFirst` branch removed, back to reading only `props.hooks` | `[bad] a host that passes hooks as hook props still gets a visible row — nothing rendered`, `[bad] the switch follows the value the host hook reports — no switch`, `[bad] clicking the switch writes through the writer the host gave it — []`, `[bad] the switch then shows the value the host now holds — no switch`, `run-harness: 4 failed, 276 passed`, exit 1; the static suite reds too: `FAIL the settings row reads the hook the host builds, not an object it never sends — settings.js does not read the useVisualFirst hook prop`, `check-bundle: 1 failed, 46 passed` | Run on the `0.2.6` tree. |
 | F15 | `src/client/settings.js`: `getSnapshot()` dropped from the value store | `FAIL the settings row reads the hook the host builds, not an object it never sends — the value store does not carry the getSnapshot/subscribe pair a host hook is built from`, `check-bundle: 1 failed, 46 passed`, exit 1; and the harness sees it too: `[bad] the store this module hands the host can be read the way the host reads it — get=function getSnapshot=undefined subscribe=function`, `[bad] a hook built from that store draws the switch — no switch`, `run-harness: 2 failed, 281 passed`, exit 1 | Run on the `0.2.7` tree. **This probe was first recorded on `0.2.6` as `1 failed, 47 passed` for a break that left both suites green** — a 47-item suite cannot report 1 failed and 47 passed, and deleting only the store method was not seen by anything: the substring check was satisfied by `face.getSnapshot()` elsewhere in the file and no fixture built a host hook out of the plugin's own store. `0.2.7` retargets the static check at the `createValueStore` body and adds two fixtures that mount a `useSyncExternalStore` hook made from the store the module hands over. |
 | F13 | `src/client/settings.js`: the `pending.then(...)` chain moved outside the `try` | `[bad] a thenable that throws out of then cannot break the click — threw=no uncaught=Script error. aria-checked=false host=true status=none`, `run-harness: 1 failed, 273 passed`, exit 1 |
+| P19 | `src/client/entry.js`: `if (typeof ctx.get === 'function') {` → `if (false) {` | `FAIL a service the plugin never declared is read through ctx.get — ctx.get was not consulted for locale`, `check-bundle: 2 failed, 45 passed`, exit 1 (the other failure is the stale-chunk line, which any source change produces). **On the `0.2.7` tree this break left the static suite green** — the check only grepped for `function optional(`/`optional(ctx, 'locale')` — so `0.2.8` executes the sliced reader: `optional({ get: (name) => 'via-get:' + name, get locale() { throw } }, 'locale')` must answer `via-get:locale`, and a host without `ctx.get` must still answer from the property. |
+| P20 | `src/client/settings.js`: `if (accepted) {` → `if (true) {` (a refusal reported as saved) | `FAIL a refused settings write is not reported as saved — the settle handler does not branch on what the host answered`, `check-bundle: 2 failed, 45 passed`, exit 1. **On the `0.2.7` tree this break also left the static suite green** (it only grepped for `result === true` elsewhere in the file); `0.2.8` slices the `settle` handler and requires `if (accepted)`, the failure sentence and `restore(before)` inside it. |
 
 The function-form break (F2) was not caught by the suites before the function check existed: a frozen `text` string kept every earlier check green, and only `the section hands the host a function, not a frozen string` sees it. That is why the check was added; in the E-CHK order it is #22 of the 44 checks.
 
-After restoring and rebuilding, the `0.2.1` probe session passed again: `build-client` reported `sources 6, syntax ok`, `check-bundle` reported `all 44 checks passed`, `run-harness` reported `all 251 checks passed`. The `0.2.3` re-runs of F1 and F9 reported the untouched copy as `all 44 checks passed` and `all 260 checks passed` before the breaks. The `0.2.5` probes (F10–F13) each started from a fresh copy of the final tree and were restored afterwards; that tree's own suites are green at 45 / 274 (see "E-CHK/E-HARN · 0.2.5"). The `0.2.4` tree itself was never probed (G10, discharged on `0.2.5`). The `0.2.6` probes (F14, F15) are the two that guard the live-window defect E-LIVE records: both were run on copies of the `0.2.6` tree and restored afterwards, and the untouched copy reported `all 47 checks passed` and `all 280 checks passed` before the breaks.
+After restoring and rebuilding, the `0.2.1` probe session passed again: `build-client` reported `sources 6, syntax ok`, `check-bundle` reported `all 44 checks passed`, `run-harness` reported `all 251 checks passed`. The `0.2.3` re-runs of F1 and F9 reported the untouched copy as `all 44 checks passed` and `all 260 checks passed` before the breaks. The `0.2.5` probes (F10–F13) each started from a fresh copy of the final tree and were restored afterwards; that tree's own suites are green at 45 / 274 (see "E-CHK/E-HARN · 0.2.5"). The `0.2.4` tree itself was never probed (G10, discharged on `0.2.5`). The probes that guard the live-window defect E-LIVE records are F14 and F15. F14 ran on a copy of the `0.2.6` tree (untouched copy: `all 47 checks passed`, `all 280 checks passed`) and F15 on a copy of the `0.2.7` tree (`all 47 checks passed`, `all 283 checks passed`) — on `0.2.6` the F15 break left both suites green, which is why `0.2.7` retargeted the static check and added the two store fixtures.
 
 Two fixture details are worth recording. Headless Chrome's virtual time does not advance the 120 ms CSS transition on the switch, so the paint assertion sets `style.transition = 'none'` on the switch before reading the computed colour (`verify/harness/index.html:1599` on the `0.2.5` tree, `:1634` on `0.2.7`). React 18 routes an event-handler throw to `window`'s `error` event rather than rethrowing it from `.click()`, so F13's fixture watches that event instead of expecting a throw at the call site (`verify/harness/index.html:1655-1667` on the `0.2.5` tree, `:1689-1702` on `0.2.7`).
 
-## E-BLD · 0.2.7 build
+## E-BLD · 0.2.8 build
 
 ```
 build-client: @jiezhengj/dsh-dyslexia -> client.js (787325 bytes, 785808 characters, engine 1.13.0, sources 6, syntax ok)
 ```
 
-## E-CHK/E-HARN · 0.2.7 (47 static, 283 browser)
+## E-CHK/E-HARN · 0.2.8 (47 static, 283 browser)
 
-Both blocks below are the complete stdout of one run of this tree; the `FAIL`/`warn` lines the checks
-trigger on purpose go to stderr and are named where they matter, not pasted here.
+Both blocks below are the complete output of one run of this tree: the first is the full stdout of
+`node verify/check-bundle.mjs`, the second the full stdout of `node verify/run-harness.mjs --list` (a plain
+run prints only the summary line). The `FAIL`/`warn` lines the checks trigger on purpose go to stderr and
+are named where they matter, not pasted here.
 
 ```
-ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.2.7
+ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.2.8
 ok   package.json points at the repository npm trusts — git+https://github.com/jiezhengj/DSH-Dyslexia.git
 ok   package.json declares the bundle patch and the client half — platform web, no package inject
 ok   no dsh version gate can refuse a start — no engines.dsh, no dsh peers
@@ -425,10 +429,10 @@ ok   every supported sample type draws an svg — flowchart:218x64 sequence:184x
 ok   a broken diagram reports a one-line reason — Parse error on line 2:
 ok   host key echo falls back to bundled strings — key echo, blanks, placeholders rejected; the host is asked under the plugin namespace
 ok   the settings row reads the hook the host builds, not an object it never sends — useVisualFirst and the store form both wired, the store itself carries getSnapshot and subscribe
-ok   a service the plugin never declared is read through ctx.get — locale, slots and configForms go through ctx.get with a property fallback
-ok   a refused settings write is not reported as saved — true saves, false reverts, a host that resolves nothing saves; behaviour is asserted by the fixture
+ok   a service the plugin never declared is read through ctx.get — the reader asked ctx.get first and fell back to the property, for locale and configForms alike
+ok   a refused settings write is not reported as saved — the resolved boolean reaches the branch: true saves, false or a skipped write reverts and says so
 ok   every language carries the same complete sentences — 16 keys x 8 languages, no engine text in labels
-ok   client.js matches the sources it claims — a08cd79acf40084829e270e0564b1b85, 787325 bytes rebuilt from the six sources
+ok   client.js matches the sources it claims — a82c554f992a9871b4b8dcdff8499f7b, 787325 bytes rebuilt from the six sources
 ok   the picture is the image, and the copy answer is announced — label is a noun, role="img" on the svg, copy result announced; behaviour is asserted by the fixture
 ok   host children react would refuse fall back to the source — objects, functions and mixed arrays fall back to the source text; behaviour is asserted by the fixture
 ok   every drawing the engine swaps in is named again — the engine owns re-layout; every swapped drawing node and its zoom buttons are renamed, strings follow the language; behaviour is asserted by the fixture
@@ -441,7 +445,8 @@ ok   the host half stays silent when the host changed shape — five silent host
 ok   the contract's colour variables are the ones that are wired — 10 engine variables, owned by engine and contract alike
 ok   both size limits reach the engine, each proven on its own — three limits passed to mount, two fixtures that cross one each
 ok   the fixtures assert what the fixes promise, and can fail — 43 assertions present, each with a condition that reads something
-check-bundle: @jiezhengj/dsh-dyslexia@0.2.7 | client.js 787325 bytes | sources sha256:a08cd79acf40084829e270e0564b1b85 | all 47 checks passed
+
+check-bundle: @jiezhengj/dsh-dyslexia@0.2.8 | client.js 787325 bytes | sources sha256:a82c554f992a9871b4b8dcdff8499f7b | all 47 checks passed
 ```
 
 ```
@@ -732,7 +737,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.2.7 | client.js 787325 bytes | sources s
 [ok] a host that refuses undeclared services is still served without a throw — quiet
 [ok] a host whose services must be read through ctx.get still gets the row — 2 defs
 [ok] a host that refuses undeclared properties still gets the strings registered — [["dyslexia",8]]
-run-harness: @jiezhengj/dsh-dyslexia@0.2.7 | client.js 787325 bytes | sources sha256:a08cd79acf40084829e270e0564b1b85 | all 283 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+run-harness: @jiezhengj/dsh-dyslexia@0.2.8 | client.js 787325 bytes | sources sha256:a82c554f992a9871b4b8dcdff8499f7b | all 283 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
 ## E-LIVE — the row and the new name on a running host (`0.2.6`)
@@ -946,3 +951,11 @@ npm notice publish Provenance statement published to transparency log: https://s
 - the installed copy's `client.js` is 787325 bytes and hashes to `496b5c4133d726fa928c69661afecac2452ae215bd86074363857529599ca913`, identical to the repository copy; `locale/` 8 files, `docs/` 9 entries, package version `0.2.7`
 
 Nothing in this release changes what a reader sees: `client.js` is the `0.2.6` code plus its version banner. What changed is the guard rail — the two fixtures and the retargeted static check that make the `getSnapshot` regression visible (F15).
+
+## E-PUB · 0.2.8
+
+- filled in after the run that publishes it
+
+## E-INS · 0.2.8
+
+- filled in after `install_bundle` returns

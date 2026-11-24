@@ -47,6 +47,23 @@ function stripComments(text) {
     .replace(/(^|[^:])\/\/[^\n]*/g, '$1 ')
 }
 
+function functionBody(source, signature) {
+  const start = source.indexOf(signature)
+  if (start < 0) return null
+  const open = source.indexOf('{', start)
+  if (open < 0) return null
+  let depth = 0
+  for (let i = open; i < source.length; i += 1) {
+    const ch = source[i]
+    if (ch === '{') depth += 1
+    else if (ch === '}') {
+      depth -= 1
+      if (depth === 0) return source.slice(start, i + 1)
+    }
+  }
+  return null
+}
+
 function readCode(relative) {
   return stripComments(read(relative))
 }
@@ -563,16 +580,34 @@ check('the settings row reads the hook the host builds, not an object it never s
 
 check('a service the plugin never declared is read through ctx.get', () => {
   // The host's cordis is strict: `ctx.locale` throws under a context whose inject
-  // lists only `slots`, and the row was never registered because of it.
+  // lists only `slots`, and the row was never registered because of it. So the
+  // reader is executed here rather than grepped around: a text check stayed
+  // green with `typeof ctx.get === 'function'` rewritten to `false`.
   const entry = readCode('src/client/entry.js')
-  assert(typeof entry === 'string' && entry.includes('function optional(ctx, name)'), 'entry.js has no optional() reader')
+  const body = functionBody(entry, 'function optional(ctx, name)')
+  assert(body, 'entry.js has no optional() reader')
+  const optional = new Function('report', body + '\nreturn optional;')(() => {})
+  const strict = {
+    get: (name) => 'via-get:' + name,
+    get locale() {
+      throw new Error('cannot get property "locale" without inject')
+    },
+    get configForms() {
+      throw new Error('cannot get property "configForms" without inject')
+    },
+  }
+  assert(optional(strict, 'locale') === 'via-get:locale', 'ctx.get was not consulted for locale')
+  assert(optional(strict, 'configForms') === 'via-get:configForms', 'ctx.get was not consulted for configForms')
+  const plain = { locale: 'property-locale', configForms: 'property-configForms' }
+  assert(optional(plain, 'locale') === 'property-locale', 'a host without ctx.get lost its locale')
+  assert(optional(plain, 'configForms') === 'property-configForms', 'a host without ctx.get lost its configForms')
   assert(entry.includes("optional(ctx, 'locale')"), 'locale is still read as a bare property')
   assert(entry.includes("optional(ctx, 'configForms')"), 'configForms is still read as a bare property')
   assert(
     !/ctx\.locale\b/.test(entry) && !/ctx\.configForms\b/.test(entry),
     'a bare ctx.locale or ctx.configForms remains',
   )
-  return 'locale, slots and configForms go through ctx.get with a property fallback'
+  return 'the reader asked ctx.get first and fell back to the property, for locale and configForms alike'
 })
 
 check('a refused settings write is not reported as saved', () => {
@@ -580,17 +615,20 @@ check('a refused settings write is not reported as saved', () => {
   // `set(field, value)` answers `Promise<boolean>`: true for Host acceptance,
   // false for a refusal or a skipped write. A handler that only listens for
   // rejection leaves the switch on a value the host refused and prints "Saved"
-  // over it, which is what the row did before 2026-11-24.
+  // over it, which is what the row did before 2026-11-24. The settled value has
+  // to reach the branch, so the branch itself is read here: an earlier version
+  // of this check stayed green with `if (accepted)` rewritten to `if (true)`.
+  const settle = functionBody(settings, 'const settle = (accepted) => {')
+  assert(settle, 'settings.js has no settle() handler')
+  assert(settle.includes('if (accepted)'), 'the settle handler does not branch on what the host answered')
+  assert(settle.includes("setState('failed')"), 'the refusal path no longer says the write failed')
+  assert(settle.includes('restore(before)'), 'the refusal path no longer puts the switch back')
   assert(
-    settings.includes('result === true') && settings.includes('result === undefined'),
+    /pending\.then\(\s*\n?\s*\(result\) => settle\(result === true \|\| result === undefined\)/.test(settings),
     'the fulfilment handler does not read the resolved boolean',
   )
-  assert(
-    !/then\(\s*\(\)\s*=>\s*setState\('saved'\)/.test(settings),
-    'the fulfilment handler ignores what the host answered',
-  )
-  assert(/pending\.then\(/.test(settings), 'the write answer is never awaited')
-  return 'true saves, false reverts, a host that resolves nothing saves; behaviour is asserted by the fixture'
+  assert(settings.includes('() => settle(false)'), 'a rejected write no longer settles as failed')
+  return 'the resolved boolean reaches the branch: true saves, false or a skipped write reverts and says so'
 })
 
 check('every language carries the same complete sentences', () => {
