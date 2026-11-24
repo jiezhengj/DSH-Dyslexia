@@ -53,7 +53,7 @@ DeepSeek Harness 本来就在聊天里渲染 Markdown。这个插件只加一件
 
 ## 安装
 
-把 DeepSeek Harness 的插件页装 `@jiezhengj/dsh-dyslexia`：装进 profile 之后会话里画图；渲染器在插件 `0.1.31` 与 `0.1.32` 上做过真机检查，而这个开关还没有在真机窗口里观察过（见 feature 002 的 E-GAPS，G1/G6）。卸载要重启应用后才生效：打开着的窗口会继续显示已经画出的图与两个按钮，历史消息不用改（见 feature 001 的 E-GAPS 里的 G24①）；启用与停用由宿主的插件机制接管、不需要改任何配置，但**这两步还没有单独的真机观察**（见 feature 001 的 E-GAPS 里的 G20）。换版本要重启应用，才会加载新的客户端代码。npm 上的包：https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
+在 DeepSeek Harness 的插件页安装 `@jiezhengj/dsh-dyslexia`：装进 profile 之后会话里画图；渲染器在插件 `0.1.31` 与 `0.1.32` 上做过真机检查，而这个开关还没有在**桌面**窗口里操作过（Web 界面上已看过它工作，见 feature 002 的 E-LIVE）（见 feature 002 的 E-GAPS，G1/G6）。卸载要重启应用后才生效：打开着的窗口会继续显示已经画出的图与两个按钮，历史消息不用改（见 feature 001 的 E-GAPS 里的 G24①）；启用与停用由宿主的插件机制接管、不需要改任何配置，但**这两步还没有单独的真机观察**（见 feature 001 的 E-GAPS 里的 G20）。换版本要重启应用，才会加载新的客户端代码。npm 上的包：https://www.npmjs.com/package/@jiezhengj/dsh-dyslexia
 
 ## 示例
 
