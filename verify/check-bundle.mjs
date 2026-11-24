@@ -318,9 +318,11 @@ check('client.js requires react and nothing else', () => {
 })
 
 check('client.js never reaches the network', () => {
-  // Two passes. The raw pass catches the obvious spellings; the identifier pass
-  // strips comments, strings and templates first, so `window['fet' + 'ch']` and
-  // `'ht' + 'tps://…'` cannot hide a call behind a concatenation.
+  // Two passes over the chunk. The raw one catches the spellings that need no
+  // trick. The stripped one is for identifiers: strings are erased there, so a
+  // name assembled from pieces (`'fet' + 'ch'`) is invisible to it, and the same
+  // trick in our own sources is refused by the bracket and literal rules below
+  // rather than by this scan.
   const raw = chunk
   for (const needle of ['fetch(', 'fetch (', 'XMLHttpRequest', 'importScripts', 'new WebSocket', 'EventSource', 'import(', 'sendBeacon', 'new Image(', 'new Worker(', 'WebTransport']) {
     assert(!raw.includes(needle), `client.js contains ${needle}`)
@@ -348,20 +350,40 @@ check('client.js never reaches the network', () => {
   const withoutNamespaces = code.replace(/www\.w3\.org[^"'\s]*/g, '')
   const found = /https?:\/\/[^\s"'`]*/.exec(withoutNamespaces)
   assert(!found, `client.js reaches a URL: ${found && found[0]}`)
-  // A name can also be hidden by not writing it: `window['fet' + 'ch']` has no
-  // identifier to match and no URL literal to find, since both halves are strings.
-  // So every global lookup has to be a plain literal key; anything else (a sum, a
-  // variable, a call) is refused.
-  const globalLookup = /\b(window|globalThis|self|navigator|document)\s*\[/g
-  let hit
-  while ((hit = globalLookup.exec(chunk))) {
-    const open = hit.index + hit[0].length - 1
-    const close = chunk.indexOf(']', open)
-    assert(close !== -1, `${hit[1]} is indexed without a closing bracket`)
-    const key = chunk.slice(open + 1, close).trim()
-    assert(/^'[^']*'$/.test(key) || /^"[^"]*"$/.test(key), `${hit[1]} is indexed with a computed key: ${key}`)
+  // The chunk carries 733 KB of vendored engine, so a global lookup written as a
+  // string key (`window['fetch']`) is hunted in the plugin's own sources, where a
+  // file is small enough to read and every one of them is code this repository
+  // owns. Concatenating the key (`window['fet' + 'ch']`) does not help either: the
+  // bracket form itself is refused.
+  const sources = ['index.js', 'src/client/entry.js', 'src/client/view.js', 'src/client/settings.js', 'src/client/figure.js', 'src/client/i18n.js', 'src/client/styles.js']
+  const shapeBans = [
+    [/\b(window|globalThis|self|navigator|document|this)\s*\[/, (m) => `is indexed with a bracket`],
+    [/\beval\b/, () => 'names eval'],
+    [/\bFunction\s*\(/, () => 'builds code with Function'],
+    [/\brequire\b/, () => 'names require'],
+    [/\bcreateElement\s*\(\s*['"](?:img|script|iframe|link)['"]/, () => 'creates a network-loading element'],
+    [/\.src\s*=/, () => 'assigns an element URL'],
+    [/\bimport\s*\(/, () => 'uses a dynamic import'],
+    [/(?:[A-Za-z0-9_$)\]])\s*\[\s*['"]/, () => 'indexes with a string key'],
+  ]
+  // A URL can also be hidden as a pair of harmless-looking strings, so every
+  // literal in those files is read: `'ht' + 'tps://…'` still contains `://`.
+  const textBans = [/https?:/, /:\/\//, /\bfetch\b/, /\brequire\b/, /XMLHttpRequest/, /WebSocket/, /sendBeacon/]
+  for (const relative of sources) {
+    const source = read(relative)
+    const withoutComments = stripComments(source)
+    for (const [pattern, describe] of shapeBans) {
+      const hit = pattern.exec(withoutComments)
+      assert(!hit, `${relative} ${describe(hit)} at ${hit ? withoutComments.slice(0, hit.index).split('\n').length : 0}`)
+    }
+    const literals = withoutComments.match(/'[^'\n]*'|"[^"\n]*"/g) || []
+    for (const literal of literals) {
+      for (const pattern of textBans) {
+        assert(!pattern.test(literal), `${relative} carries a network token in a literal: ${literal.slice(0, 40)}`)
+      }
+    }
   }
-  return 'no fetch, no XHR, no dynamic import, no remote URL, no computed global lookup'
+  return 'no fetch, no XHR, no dynamic import, no remote URL, no string-keyed global lookup, no eval'
 })
 
 check('client.js carries the vendored engine', () => {
@@ -1658,10 +1680,15 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
   // with the quote closed.
   const constantOnly = (head) => {
     const forms = [head, `${head}'`, `${head}"`]
+    // A chain of string methods on a fixture constant (`CODE.toLowerCase().length > 0`)
+    // reads the constant and is true whatever the product does, so it joins the
+    // constant comparisons below.
+    const chain = /^[A-Z][A-Z0-9_$]*(\s*\.\s*(?:toLowerCase|toUpperCase|trim|trimStart|trimEnd|slice|substring|split|replace|replaceAll|concat|normalize|padStart|padEnd|repeat|charAt|toString)\s*\([^()]*\))+(\s*\.\s*length)?\s*(===|!==|>=|<=|>|<)\s*(-?\d+|'[^']*'|true|false)$/
     return forms.some(
       (form) =>
         /^typeof\s+[A-Z][A-Z0-9_$]*\s*(===|!==)\s*'[a-z]+'$/.test(form) ||
-        /^[A-Z][A-Z0-9_$]*(\.[\w$]+)*(\.length)?\s*(===|!==|>=|<=|>|<)\s*(-?\d+|'[^']*'|true|false)$/.test(form),
+        /^[A-Z][A-Z0-9_$]*(\.[\w$]+)*(\.length)?\s*(===|!==|>=|<=|>|<)\s*(-?\d+|'[^']*'|true|false)$/.test(form) ||
+        chain.test(form),
     )
   }
   // A truthiness test alone cannot say what went wrong: `!!CODE` reads a fixture
@@ -1702,9 +1729,23 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
   return `${needed.length} assertions present, each with a condition that reads something`
 })
 
+check('every class the row writes has a rule in the stylesheet', () => {
+  const settings = read('src/client/settings.js')
+  const styles = read('src/client/styles.js')
+  const names = new Set()
+  for (const hit of settings.matchAll(/className:\s*'([^']+)'/g)) {
+    for (const part of hit[1].split(/\s+/)) if (part) names.add(part)
+  }
+  assert(names.size > 0, 'settings.js writes no class at all')
+  const css = styles.replace(/\s+/g, ' ')
+  const missing = [...names].filter((name) => !new RegExp('\\.' + name + '(?![\\w-])').test(css))
+  assert(missing.length === 0, `no stylesheet rule for ${missing.join(', ')}`)
+  return `${names.size} classes, each with a rule`
+})
+
 /* ---------------------------------------------------------------- report */
 
-const EXPECTED_CHECKS = 63
+const EXPECTED_CHECKS = 64
 if (notices.length + failures.length !== EXPECTED_CHECKS) {
   failures.push(
     `[FAIL] the suite has ${notices.length + failures.length} checks, expected ${EXPECTED_CHECKS}: a check was added or removed without updating this number`,

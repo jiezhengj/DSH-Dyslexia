@@ -1550,6 +1550,12 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           const row = rowView.stage.querySelector('.dsh-dyslexia-row')
           const toggle = rowView.stage.querySelector('button[role="switch"]')
           expect(!!row, 'the settings row renders inside its slot component')
+          const rowBox = row ? getComputedStyle(row) : null
+          expect(
+            !!rowBox && rowBox.display === 'flex' && rowBox.alignItems === 'flex-start',
+            'the row lays itself out as the stylesheet promises',
+            rowBox ? `${rowBox.display}/${rowBox.alignItems}` : 'no row',
+          )
           const rowLabel = rowView.stage.querySelector('.dsh-dyslexia-row-label')
           const rowHint = rowView.stage.querySelector('.dsh-dyslexia-row-hint')
           expect(

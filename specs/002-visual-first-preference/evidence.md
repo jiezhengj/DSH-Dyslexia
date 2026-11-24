@@ -1,8 +1,8 @@
 # Evidence — feature 002: the preference switch and the new name
 
-This file records what was actually observed while building feature 002. Each block is one run on one tree — E-PROBE is the exception, collecting one run per probe, the tree of each probe is named in the row itself (M1–M6 on `0.2.16`, M7–M8 on the `0.2.17` work tree, N1–N4 on `0.2.19`, P19/P20 on `0.2.8`, P21–P23 on `0.2.9`, P24–P27 on `0.2.10`, P28–P30 on `0.2.11`, P31/P32 on `0.2.12`, P33–P35 on `0.2.13`, P36a–P36h on `0.2.14`, P37 on `0.2.15`, and the earlier F-group in the paragraph below; P24 and P30 were re-run on `0.2.11`, P29 on `0.2.13`); no block mixes trees silently. E-PUB/E-INS exist for every published version of this feature, `0.2.0` through `0.2.18` (the package also carries the earlier `0.1.x` line and one `0.0.0-stage` placeholder, which this file does not record); the current blocks are the `0.2.19` tree (63 static, 302 browser, one run copied line for line, build line included). The `0.2.1` blocks below (44 static, 251 browser) are kept as history; the `0.2.5` build line and the `0.2.5` check runs are summary lines in their own sections, not transcripts.
+This file records what was actually observed while building feature 002. Each block is one run on one tree — E-PROBE is the exception, collecting one run per probe, the tree of each probe is named in the row itself (M1–M6 on `0.2.16`, M7–M8 on the `0.2.17` work tree, N1–N4 on `0.2.19`, Q1–Q7 on `0.2.20`, P19/P20 on `0.2.8`, P21–P23 on `0.2.9`, P24–P27 on `0.2.10`, P28–P30 on `0.2.11`, P31/P32 on `0.2.12`, P33–P35 on `0.2.13`, P36a–P36h on `0.2.14`, P37 on `0.2.15`, and the earlier F-group in the paragraph below; P24 and P30 were re-run on `0.2.11`, P29 on `0.2.13`); no block mixes trees silently. E-PUB/E-INS exist for every published version of this feature, `0.2.0` through `0.2.19` (the package also carries the earlier `0.1.x` line and one `0.0.0-stage` placeholder, which this file does not record); the current blocks are the `0.2.20` tree (64 static, 303 browser, one run copied line for line, build line included). The `0.2.1` blocks below (44 static, 251 browser) are kept as history; the `0.2.5` build line and the `0.2.5` check runs are summary lines in their own sections, not transcripts.
 
-**The current tree is `0.2.19`** (published after this block was written; E-PUB/E-INS are appended below once the release lands): 63 static and 302 browser checks, `client.js` 788314 bytes / 786797 characters, sources sha256 `46c72540aca269e6220283206e48f722`, file SHA-256 `D2C571A9C54650981520B4B040954F593978975EC3BD3865F0CCB2EB4B96AAEA`. It replaced `0.2.18` (63 static / 301 browser, `client.js` 788314 bytes, sources sha256 `f258984ca46233bbc30fb4a1f5fc68d6`, file SHA-256 `CF19A8E078AAFF5F7A43F131C0456380D030A0A36462A7E433879B765FD12187`), which replaced `0.2.17` (63 / 301, `client.js` 788314 bytes, sources sha256 `91f138aa9db9da2310e3736835b3f88c`, file SHA-256 `543BBC001E9E92A95E6C033E4BBD5B1AA418B2A4574181478AB90D3D25053A41`), which replaced `0.2.16` (63 / 299, `client.js` 788059 bytes, sources sha256 `7e984e470550cfe58ad02d65d94c7b4a`, file SHA-256 `2AB27E73F7B8E8BBFA171AADAAD6A919DB8D3DF8240CCD97275E8954A2908A1F`), which replaced `0.2.15` (63 / 299, `client.js` 788059 bytes, sources sha256 `cac1e7ab0fd5deb75586b1e8577f07f4`, file SHA-256 `6307775D…6398` (prefix only: the full value is in that version's own E-INS row)), which replaced `0.2.14` (62 static / 299 browser, `client.js` 787768 bytes, sources sha256 `486b90e17026855e9e7d9e769845d106`, file SHA-256 `B1B3039E5B937AA9E69B4C0C6C8728A20CAA0CF36090B158F06DB1FFBFAC0F23`), which replaced `0.2.13` (55 static / 294 browser, `client.js` 787768 bytes, sources sha256 `bec49f4eeba79400e467078384088f38`, file SHA-256 `A22E6E3AA23E14CF927CF62E61E7EBD70307AEF5DDAB4615930DEE39771B70DF`), which replaced `0.2.12` (52 static / 292 browser, `client.js` 787768 bytes, sources sha256 `838eef8dcc57b574bd405b70689df2e9`, file SHA-256 `C58A4DD653B5973C7B60E3F8EE2658989E74EEEB6BD27192DA24B25540652F2C`), which replaced `0.2.11` (51 static / 292 browser, `client.js` 787768 bytes, sources sha256 `25576ab91ac35a54cd3ec710e0e2ba93`, file SHA-256 `14C6514A5D504676C04137D943A0D6B791A1441548C1160B6149280451A35975`), which replaced `0.2.10` (50 static / 292 browser, `client.js` 787768 bytes, sources sha256 `25fe69385f7372015944ae0b18386c31`), which replaced `0.2.9` (49 static / 287 browser, `client.js` 787688 bytes, sources sha256 `b6c17c26e57f7d50cd2ed86a9002ad28`), which replaced `0.2.8` (47 / 283, `client.js` 787325 bytes, sources sha256 `a82c554f992a9871b4b8dcdff8499f7b`). E-PROBE records F3–F8 on `0.2.1`, F1/F9 on the `0.2.3` tree, F10–F13 on `0.2.5`, F14 on `0.2.6`, F15 on `0.2.7`, P19/P20 on `0.2.8`, P21–P23 on `0.2.9`, P24–P27 on `0.2.10`, P28–P30 on `0.2.11`, P31/P32 on `0.2.12`, P29's re-run with P33–P35 on `0.2.13`, P36's eight cases on `0.2.14`, P37 on `0.2.15`, M1–M6 on `0.2.16`, M7–M8 on the `0.2.17` work tree, and N1–N4 on `0.2.19`; the `0.2.4` tree itself was never probed, and `0.2.5` supersedes it (G10 discharged).
+**The current tree is `0.2.20`** (published after this block was written; E-PUB/E-INS are appended below once the release and the install are done).
 
 ## E-BLD · 0.2.1 build
 
@@ -344,7 +344,7 @@ The three browser assertions this round added are `a refused write keeps the val
 
 ## E-PROBE — the new checks can fail
 
-Each probe below breaks one protected behaviour in a working copy of the sources, rebuilds it, runs the suite that should see it, records the red line, and restores the copy. F1 and F9 were last run on the `0.2.3` tree (44 static, 260 browser); no probe was run on `0.2.4`, which `0.2.5` supersedes; F10–F13 ran on `0.2.5` (45 static, 274 browser), each in a fresh `%TEMP%` copy of the final tree, restored afterwards. So F1/F9's red lines and counts are `0.2.3` numbers, not the `0.2.5` tree's 45 / 274 (the `0.2.9` tree ran 49 static and 287 browser checks, the `0.2.10` tree 50 and 292, the `0.2.11` tree 51 and 292, the `0.2.12` tree 52 and 292, the `0.2.13` tree ran 55 static and 294, the `0.2.14` tree 62 and 299, the `0.2.15` tree ran 63 static and 299, and this `0.2.17` tree runs 63 static and 301). `0.2.2` shipped 44 static and 252 browser checks, and F9's no-writer assertion did not exist there. F3–F8 are the earlier runs on the `0.2.1` tree (44 static, 251 browser) and were not re-run. The untouched `0.2.3` copy reported `all 44 checks passed` and `all 260 checks passed` before the breaks.
+Each probe below breaks one protected behaviour in a working copy of the sources, rebuilds it, runs the suite that should see it, records the red line, and restores the copy. F1 and F9 were last run on the `0.2.3` tree (44 static, 260 browser); no probe was run on `0.2.4`, which `0.2.5` supersedes; F10–F13 ran on `0.2.5` (45 static, 274 browser), each in a fresh `%TEMP%` copy of the final tree, restored afterwards. So F1/F9's red lines and counts are `0.2.3` numbers, not the `0.2.5` tree's 45 / 274 (the `0.2.9` tree ran 49 static and 287 browser checks, the `0.2.10` tree 50 and 292, the `0.2.11` tree 51 and 292, the `0.2.12` tree 52 and 292, the `0.2.13` tree ran 55 static and 294, the `0.2.14` tree 62 and 299, the `0.2.15` tree ran 63 static and 299, the `0.2.17` tree 63 and 301, the `0.2.18` tree 63 and 301, the `0.2.19` tree 63 and 302, and this `0.2.20` tree runs 64 static and 303). `0.2.2` shipped 44 static and 252 browser checks, and F9's no-writer assertion did not exist there. F3–F8 are the earlier runs on the `0.2.1` tree (44 static, 251 browser) and were not re-run. The untouched `0.2.3` copy reported `all 44 checks passed` and `all 260 checks passed` before the breaks.
 
 | probe | change | result |
 |---|---|---|
@@ -401,6 +401,13 @@ Each probe below breaks one protected behaviour in a working copy of the sources
 | N2 | `src/client/entry.js` on the `0.2.19` work tree: `require(window && window.__dshExtraChunk)` appended | `FAIL client.js requires react and nothing else — client.js makes 2 require calls, not one`, `check-bundle: 1 failed, 62 passed`. The old check only matched `require('…')` with a quoted literal. |
 | N3 | `verify/harness/index.html` on the `0.2.19` work tree: the condition of `a picture that fits offers no zoom buttons` replaced by `typeof CODE === 'string'` | `FAIL the fixtures assert what the fixes promise, and can fail — fixture assertions without a condition: a picture that fits offers no zoom buttons`, `check-bundle: 1 failed, 62 passed`. This shape (a constant compared with a literal) is what the guard now rejects. |
 | N4 | `src/client/entry.js` on the `0.2.19` work tree: `ctx.inject(['configForms'], (child) => wireOnce(child))` deleted, product code untouched | `FAIL the row is claimed through the slot name the host declares — the late configForms wiring is gone`, `check-bundle: 1 failed, 62 passed`; the browser suite also reddens (`a host that gains configForms after apply still gets the settings row` / `a row that arrives late is published, ordered and localised like an early one`). On `0.2.18` only the browser suite saw this. |
+| Q1 | `0.2.20` | 在 `src/client/entry.js` 末尾加 `window['fetch']('ht' + 'tps://example.invalid/x')` | 静态 1 红：`FAIL client.js never reaches the network — src/client/entry.js is indexed with a bracket at 176`；`check-bundle: 1 failed, 63 passed`；浏览器不动 | 字面量键的全局方括号被 `shapeBans` 拒绝，拼接的 URL 无所谓——取用方式本身就被拒 |
+| Q2 | `0.2.20` | 加 `(0, eval)('fet' + 'ch')` | 静态 1 红：`FAIL client.js never reaches the network — src/client/entry.js names eval at 176` | `eval` 与 `Function(` 在自有源码里直接禁 |
+| Q3 | `0.2.20` | 加 `document['createElement']('img').src = 'https://example.invalid/x'` | 静态 1 红：`FAIL client.js never reaches the network — src/client/entry.js is indexed with a bracket at 176` | 方括号与网络元素都在同一条规则里 |
+| Q4 | `0.2.20` | 加 `(this || window)['fet' + 'ch']` | 静态 1 红：`FAIL client.js never reaches the network — src/client/entry.js indexes with a string key at 176` | 只要方括号出现在一个表达式之后、键是字符串，就拒绝（含 `this`、`(…)`） |
+| Q5 | `0.2.20` | 加 `window['require']('fs')` | 静态 1 红：`FAIL client.js never reaches the network — src/client/entry.js is indexed with a bracket at 176` | 同 Q1 |
+| Q6 | `0.2.20` | 把夹具条件 `!!toggle && toggle.getAttribute('aria-checked') === 'true'` 换成 `CODE.toLowerCase().length > 0` | 静态 1 红：`FAIL the fixtures assert what the fixes promise, and can fail — fixture assertions without a condition: the switch shows the value the host reports`；浏览器不动 | `constantOnly` 现在识别"常量 + 字符串方法链 + 与字面量比较"的形态 |
+| Q7 | `0.2.20` | 把 `src/client/styles.js` 的 `.dsh-dyslexia-row {` 改成 `.dsh-dyslexia-row-x {` | 静态 1 红：`FAIL every class the row writes has a rule in the stylesheet — no stylesheet rule for dsh-dyslexia-row`；浏览器 1 红：`[bad] the row lays itself out as the stylesheet promises — block/normal`、`1 failed, 302 passed` | 类名与选择器两个方向都被钉住：写类的地方要有规则，规则也要真的生效 |
 **This probe was first recorded on `0.2.6` as `1 failed, 47 passed` for a break that left both suites green** — a 47-item suite cannot report 1 failed and 47 passed, and deleting only the store method was not seen by anything: the substring check was satisfied by `face.getSnapshot()` elsewhere in the file and no fixture built a host hook out of the plugin's own store. `0.2.7` retargets the static check at the `createValueStore` body and adds two fixtures that mount a `useSyncExternalStore` hook made from the store the module hands over.
 
 
@@ -412,75 +419,16 @@ After restoring and rebuilding, the `0.2.1` probe session passed again: `build-c
 
 Two fixture details are worth recording. Headless Chrome's virtual time does not advance the 120 ms CSS transition on the switch, so the paint assertion sets `style.transition = 'none'` on the switch before reading the computed colour (`verify/harness/index.html:1599` on the `0.2.5` tree, `:1634` on `0.2.7`). React 18 routes an event-handler throw to `window`'s `error` event rather than rethrowing it from `.click()`, so F13's fixture watches that event instead of expecting a throw at the call site (`verify/harness/index.html:1655-1667` on the `0.2.5` tree, `:1689-1702` on `0.2.7`).
 
-## E-BLD · 0.2.19 build
+## E-BLD · 0.2.20 build
 
 ```
-build-client: @jiezhengj/dsh-dyslexia@0.2.19 -> client.js (788314 bytes, 786797 characters, engine 1.13.0, sources 6, sources sha256:46c72540aca269e6220283206e48f722, syntax ok)
+build-client: @jiezhengj/dsh-dyslexia@0.2.20 -> client.js (788314 bytes, 786797 characters, engine 1.13.0, sources 6, sources sha256:b6c1b8f2c46c49466ced702258d8ce19, syntax ok)
 ```
 
-## E-CHK · 0.2.19 (63 static)
+## E-CHK · 0.2.20 (64 static)
 
 ```
-dsh-dyslexia: loader Error: host changed the loader
-    at Object.load (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:391:60)
-    at evalmachine.<anonymous>:1617:29
-    at evalmachine.<anonymous>:1631:3
-    at Script.runInContext (node:vm:149:12)
-    at Script.runInNewContext (node:vm:154:17)
-    at runInNewContext (node:vm:310:38)
-    at loadChunk (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:380:3)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:391:3
-    at check (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:23:20)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:390:1
-dsh-dyslexia: loader TypeError: Cannot read properties of undefined (reading 'load')
-    at evalmachine.<anonymous>:1617:29
-    at evalmachine.<anonymous>:1631:3
-    at Script.runInContext (node:vm:149:12)
-    at Script.runInNewContext (node:vm:154:17)
-    at runInNewContext (node:vm:310:38)
-    at loadChunk (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:380:3)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:392:3
-    at check (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:23:20)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:390:1
-    at ModuleJob.run (node:internal/modules/esm/module_job:437:25)
-dsh-dyslexia: loader ReferenceError: window is not defined
-    at evalmachine.<anonymous>:1617:5
-    at evalmachine.<anonymous>:1631:3
-    at Script.runInContext (node:vm:149:12)
-    at Script.runInNewContext (node:vm:154:17)
-    at runInNewContext (node:vm:310:38)
-    at loadChunk (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:380:3)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:393:3
-    at check (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:23:20)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:390:1
-    at ModuleJob.run (node:internal/modules/esm/module_job:437:25)
-dsh-dyslexia: prompt section skipped Error: signature changed
-    at Object.section (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:476:15)
-    at Module.apply (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/index.js:98:27)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:473:14
-    at check (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:23:20)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:466:1
-dsh-dyslexia: module Error: react went feral
-    at Object.get (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1065:15)
-    at buildModule (evalmachine.<anonymous>:777:34)
-    at factory (evalmachine.<anonymous>:1621:18)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1072:18
-    at check (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:23:20)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1055:1
-dsh-dyslexia: settings unavailable Error: inject exploded
-    at Object.inject (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1174:15)
-    at claimSettingsPage (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/index.js:130:9)
-    at Module.apply (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/index.js:90:5)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1171:14
-    at check (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:23:20)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1131:1
-dsh-dyslexia: prompt section skipped Error: the host refused the first attempt
-    at Object.section (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1228:35)
-    at Module.apply (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/index.js:98:27)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1233:12
-    at check (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:23:20)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1198:1
-ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.2.19
+ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.2.20
 ok   package.json points at the repository npm trusts — git+https://github.com/jiezhengj/DSH-Dyslexia.git
 ok   package.json declares the bundle patch and the client half — platform web, no package inject
 ok   no dsh version gate can refuse a start — no engines.dsh, no dsh peers
@@ -491,7 +439,7 @@ ok   cordis.patch.yml inserts the plugin by package name — 3 lines
 ok   both locales carry metadata — en, zh
 ok   client.js is one loader chunk keyed by the package name — 788314 bytes
 ok   client.js requires react and nothing else — one require call, and it is react
-ok   client.js never reaches the network — no fetch, no XHR, no dynamic import, no remote URL, no computed global lookup
+ok   client.js never reaches the network — no fetch, no XHR, no dynamic import, no remote URL, no string-keyed global lookup, no eval
 ok   client.js carries the vendored engine — Pele 1.13.0 inlined
 ok   client.js compiles on its own — no syntax error for a host batch to inherit
 ok   a broken host loader cannot make the chunk throw — throwing loader, missing loader, missing window
@@ -518,9 +466,9 @@ ok   a refused settings write is not reported as saved — the resolved boolean 
 ok   a face that cannot answer still reads as on — missing field, missing getter, a throwing getter and a null snapshot all read as on
 ok   a host word is used only when it is a real translation — echoes, blanks, placeholders and non-strings are refused; a real sentence is used
 ok   every language carries the same complete sentences — 16 keys x 8 languages, no engine text in labels
-ok   client.js matches the sources it claims — 46c72540aca269e6220283206e48f722, 788314 bytes rebuilt from the six sources
+ok   client.js matches the sources it claims — b6c1b8f2c46c49466ced702258d8ce19, 788314 bytes rebuilt from the six sources
 ok   the fingerprint covers the engine bundle, not only the six client sources — 733369 characters of engine inside the digest
-ok   the lockfile names the version the manifest ships — package-lock.json and package.json both 0.2.19
+ok   the lockfile names the version the manifest ships — package-lock.json and package.json both 0.2.20
 ok   the two host-side resources are handed to ctx.effect as disposables — stylesheet and strings both registered as effects that return a disposer
 ok   the picture is the image, and the copy answer is announced — label is a noun, role="img" on the svg, copy result announced; behaviour is asserted by the fixture
 ok   host children react would refuse fall back to the source — objects, functions and mixed arrays fall back to the source text; behaviour is asserted by the fixture
@@ -543,11 +491,12 @@ ok   the settings page claim can be taken back — the opt-out runs inside ctx.e
 ok   a host without react gets a silent module, not nothing — a host whose react is missing receives a module that does nothing, not null
 ok   a new write clears the sentence the last one left — a second press starts silent, then says what happened
 ok   the fixtures assert what the fixes promise, and can fail — 43 assertions present, each with a condition that reads something
+ok   every class the row writes has a rule in the stylesheet — 7 classes, each with a rule
 
-check-bundle: @jiezhengj/dsh-dyslexia@0.2.19 | client.js 788314 bytes | sources sha256:46c72540aca269e6220283206e48f722 | all 63 checks passed
+check-bundle: @jiezhengj/dsh-dyslexia@0.2.20 | client.js 788314 bytes | sources sha256:b6c1b8f2c46c49466ced702258d8ce19 | all 64 checks passed
 ```
 
-## E-HARN · 0.2.19 (302 browser)
+## E-HARN · 0.2.20 (303 browser) — `node verify/run-harness.mjs --list`
 
 ```
 [ok] loading client.js registers one factory
@@ -802,6 +751,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.2.19 | client.js 788314 bytes | sources 
 [ok] the store this module hands the host can be read the way the host reads it — get=function getSnapshot=function subscribe=function
 [ok] a hook built from that store draws the switch — aria-checked=true
 [ok] the settings row renders inside its slot component
+[ok] the row lays itself out as the stylesheet promises — flex/flex-start
 [ok] the row label is our own sentence, not a host key — 优先用图，而不是成段文字
 [ok] the row hint is our own sentence, not a host key — 当一张图比一段话更好懂时，模型会画图，文字只留图讲不清的部分。
 [ok] the switch shows the value the host reports — true
@@ -856,7 +806,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.2.19 | client.js 788314 bytes | sources 
 [ok] a host whose services must be read through ctx.get still gets the row — 2 defs
 [ok] a host that refuses undeclared properties still gets the strings registered — [["dyslexia",8]]
 [ok] a host that refuses undeclared services is not warned about — []
-run-harness: @jiezhengj/dsh-dyslexia@0.2.19 | client.js 788314 bytes | sources sha256:46c72540aca269e6220283206e48f722 | all 302 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+run-harness: @jiezhengj/dsh-dyslexia@0.2.20 | client.js 788314 bytes | sources sha256:b6c1b8f2c46c49466ced702258d8ce19 | all 303 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
 ## E-LIVE — the row and the new name on a running host (`0.2.6`, re-checked on `0.2.8`, `0.2.9` and `0.2.16`)
