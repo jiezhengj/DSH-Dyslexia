@@ -7,7 +7,7 @@
 
 ## E-INS . 0.2.24
 
-- Installed into profile `desktop` from the registry after the `0.2.23` removal.
+- Installed into profile `desktop` from the registry after the `0.2.23` removal: dependency `0.2.24`, `node_modules/@jiezhengj/dsh-dyslexia/client.js` 790821 bytes, SHA-256 prefix `EAF068C2C60249A6`, byte-identical to the repository root copy.
 - Read in a throw-away profile (`look`, since deleted) through `dsh web`, in both themes:
   - Settings shows its own navigation entry (Chinese: the plugin page name) beside General / Models / Built-in plugins / Agent presets, instead of a row inside General.
   - Light, off: track `rgba(0, 0, 0, 0.12)`, thumb `rgb(255, 255, 255)`. Light, on: track `rgb(249, 250, 251)`, thumb `rgb(15, 17, 21)`.
