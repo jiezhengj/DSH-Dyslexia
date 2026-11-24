@@ -305,21 +305,25 @@ check('a failing factory still yields a silent module', () => {
 })
 
 check('an engine that fails to load leaves the picture to the host', () => {
-  assert(chunk.includes('getDerivedStateFromError'), 'the layer has no error boundary')
-  assert(chunk.includes('function readLayerInput'), 'the layer does not read the fence props defensively')
-  assert(chunk.includes('safeRead'), 'the layer reads host props without a guard')
-  assert(chunk.includes('engineUnavailable'), 'the layer has no sentence for a missing engine')
+  // Comments are stripped first: a comment that mentions the guard must not keep
+  // this check green after the guard itself is weakened.
+  const code = stripComments(chunk)
+  assert(code.includes('getDerivedStateFromError'), 'the layer has no error boundary')
+  assert(code.includes('function readLayerInput'), 'the layer does not read the fence props defensively')
+  assert(code.includes('safeRead'), 'the layer reads host props without a guard')
+  assert(code.includes('engineUnavailable'), 'the layer has no sentence for a missing engine')
   // The half-drawn state a missing engine leaves behind is why the picture is
   // thrown away: without this guard the engine call itself would be the failure.
-  assert(chunk.includes("typeof pele.mount !== 'function'"), 'the layer does not check the engine before drawing')
+  assert(code.includes("typeof pele.mount !== 'function'"), 'the layer does not check the engine before drawing')
   return 'boundary + guarded props + engine guard + engine sentence'
 })
 
 check('the layer is keyed to mermaid on the fence slot', () => {
-  assert(chunk.includes("'conversation.chat.markdown.fence'"), 'slot name is missing')
-  assert(/key:\s*FENCE_KEY/.test(chunk) && /FENCE_KEY\s*=\s*'mermaid'/.test(chunk), 'the layer must be keyed to mermaid')
-  assert(chunk.includes("locale: LOCALE_NAMESPACE"), 'the layer must claim the locale namespace')
-  assert(chunk.includes('.inject(SLOT_NAME'), 'the slot is never taken')
+  const code = stripComments(chunk)
+  assert(code.includes("'conversation.chat.markdown.fence'"), 'slot name is missing')
+  assert(/key:\s*FENCE_KEY/.test(code) && /FENCE_KEY\s*=\s*'mermaid'/.test(code), 'the layer must be keyed to mermaid')
+  assert(code.includes("locale: LOCALE_NAMESPACE"), 'the layer must claim the locale namespace')
+  assert(code.includes('.inject(SLOT_NAME'), 'the slot is never taken')
   return 'conversation.chat.markdown.fence + mermaid'
 })
 
@@ -1337,13 +1341,67 @@ check('a fence that failed comes back when its source changes', () => {
 })
 
 check('a missing engine is told apart from a broken diagram', () => {
-  // Three causes, three sentences. Deleting the code or the message test turned
-  // a missing engine into "the diagram is broken", and no suite noticed.
+  // Three causes, three sentences, and the mapping is executed rather than read:
+  // a grep kept this green while the reader's sentence for a missing engine was
+  // replaced by the syntax sentence (twelfth review).
   const figure = readCode('src/client/figure.js')
-  assert(/missing\.code = ENGINE_UNAVAILABLE/.test(figure), 'the missing-engine error carries no code')
-  assert(/error\.code === ENGINE_UNAVAILABLE\)\s*return 'unavailable'/.test(figure), 'that code is not read back')
-  assert(/\/parse\|syntax\|lexical\|invalid\/i\.test\(message\)/.test(figure), 'the engine message no longer decides the sentence')
-  return 'missing engine, syntax error and any other failure stay distinguishable'
+  const codeConstant = figure.match(/const ENGINE_UNAVAILABLE = '([^']+)'/)
+  assert(codeConstant, 'figure.js has no ENGINE_UNAVAILABLE value')
+  const body = functionBody(figure, 'function figureErrorKind(error) {')
+  assert(body, 'figure.js has no figureErrorKind()')
+  const kind = new Function('ENGINE_UNAVAILABLE', `return (${body})(arguments[1])`).bind(null, codeConstant[1])
+  const missing = new Error('drawing engine unavailable')
+  missing.code = codeConstant[1]
+  assert(kind(missing) === 'unavailable', 'a missing engine is not classified as unavailable')
+  assert(kind(new Error('Parse error on line 2 of the diagram')) === 'syntax', 'a parse error is not classified as syntax')
+  assert(kind(new Error('something else broke')) === 'other', 'an unknown failure is not classified as other')
+  assert(kind(null) === 'other', 'no error at all is not classified as other')
+
+  // The sentence the reader sees has to follow that classification.
+  const view = readCode('src/client/view.js')
+  const start = view.indexOf('const noteText =')
+  assert(start !== -1, 'view.js has no note sentence')
+  const stop = view.indexOf('\n\n', start)
+  assert(stop !== -1, 'the note sentence cannot be cut out of view.js')
+  const mapping = view.slice(start, stop).trim()
+  const noteFor = new Function('reasonKind', 'translate', `${mapping}\nreturn noteText`)
+  assert(noteFor('syntax', (key) => key) === 'syntaxError', 'a syntax error does not reach the syntax sentence')
+  assert(noteFor('unavailable', (key) => key) === 'engineUnavailable', 'a missing engine does not reach its own sentence')
+  assert(noteFor('other', (key) => key) === 'renderFailed', 'any other failure does not reach the catch-all sentence')
+
+  // And the three sentences stay distinct in every language the plugin ships.
+  const i18n = readCode('src/client/i18n.js')
+  const at = i18n.indexOf('const DICTIONARY = ')
+  assert(at !== -1, 'i18n.js has no DICTIONARY')
+  const open = i18n.indexOf('{', at)
+  let depth = 0
+  let end = -1
+  for (let i = open; i < i18n.length; i += 1) {
+    if (i18n[i] === '{') depth += 1
+    if (i18n[i] === '}') {
+      depth -= 1
+      if (depth === 0) {
+        end = i + 1
+        break
+      }
+    }
+  }
+  assert(end !== -1, 'the dictionary cannot be cut out of i18n.js')
+  const dictionary = new Function(`return ${i18n.slice(open, end)}`)()
+  const languages = Object.keys(dictionary)
+  assert(languages.length === 8, `the dictionary carries ${languages.length} languages, expected 8`)
+  const collisions = []
+  for (const language of languages) {
+    const table = dictionary[language]
+    const sentences = [table.engineUnavailable, table.syntaxError, table.renderFailed]
+    if (!sentences.every((sentence) => typeof sentence === 'string' && sentence.length > 0)) {
+      collisions.push(`${language}: missing sentence`)
+    } else if (new Set(sentences).size !== 3) {
+      collisions.push(`${language}: two causes share one sentence`)
+    }
+  }
+  assert(collisions.length === 0, collisions.join('; '))
+  return `three causes, three sentences in ${languages.length} languages`
 })
 
 check('an unsupported language falls back to english', () => {
@@ -1397,7 +1455,6 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
     .replace(/\/\*[\s\S]*?\*\//g, ' ')
     .replace(/(^|[^:])\/\/[^\n]*/g, '$1 ')
   const needed = [
-    'the fixture really replaced the drawing node',
     'a swapped drawing is named again',
     'a drawing swapped after a width change is named again',
     'a picture that fits offers no zoom buttons',
@@ -1438,6 +1495,7 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
     'a value the host pushes reaches the switch without a write',
     'a thenable that throws out of then cannot break the click',
     'a host that gains configForms after apply still gets the settings row',
+    'a host that refuses undeclared services is not warned about',
     "[${lang}] the settings row label is that language's own sentence",
     "[${lang}] the settings row hint is that language's own sentence",
   ]
@@ -1467,6 +1525,13 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
   // A comparison of a name with itself (`x === x`, `x !== x`) is true whatever
   // the name holds, so it joins the constant branches below.
   const selfComparison = (head) => /^([\w$.()'"\[\] ]+?)\s*(===|!==)\s*\1$/.test(head)
+  // A truthiness test alone cannot say what went wrong: `!!CODE` reads a fixture
+  // constant and is true whatever the product does. A condition has to compare
+  // something or query something, so a bare `!!x` no longer counts as a check.
+  const comparesOrQueries = (head) =>
+    /(===|!==|>=|<=|\.includes\(|\.test\(|\.some\(|\.every\(|\.filter\(|\.length|\.match\(|\.indexOf\(|\.getAttribute\(|\.hasAttribute\(|\.querySelector|\.getBoundingClientRect\(|\.clientWidth|\.textContent|\s[<>]\s)/.test(
+      head,
+    )
   const constantBranch = new RegExp(
     [
       '\\|\\|\\s*(?:true|1|!0|"")',
@@ -1488,6 +1553,7 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
       head.length === 0 ||
       literals.test(head) ||
       !mentionsFixtureName(head) ||
+      !comparesOrQueries(head) ||
       selfComparison(head) ||
       constantBranch.test(head)
     )

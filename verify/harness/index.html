@@ -436,8 +436,8 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           } catch (error) {
             codeGetterCaught = error
           }
-          expect(!codeGetterCaught, 'the layer survives a throwing code getter', codeGetterCaught ? String(codeGetterCaught.message) : '')
-          expect(!!codeGetterRendered, 'a throwing code getter still yields an element')
+          expect(codeGetterCaught === null, 'the layer survives a throwing code getter', codeGetterCaught ? String(codeGetterCaught.message) : '')
+          expect(codeGetterRendered !== null && typeof codeGetterRendered === 'object', 'a throwing code getter still yields an element')
           expect(!!codeGetterView && codeGetterView.stage.textContent.indexOf(CODE) !== -1, 'a throwing code getter leaves the host block', codeGetterView ? JSON.stringify(codeGetterView.stage.textContent.slice(0, 40)) : 'no view')
           if (codeGetterView) {
             codeGetterView.root.unmount()
@@ -488,8 +488,8 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             'the hostile children bag mounted without a setup error',
             childrenSetupError ? String(childrenSetupError.message) : childrenView ? `nodes=${childrenView.stage.childNodes.length}` : 'no view',
           )
-          expect(!childrenGetterCaught, 'the layer survives a throwing children getter', childrenGetterCaught ? String(childrenGetterCaught.message) : '')
-          expect(!!childrenGetterRendered, 'a throwing children getter still yields an element')
+          expect(childrenGetterCaught === null, 'the layer survives a throwing children getter', childrenGetterCaught ? String(childrenGetterCaught.message) : '')
+          expect(childrenGetterRendered !== null && typeof childrenGetterRendered === 'object', 'a throwing children getter still yields an element')
           expect(
             !!childrenView && childrenView.stage.textContent.indexOf(CODE) !== -1,
             'a throwing children getter leaves the source',
@@ -934,7 +934,7 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           lifeRoot.unmount()
           life.dispose()
           await tick(60)
-          expect(!document.getElementById('dsh-dyslexia-figure-style'), 'disabling the plugin takes its stylesheet away', String(!!document.getElementById('dsh-dyslexia-figure-style')))
+          expect(document.getElementById('dsh-dyslexia-figure-style') === null, 'disabling the plugin takes its stylesheet away', String(!!document.getElementById('dsh-dyslexia-figure-style')))
           expect(life.calls.stringsDropped === 1, 'the locale registration is dropped', String(life.calls.stringsDropped))
           expect(life.defs.length === 0, 'the fence layer is gone once the host disposes', String(life.defs.length))
           lifeStage.remove()
@@ -2268,11 +2268,8 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
               throw new Error('cannot get property "locale" without inject')
             },
           })
-          quietHost.ctx.get = function get(name) {
-            if (name === 'locale') return strictLocale
-            if (name === 'configForms') return { get: () => settingsFace }
-            return undefined
-          }
+          // No ctx.get on this host on purpose: the refusal has to be produced by
+          // the property read below, or the filter that keeps it quiet never runs.
           const strictWarnings = captureWarnings(() => module.apply(quietHost.ctx))
           expect(
             strictWarnings.filter((line) => line.indexOf('without inject') !== -1).length === 0,
