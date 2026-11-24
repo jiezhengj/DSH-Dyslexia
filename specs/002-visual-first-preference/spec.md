@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-23
 
-**Status**: Implemented in `0.2.0` and corrected through `0.2.14`; the working tree is `0.2.14` (the tenth review's eight behaviours that no suite could falsify are now assertions), and fourteen versions of this feature are published (`0.2.0`–`0.2.13`) — the package as a whole carries 49 versions, of which these fourteen are this feature's. `0.2.5` registered the settings row and rendered nothing where a reader would look; `0.2.6` fixed the three causes (the host hands `hooks` over as hook props, the store needs `getSnapshot`, `ctx.locale` throws under strict `inject`) and was the first build whose row was seen in a running host; `0.2.7`–`0.2.13` each turned evidence that could not fail into an assertion that does, one review round at a time — the red lines are in `evidence.md` E-PROBE (F14, F15, P19–P35). This tree: 62 static and 299 browser checks, `client.js` 787768 bytes / 786251 characters, sources sha256 `486b90e17026855e9e7d9e769845d106`. Evidence lives in `evidence.md`: its `0.2.14` E-BLD/E-CHK/E-HARN blocks are one run of this tree copied line for line, E-PUB/E-INS exist for every published version of this feature, and E-GAPS lists what is not proven (G2–G8 and G11–G21 open; G1 discharged for the web surface only, because the desktop window of this build offers no reachable settings control; G9 and G10 discharged by `0.2.5`).
+**Status**: Implemented in `0.2.0` and corrected through `0.2.15`; the published tree is `0.2.15` (the tenth review's eight behaviours that no suite could falsify are now assertions), and fourteen versions of this feature are published (`0.2.0`–`0.2.13`) — the package as a whole carries 49 versions, of which these fourteen are this feature's. `0.2.5` registered the settings row and rendered nothing where a reader would look; `0.2.6` fixed the three causes (the host hands `hooks` over as hook props, the store needs `getSnapshot`, `ctx.locale` throws under strict `inject`) and was the first build whose row was seen in a running host; `0.2.7`–`0.2.15` each turned evidence that could not fail into an assertion that does, one review round at a time — the red lines are in `evidence.md` E-PROBE (F14, F15, P19–P37). This tree: 63 static and 299 browser checks, `client.js` 788059 bytes / 786542 characters, sources sha256 `cac1e7ab0fd5deb75586b1e8577f07f4`. Evidence lives in `evidence.md`: its `0.2.15` E-BLD/E-CHK/E-HARN blocks are one run of this tree copied line for line, E-PUB/E-INS exist for every published version of this feature, and E-GAPS lists what is not proven (G2–G8 and G11–G22 open; G1 discharged for the web surface only, because the desktop window of this build offers no reachable settings control; G9 and G10 discharged by `0.2.5`).
 
 **Input**: User description: "插件可以有个简单的设置面板，里面有个开关：仅仅是在会话里更好地渲染 mermaid，还是同时更积极地用图形化的方式表达和输出。名称改为 DSH 我有阅读障碍（其他语种按语义翻译）。如果 Agent 并不积极地用图形化的方式输出，渲染再完美也没有意义。"
 
@@ -96,7 +96,7 @@ feature 001 交付的是**渲染能力**：会话里出现 `mermaid` 代码块�
 ### Functional Requirements
 
 - **FR-001**: 设置面板 MUST 在通用设置区提供一行开关，包含标题与一句说明；两档分别是"只渲染"和"渲染 + 视觉优先"。
-- **FR-002**: 开关 MUST 默认处于"渲染 + 视觉优先"，对全新安装与从旧版本升级同样成立。
+- **FR-002**: 开关 MUST 默认处于"渲染 + 视觉优先"，对全新安装与从旧版本升级同样成立。（升级路径的"原地升级"未取证，见 E-GAPS 的 G21。）
 - **FR-003**: 开关打开时，模型可见的指令 MUST 含偏好段落：说明何时用图更省力（流程、结构、对比、多步骤、状态迁移等），并明确简单问题仍用文字。
 - **FR-004**: 开关关闭时，模型可见的指令 MUST NOT 含该偏好段落，只保留渲染能力说明；渲染行为与 feature 001 一致。
 - **FR-005**: 切换 MUST 在不需要重启、不需要重装的情况下对下一条消息生效。
@@ -123,12 +123,12 @@ feature 001 交付的是**渲染能力**：会话里出现 `mermaid` 代码块�
 
 ### Measurable Outcomes
 
-- **SC-001**: 开关打开后，面对固定 5 个"用图更省力"的样板请求，至少 3 个回答里出现可渲染的图；关闭时同一批样板仍至少 1 个出现图（能力未丧失，只是不再被鼓励）。
+- **SC-001**: 开关打开后，面对固定 5 个"用图更省力"的样板请求，至少 3 个回答里出现可渲染的图；关闭时同一批样板仍至少 1 个出现图（能力未丧失，只是不再被鼓励）。（**未取证**：需要真实模型会话，见 E-GAPS 的 G7。）
 - **SC-002**: 切换开关后第一条新消息即反映新状态，读者不需要重启、重装或改任何文件（0 次重启）。
 - **SC-003**: 重启应用后，开关状态与重启前一致（对比 1 次：`0.2.8` 的 Web 复核，E-LIVE 的 restart 行，一致）。
 - **SC-004**: 8 种界面语言下，开关标题、说明与插件名全部是该语言的译文，未翻译键数量为 0。
 - **SC-005**: 切换操作在 1 秒内反映到界面；写入失败时 1 秒内出现可见提示，且显示值与实际生效值一致。（这一条**没有计时断言**：夹具只检查状态与提示是否出现，不测耗时——见 `evidence.md` G14。）
-- **SC-006**: 关闭插件后，历史消息回到纯文本代码块呈现，开关行消失；重新启用后开关回到关闭前的值（沿用 feature 001 的可逆性）。
+- **SC-006**: 关闭插件后，历史消息回到纯文本代码块呈现，开关行消失；重新启用后开关回到关闭前的值（沿用 feature 001 的可逆性）。（**未取证**：真机卸载只观察到行消失，见 E-GAPS 的 G6 与 E14。）
 - **SC-007**: 只用键盘可完成"聚焦 → 切换 → 读到新状态"三步，读屏或无辅助工具的无障碍树中角色、名称、状态齐备。键盘触发未被夹具驱动（只断言角色、名称、状态与可聚焦性，见 `evidence.md` G6）。
 - **SC-008**（未取证：G5）: 开关行与相邻官方设置在截图级对比中同属一套视觉语言：标题基线对齐、说明字号与次要色一致、行距与分隔方式一致（逐项对照，允许 1px 级差异）。
 - **SC-009**（未取证：G3）: 8 种界面语言（200% 字体放大、360px 栏宽为固定条件）共 8 种组合下，开关行不截断、不重叠、不产生横向滚动。
