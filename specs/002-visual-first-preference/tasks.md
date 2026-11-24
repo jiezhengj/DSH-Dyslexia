@@ -240,7 +240,7 @@ has an assertion that executes the shape it protects.
 - [x] **T163** 夹具自证补强：间谍的 `note` 必须无任何过滤（新检查 `the network spy records every call, without a filter`：唯一一处 `__netCalls.push`、必须有 `__netSeen`）；`hollow` 的常量判定改为"本文件内绑定到字面量的任意标识符"，`const alive = true; expect(!!alive === true, …)` 与 `const rows = ['x']; expect([rows].length > 0, …)` 都会红（探针 T4/T5）；源码按钮"再点一次要关"加夹具（T8 红）。
 - [x] **T164** 计数与文档：静态 65 → **67**、浏览器 306 → **325**（`verify/run-harness.mjs` 的 `EXPECTED_CHECKS`）；`spec.md` Status、`plan.md` 当前工作树与 `quickstart.md:14/42` 计数、探针总数七十一条 → 七十七条改 0.2.23 口径。
 - [x] **T165** 证据：`evidence.md` 头注、`## E-BLD/E-CHK/E-HARN · 0.2.23` 三块（单次运行输出）、E-PROBE 加 T1–T8、G24 扩写（媒体元素、`@import`、文档扫描、间谍只能靠文本自证）。
-- [ ] **T166** 发版 `0.2.23` 与装回（本步之后立刻停止，不再开第二十轮评审）。
+- [x] **T166** 发版 `0.2.23` 与装回：commit `e581748`、tag `v0.2.23`、run [`45403177119`](https://github.com/jiezhengj/DSH-Dyslexia/actions/runs/45403177119) success（CI 67 / 325，`sources sha256:3d76d67eab72793ee5d54b1c8757b890`，shasum `3762a8bf0d249bf54db69ac3179a7bebeac4c152`、logIndex `4078906667`、33 文件）；registry tarball 第 29 次轮询 200；`remove_bundle` 卸 0.2.22 后 `install_bundle @0.2.23` applied，依赖 `"0.2.23"`、安装副本 788739 字节 / SHA-256 `E7E0525C…2195` 与仓库根一致、`locale/` 8、`docs/` 9。按用户要求（「下一次安装后优雅地停止」）到此停止，不再开第二十轮评审。
 
 ## Dependencies
 
