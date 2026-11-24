@@ -14,7 +14,7 @@
 - `true → false`：读者在设置里关闭；上一状态立即失效（提示词段不再追加偏好）。
 - `false → true`：反向；下一条消息即恢复偏好段。
 - `读不到 → 保持`：快照缺字段时界面按默认 `true` 显示开关，宿主侧也按 `true` 装配。
-- `写入失败 → 回到宿主当前值`：被拒、reject 或 thenable 抛错后，`restore()`（`src/client/settings.js:72-83`）经 `inject.readHostValue()` → `readPreference(face)`（`:41-51`）重读一次快照再显示；`readHostValue` 只要有 face 就会挂上（`:182-184`），而设置行只在有 face 时注册（`src/client/entry.js:133-134`），所以已挂载的行总会重读宿主，点击前捕获的值只在 `readHostValue` 缺席（即没有已挂载行）时生效。`readPreference` 对缺字段、不可读、无 `getSnapshot` 或抛出的 face 一律返回默认 `true`，从不表示读不到；退化 face 上开关因此回到 `true` 而非捕获值，可能在没有保存写入时显示为打开（`evidence.md` G12）。两窗口同时改值时不得用旧捕获值覆盖别处写入的新值，并给出可见提示。
+- `写入失败 → 回到宿主当前值`：被拒、reject 或 thenable 抛错后，`restore()`（`src/client/settings.js:127-138`）经 `inject.readHostValue()` → `readPreference(face)`（`:48-58`）重读一次快照再显示；`readHostValue` 只要有 face 就会挂上（`:243-245`），而设置行只在有 face 时注册（`src/client/entry.js:167-168`），所以已挂载的行总会重读宿主，点击前捕获的值只在 `readHostValue` 缺席（即没有已挂载行）时生效。`readPreference` 对缺字段、不可读、无 `getSnapshot` 或抛出的 face 一律返回默认 `true`，从不表示读不到；退化 face 上开关因此回到 `true` 而非捕获值，可能在没有保存写入时显示为打开（`evidence.md` G12）。两窗口同时改值时不得用旧捕获值覆盖别处写入的新值，并给出可见提示。
 
 **校验规则**
 
@@ -49,4 +49,4 @@
 | 状态 | `on` / `off` | 与 `visualFirst` 对应；没有 `disabled` |
 | 反馈 | `idle` / `saved` / `failed` | 失败时回到宿主当前值并可见提示；提示留到下一次点击，没有计时器 |
 
-**不变量**：宿主给出答案之后，显示的状态等于实际生效值；一次写入从点击到落定之间，行先显示读者请求的值（`src/client/settings.js:86-87` 在 `injected.setValue` 被等待之前就写进 store，此时宿主尚未接受），落定后按宿主答案显示——被拒、reject 或 thenable 抛错时回到宿主当前值：`restore()`（`src/client/settings.js:72-83`）经 `inject.readHostValue()` → `readPreference(face)`（`:41-51`）重读快照；`readHostValue` 只要有 face 就会挂上（`:182-184`），而设置行只在有 face 时注册（`src/client/entry.js:133-134`），故任何已挂载行都会真正重读宿主，捕获值只在 `readHostValue` 缺席（没有已挂载行）时生效。`readPreference` 从不表示读不到：face 缺 `getSnapshot`、抛错或快照缺字段时一律返回默认 `true`，退化 face 上开关因此回到 `true` 而非捕获值，可能在没有保存写入时显示为打开（`evidence.md` G12）。所以规则是"宿主答过之后等价"，不是"永远等价"；宿主始终不回答（promise 永不 settle）的情形未覆盖，登记为 `evidence.md` G11。不存在"不可用"占位。
+**不变量**：宿主给出答案之后，显示的状态等于实际生效值；一次写入从点击到落定之间，行先显示读者请求的值（`src/client/settings.js:110-113` 在 `injected.setValue` 被等待之前就写进 store，此时宿主尚未接受），落定后按宿主答案显示——被拒、reject 或 thenable 抛错时回到宿主当前值：`restore()`（`src/client/settings.js:127-138`）经 `inject.readHostValue()` → `readPreference(face)`（`:48-58`）重读快照；`readHostValue` 只要有 face 就会挂上（`:243-245`），而设置行只在有 face 时注册（`src/client/entry.js:167-168`），故任何已挂载行都会真正重读宿主，捕获值只在 `readHostValue` 缺席（没有已挂载行）时生效。`readPreference` 从不表示读不到：face 缺 `getSnapshot`、抛错或快照缺字段时一律返回默认 `true`，退化 face 上开关因此回到 `true` 而非捕获值，可能在没有保存写入时显示为打开（`evidence.md` G12）。所以规则是"宿主答过之后等价"，不是"永远等价"；宿主始终不回答（promise 永不 settle）的情形未覆盖，登记为 `evidence.md` G11。不存在"不可用"占位。
