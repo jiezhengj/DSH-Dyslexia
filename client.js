@@ -1,4 +1,4 @@
-/*! @jiezhengj/dsh-dyslexia 0.2.5 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:2b5728286c556d8dbaaa349cc9fb8ec5 */
+/*! @jiezhengj/dsh-dyslexia 0.2.6 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:b69ddecef48b3acc5a9b51e2a1a27bc1 */
 ;(function () {
   function reportLoadFailure(scope, error) {
     try { console.error('dsh-dyslexia: ' + scope, error) } catch (_error) {}
@@ -1172,6 +1172,13 @@ function createValueStore(initial) {
     get() {
       return value
     },
+    // The host turns every entry of the slot's `hooks` face into
+    // `useSyncExternalStore`-style hook props, and that needs `getSnapshot`:
+    // without it the settings page throws `w.getSnapshot is not a function`
+    // and the row never appears even though it registered.
+    getSnapshot() {
+      return value
+    },
     set(next) {
       if (next === value) return
       value = next
@@ -1202,16 +1209,64 @@ function readPreference(face) {
   }
 }
 
-/** The row component. Receives its store and writer through the inject face. */
+/**
+ * The row. The host turns each entry of the slot's `hooks` face into a hook
+ * prop named after it (`hooks: { visualFirst }` arrives as `useVisualFirst`), so
+ * the value has two possible sources and the adapter that has one is chosen
+ * before any hook runs: the `useVisualFirst` hook the host built, or the store
+ * this module made when the host has no hook machinery. A row that takes
+ * neither renders nothing, which is what kept it off the settings page on a
+ * host that flattens hooks: it looked for `hooks` and the host had removed it.
+ */
 function VisualFirstRow(props) {
+  const injected = props || {}
+  if (typeof injected.useVisualFirst === 'function') {
+    return React.createElement(HostValueRow, injected)
+  }
+  const store = injected.hooks ? injected.hooks.visualFirst : null
+  if (!store || typeof React.useSyncExternalStore !== 'function') return null
+  return React.createElement(StoreValueRow, { ...injected, store })
+}
+
+/** Reads the value through the host's own hook for the `hooks` face. */
+function HostValueRow(props) {
+  const value = props.useVisualFirst((current) => current)
+  return React.createElement(RowBody, { ...props, value })
+}
+
+/** Reads the value through the store this module made for older hosts. */
+function StoreValueRow(props) {
+  const value = React.useSyncExternalStore(props.store.subscribe, props.store.get)
+  return React.createElement(RowBody, { ...props, value })
+}
+
+/** The row itself: one label, one hint, one switch, and what the write said. */
+function RowBody(props) {
   const injected = props || {}
   const store = injected.hooks ? injected.hooks.visualFirst : null
   const say = translateFor(props, typeof document === 'undefined' ? null : document)
   const labelId = React.useId() + '-label'
   const hintId = React.useId() + '-hint'
   const [state, setState] = React.useState('idle')
-  if (!store || typeof React.useSyncExternalStore !== 'function') return null
-  const value = React.useSyncExternalStore(store.subscribe, store.get)
+  // The host hook answers on the host's next render, so the switch stands on the
+  // answer it was already given for one frame. `shown` is that answer; it is
+  // dropped as soon as the host agrees or refuses.
+  const [shown, setShown] = React.useState(null)
+  const value = shown === null ? props.value === true : shown
+
+  /**
+   * Shows a value on the switch: the store this module made is told directly,
+   * while a host that supplies the value through its own hook is shown the
+   * answer for one render (`shown`) until the host's hook reports again.
+   */
+  function show(next) {
+    if (store && typeof store.set === 'function') store.set(next)
+    else setShown(next)
+  }
+
+  function current() {
+    return shown === null ? props.value === true : shown
+  }
 
   /**
    * Puts the switch back on the value the host holds. A host reloads its mirror
@@ -1231,12 +1286,12 @@ function VisualFirstRow(props) {
     } catch (error) {
       report('settings revert', error)
     }
-    store.set(next)
+    show(next)
   }
 
   function choose(next) {
-    const before = store.get()
-    store.set(next)
+    const before = current()
+    show(next)
     setState('idle')
     let pending = null
     try {
@@ -1263,6 +1318,10 @@ function VisualFirstRow(props) {
         const settle = (accepted) => {
           if (accepted) {
             setState('saved')
+            // The host's hook is the truth from now on: dropping the local
+            // answer lets its next render move the switch, including when
+            // another window changed the value meanwhile.
+            setShown(null)
             return
           }
           setState('failed')
@@ -1272,6 +1331,8 @@ function VisualFirstRow(props) {
           (result) => settle(result === true || result === undefined),
           () => settle(false),
         )
+      } else {
+        setShown(null)
       }
     } catch (error) {
       // A host that hands back a thenable whose `then` throws has refused the
@@ -1379,6 +1440,34 @@ function report(scope, error) {
   }
 }
 
+/**
+ * Reads a service this module did not declare in `inject`.
+ *
+ * The host's cordis is strict: `ctx.someService` throws `cannot get property
+ * "someService" without inject` unless `inject` lists it, and listing `locale`
+ * or `configForms` would make the whole plugin wait for services a lean host may
+ * not have — a figure that could still be drawn would not be drawn. `ctx.get`
+ * exists exactly for this: it reads a live service without the inject
+ * requirement. The direct property is the fallback for a host that has no
+ * `ctx.get`, where reading it is what the old code did.
+ */
+function optional(ctx, name) {
+  if (typeof ctx.get === 'function') {
+    try {
+      const value = ctx.get(name)
+      if (value !== undefined) return value
+    } catch (error) {
+      report(name + ' via get', error)
+    }
+  }
+  try {
+    return ctx[name]
+  } catch (error) {
+    report(name, error)
+    return undefined
+  }
+}
+
 /** Registers the fence layer, dropping the locale option if the host rejects it. */
 function registerLayer(slots) {
   const base = { name: SLOT_NAME, id: LAYER_ID, key: FENCE_KEY, order: LAYER_ORDER }
@@ -1418,7 +1507,7 @@ function apply(ctx) {
     report('styles', error)
   }
   try {
-    const locale = ctx.locale
+    const locale = optional(ctx, 'locale')
     if (locale && typeof locale.register === 'function') {
       const register = () => locale.register(LOCALE_NAMESPACE, DICTIONARY)
       if (typeof ctx.effect === 'function') {
@@ -1431,7 +1520,7 @@ function apply(ctx) {
     report('locale', error)
   }
   try {
-    const slots = ctx.slots
+    const slots = optional(ctx, 'slots')
     if (!slots || typeof slots.register !== 'function' || typeof slots.inject !== 'function') {
       report('slots service unavailable', null)
       return
@@ -1447,11 +1536,18 @@ function apply(ctx) {
     // context registers the row whenever that service appears and keeps the
     // fence layer independent of the settings surface. A host old enough to
     // have no `inject` is asked directly, as before.
-    if (typeof ctx.inject === 'function') {
-      ctx.inject(['configForms'], (child) => wireSettingsRow(child))
-    } else {
-      wireSettingsRow(ctx)
+    // A host whose services may only be read through ctx.get never fires the
+    // inject callback, so the row is also attempted once directly; whichever
+    // path finds a face first wins and the other becomes a no-op.
+    let wired = false
+    const wireOnce = (target) => {
+      if (wired) return
+      wired = wireSettingsRow(target) === true
     }
+    if (typeof ctx.inject === 'function') {
+      ctx.inject(['configForms'], (child) => wireOnce(child))
+    }
+    wireOnce(ctx)
   } catch (error) {
     report('settings row', error)
   }
@@ -1464,12 +1560,12 @@ function apply(ctx) {
  * cannot write still gets a row, and the row itself treats the click as failed.
  */
 function wireSettingsRow(ctx) {
-  const slots = ctx.slots
-  if (!slots || typeof slots.inject !== 'function' || typeof slots.register !== 'function') return
-  const configForms = ctx.configForms
-  if (!configForms || typeof configForms.get !== 'function') return
+  const slots = optional(ctx, 'slots')
+  if (!slots || typeof slots.inject !== 'function' || typeof slots.register !== 'function') return false
+  const configForms = optional(ctx, 'configForms')
+  if (!configForms || typeof configForms.get !== 'function') return false
   const face = configForms.get(SETTINGS_NAMESPACE)
-  if (!face) return
+  if (!face) return false
   const row = createVisualFirstRow(face)
   if (typeof ctx.effect === 'function' && typeof face.subscribe === 'function') {
     ctx.effect(
@@ -1492,6 +1588,7 @@ function wireSettingsRow(ctx) {
       row.component,
     ),
   )
+  return true
 }
 
     exports.apply = apply

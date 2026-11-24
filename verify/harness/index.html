@@ -1898,6 +1898,114 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             `${blankHost.defs.length} defs`,
           )
           blankHost.dispose()
+
+          // The real host does not hand the row a `hooks` object: it turns each
+          // entry of the slot's `hooks` face into a hook prop named after it, so
+          // the row receives `useVisualFirst(value => value)`. A row that only
+          // looked for `hooks` returned nothing there, which is how the switch
+          // vanished from a real settings page while every fixture stayed green.
+          const hookState = { value: { visualFirst: true } }
+          const hookSets = []
+          const hookListeners = new Set()
+          let hookSnapshot = null
+          const hookFace = {
+            getSnapshot() {
+              if (!hookSnapshot || hookSnapshot.value.visualFirst !== hookState.value.visualFirst) {
+                hookSnapshot = { value: { visualFirst: hookState.value.visualFirst } }
+              }
+              return hookSnapshot
+            },
+            subscribe(listener) {
+              hookListeners.add(listener)
+              return () => hookListeners.delete(listener)
+            },
+            set(field, value) {
+              hookSets.push([field, value])
+              hookState.value[field] = value
+              hookListeners.forEach((listener) => listener())
+              return Promise.resolve(true)
+            },
+          }
+          function useVisualFirst(selector) {
+            const snapshot = React.useSyncExternalStore(
+              (listener) => hookFace.subscribe(listener),
+              () => hookFace.getSnapshot(),
+            )
+            const value = snapshot && snapshot.value ? snapshot.value.visualFirst : undefined
+            return typeof selector === 'function' ? selector(value === undefined ? true : value !== false) : value
+          }
+          const hookDef = {
+            name: 'settings.general.item',
+            id: '@jiezhengj/dsh-dyslexia/visual-first',
+            order: 62,
+            locale: 'dyslexia',
+            inject: {
+              hooks: { visualFirst: null },
+              useVisualFirst,
+              setValue: (next) => hookFace.set('visualFirst', next),
+              readHostValue: () => hookState.value.visualFirst,
+            },
+          }
+          const HookRow = module.RowComponentForTest ? module.RowComponentForTest : null
+          void HookRow
+          const hookView = mount(Row, hookDef.inject)
+          await tick(40)
+          const hookRow = hookView.stage.querySelector('.dsh-dyslexia-row')
+          const hookToggle = hookView.stage.querySelector('button[role="switch"]')
+          expect(
+            !!hookRow,
+            'a host that passes hooks as hook props still gets a visible row',
+            hookRow ? 'row' : 'nothing rendered',
+          )
+          expect(
+            !!hookToggle && hookToggle.getAttribute('aria-checked') === 'true',
+            'the switch follows the value the host hook reports',
+            hookToggle ? `aria-checked=${hookToggle.getAttribute('aria-checked')}` : 'no switch',
+          )
+          if (hookToggle) {
+            hookToggle.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true }))
+            await tick(60)
+          }
+          expect(
+            hookSets.length === 1 && hookSets[0][0] === 'visualFirst' && hookSets[0][1] === false,
+            'clicking the switch writes through the writer the host gave it',
+            JSON.stringify(hookSets),
+          )
+          const hookAfter = hookView.stage.querySelector('button[role="switch"]')
+          expect(
+            !!hookAfter && hookAfter.getAttribute('aria-checked') === 'false',
+            'the switch then shows the value the host now holds',
+            hookAfter ? `aria-checked=${hookAfter.getAttribute('aria-checked')}` : 'no switch',
+          )
+          hookView.root.unmount()
+          hookView.stage.remove()
+
+          // A host whose strict cordis refuses a service this module never
+          // declared still draws the picture and still gets the row: `ctx.get`
+          // is the read that does not need `inject`.
+          const strictHost = makeContext({})
+          strictHost.ctx.get = function get(name) {
+            if (name === 'locale') return undefined
+            if (name === 'configForms') return { get: () => settingsFace }
+            return undefined
+          }
+          let strictThrew = null
+          try {
+            module.apply(strictHost.ctx)
+          } catch (error) {
+            strictThrew = error
+          }
+          expect(
+            strictThrew === null,
+            'a host that refuses undeclared services is still served without a throw',
+            strictThrew ? String(strictThrew.message) : 'quiet',
+          )
+          expect(
+            strictHost.defs.some((entry) => entry.def && entry.def.name === 'settings.general.item'),
+            'a host whose services must be read through ctx.get still gets the row',
+            `${strictHost.defs.length} defs`,
+          )
+          strictHost.dispose()
         } catch (error) {
           bad('fixture aborted', String(error && error.stack ? error.stack.split('\n')[0] : error))
         }

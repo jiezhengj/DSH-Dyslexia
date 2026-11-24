@@ -40,6 +40,34 @@ function report(scope, error) {
   }
 }
 
+/**
+ * Reads a service this module did not declare in `inject`.
+ *
+ * The host's cordis is strict: `ctx.someService` throws `cannot get property
+ * "someService" without inject` unless `inject` lists it, and listing `locale`
+ * or `configForms` would make the whole plugin wait for services a lean host may
+ * not have — a figure that could still be drawn would not be drawn. `ctx.get`
+ * exists exactly for this: it reads a live service without the inject
+ * requirement. The direct property is the fallback for a host that has no
+ * `ctx.get`, where reading it is what the old code did.
+ */
+function optional(ctx, name) {
+  if (typeof ctx.get === 'function') {
+    try {
+      const value = ctx.get(name)
+      if (value !== undefined) return value
+    } catch (error) {
+      report(name + ' via get', error)
+    }
+  }
+  try {
+    return ctx[name]
+  } catch (error) {
+    report(name, error)
+    return undefined
+  }
+}
+
 /** Registers the fence layer, dropping the locale option if the host rejects it. */
 function registerLayer(slots) {
   const base = { name: SLOT_NAME, id: LAYER_ID, key: FENCE_KEY, order: LAYER_ORDER }
@@ -79,7 +107,7 @@ function apply(ctx) {
     report('styles', error)
   }
   try {
-    const locale = ctx.locale
+    const locale = optional(ctx, 'locale')
     if (locale && typeof locale.register === 'function') {
       const register = () => locale.register(LOCALE_NAMESPACE, DICTIONARY)
       if (typeof ctx.effect === 'function') {
@@ -92,7 +120,7 @@ function apply(ctx) {
     report('locale', error)
   }
   try {
-    const slots = ctx.slots
+    const slots = optional(ctx, 'slots')
     if (!slots || typeof slots.register !== 'function' || typeof slots.inject !== 'function') {
       report('slots service unavailable', null)
       return
@@ -108,11 +136,18 @@ function apply(ctx) {
     // context registers the row whenever that service appears and keeps the
     // fence layer independent of the settings surface. A host old enough to
     // have no `inject` is asked directly, as before.
-    if (typeof ctx.inject === 'function') {
-      ctx.inject(['configForms'], (child) => wireSettingsRow(child))
-    } else {
-      wireSettingsRow(ctx)
+    // A host whose services may only be read through ctx.get never fires the
+    // inject callback, so the row is also attempted once directly; whichever
+    // path finds a face first wins and the other becomes a no-op.
+    let wired = false
+    const wireOnce = (target) => {
+      if (wired) return
+      wired = wireSettingsRow(target) === true
     }
+    if (typeof ctx.inject === 'function') {
+      ctx.inject(['configForms'], (child) => wireOnce(child))
+    }
+    wireOnce(ctx)
   } catch (error) {
     report('settings row', error)
   }
@@ -125,12 +160,12 @@ function apply(ctx) {
  * cannot write still gets a row, and the row itself treats the click as failed.
  */
 function wireSettingsRow(ctx) {
-  const slots = ctx.slots
-  if (!slots || typeof slots.inject !== 'function' || typeof slots.register !== 'function') return
-  const configForms = ctx.configForms
-  if (!configForms || typeof configForms.get !== 'function') return
+  const slots = optional(ctx, 'slots')
+  if (!slots || typeof slots.inject !== 'function' || typeof slots.register !== 'function') return false
+  const configForms = optional(ctx, 'configForms')
+  if (!configForms || typeof configForms.get !== 'function') return false
   const face = configForms.get(SETTINGS_NAMESPACE)
-  if (!face) return
+  if (!face) return false
   const row = createVisualFirstRow(face)
   if (typeof ctx.effect === 'function' && typeof face.subscribe === 'function') {
     ctx.effect(
@@ -153,4 +188,5 @@ function wireSettingsRow(ctx) {
       row.component,
     ),
   )
+  return true
 }

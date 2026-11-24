@@ -532,6 +532,40 @@ check('host key echo falls back to bundled strings', () => {
   return 'key echo, blanks, placeholders rejected; the host is asked under the plugin namespace'
 })
 
+check('the settings row reads the hook the host builds, not an object it never sends', () => {
+  // The host turns each entry of the slot's `hooks` face into a hook prop named
+  // after it, so `hooks: { visualFirst }` arrives as `useVisualFirst`. A row that
+  // only read `props.hooks` rendered nothing on the real settings page while
+  // every fixture that handed it a `hooks` object stayed green.
+  const settings = readCode('src/client/settings.js')
+  assert(
+    settings.includes('injected.useVisualFirst') && settings.includes('HostValueRow'),
+    'settings.js does not read the useVisualFirst hook prop',
+  )
+  assert(
+    settings.includes('injected.hooks') && settings.includes('StoreValueRow'),
+    'settings.js dropped the store form older hosts hand over',
+  )
+  // The host mounts each hooks entry with useSyncExternalStore, which calls
+  // `getSnapshot`; without it the real settings page throws and the row dies.
+  assert(settings.includes('getSnapshot()'), 'the value store has no getSnapshot for the host hook')
+  return 'useVisualFirst and the store form both wired, getSnapshot present'
+})
+
+check('a service the plugin never declared is read through ctx.get', () => {
+  // The host's cordis is strict: `ctx.locale` throws under a context whose inject
+  // lists only `slots`, and the row was never registered because of it.
+  const entry = readCode('src/client/entry.js')
+  assert(typeof entry === 'string' && entry.includes('function optional(ctx, name)'), 'entry.js has no optional() reader')
+  assert(entry.includes("optional(ctx, 'locale')"), 'locale is still read as a bare property')
+  assert(entry.includes("optional(ctx, 'configForms')"), 'configForms is still read as a bare property')
+  assert(
+    !/ctx\.locale\b/.test(entry) && !/ctx\.configForms\b/.test(entry),
+    'a bare ctx.locale or ctx.configForms remains',
+  )
+  return 'locale, slots and configForms go through ctx.get with a property fallback'
+})
+
 check('a refused settings write is not reported as saved', () => {
   const settings = readCode('src/client/settings.js')
   // `set(field, value)` answers `Promise<boolean>`: true for Host acceptance,
@@ -1105,7 +1139,7 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
 
 /* ---------------------------------------------------------------- report */
 
-const EXPECTED_CHECKS = 45
+const EXPECTED_CHECKS = 47
 if (notices.length + failures.length !== EXPECTED_CHECKS) {
   failures.push(
     `[FAIL] the suite has ${notices.length + failures.length} checks, expected ${EXPECTED_CHECKS}: a check was added or removed without updating this number`,

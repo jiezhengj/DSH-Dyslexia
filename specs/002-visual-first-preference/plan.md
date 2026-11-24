@@ -6,7 +6,7 @@
 
 在现有的 `@jiezhengj/dsh-dyslexia` 包里加三件事：①宿主侧一个可持久化的布尔偏好 `visualFirst`（默认 `true`），它决定模型可见的提示词段里是否追加"图更省力时优先用图"的判据段；②客户端侧在设置「通用设置」区贡献一行开关（复用宿主的 `settings.general.item` 槽），支持键盘与读屏、8 种界面语言；③把插件标题/说明/README 改成「DSH 我有阅读障碍」及 7 种译文。渲染、回退、窄屏、卸载可逆这些 feature 001 的契约不变。
 
-**当前工作树**：`0.2.5`（commit `0be17fe`、tag `v0.2.5`、run `45240437544`、45 / 274，已发布并已装回 profile `desktop`；尚未在真实窗口里观察，见 T020 / G1）。
+**当前工作树**：`0.2.6`（`0.2.5` 的运行记录是 commit `0be17fe` / tag `v0.2.5` / run `45240437544`、45 / 274；`0.2.6` 是 47 静态 / 280 浏览器，行与开关已在运行中的宿主里观察过，见 `evidence.md` 的 E-LIVE；桌面窗口仍不可达，见 T020 / G1）。
 
 ## Technical Context
 
@@ -51,7 +51,7 @@ specs/002-visual-first-preference/
 ├── research.md
 ├── data-model.md
 ├── quickstart.md
-├── evidence.md                 # 构建/检查/探针输出与未取证项（G1–G8、G11–G13 未取证，G9/G10 已由 0.2.5 关闭）
+├── evidence.md                 # 构建/检查/探针输出与未取证项（G2–G8、G11–G13 未取证；G1 由 0.2.6 的 E-LIVE 关闭，G9/G10 由 0.2.5 关闭）
 ├── contracts/
 │   ├── plugin-config.md        # 配置项与宿主侧读取契约
 │   ├── settings-row.md         # 设置行的槽契约、DOM/可访问性契约

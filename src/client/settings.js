@@ -20,6 +20,13 @@ function createValueStore(initial) {
     get() {
       return value
     },
+    // The host turns every entry of the slot's `hooks` face into
+    // `useSyncExternalStore`-style hook props, and that needs `getSnapshot`:
+    // without it the settings page throws `w.getSnapshot is not a function`
+    // and the row never appears even though it registered.
+    getSnapshot() {
+      return value
+    },
     set(next) {
       if (next === value) return
       value = next
@@ -50,16 +57,64 @@ function readPreference(face) {
   }
 }
 
-/** The row component. Receives its store and writer through the inject face. */
+/**
+ * The row. The host turns each entry of the slot's `hooks` face into a hook
+ * prop named after it (`hooks: { visualFirst }` arrives as `useVisualFirst`), so
+ * the value has two possible sources and the adapter that has one is chosen
+ * before any hook runs: the `useVisualFirst` hook the host built, or the store
+ * this module made when the host has no hook machinery. A row that takes
+ * neither renders nothing, which is what kept it off the settings page on a
+ * host that flattens hooks: it looked for `hooks` and the host had removed it.
+ */
 function VisualFirstRow(props) {
+  const injected = props || {}
+  if (typeof injected.useVisualFirst === 'function') {
+    return React.createElement(HostValueRow, injected)
+  }
+  const store = injected.hooks ? injected.hooks.visualFirst : null
+  if (!store || typeof React.useSyncExternalStore !== 'function') return null
+  return React.createElement(StoreValueRow, { ...injected, store })
+}
+
+/** Reads the value through the host's own hook for the `hooks` face. */
+function HostValueRow(props) {
+  const value = props.useVisualFirst((current) => current)
+  return React.createElement(RowBody, { ...props, value })
+}
+
+/** Reads the value through the store this module made for older hosts. */
+function StoreValueRow(props) {
+  const value = React.useSyncExternalStore(props.store.subscribe, props.store.get)
+  return React.createElement(RowBody, { ...props, value })
+}
+
+/** The row itself: one label, one hint, one switch, and what the write said. */
+function RowBody(props) {
   const injected = props || {}
   const store = injected.hooks ? injected.hooks.visualFirst : null
   const say = translateFor(props, typeof document === 'undefined' ? null : document)
   const labelId = React.useId() + '-label'
   const hintId = React.useId() + '-hint'
   const [state, setState] = React.useState('idle')
-  if (!store || typeof React.useSyncExternalStore !== 'function') return null
-  const value = React.useSyncExternalStore(store.subscribe, store.get)
+  // The host hook answers on the host's next render, so the switch stands on the
+  // answer it was already given for one frame. `shown` is that answer; it is
+  // dropped as soon as the host agrees or refuses.
+  const [shown, setShown] = React.useState(null)
+  const value = shown === null ? props.value === true : shown
+
+  /**
+   * Shows a value on the switch: the store this module made is told directly,
+   * while a host that supplies the value through its own hook is shown the
+   * answer for one render (`shown`) until the host's hook reports again.
+   */
+  function show(next) {
+    if (store && typeof store.set === 'function') store.set(next)
+    else setShown(next)
+  }
+
+  function current() {
+    return shown === null ? props.value === true : shown
+  }
 
   /**
    * Puts the switch back on the value the host holds. A host reloads its mirror
@@ -79,12 +134,12 @@ function VisualFirstRow(props) {
     } catch (error) {
       report('settings revert', error)
     }
-    store.set(next)
+    show(next)
   }
 
   function choose(next) {
-    const before = store.get()
-    store.set(next)
+    const before = current()
+    show(next)
     setState('idle')
     let pending = null
     try {
@@ -111,6 +166,10 @@ function VisualFirstRow(props) {
         const settle = (accepted) => {
           if (accepted) {
             setState('saved')
+            // The host's hook is the truth from now on: dropping the local
+            // answer lets its next render move the switch, including when
+            // another window changed the value meanwhile.
+            setShown(null)
             return
           }
           setState('failed')
@@ -120,6 +179,8 @@ function VisualFirstRow(props) {
           (result) => settle(result === true || result === undefined),
           () => settle(false),
         )
+      } else {
+        setShown(null)
       }
     } catch (error) {
       // A host that hands back a thenable whose `then` throws has refused the

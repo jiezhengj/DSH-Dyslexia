@@ -361,7 +361,7 @@ Each probe below breaks one protected behaviour in a working copy of the sources
 | probe | change | result |
 |---|---|---|
 | F1 | `index.js`: `briefing` ignores the switch and always appends the preference | `FAIL the section hands the host a function, not a frozen string — the same registration did not read the value again: the briefing is frozen at apply time`, `FAIL the capability briefing is what it was before the switch — capability text is 155 words, budget is 95`, `FAIL the switch adds the preference on top of the capability, and nothing else — the switch is on and nothing was added`, `check-bundle: 3 failed, 41 passed`, exit 1; last run on the `0.2.3` tree, not re-run since |
-| F2 | `index.js`: `text: briefing(config)` instead of `text: () => briefing(config)` | `FAIL the section hands the host a function, not a frozen string — section text is a frozen string: the switch would only apply after a restart`, `check-bundle: 1 failed, 43 passed`, exit 1; historical record, not one of the twelve counted probes (F1, F3–F13): that line comes from the `0.2.1` tree's 44 static checks (43 passed + 1 failed), not from this tree's 45 |
+| F2 | `index.js`: `text: briefing(config)` instead of `text: () => briefing(config)` | `FAIL the section hands the host a function, not a frozen string — section text is a frozen string: the switch would only apply after a restart`, `check-bundle: 1 failed, 43 passed`, exit 1; historical record, not one of the fourteen counted probes (F1, F3–F15): that line comes from the `0.2.1` tree's 44 static checks (43 passed + 1 failed), not from this tree's 45 |
 | F3 | `index.js`: `visualFirst` default `false` | `FAIL the switch is on for an empty configuration — the switch does not default to on`, `check-bundle: 1 failed, 43 passed`, exit 1 |
 | F4 | `src/client/entry.js`: locale registration run immediately instead of through `ctx.effect` | `[bad] styles and strings are claimed as effects — 1`, `[bad] the locale registration is dropped — 0`, `run-harness: 2 failed, 249 passed`, exit 1 |
 | F5 | `src/client/settings.js`: a rejected write drops `store.set(before)` | `[bad] a rejected write leaves the switch where the host put it — true`, `run-harness: 1 failed, 250 passed`, exit 1 |
@@ -372,22 +372,429 @@ Each probe below breaks one protected behaviour in a working copy of the sources
 | F10 | `src/client/settings.js`: `restore` puts back the value captured before the click and never asks the face again | `[bad] a refused write keeps the value the host took while it was pending — aria-checked=false host=true status=保存失败，开关保持原来的状态。`, `run-harness: 1 failed, 273 passed`, exit 1 |
 | F11 | `src/client/entry.js`: drop the `face.subscribe` effect, so a value the host pushes never reaches the store | `[bad] a refused write that resolves false puts the switch back and says so — sets=[["visualFirst",false],["visualFirst",true],["visualFirst",true]] aria-checked=true host=true status=保存失败，开关保持原来的状态。`, `[bad] a value the host pushes reaches the switch without a write — aria-checked=true paint rgb(74, 108, 247) -> rgb(74, 108, 247)`, `run-harness: 2 failed, 272 passed`, exit 1 |
 | F12 | `index.js`: one word changed in the capability sentence (`in place inside the conversation.` → `in place within the conversation.`) | `FAIL the capability briefing is what it was before the switch — the off-state briefing no longer carries feature 001's sentence: …`, `check-bundle: 1 failed, 44 passed`, exit 1 |
+| F14 | `src/client/settings.js`: the `useVisualFirst` branch removed, back to reading only `props.hooks` | `[bad] a host that passes hooks as hook props still gets a visible row — nothing rendered`, `[bad] the switch follows the value the host hook reports — no switch`, `[bad] clicking the switch writes through the writer the host gave it — []`, `[bad] the switch then shows the value the host now holds — no switch`, `run-harness: 4 failed, 276 passed`, exit 1 |
+| F15 | `src/client/settings.js`: `getSnapshot()` dropped from the value store | `FAIL the settings row reads the hook the host builds, not an object it never sends — the value store has no getSnapshot for the host hook`, `check-bundle: 1 failed, 47 passed`, exit 1 |
 | F13 | `src/client/settings.js`: the `pending.then(...)` chain moved outside the `try` | `[bad] a thenable that throws out of then cannot break the click — threw=no uncaught=Script error. aria-checked=false host=true status=none`, `run-harness: 1 failed, 273 passed`, exit 1 |
 
 The function-form break (F2) was not caught by the suites before the function check existed: a frozen `text` string kept every earlier check green, and only `the section hands the host a function, not a frozen string` sees it. That is why the check was added; in the E-CHK order it is #22 of the 44 checks.
 
-After restoring and rebuilding, the `0.2.1` probe session passed again: `build-client` reported `sources 6, syntax ok`, `check-bundle` reported `all 44 checks passed`, `run-harness` reported `all 251 checks passed`. The `0.2.3` re-runs of F1 and F9 reported the untouched copy as `all 44 checks passed` and `all 260 checks passed` before the breaks. The `0.2.5` probes (F10–F13) each started from a fresh copy of the final tree and were restored afterwards; that tree's own suites are green at 45 / 274 (see "E-CHK/E-HARN · 0.2.5"). The `0.2.4` tree itself was never probed (G10, discharged on `0.2.5`).
+After restoring and rebuilding, the `0.2.1` probe session passed again: `build-client` reported `sources 6, syntax ok`, `check-bundle` reported `all 44 checks passed`, `run-harness` reported `all 251 checks passed`. The `0.2.3` re-runs of F1 and F9 reported the untouched copy as `all 44 checks passed` and `all 260 checks passed` before the breaks. The `0.2.5` probes (F10–F13) each started from a fresh copy of the final tree and were restored afterwards; that tree's own suites are green at 45 / 274 (see "E-CHK/E-HARN · 0.2.5"). The `0.2.4` tree itself was never probed (G10, discharged on `0.2.5`). The `0.2.6` probes (F14, F15) are the two that guard the live-window defect E-LIVE records: both were run on copies of the `0.2.6` tree and restored afterwards, and the untouched copy reported `all 47 checks passed` and `all 280 checks passed` before the breaks.
 
 Two fixture details are worth recording. Headless Chrome's virtual time does not advance the 120 ms CSS transition on the switch, so the paint assertion sets `style.transition = 'none'` on the switch before reading the computed colour (`verify/harness/index.html:1599`). React 18 routes an event-handler throw to `window`'s `error` event rather than rethrowing it from `.click()`, so F13's fixture watches that event instead of expecting a throw at the call site (`verify/harness/index.html:1655-1667`).
 
+## E-BLD · 0.2.6 build
+
+```
+build-client: @jiezhengj/dsh-dyslexia -> client.js (787325 bytes, 785808 characters, engine 1.13.0, sources 6, syntax ok)
+```
+
+## E-CHK/E-HARN · 0.2.6 (47 static, 280 browser)
+
+Both blocks below are the complete stdout of one run of this tree; the `FAIL`/`warn` lines the checks
+trigger on purpose go to stderr and are named where they matter, not pasted here.
+
+```
+ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.2.6
+ok   package.json points at the repository npm trusts — git+https://github.com/jiezhengj/DSH-Dyslexia.git
+ok   package.json declares the bundle patch and the client half — platform web, no package inject
+ok   no dsh version gate can refuse a start — no engines.dsh, no dsh peers
+ok   published files leave the build sources out — 9 patterns
+ok   the required published files exist — 24 required files
+ok   every interface language has its own plugin page — 8 languages
+ok   cordis.patch.yml inserts the plugin by package name — 3 lines
+ok   both locales carry metadata — en, zh
+ok   client.js is one loader chunk keyed by the package name — 787325 bytes
+ok   client.js requires react and nothing else — react
+ok   client.js never reaches the network — no fetch, no XHR, no dynamic import, no remote URL
+ok   client.js carries the vendored engine — Pele 1.13.0 inlined
+ok   client.js compiles on its own — no syntax error for a host batch to inherit
+ok   a broken host loader cannot make the chunk throw — throwing loader, missing loader, missing window
+ok   a failing factory still yields a silent module — no react, no ctx, no slots, empty services
+ok   an engine that fails to load leaves the picture to the host — boundary + guarded props + engine guard + engine sentence
+ok   the layer is keyed to mermaid on the fence slot — conversation.chat.markdown.fence + mermaid
+ok   host half declares its package identity and one service — systemPrompt only
+ok   the host half can be loaded and apply once — one section on a healthy host
+ok   host apply survives a host that changed shape — six hostile hosts, no throw, no section
+ok   the section hands the host a function, not a frozen string — one registration, three reads, the text follows the value
+ok   the capability briefing is what it was before the switch — 85 words, all four sentences match feature 001's contract, order 9000, name ui:dsh-dyslexia
+ok   the switch adds the preference on top of the capability, and nothing else — 70 words of preference, 85 of capability
+ok   the switch is on for an empty configuration — visualFirst defaults to true
+ok   a host that hands over no configuration still gets the full briefing — no config means the default, not an empty briefing
+ok   the engine type is exposed the way client.js expects — PeleError, detectType, enableZoom, forgetTextWidths, mount, parse, register, registered, render, supports
+ok   every supported sample type draws an svg — flowchart:218x64 sequence:184x167 class:80x192 state:87x206 er:144x201 mindmap:172x71 timeline:408x133
+ok   a broken diagram reports a one-line reason — Parse error on line 2:
+ok   host key echo falls back to bundled strings — key echo, blanks, placeholders rejected; the host is asked under the plugin namespace
+ok   the settings row reads the hook the host builds, not an object it never sends — useVisualFirst and the store form both wired, getSnapshot present
+ok   a service the plugin never declared is read through ctx.get — locale, slots and configForms go through ctx.get with a property fallback
+ok   a refused settings write is not reported as saved — true saves, false reverts, a host that resolves nothing saves; behaviour is asserted by the fixture
+ok   every language carries the same complete sentences — 16 keys x 8 languages, no engine text in labels
+ok   client.js matches the sources it claims — b69ddecef48b3acc5a9b51e2a1a27bc1, 787325 bytes rebuilt from the six sources
+ok   the picture is the image, and the copy answer is announced — label is a noun, role="img" on the svg, copy result announced; behaviour is asserted by the fixture
+ok   host children react would refuse fall back to the source — objects, functions and mixed arrays fall back to the source text; behaviour is asserted by the fixture
+ok   every drawing the engine swaps in is named again — the engine owns re-layout; every swapped drawing node and its zoom buttons are renamed, strings follow the language; behaviour is asserted by the fixture
+ok   a host block that throws cannot empty the message — host blocks render inside their own boundary, with the source text as the floor; behaviour is asserted by the fixture
+ok   a factory that cannot build never throws at the host — module-level throw contained, empty module returned
+ok   nothing in the package asks you to edit an instruction file — 17 shipped text files, no instruction-file ask, no visual-first-agents-snippet.md at the root
+ok   the host half registers exactly one capability section — ui:dsh-dyslexia, order 9000, 155 words
+ok   the host half adds one section per context, not one per call — three calls on one context, one section; a second context gets its own; a failed attempt still allows a retry, whether the host refused at once, later, or by throwing out of .then
+ok   the host half stays silent when the host changed shape — five silent hosts (no warning), two refused sections (one warning each, naming the error)
+ok   the contract's colour variables are the ones that are wired — 10 engine variables, owned by engine and contract alike
+ok   both size limits reach the engine, each proven on its own — three limits passed to mount, two fixtures that cross one each
+ok   the fixtures assert what the fixes promise, and can fail — 43 assertions present, each with a condition that reads something
+
+check-bundle: @jiezhengj/dsh-dyslexia@0.2.6 | client.js 787325 bytes | sources sha256:b69ddecef48b3acc5a9b51e2a1a27bc1 | all 47 checks passed
+```
+
+```
+[ok] loading client.js registers one factory
+[ok] the module exposes apply
+[ok] the module asks for slots only — slots
+[ok] apply registers exactly one fence layer — count 1
+[ok] layer sits on the fence slot — conversation.chat.markdown.fence
+[ok] layer is keyed to mermaid — mermaid
+[ok] layer id — @jiezhengj/dsh-dyslexia/mermaid
+[ok] layer order — 100
+[ok] layer claims the locale namespace — dyslexia
+[ok] every interface language has expectations
+[ok] [zh] the picture carries a plain name — 图
+[ok] [zh] first render shows the two buttons — 查看源码 | 复制源码
+[ok] [zh] a picture is drawn
+[ok] [zh] exactly two buttons — 2
+[ok] [zh] no internal key reaches the screen
+[ok] [zh] the source toggle starts collapsed
+[ok] [zh] the source toggle flips its word — 隐藏源码
+[ok] [zh] the source toggle announces itself as expanded
+[ok] [zh] the expanded source keeps its fence language — language-mermaid
+[ok] [zh] the mount point is presentational
+[ok] [zh] the copy answer is announced in words — 已复制 / expected 已复制
+[ok] [zh] the copy answer can be read, not only heard — 12px / rgb(91, 95, 114)
+[ok] [zh] a refused clipboard says so — 复制失败 / expected 复制失败
+[ok] [en] the picture carries a plain name — Diagram
+[ok] [en] first render shows the two buttons — Show source | Copy source
+[ok] [en] a picture is drawn
+[ok] [en] exactly two buttons — 2
+[ok] [en] no internal key reaches the screen
+[ok] [en] the source toggle starts collapsed
+[ok] [en] the source toggle flips its word — Hide source
+[ok] [en] the source toggle announces itself as expanded
+[ok] [en] the expanded source keeps its fence language — language-mermaid
+[ok] [en] the mount point is presentational
+[ok] [en] the copy answer is announced in words — Copied / expected Copied
+[ok] [en] the copy answer can be read, not only heard — 12px / rgb(91, 95, 114)
+[ok] [en] a refused clipboard says so — Copy failed / expected Copy failed
+[ok] [ja] the picture carries a plain name — 図
+[ok] [ja] first render shows the two buttons — ソースを表示 | ソースをコピー
+[ok] [ja] a picture is drawn
+[ok] [ja] exactly two buttons — 2
+[ok] [ja] no internal key reaches the screen
+[ok] [ja] the source toggle starts collapsed
+[ok] [ja] the source toggle flips its word — ソースを隠す
+[ok] [ja] the source toggle announces itself as expanded
+[ok] [ja] the expanded source keeps its fence language — language-mermaid
+[ok] [ja] the mount point is presentational
+[ok] [ja] the copy answer is announced in words — コピーしました / expected コピーしました
+[ok] [ja] the copy answer can be read, not only heard — 12px / rgb(91, 95, 114)
+[ok] [ja] a refused clipboard says so — コピーできませんでした / expected コピーできませんでした
+[ok] [es] the picture carries a plain name — Diagrama
+[ok] [es] first render shows the two buttons — Mostrar el código | Copiar el código
+[ok] [es] a picture is drawn
+[ok] [es] exactly two buttons — 2
+[ok] [es] no internal key reaches the screen
+[ok] [es] the source toggle starts collapsed
+[ok] [es] the source toggle flips its word — Ocultar el código
+[ok] [es] the source toggle announces itself as expanded
+[ok] [es] the expanded source keeps its fence language — language-mermaid
+[ok] [es] the mount point is presentational
+[ok] [es] the copy answer is announced in words — Copiado / expected Copiado
+[ok] [es] the copy answer can be read, not only heard — 12px / rgb(91, 95, 114)
+[ok] [es] a refused clipboard says so — No se pudo copiar / expected No se pudo copiar
+[ok] [fr] the picture carries a plain name — Schéma
+[ok] [fr] first render shows the two buttons — Afficher la source | Copier la source
+[ok] [fr] a picture is drawn
+[ok] [fr] exactly two buttons — 2
+[ok] [fr] no internal key reaches the screen
+[ok] [fr] the source toggle starts collapsed
+[ok] [fr] the source toggle flips its word — Masquer la source
+[ok] [fr] the source toggle announces itself as expanded
+[ok] [fr] the expanded source keeps its fence language — language-mermaid
+[ok] [fr] the mount point is presentational
+[ok] [fr] the copy answer is announced in words — Copié / expected Copié
+[ok] [fr] the copy answer can be read, not only heard — 12px / rgb(91, 95, 114)
+[ok] [fr] a refused clipboard says so — Échec de la copie / expected Échec de la copie
+[ok] [de] the picture carries a plain name — Diagramm
+[ok] [de] first render shows the two buttons — Quelle anzeigen | Quelle kopieren
+[ok] [de] a picture is drawn
+[ok] [de] exactly two buttons — 2
+[ok] [de] no internal key reaches the screen
+[ok] [de] the source toggle starts collapsed
+[ok] [de] the source toggle flips its word — Quelle ausblenden
+[ok] [de] the source toggle announces itself as expanded
+[ok] [de] the expanded source keeps its fence language — language-mermaid
+[ok] [de] the mount point is presentational
+[ok] [de] the copy answer is announced in words — Kopiert / expected Kopiert
+[ok] [de] the copy answer can be read, not only heard — 12px / rgb(91, 95, 114)
+[ok] [de] a refused clipboard says so — Kopieren fehlgeschlagen / expected Kopieren fehlgeschlagen
+[ok] [ru] the picture carries a plain name — Диаграмма
+[ok] [ru] first render shows the two buttons — Показать код | Копировать код
+[ok] [ru] a picture is drawn
+[ok] [ru] exactly two buttons — 2
+[ok] [ru] no internal key reaches the screen
+[ok] [ru] the source toggle starts collapsed
+[ok] [ru] the source toggle flips its word — Скрыть код
+[ok] [ru] the source toggle announces itself as expanded
+[ok] [ru] the expanded source keeps its fence language — language-mermaid
+[ok] [ru] the mount point is presentational
+[ok] [ru] the copy answer is announced in words — Скопировано / expected Скопировано
+[ok] [ru] the copy answer can be read, not only heard — 12px / rgb(91, 95, 114)
+[ok] [ru] a refused clipboard says so — Не удалось скопировать / expected Не удалось скопировать
+[ok] [pt] the picture carries a plain name — Diagrama
+[ok] [pt] first render shows the two buttons — Mostrar o código | Copiar o código
+[ok] [pt] a picture is drawn
+[ok] [pt] exactly two buttons — 2
+[ok] [pt] no internal key reaches the screen
+[ok] [pt] the source toggle starts collapsed
+[ok] [pt] the source toggle flips its word — Ocultar o código
+[ok] [pt] the source toggle announces itself as expanded
+[ok] [pt] the expanded source keeps its fence language — language-mermaid
+[ok] [pt] the mount point is presentational
+[ok] [pt] the copy answer is announced in words — Copiado / expected Copiado
+[ok] [pt] the copy answer can be read, not only heard — 12px / rgb(91, 95, 114)
+[ok] [pt] a refused clipboard says so — Não foi possível copiar / expected Não foi possível copiar
+[ok] every interface language actually translates
+[ok] the source block keeps the language the host sent — language-mmd
+[ok] a host t that echoes the key still shows words — 查看源码 | 复制源码 / 图
+[ok] a host t that throws still shows words — 查看源码 | 复制源码 / 图
+[ok] a host t that answers blanks still shows words — 查看源码 | 复制源码 / 图
+[ok] a host t that echoes key with a value still shows words — 查看源码 | 复制源码 / 图
+[ok] a host t that leaves a placeholder still shows words — 查看源码 | 复制源码 / 图
+[ok] a streaming fence shows only the host block
+[ok] a truthy streaming flag is honoured
+[ok] the layer survives a throwing code getter
+[ok] a throwing code getter still yields an element
+[ok] a throwing code getter leaves the host block — "flowchart LR\n  A[Text] --> B[Picture]"
+[ok] the hostile children bag mounted without a setup error — nodes=1
+[ok] the layer survives a throwing children getter
+[ok] a throwing children getter still yields an element
+[ok] a throwing children getter leaves the source — "flowchart LR\n  A[Text] --> B[Picture]"
+[ok] a fence whose props read throws is left to the host, not the message — "flowchart LR\n  A[Text] --> B[Picture]"
+[ok] a non-string fence is left to the host
+[ok] a broken diagram says why
+[ok] the reason is a complete sentence — 图里的语法有误，已改为显示源码。
+[ok] the engine English is not pasted into the sentence
+[ok] a broken diagram keeps the host block
+[ok] a broken diagram without host children still shows its source
+[ok] a throwing engine leaves a sentence
+[ok] a throwing engine keeps the host block
+[ok] the opened panel is on screen before the source changes — 1
+[ok] a source swapped for a broken one is shown once, not twice — copies=1 panels=0
+[ok] the swapped-in failure still says why
+[ok] the panel is open before a new fence replaces the text — 1
+[ok] a new fence closes a panel the reader opened for the old one — panels=0
+[ok] the new fence offers the panel closed, not open — false
+[ok] the copy answer is on screen before the source changes — 已复制
+[ok] a copy answer does not outlive the source it described
+[ok] a missing clipboard is reported, not faked — 复制失败 / 查看源码 | 复制源码
+[ok] the copy button writes once — 1
+[ok] a real copy is reported as copied — 已复制 / 查看源码 | 复制源码
+[ok] a host dictionary that already owns a word does not put it on our button — 已复制
+[ok] a host that translates the namespaced key is used — HOST COPIED
+[ok] two fences draw two pictures — 2
+[ok] the second fence draws its own picture — 1
+[ok] the prose around a picture is left alone — 3
+[ok] the picture and the prose keep their order — p,figure,p,figure,p
+[ok] the column measurement can see an overflow — 4000/360
+[ok] the column goes back to fitting once the control is gone — 360/360
+[ok] the picture takes the column width — 358/360
+[ok] a wide picture does not widen the column — 360/360
+[ok] the page itself never overflows — 0
+[ok] the picture box is capped to the column — 100%
+[ok] the picture box counts its own padding — border-box
+[ok] a wide picture scrolls inside its own box — auto
+[ok] a drawn picture has text to colour
+[ok] the picture follows the host colour without reloading — rgb(16, 16, 20) -> rgb(1, 2, 3)
+[ok] a host that rejects the locale option does not break apply
+[ok] the layer is registered once after the retry — 1
+[ok] the retried registration drops the locale option — {"name":"conversation.chat.markdown.fence","id":"@jiezhengj/dsh-dyslexia/mermaid","key":"mermaid","order":100}
+[ok] apply stays silent on a changed host — null
+[ok] apply stays silent on a changed host — null
+[ok] apply stays silent on a changed host — null
+[ok] apply stays silent on a changed host — null
+[ok] apply stays silent on a changed host — null
+[ok] apply stays silent on a changed host — null
+[ok] apply stays silent on a changed host — null
+[ok] styles arrive with apply — true
+[ok] one fence layer while installed — 1
+[ok] styles and strings are claimed as effects — 2
+[ok] the layer draws while the fiber lives — true
+[ok] disabling the plugin takes its stylesheet away — false
+[ok] the locale registration is dropped — 1
+[ok] the fence layer is gone once the host disposes — 0
+[ok] a second apply does not add a second fence layer — 1
+[ok] a host without effects keeps one stylesheet, not one per apply — 1
+[ok] no internal key reaches the eye — leaked: 
+[ok] a source over the size limit says why — 这张图无法绘制，已改为显示源码。long
+[ok] a source over the size limit keeps the host block
+[ok] a source over the size limit is not drawn
+[ok] a picture with too many edges says why — 这张图无法绘制，已改为显示源码。many edges
+[ok] a picture with too many edges keeps the host block
+[ok] a picture with too many edges is not drawn
+[ok] the picture appears when the stream ends
+[ok] a falsy children is not mistaken for content — 图里的语法有误，已改为显示源码。flowchart TD
+  A-->
+[ok] a refused children cannot empty the message — object — children=1 text=flowchart LR
+  A[Tex
+[ok] a refused children falls back to the source — object — "flowchart LR\n  A[Text] --> B[Picture]"
+[ok] no React error 31 escapes — object
+[ok] a refused children cannot empty the message — function — children=1 text=flowchart LR
+  A[Tex
+[ok] a refused children falls back to the source — function — "flowchart LR\n  A[Text] --> B[Picture]"
+[ok] no React error 31 escapes — function
+[ok] a refused children cannot empty the message — object in a failed picture — children=3 text=图里的语法有误，已改为显示源码。flow
+[ok] a refused children falls back to the source — object in a failed picture — "图里的语法有误，已改为显示源码。flowchart TD\n  A-->"
+[ok] no React error 31 escapes — object in a failed picture
+[ok] a refused children cannot empty the message — array with an object — children=3 text=图里的语法有误，已改为显示源码。flow
+[ok] a refused children falls back to the source — array with an object — "图里的语法有误，已改为显示源码。flowchart TD\n  A-->"
+[ok] no React error 31 escapes — array with an object
+[ok] a streaming block with no host children still shows its source — flowchart LR
+  A[Text] --> B[P
+[ok] a fresh t does not redraw the picture
+[ok] the drawing is named when it is first laid out — img|图
+[ok] the fixture really replaced the drawing node — new node
+[ok] a swapped drawing is named again — img|图|roledesc=null
+[ok] the fixture replaced the drawing again after the column narrowed — new node
+[ok] a drawing swapped after a width change is named again — img|图|roledesc=null
+[ok] a hostile host block still leaves the message — an iterable of plain objects — text=图里的语法有误，已改为显示源码。flowchar
+[ok] a hostile host block still leaves the message — a host block that throws while rendering — text=图里的语法有误，已改为显示源码。flowchar
+[ok] the zoom buttons speak the language they were mounted in — 放大 | 缩小 | 重置缩放
+[ok] the zoom buttons follow the interface language — labels=[Zoom in | Zoom out | Reset zoom] nodes=DIV.pele pele-zoom: ~ BUTTON.pele-zoom-in:Zoom in ~ svg.[object SVGAnimatedString]: ~ path.[object SVGAnimatedString]: ~ BUTTON.pele-zoom-out:Zoom out ~ svg.[object SVGAnimatedString]: ~ path.[object SVGAnimatedString]: ~ BUTTON.pele-zoom-reset:Reset zoom ~ svg.[object SVGAnimatedString]: ~ path.[ob
+[ok] the copy answer is announced, not only coloured — 已复制
+[ok] the box around the picture is a group
+[ok] the box around the picture carries no name of its own — null
+[ok] the drawing itself is the image
+[ok] a picture that fits offers no zoom buttons — 0
+[ok] the image carries the localised name — 图
+[ok] the image carries no english role description — absent
+[ok] exactly one image in the picture — 1
+[ok] a scaled picture offers the engine zoom buttons — scaled=3 fitting=0
+[ok] the zoom buttons sit outside the image — 0
+[ok] the zoom buttons speak the interface language — 放大 | 缩小 | 重置缩放
+[ok] the zoom button titles say the same as their names — 放大 | 缩小 | 重置缩放
+[ok] every zoom button in reach can take the keyboard — 1/1 reachable of 3
+[ok] every zoom button is reachable once the picture is zoomed — 3/3 after zoom
+[ok] a host with configForms takes the row without throwing — quiet
+[ok] the row registers on the general settings slot and nowhere else — 2 defs, 1 on the slot
+[ok] the row carries its id, order and locale — @jiezhengj/dsh-dyslexia/visual-first 62 dyslexia
+[ok] the settings row renders inside its slot component
+[ok] the row label is our own sentence, not a host key — 优先用图，而不是成段文字
+[ok] the row hint is our own sentence, not a host key — 当一张图比一段话更好懂时，模型会画图，文字只留图讲不清的部分。
+[ok] the switch shows the value the host reports — true
+[ok] the switch is named and described by the visible sentences — :r0:-label -> 优先用图，而不是成段文字 | :r1:-hint -> 当一张图比一段话更好懂时，模型会画图，文字只留图讲不清的部分。
+[ok] the switch keeps the keyboard — disabled=false tabindex=null
+[ok] no status sentence before the reader touches the switch
+[ok] one click asks the host for the opposite value once — [["visualFirst",false]]
+[ok] the switch turns off after the write — false
+[ok] a saved write says so in the status sentence — 已保存
+[ok] the second click tries the other value once — [["visualFirst",false],["visualFirst",true]]
+[ok] a rejected write leaves the switch where the host put it — aria-checked=false host=false
+[ok] a rejected write explains itself in the status sentence — 保存失败，开关保持原来的状态。
+[ok] a refused write that resolves false puts the switch back and says so — sets=[["visualFirst",false],["visualFirst",true],["visualFirst",false]] aria-checked=true host=true status=保存失败，开关保持原来的状态。
+[ok] a refused write keeps the value the host took while it was pending — aria-checked=true host=true status=保存失败，开关保持原来的状态。
+[ok] a value the host pushes reaches the switch without a write — aria-checked=false paint rgb(74, 108, 247) -> rgba(120, 130, 150, 0.35)
+[ok] a thenable that throws out of then cannot break the click — threw=no uncaught=no aria-checked=true host=true status=保存失败，开关保持原来的状态。
+[ok] [zh] the settings row label is that language's own sentence — 优先用图，而不是成段文字
+[ok] [zh] the settings row hint is that language's own sentence — 当一张图比一段话更好懂时，模型会画图，文字只留图讲不清的部分。
+[ok] [en] the settings row label is that language's own sentence — Prefer pictures to prose
+[ok] [en] the settings row hint is that language's own sentence — When a picture carries the answer better than a paragraph, the model draws one and keeps the text to what the picture cannot show.
+[ok] [ja] the settings row label is that language's own sentence — 文章より図を優先
+[ok] [ja] the settings row hint is that language's own sentence — 図のほうが伝わりやすいときは図を描き、文章は図で表せない部分だけにします。
+[ok] [es] the settings row label is that language's own sentence — Prefiere las imágenes al texto
+[ok] [es] the settings row hint is that language's own sentence — Cuando una imagen explica mejor que un párrafo, el modelo dibuja y deja en texto solo lo que la imagen no puede mostrar.
+[ok] [fr] the settings row label is that language's own sentence — Préférer les schémas au texte
+[ok] [fr] the settings row hint is that language's own sentence — Quand un schéma explique mieux qu'un paragraphe, le modèle en dessine un et ne garde en texte que ce que le schéma ne peut pas montrer.
+[ok] [de] the settings row label is that language's own sentence — Bilder statt Textabsätze
+[ok] [de] the settings row hint is that language's own sentence — Wenn ein Bild mehr erklärt als ein Absatz, zeichnet das Modell eines und lässt im Text nur, was das Bild nicht zeigen kann.
+[ok] [ru] the settings row label is that language's own sentence — Картинки вместо абзацев
+[ok] [ru] the settings row hint is that language's own sentence — Когда рисунок объясняет лучше абзаца, модель рисует его, а в тексте оставляет только то, чего на рисунке не видно.
+[ok] [pt] the settings row label is that language's own sentence — Preferir imagens ao texto
+[ok] [pt] the settings row hint is that language's own sentence — Quando uma imagem explica melhor que um parágrafo, o modelo desenha e deixa no texto só o que a imagem não mostra.
+[ok] the switch starts off when the host already says off — false
+[ok] a host whose face has no setter hands the row no writer at all — setValue is undefined
+[ok] a host whose face has no setter keeps the switch and says the write failed — aria-checked=true status=保存失败，开关保持原来的状态。 set=undefined threw=no
+[ok] a host without configForms gets the picture and no settings row — 1 defs, threw=no
+[ok] the picture still draws when the settings surface is missing
+[ok] a host that gains configForms after apply still gets the settings row — 0 before, 1 after
+[ok] a configForms face that answers nothing adds no row — 1 defs
+[ok] a host that passes hooks as hook props still gets a visible row — row
+[ok] the switch follows the value the host hook reports — aria-checked=true
+[ok] clicking the switch writes through the writer the host gave it — [["visualFirst",false]]
+[ok] the switch then shows the value the host now holds — aria-checked=false
+[ok] a host that refuses undeclared services is still served without a throw — quiet
+[ok] a host whose services must be read through ctx.get still gets the row — 2 defs
+run-harness: @jiezhengj/dsh-dyslexia@0.2.6 | client.js 787325 bytes | sources sha256:b69ddecef48b3acc5a9b51e2a1a27bc1 | all 280 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+```
+
+## E-LIVE — the row and the new name on a running host (`0.2.6`)
+
+What was run: the shipped desktop build (`@deepseek-ai/dsh-desktop` `0.2.2-rc.5`) with the web surface, on a
+throwaway profile so nothing in the reader's own profile was touched:
+
+    ELECTRON_RUN_AS_NODE=1 "<app>\DeepSeek Harness.exe" "<app>\resources\app.asar\dsh\node_modules\@deepseek-ai\dsh\lib\bin.js" webcheck --no-open --port 0
+    dsh web: http://127.0.0.1:<port>/?token=<token>
+
+The profile was made with `--from-default-profile web`, the published build was installed into it with
+`plugin add`, and the page was driven with `agent-browser` (an independent Chrome, so the refs and the console
+below belong to that page alone).
+
+| surface | what was seen |
+|---|---|
+| plugin page | `button "查看 DSH 我有阅读障碍"`, heading `DSH 我有阅读障碍`, `StaticText "v0.2.6"`, `StaticText "@jiezhengj/dsh-dyslexia@0.2.6"`, and the preview image whose accessible name is the sentence `会话中的一条消息把 mermaid 代码块就地画成了示意图，图下方是「查看源码」与「复制源码」两个按钮，由插件「DSH 我有阅读障碍」呈现` |
+| Settings → General | `StaticText "优先用图，而不是成段文字"`, `StaticText "当一张图比一段话更好懂时，模型会画图，文字只留图讲不清的部分。"`, `switch "优先用图，而不是成段文字" [checked=true]` — placed between the host's 性能与用量 row and its Session Log row, i.e. in the slot it registered for |
+| the write | clicking the switch flipped it to `checked=false` and showed `role="status"` with `StaticText "已保存"`; the throwaway profile's `cordis.patch.yml` then carried `- id: dsh-dyslexia … config: visualFirst: false`. Clicking again flipped it back to `checked=true`, wrote `visualFirst: true`, and the value survived closing and reopening the settings dialog |
+| console | no `dsh-dyslexia:` warning at all on this build (`0.2.5` logged `locale … without inject`; `ctx.get` is the read now) |
+
+**The defect this found, and what `0.2.6` changes.** On the running host the row registered but rendered
+nothing: our module logged no warning, the settings page logged `TypeError: w.getSnapshot is not a function`
+from the slot, and the switch was simply absent. Three separate causes, each invisible to the suites as they
+were:
+
+1. The host turns each entry of the slot's `hooks` face into a **hook prop** named after it, so `hooks: {
+   visualFirst: store }` arrives as `useVisualFirst(selector)` — the host's own row in
+   `dsh-client-ui-settings-general/lib/client.js` reads `const enabled = useDeveloperTools(value => value)`.
+   Our row only looked for `props.hooks` and returned `null` when it was missing, so a host that flattens
+   hooks got an empty row. `VisualFirstRow` now picks its adapter before any hook runs: `HostValueRow`
+   (through `useVisualFirst`) when that prop exists, `StoreValueRow` (through `useSyncExternalStore`) when the
+   older `hooks` object is what the host hands over.
+2. The store the row hands the host had `get`/`set`/`subscribe` but no `getSnapshot`, which is what the host's
+   hook plumbing calls: the slot threw and the row died. `createValueStore` now has `getSnapshot()`.
+3. The host's cordis is strict: `ctx.locale` throws `cannot get property "locale" without inject` on a context
+   whose `inject` lists only `slots`, which is why the string table was never registered and why the row could
+   be skipped. `entry.js` reads `locale`, `slots` and `configForms` through `optional(ctx, name)`, which
+   prefers `ctx.get(name)` — the read that needs no `inject` — and falls back to the bare property for a host
+   without `ctx.get`. The row is attempted once directly and once from `ctx.inject`, and whichever finds a
+   face first wins, so a host that only answers `ctx.get` still gets a row.
+
+Both new static checks and both new fixture groups go red when their cause is put back, on a copy of the tree
+that was restored afterwards: removing `getSnapshot()` fails `the settings row reads the hook the host builds,
+not an object it never sends`; deleting the `useVisualFirst` branch fails four fixtures (`a host that passes
+hooks as hook props still gets a visible row`, `the switch follows the value the host hook reports`, `clicking
+the switch writes through the writer the host gave it`, `the switch then shows the value the host now holds`)
+with `4 failed, 276 passed`.
+
+**What is still not proven.** The desktop window itself: in this build settings opens as a separate document
+(`ctx.remote.settings.openSettingsDocument()`), the desktop window's accessibility tree has no 设置 control
+(50 elements), and `agent-desktop press` cannot send `Ctrl+,` (its key list has no comma) — so the desktop
+path is recorded as "not reachable in this build", not as "works". The web surface runs the same client bundle
+against the same host services, so the row, the label and the write path are proven for the plugin; only the
+desktop trigger is not.
+
 ## E-GAPS — not proven here
 
-Eleven gaps are open here: G1–G8 and G11–G13; G9 and G10 are discharged by `0.2.5`.
+Ten gaps are open here: G2–G8 and G11–G13; G1 is discharged below in E-LIVE, and G9 and G10 are discharged by `0.2.5`.
 
 | gap | what is missing |
 |---|---|
-| G1 | The switch was not operated in a live DSH window: the row is proven in the browser fixture (fake `configForms`), not against the running host service. |
-| G2 | The write path to the host (`settings.update`) was not exercised end to end; the fixture proves only that our half calls `set` once and honours its answer. |
+| G1 | **Discharged in `0.2.6`** — see E-LIVE: on the running host (same DSH build, `dsh web` on a throwaway profile, plugin `0.2.6`) the row rendered in Settings → General with the Chinese label, the hint and a switch reading the host's value, and a click wrote through to `cordis.patch.yml`. Getting there found a real defect that no fixture had caught (the row looked for `props.hooks` while the host sends `useVisualFirst`), which is why the gap was worth keeping open. Not proven in the **desktop** window: its settings surface opens as a separate document and no trigger was reachable in this build (see E-LIVE). |
+| G2 | The host's own `settings.update` call was not observed directly; what was observed is its effect: after the click the profile's `cordis.patch.yml` carried `visualFirst: false`, and after the second click `visualFirst: true`. |
 | G3 | The row label is asserted in the fixture in all eight languages (`the row label is our own sentence, not a host key — 优先用图，而不是成段文字` for zh, plus one label assertion per other language after this review pass). No narrow-layout assertion exists: neither suite renders the row at 360px or at 200% font size. No assertion compares a non-English string with its English counterpart word for word. |
 | G4 | The renamed names were not seen in a live window (plugin page, settings row); 8 titles are proven in the locale files and by assertion. |
 | G5 | No screenshot comparison against host rows (SC-008); the row uses host tokens and matches the neighbour row structure by construction, not by pixels. |
