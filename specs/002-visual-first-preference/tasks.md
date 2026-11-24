@@ -174,7 +174,7 @@ has an assertion that executes the shape it protects.
 - [x] **T111** `src/client/entry.js` 的 `slots.inject(SETTINGS_SLOT, …)` 包 try/catch（失败只丢行、fence 照画，`report('settings row', error)`）。
 - [x] **T112** 冻结语言三种变体都无法让 T110 的断言变红，说明该路径是重挂载而非原地更新；按"没断言的行为不能写成已验证"的规矩登记 **G23**，并把 `spec.md` 的 FR-017 改成读者可见的承诺。
 - [x] **T113** 证据与计数同步到 `0.2.17`（E-BLD/E-CHK/E-HARN 由单次运行重生成、头注、E-GAPS 二十项、`spec.md`/`plan.md`/`quickstart.md`）。
-- [ ] **T114** 发版 `0.2.17` 并装回 `desktop`（未勾；E-PUB/E-INS 待填）。
+- [x] **T114** 发版 `0.2.17` 并装回 `desktop`：commit `25042b8`、tag `v0.2.17`、run `45349634062`、shasum `03f1938f1491ff1048291d87efb9e852db9471c5`、logIndex `4072512077`、33 文件；装上后依赖 `"0.2.17"`、`client.js` 788314 字节、SHA-256 `543BBC00…3A41`、locale 8、docs 9（E-PUB/E-INS · 0.2.17）。
 - [ ] **T115** 第十四轮两份独立评审；两份 PASS 才把 feature 002 标记完成。
 
 ## Dependencies

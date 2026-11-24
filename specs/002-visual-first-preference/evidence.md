@@ -1343,3 +1343,42 @@ What the profile holds afterwards (`C:\Users\jiezhengj\.dsh\profiles\desktop`):
 | version inside the installed package | `0.2.16` |
 
 This version changes nothing a reader sees: `client.js` carries the same 788,059 bytes as `0.2.15` because what changed is the checks (`check-bundle.mjs`, `verify/harness/index.html`) and the records — not `src/`. The settings row, its two sentences and the eight titles are the ones E-LIVE describes.
+
+## E-PUB · 0.2.17
+
+| version | tag | commit | workflow run | shasum | transparency log | files |
+|---|---|---|---|---|---|---|
+| 0.2.17 | `v0.2.17` | `25042b8` | `45349634062` | `03f1938f1491ff1048291d87efb9e852db9471c5` | `logIndex=4072512077` | 33 of the packed set, npm `total files: 33` |
+
+CI lines from that run:
+
+```
+check-bundle: @jiezhengj/dsh-dyslexia@0.2.17 | client.js 788314 bytes | sources sha256:91f138aa9db9da2310e3736835b3f88c | all 63 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.2.17 | client.js 788314 bytes | sources sha256:91f138aa9db9da2310e3736835b3f88c | all 301 checks passed (/usr/bin/google-chrome)
+```
+
+The registry copy appeared after 29 polls of the tarball URL (10 s apart, about five minutes after the version document first answered).
+
+## E-INS · 0.2.17
+
+```
+$ plugin_manager remove_bundle @jiezhengj/dsh-dyslexia
+dependencies:
+- @jiezhengj/dsh-dyslexia 0.2.16
+
+$ plugin_manager install_bundle @jiezhengj/dsh-dyslexia@0.2.17
+dependencies:
++ @jiezhengj/dsh-dyslexia 0.2.17
+{"stage":"enable","changed":true,"application":"applied","version":"0.2.17"}
+```
+
+| check | value |
+|---|---|
+| `profile.json` dependency | `"0.2.17"` |
+| installed `client.js` | 788314 bytes |
+| installed `client.js` SHA-256 | `543BBC001E9E92A95E6C033E4BBD5B1AA418B2A4574181478AB90D3D25053A41` (equal to the repository's copy) |
+| `locale/` files | 8 |
+| `docs/` entries | 9 |
+| package version in the installed tree | `0.2.17` |
+
+This release changes no visible behaviour: it makes the preference paragraph and the unconditional-wording guard fail-able, adds the language-change assertion, guards the settings-row registration, and records G23.
