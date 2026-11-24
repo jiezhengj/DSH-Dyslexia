@@ -29,6 +29,7 @@ const DICTIONARY = {
     settingFailed: 'Could not save the change, so the switch stays where it was.',
     settingHint: 'When a picture carries the answer better than a paragraph, the model draws one and keeps the text to what the picture cannot show.',
     settingLabel: 'Prefer pictures to prose',
+    nav: 'Pictures',
     settingSaved: 'Saved',
 
   },
@@ -48,6 +49,7 @@ const DICTIONARY = {
     settingFailed: '保存失败，开关保持原来的状态。',
     settingHint: '当一张图比一段话更好懂时，模型会画图，文字只留图讲不清的部分。',
     settingLabel: '优先用图，而不是成段文字',
+    nav: '图示阅读',
     settingSaved: '已保存',
 
   },
@@ -67,6 +69,7 @@ const DICTIONARY = {
     settingFailed: '保存できませんでした。スイッチは元のままです。',
     settingHint: '図のほうが伝わりやすいときは図を描き、文章は図で表せない部分だけにします。',
     settingLabel: '文章より図を優先',
+    nav: '図で読む',
     settingSaved: '保存しました',
 
   },
@@ -86,6 +89,7 @@ const DICTIONARY = {
     settingFailed: 'No se pudo guardar el cambio, así que el interruptor se queda como estaba.',
     settingHint: 'Cuando una imagen explica mejor que un párrafo, el modelo dibuja y deja en texto solo lo que la imagen no puede mostrar.',
     settingLabel: 'Prefiere las imágenes al texto',
+    nav: 'Imágenes',
     settingSaved: 'Guardado',
 
   },
@@ -105,6 +109,7 @@ const DICTIONARY = {
     settingFailed: 'Impossible d\'enregistrer le changement : l\'interrupteur reste tel quel.',
     settingHint: 'Quand un schéma explique mieux qu\'un paragraphe, le modèle en dessine un et ne garde en texte que ce que le schéma ne peut pas montrer.',
     settingLabel: 'Préférer les schémas au texte',
+    nav: 'Schémas',
     settingSaved: 'Enregistré',
 
   },
@@ -124,6 +129,7 @@ const DICTIONARY = {
     settingFailed: 'Die Änderung konnte nicht gespeichert werden, der Schalter bleibt, wie er war.',
     settingHint: 'Wenn ein Bild mehr erklärt als ein Absatz, zeichnet das Modell eines und lässt im Text nur, was das Bild nicht zeigen kann.',
     settingLabel: 'Bilder statt Textabsätze',
+    nav: 'Bilder',
     settingSaved: 'Gespeichert',
 
   },
@@ -143,6 +149,7 @@ const DICTIONARY = {
     settingFailed: 'Не удалось сохранить изменение, переключатель остался прежним.',
     settingHint: 'Когда рисунок объясняет лучше абзаца, модель рисует его, а в тексте оставляет только то, чего на рисунке не видно.',
     settingLabel: 'Картинки вместо абзацев',
+    nav: 'Схемы',
     settingSaved: 'Сохранено',
 
   },
@@ -162,6 +169,7 @@ const DICTIONARY = {
     settingFailed: 'Não foi possível guardar a alteração, o interruptor fica como estava.',
     settingHint: 'Quando uma imagem explica melhor que um parágrafo, o modelo desenha e deixa no texto só o que a imagem não mostra.',
     settingLabel: 'Preferir imagens ao texto',
+    nav: 'Imagens',
     settingSaved: 'Guardado',
 
   },

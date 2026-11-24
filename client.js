@@ -1,4 +1,4 @@
-/*! @jiezhengj/dsh-dyslexia 0.2.23 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:3d76d67eab72793ee5d54b1c8757b890 */
+/*! @jiezhengj/dsh-dyslexia 0.2.24 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:e735880491501f8df7a1dc29a3ff0e2e */
 ;(function () {
   function reportLoadFailure(scope, error) {
     try { console.error('dsh-dyslexia: ' + scope, error) } catch (_error) {}
@@ -190,15 +190,19 @@ const BUTTON_CLASS = 'dsh-dyslexia-button'
 const SOURCE_CLASS = 'dsh-dyslexia-source'
 
 const FIGURE_CSS = [
+  '.dsh-dyslexia-section { display: flex; flex-direction: column; gap: 4px; padding: 4px 0 8px; max-width: 720px; }',
+  '.dsh-dyslexia-section-title { margin: 0; font-size: 16px; line-height: 24px; font-weight: 600; color: var(--dsw-alias-label-primary); }',
+  '.dsh-dyslexia-section-intro { margin: 0 0 8px; font-size: 13px; line-height: 20px; color: var(--dsw-alias-label-secondary); }',
   '.dsh-dyslexia-row { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 8px 12px; padding: 12px 0; }',
   '.dsh-dyslexia-row-text { flex: 1 1 220px; min-width: 0; display: flex; flex-direction: column; gap: 4px; }',
   '.dsh-dyslexia-row-label { font-size: 14px; line-height: 22px; color: var(--dsw-alias-label-primary); }',
   '.dsh-dyslexia-row-hint { font-size: 12px; line-height: 20px; color: var(--dsw-alias-label-secondary); }',
-  '.dsh-dyslexia-switch { position: relative; flex: none; width: 36px; height: 20px; margin: 2px 0 0 0; padding: 0; border: 0; border-radius: 10px; background: rgba(120, 130, 150, 0.35); cursor: pointer; transition: background 120ms ease; }',
+  '.dsh-dyslexia-switch { position: relative; flex: 0 0 auto; box-sizing: border-box; width: 36px; height: 20px; margin: 2px 0 0 0; padding: 2px; border: 0; border-radius: 999px; background: var(--dsw-alias-border-l3); cursor: pointer; transition: background 120ms ease; }',
   '.dsh-dyslexia-switch[aria-checked="true"] { background: var(--dsw-alias-brand-primary); }',
-  '.dsh-dyslexia-switch-knob { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform 120ms ease; }',
-  '.dsh-dyslexia-switch[aria-checked="true"] .dsh-dyslexia-switch-knob { transform: translateX(16px); }',
-  '.dsh-dyslexia-switch:focus-visible { outline: 2px solid var(--dsw-alias-brand-primary); outline-offset: 2px; }',
+  '.dsh-dyslexia-switch-knob { display: block; width: 16px; height: 16px; border-radius: 50%; background: var(--dsw-alias-switch-thumb); transition: transform 120ms ease; }',
+  '.dsh-dyslexia-switch[aria-checked="false"] .dsh-dyslexia-switch-knob { background: var(--dsw-alias-switch-thumb); }',
+  '.dsh-dyslexia-switch[aria-checked="true"] .dsh-dyslexia-switch-knob { background: var(--dsw-alias-label-primary-foreground); transform: translateX(16px); }',
+  '.dsh-dyslexia-switch:focus-visible { outline: var(--dsw-focus-ring-width, 2px) solid var(--dsw-focus-ring-color, var(--dsw-alias-brand-primary)); outline-offset: 2px; }',
   '.dsh-dyslexia-row-state { flex: 1 1 100%; font-size: 12px; line-height: 20px; color: var(--dsw-alias-label-secondary); }',
   '.dsh-dyslexia-row-state[data-failed="true"] { color: var(--dsw-alias-state-error-primary); }',
   `.${FIGURE_GROUP_CLASS} {`,
@@ -337,6 +341,7 @@ const DICTIONARY = {
     settingFailed: 'Could not save the change, so the switch stays where it was.',
     settingHint: 'When a picture carries the answer better than a paragraph, the model draws one and keeps the text to what the picture cannot show.',
     settingLabel: 'Prefer pictures to prose',
+    nav: 'Pictures',
     settingSaved: 'Saved',
 
   },
@@ -356,6 +361,7 @@ const DICTIONARY = {
     settingFailed: '保存失败，开关保持原来的状态。',
     settingHint: '当一张图比一段话更好懂时，模型会画图，文字只留图讲不清的部分。',
     settingLabel: '优先用图，而不是成段文字',
+    nav: '图示阅读',
     settingSaved: '已保存',
 
   },
@@ -375,6 +381,7 @@ const DICTIONARY = {
     settingFailed: '保存できませんでした。スイッチは元のままです。',
     settingHint: '図のほうが伝わりやすいときは図を描き、文章は図で表せない部分だけにします。',
     settingLabel: '文章より図を優先',
+    nav: '図で読む',
     settingSaved: '保存しました',
 
   },
@@ -394,6 +401,7 @@ const DICTIONARY = {
     settingFailed: 'No se pudo guardar el cambio, así que el interruptor se queda como estaba.',
     settingHint: 'Cuando una imagen explica mejor que un párrafo, el modelo dibuja y deja en texto solo lo que la imagen no puede mostrar.',
     settingLabel: 'Prefiere las imágenes al texto',
+    nav: 'Imágenes',
     settingSaved: 'Guardado',
 
   },
@@ -413,6 +421,7 @@ const DICTIONARY = {
     settingFailed: 'Impossible d\'enregistrer le changement : l\'interrupteur reste tel quel.',
     settingHint: 'Quand un schéma explique mieux qu\'un paragraphe, le modèle en dessine un et ne garde en texte que ce que le schéma ne peut pas montrer.',
     settingLabel: 'Préférer les schémas au texte',
+    nav: 'Schémas',
     settingSaved: 'Enregistré',
 
   },
@@ -432,6 +441,7 @@ const DICTIONARY = {
     settingFailed: 'Die Änderung konnte nicht gespeichert werden, der Schalter bleibt, wie er war.',
     settingHint: 'Wenn ein Bild mehr erklärt als ein Absatz, zeichnet das Modell eines und lässt im Text nur, was das Bild nicht zeigen kann.',
     settingLabel: 'Bilder statt Textabsätze',
+    nav: 'Bilder',
     settingSaved: 'Gespeichert',
 
   },
@@ -451,6 +461,7 @@ const DICTIONARY = {
     settingFailed: 'Не удалось сохранить изменение, переключатель остался прежним.',
     settingHint: 'Когда рисунок объясняет лучше абзаца, модель рисует его, а в тексте оставляет только то, чего на рисунке не видно.',
     settingLabel: 'Картинки вместо абзацев',
+    nav: 'Схемы',
     settingSaved: 'Сохранено',
 
   },
@@ -470,6 +481,7 @@ const DICTIONARY = {
     settingFailed: 'Não foi possível guardar a alteração, o interruptor fica como estava.',
     settingHint: 'Quando uma imagem explica melhor que um parágrafo, o modelo desenha e deixa no texto só o que a imagem não mostra.',
     settingLabel: 'Preferir imagens ao texto',
+    nav: 'Imagens',
     settingSaved: 'Guardado',
 
   },
@@ -1150,13 +1162,13 @@ class FigureBoundary extends React.Component {
 }
 
 
-const SETTINGS_SLOT = 'settings.general.item'
+const SETTINGS_SLOT = 'settings.section'
 const SETTINGS_NAMESPACE = 'dsh-dyslexia'
-const SETTINGS_ROW_ID = '@jiezhengj/dsh-dyslexia/visual-first'
-const SETTINGS_ROW_ORDER = 62
+const SETTINGS_SECTION_ID = 'dyslexia'
+const SETTINGS_SECTION_ORDER = 900
 
 /**
- * The reader's preference, drawn as one row in Settings -> General.
+ * The reader's preference, drawn as this plugin's own page in Settings.
  *
  * The row is the whole of the client's settings work: it reads the value the
  * host already knows, shows it as a switch, writes the new value back through
@@ -1399,6 +1411,22 @@ function createVisualFirstRow(face) {
 }
 
 /**
+ * This plugin's page in Settings: the name of the page, then the row that
+ * carries the switch. The page adds nothing the row does not already say, so a
+ * reader sees each sentence once.
+ */
+function SettingsSection(props) {
+  const injected = props || {}
+  const say = translateFor(injected, typeof document === 'undefined' ? null : document)
+  return React.createElement(
+    'section',
+    { className: 'dsh-dyslexia-section' },
+    React.createElement('h2', { className: 'dsh-dyslexia-section-title' }, say('nav')),
+    React.createElement(VisualFirstRow, injected),
+  )
+}
+
+/**
  * Client half of `@jiezhengj/dsh-dyslexia`.
  *
  * One layer on the fence slot, keyed to the `mermaid` language, so only mermaid
@@ -1576,6 +1604,30 @@ function apply(ctx) {
  * host with no `slots` or no face loses only the switch; a host whose face
  * cannot write still gets a row, and the row itself treats the click as failed.
  */
+/** The page's own locale object, when the host left one in the document. */
+function settingsDocument() {
+  try {
+    return typeof document === 'undefined' ? null : document
+  } catch (error) {
+    void error
+    return null
+  }
+}
+
+/**
+ * The name this plugin's section carries in the settings navigation. It is read
+ * through the same fallback chain as every other string: the host `t` when it
+ * answers, the bundled table otherwise, so the navigation never shows a key.
+ */
+function navLabel(doc) {
+  try {
+    return makeFallbackTranslate(doc)('nav')
+  } catch (error) {
+    void error
+    return 'Pictures'
+  }
+}
+
 function wireSettingsRow(ctx) {
   // apply already returned when slots cannot inject or register, so this is
   // only the second call path's own check; anything deeper would be dead code.
@@ -1602,12 +1654,13 @@ function wireSettingsRow(ctx) {
       slots.register(
         {
           name: SETTINGS_SLOT,
-          id: SETTINGS_ROW_ID,
-          order: SETTINGS_ROW_ORDER,
+          id: SETTINGS_SECTION_ID,
+          order: SETTINGS_SECTION_ORDER,
+          label: () => navLabel(settingsDocument()),
           locale: LOCALE_NAMESPACE,
           inject: () => row.inject,
         },
-        row.component,
+        SettingsSection,
       ),
     )
   } catch (error) {

@@ -176,6 +176,30 @@ function apply(ctx) {
  * host with no `slots` or no face loses only the switch; a host whose face
  * cannot write still gets a row, and the row itself treats the click as failed.
  */
+/** The page's own locale object, when the host left one in the document. */
+function settingsDocument() {
+  try {
+    return typeof document === 'undefined' ? null : document
+  } catch (error) {
+    void error
+    return null
+  }
+}
+
+/**
+ * The name this plugin's section carries in the settings navigation. It is read
+ * through the same fallback chain as every other string: the host `t` when it
+ * answers, the bundled table otherwise, so the navigation never shows a key.
+ */
+function navLabel(doc) {
+  try {
+    return makeFallbackTranslate(doc)('nav')
+  } catch (error) {
+    void error
+    return 'Pictures'
+  }
+}
+
 function wireSettingsRow(ctx) {
   // apply already returned when slots cannot inject or register, so this is
   // only the second call path's own check; anything deeper would be dead code.
@@ -202,12 +226,13 @@ function wireSettingsRow(ctx) {
       slots.register(
         {
           name: SETTINGS_SLOT,
-          id: SETTINGS_ROW_ID,
-          order: SETTINGS_ROW_ORDER,
+          id: SETTINGS_SECTION_ID,
+          order: SETTINGS_SECTION_ORDER,
+          label: () => navLabel(settingsDocument()),
           locale: LOCALE_NAMESPACE,
           inject: () => row.inject,
         },
-        row.component,
+        SettingsSection,
       ),
     )
   } catch (error) {

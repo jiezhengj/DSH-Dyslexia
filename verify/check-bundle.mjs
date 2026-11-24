@@ -852,10 +852,10 @@ check('the preference field is volatile, so the settings form can show it', () =
 check('the row is claimed through the slot name the host declares', () => {
   const settings = readCode('src/client/settings.js')
   const entry = readCode('src/client/entry.js')
-  assert(settings.includes("const SETTINGS_SLOT = 'settings.general.item'"), 'settings.js does not name the general settings slot')
+  assert(settings.includes("const SETTINGS_SLOT = 'settings.section'"), 'settings.js does not name the general settings slot')
   assert(entry.includes('slots.inject(SETTINGS_SLOT, () =>'), 'entry.js does not register the row through that name')
   assert(entry.includes('name: SETTINGS_SLOT,'), 'the slot entry does not use the declared name')
-  assert(entry.includes('id: SETTINGS_ROW_ID,'), 'the slot entry does not use the declared id')
+  assert(entry.includes('id: SETTINGS_SECTION_ID,'), 'the slot entry does not use the declared id')
   // `configForms` arrives after `apply` on a real host, so the late wiring has to
   // exist; deleting it once left every suite green because only one assertion
   // covered the behaviour.
@@ -1752,8 +1752,8 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
     'a copy answer does not outlive the source it described',
     'a fence whose props read throws is left to the host, not the message',
     'a host without effects keeps one stylesheet, not one per apply',
-    'a host with configForms takes the row without throwing',
-    'the row registers on the general settings slot and nowhere else',
+    'a host with configForms takes the section without throwing',
+    'the section registers on the settings navigation and nowhere else',
     'the row label is our own sentence, not a host key',
     'the switch shows the value the host reports',
     'the switch is named and described by the visible sentences',
@@ -1766,7 +1766,7 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
     'a refused write keeps the value the host took while it was pending',
     'a value the host pushes reaches the switch without a write',
     'a thenable that throws out of then cannot break the click',
-    'a host that gains configForms after apply still gets the settings row',
+    'a host that gains configForms after apply still gets the settings section',
     'a host that refuses undeclared services is not warned about',
     "[${lang}] the settings row label is that language's own sentence",
     "[${lang}] the settings row hint is that language's own sentence",

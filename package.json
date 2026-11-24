@@ -1,6 +1,6 @@
 {
   "name": "@jiezhengj/dsh-dyslexia",
-  "version": "0.2.23",
+  "version": "0.2.24",
   "description": "DSH — I'm dyslexic — Draws mermaid blocks right in the conversation and, when it helps, asks for a picture instead of a wall of text.",
   "keywords": [
     "dsh",

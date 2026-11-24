@@ -1,10 +1,10 @@
-const SETTINGS_SLOT = 'settings.general.item'
+const SETTINGS_SLOT = 'settings.section'
 const SETTINGS_NAMESPACE = 'dsh-dyslexia'
-const SETTINGS_ROW_ID = '@jiezhengj/dsh-dyslexia/visual-first'
-const SETTINGS_ROW_ORDER = 62
+const SETTINGS_SECTION_ID = 'dyslexia'
+const SETTINGS_SECTION_ORDER = 900
 
 /**
- * The reader's preference, drawn as one row in Settings -> General.
+ * The reader's preference, drawn as this plugin's own page in Settings.
  *
  * The row is the whole of the client's settings work: it reads the value the
  * host already knows, shows it as a switch, writes the new value back through
@@ -244,4 +244,20 @@ function createVisualFirstRow(face) {
     inject.readHostValue = () => readPreference(face)
   }
   return { store, component: VisualFirstRow, inject }
+}
+
+/**
+ * This plugin's page in Settings: the name of the page, then the row that
+ * carries the switch. The page adds nothing the row does not already say, so a
+ * reader sees each sentence once.
+ */
+function SettingsSection(props) {
+  const injected = props || {}
+  const say = translateFor(injected, typeof document === 'undefined' ? null : document)
+  return React.createElement(
+    'section',
+    { className: 'dsh-dyslexia-section' },
+    React.createElement('h2', { className: 'dsh-dyslexia-section-title' }, say('nav')),
+    React.createElement(VisualFirstRow, injected),
+  )
 }

@@ -196,7 +196,7 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
         // `fn` only while the host has that slot's owner declaration; a wrong
         // key therefore leaves the row pending forever, with no error anywhere.
         // The fake host below mirrors that: an unknown key never fires.
-        const SLOT_NAMES = ['conversation.chat.markdown.fence', 'settings.general.item']
+        const SLOT_NAMES = ['conversation.chat.markdown.fence', 'settings.section']
 
         function makeContext(options) {
           const defs = []
@@ -1532,28 +1532,29 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           }
           expect(
             settingsThrew === null,
-            'a host with configForms takes the row without throwing',
+            'a host with configForms takes the section without throwing',
             settingsThrew ? String(settingsThrew.message) : 'quiet',
           )
           expect(
-            settingsHost.injectedSlots.indexOf('settings.general.item') !== -1,
-            'the row is claimed through the slot the host names',
+            settingsHost.injectedSlots.indexOf('settings.section') !== -1,
+            'the section is claimed through the slot the host names',
             settingsHost.injectedSlots.join(','),
           )
           const settingsDefs = settingsHost.defs.filter(
-            (entry) => entry.def && entry.def.name === 'settings.general.item',
+            (entry) => entry.def && entry.def.name === 'settings.section',
           )
           expect(
             settingsHost.defs.length === 2 && settingsDefs.length === 1,
-            'the row registers on the general settings slot and nowhere else',
+            'the section registers on the settings navigation and nowhere else',
             `${settingsHost.defs.length} defs, ${settingsDefs.length} on the slot`,
           )
           const settingsDef = (settingsDefs[0] && settingsDefs[0].def) || {}
           expect(
-            settingsDef.id === '@jiezhengj/dsh-dyslexia/visual-first' &&
-              settingsDef.order === 62 &&
-              settingsDef.locale === 'dyslexia',
-            'the row carries its id, order and locale',
+            settingsDef.id === 'dyslexia' &&
+              settingsDef.order === 900 &&
+              settingsDef.locale === 'dyslexia' &&
+              typeof settingsDef.label === 'function',
+            'the section carries its id, order, label and locale',
             `${settingsDef.id} ${settingsDef.order} ${settingsDef.locale}`,
           )
           // A host with no `slots` cannot draw a fence at all, so that one says
@@ -1799,7 +1800,7 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           }
           module.apply(pendingHost.ctx)
           const pendingDef = pendingHost.defs.find(
-            (entry) => entry.def && entry.def.name === 'settings.general.item',
+            (entry) => entry.def && entry.def.name === 'settings.section',
           )
           const pendingView = pendingDef ? mount(pendingDef.component, pendingDef.def.inject()) : null
           if (pendingView) await tick(40)
@@ -1860,7 +1861,7 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           }
           module.apply(externalHost.ctx)
           const externalDef = externalHost.defs.find(
-            (entry) => entry.def && entry.def.name === 'settings.general.item',
+            (entry) => entry.def && entry.def.name === 'settings.section',
           )
           const externalView = externalDef ? mount(externalDef.component, externalDef.def.inject()) : null
           if (externalView) await tick(250)
@@ -1878,11 +1879,15 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           externalListeners.forEach((listener) => listener())
           await tick(250)
           const offPaint = paintOf(externalToggle)
+          // The track follows the host's own tokens, so the assertion is that the
+          // two states paint differently and neither is the browser default —
+          // hard-coding a colour here would pass while the switch stayed white.
           expect(
             !!externalToggle &&
               externalToggle.getAttribute('aria-checked') === 'false' &&
-              onPaint.includes('74, 108, 247') &&
-              offPaint.includes('120, 130, 150'),
+              onPaint !== '' &&
+              offPaint !== '' &&
+              onPaint !== offPaint,
             'a value the host pushes reaches the switch without a write',
             `aria-checked=${
               externalToggle ? externalToggle.getAttribute('aria-checked') : 'no switch'
@@ -1920,7 +1925,7 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             },
           }
           module.apply(thenHost.ctx)
-          const thenDef = thenHost.defs.find((entry) => entry.def && entry.def.name === 'settings.general.item')
+          const thenDef = thenHost.defs.find((entry) => entry.def && entry.def.name === 'settings.section')
           const thenView = thenDef ? mount(thenDef.component, thenDef.def.inject()) : null
           if (thenView) await tick(40)
           const thenToggle = thenView ? thenView.stage.querySelector('button[role="switch"]') : null
@@ -1994,7 +1999,7 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
               },
             }
             module.apply(langHost.ctx)
-            const langDef = langHost.defs.find((entry) => entry.def && entry.def.name === 'settings.general.item')
+            const langDef = langHost.defs.find((entry) => entry.def && entry.def.name === 'settings.section')
             const langView = langDef ? mount(langDef.component, langDef.def.inject()) : null
             if (langView) await tick(40)
             const langLabel = langView ? langView.stage.querySelector('.dsh-dyslexia-row-label') : null
@@ -2042,7 +2047,7 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           }
           document.documentElement.lang = 'zh'
           module.apply(morphHost.ctx)
-          const morphDef = morphHost.defs.find((entry) => entry.def && entry.def.name === 'settings.general.item')
+          const morphDef = morphHost.defs.find((entry) => entry.def && entry.def.name === 'settings.section')
           const morphView = morphDef ? mount(morphDef.component, morphDef.def.inject()) : null
           if (morphView) await tick(50)
           const labelNow = () => {
@@ -2095,7 +2100,7 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             },
           }
           module.apply(offHost.ctx)
-          const offDef = offHost.defs.find((entry) => entry.def && entry.def.name === 'settings.general.item')
+          const offDef = offHost.defs.find((entry) => entry.def && entry.def.name === 'settings.section')
           const offView = offDef ? mount(offDef.component, offDef.def.inject()) : null
           if (offView) await tick(40)
           const offToggle = offView ? offView.stage.querySelector('button[role="switch"]') : null
@@ -2126,7 +2131,7 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             },
           }
           module.apply(noSetHost.ctx)
-          const noSetDef = noSetHost.defs.find((entry) => entry.def && entry.def.name === 'settings.general.item')
+          const noSetDef = noSetHost.defs.find((entry) => entry.def && entry.def.name === 'settings.section')
           // The outcome alone cannot tell "the row saw there is no writer" from
           // "the row called a writer that threw": the face is the only thing that
           // knows the host cannot write, so the row must be handed no writer at all.
@@ -2199,18 +2204,18 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           // `apply` has run; reading it once would skip the row forever.
           const lateHost = makeContext({})
           module.apply(lateHost.ctx)
-          const lateBefore = lateHost.defs.filter((entry) => entry.def && entry.def.name === 'settings.general.item')
+          const lateBefore = lateHost.defs.filter((entry) => entry.def && entry.def.name === 'settings.section')
           lateHost.provide('configForms', {
             get(namespace) {
               return namespace === 'dsh-dyslexia' ? settingsFace : null
             },
           })
-          const lateDefs = lateHost.defs.filter((entry) => entry.def && entry.def.name === 'settings.general.item')
+          const lateDefs = lateHost.defs.filter((entry) => entry.def && entry.def.name === 'settings.section')
           expect(
             lateBefore.length === 0 &&
               lateDefs.length === 1 &&
-              lateDefs[0].def.id === '@jiezhengj/dsh-dyslexia/visual-first',
-            'a host that gains configForms after apply still gets the settings row',
+              lateDefs[0].def.id === 'dyslexia',
+            'a host that gains configForms after apply still gets the settings section',
             `${lateBefore.length} before, ${lateDefs.length} after`,
           )
           // A second reading of the same wiring, in a shape a single assertion can
@@ -2218,10 +2223,11 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           // present. Deleting the late wiring once left this suite green.
           expect(
             lateDefs.length === 1 &&
-              lateDefs[0].def.order === 62 &&
+              lateDefs[0].def.order === 900 &&
               lateDefs[0].def.locale === 'dyslexia' &&
+              typeof lateDefs[0].def.label === 'function' &&
               typeof lateDefs[0].component === 'function',
-            'a row that arrives late is published, ordered and localised like an early one',
+            'a section that arrives late is published, ordered and labelled like an early one',
             lateDefs.length === 1
               ? `order=${lateDefs[0].def.order} locale=${lateDefs[0].def.locale} component=${typeof lateDefs[0].component}`
               : `${lateDefs.length} rows`,
@@ -2288,7 +2294,7 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             return typeof selector === 'function' ? selector(value === undefined ? true : value !== false) : value
           }
           const hookDef = {
-            name: 'settings.general.item',
+            name: 'settings.section',
             id: '@jiezhengj/dsh-dyslexia/visual-first',
             order: 62,
             locale: 'dyslexia',
@@ -2371,7 +2377,7 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             } catch (error) {
               degradedThrew = error
             }
-            const degradedDef = degradedHost.defs.find((entry) => entry.def && entry.def.name === 'settings.general.item')
+            const degradedDef = degradedHost.defs.find((entry) => entry.def && entry.def.name === 'settings.section')
             let degradedToggle = null
             let degradedView = null
             if (degradedDef) {
@@ -2463,7 +2469,7 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
         )
 
           expect(
-            strictHost.defs.some((entry) => entry.def && entry.def.name === 'settings.general.item'),
+            strictHost.defs.some((entry) => entry.def && entry.def.name === 'settings.section'),
             'a host whose services must be read through ctx.get still gets the row',
             `${strictHost.defs.length} defs`,
           )
