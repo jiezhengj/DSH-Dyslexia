@@ -54,6 +54,17 @@
 - [x] **T029** 发版 `0.2.6`：commit `c3520c2`、tag `v0.2.6`、GitHub Actions run `45302814465` success（CI 47 / 280，`sources sha256:b69ddecef48b3acc5a9b51e2a1a27bc1`，shasum `1deccbbf61f9068c22ff418980fb16d960bf5e4b`、33 files、logIndex `4063373865`）→ registry 装回 `desktop` profile（卸 0.2.5、装 0.2.6，安装副本 787325 字节、SHA-256 `63B5517E3074F37D44CB8F63EB84593426F3B451B1FE3951336A125E16D6D786` 与仓库根逐字节相同、`locale/` 8、`docs/` 9）→ E-PUB/E-INS 补 0.2.6 行 → 清理 `webcheck` profile 与本次起的 `dsh web` 进程。
 - [ ] **T030** 再次起两份独立评审（文档 / 实现），两份 PASS 才把 feature 002 标记完成。
 
+## Phase 7：让 getSnapshot 的回归能被看见（0.2.7）
+
+- [x] **T031** 独立实现评审 `review-impl-002r` 指出的 P0：`evidence.md` 的 F15 在 `0.2.6` 上写的红行是假的（`1 failed, 47 passed` 在 47 项套件里不可能，且只删 `createValueStore` 的 `getSnapshot()` 时两套检查全绿）。修法不是改数字，而是让破坏真的变红。
+- [x] **T032** `verify/check-bundle.mjs` 的 `getSnapshot()` 断言原来是对整个 `settings.js` 的子串匹配，会命中 `readPreference` 里的 `face.getSnapshot()`；改为只检查 `createValueStore` 函数体，并要求 `getSnapshot()` 与 `subscribe(listener)` 同时在该函数体内。返回串改为 `the store itself carries getSnapshot and subscribe`。
+- [x] **T033** `verify/harness/index.html` 新增两条夹具（280 → 282）：`the store this module hands the host can be read the way the host reads it`（从注册的 `inject.hooks.visualFirst` 取插件自己的 store，断言 `get/getSnapshot/subscribe` 三类齐全且 `getSnapshot()` 返回初始值）与 `a hook built from that store draws the switch`（用 `useSyncExternalStore(store.subscribe, store.getSnapshot)` 按宿主的方式造一个 `useVisualFirst` prop，断言开关渲染并显示 true）。
+- [x] **T034** 修 P2：严格 `inject` 夹具改用 `makeContext({ noLocale: true })` 并给 `ctx.locale` 定义会抛错的 getter，同时断言 `locale.register` 恰好被调用一次（`dyslexia`），使"把 `optional(ctx,'locale')` 换回 `ctx.locale`"在夹具层也变红（282 → 283）。
+- [x] **T035** 重跑探针并记录真实红行：删 store 的 `getSnapshot()` → `FAIL the settings row reads the hook the host builds, not an object it never sends — the value store does not carry the getSnapshot/subscribe pair a host hook is built from`、`check-bundle: 1 failed, 46 passed`，以及 `[bad] … get=function getSnapshot=undefined subscribe=function`、`[bad] a hook built from that store draws the switch — no switch`、`run-harness: 2 failed, 281 passed`；`optional(ctx,'locale')` → `ctx.locale` → `FAIL … locale is still read as a bare property` 与 `[bad] a host that refuses undeclared properties still gets the strings registered — []`。
+- [x] **T036** 文档：`evidence.md` 的 E-BLD/E-CHK/E-HARN 三块用 `0.2.7` 单次运行重写、头注与版本链改 `0.2.7`、F15 行改为真实红行并注明"`0.2.6` 上记录的那行是错的"、G12 的行号改到当前文件、E-PUB/E-INS 追加 0.2.7；`plan.md`/`quickstart.md`/`spec.md`/`tasks.md` 的计数与版本同步。
+- [ ] **T037** 发版 `0.2.7`：commit → tag `v0.2.7` → GitHub Actions → registry 装回 `desktop` profile → E-PUB/E-INS 补 run/shasum/logIndex 与实测哈希。
+- [ ] **T038** 再次起两份独立评审（文档 / 实现），两份 PASS 才把 feature 002 标记完成。
+
 ## Dependencies
 
 - Phase 2 依赖 T002/T003（段文本两档）先用静态断言钉住契约，再写客户端。
@@ -72,9 +83,9 @@
 | area | state |
 |---|---|
 | Host half: `Config` with `visualFirst` (default on, `.volatile()`), two-tier briefing, `claimSettingsPage` | done, 47 static checks |
-| Client half: settings row on `settings.general.item`, `configForms` read/write, revert on refusal | done, 280 browser checks in the published `0.2.6` (`0.2.5` shipped 274, `0.2.4` 271, `0.2.3` 260, `0.2.2` 252); the row reads the hook prop the host builds (`useVisualFirst`) and keeps the store path for hosts that send `hooks`; no disabled state, no timer; a refused write restores the host's current value |
+| Client half: settings row on `settings.general.item`, `configForms` read/write, revert on refusal | done, 283 browser checks in the published `0.2.7` (`0.2.6` shipped 280) (`0.2.5` shipped 274, `0.2.4` 271, `0.2.3` 260, `0.2.2` 252); the row reads the hook prop the host builds (`useVisualFirst`) and keeps the store path for hosts that send `hooks`; no disabled state, no timer; a refused write restores the host's current value |
 | Eight-language rename (locale, DETAIL alt line, 8 READMEs, index, package description) | done; DETAIL keeps exactly one image line (its alt sentence carries the new name) |
-| Evidence | `evidence.md` (this feature): `0.2.6` build and 47 / 280, fourteen falsifiability probes (F1, F3–F15), E-LIVE records the row and the switch in a running host; gaps G2–G8 and G11–G13 open, G1 discharged by `0.2.6` (web surface only), G9/G10 by `0.2.5` |
+| Evidence | `evidence.md` (this feature): `0.2.7` build and 47 / 283, fourteen falsifiability probes (F1, F3–F15), E-LIVE records the row and the switch in a running host; gaps G2–G8 and G11–G13 open, G1 discharged by `0.2.6` (web surface only), G9/G10 by `0.2.5` |
 | Not done | the desktop window's settings entry (the row was observed through `dsh web`; the desktop build opens settings as a separate document that this window offers no control for — G1 records the limit), the host write path to `settings.update` seen directly (G2 records what was observed instead), 200%/360px layout assertion for the row (G3), pixel comparison (G5), E1–E14 end-to-end rows (G6), SC-001 five sample requests (G7), schemastery import failure path (G8) |
 
 **2026-11-24：** T021 的两项评审曾均 PASS（实现 `review-impl-002f`、文档 `review-docs-002m`），但那是在没有真机观察的前提下——按用户建议用 `dsh web` 起独立 profile 复现后，`0.2.5` 的设置行在真实设置页里渲染为空（T024），`0.2.6` 修好三处并补了 2 条静态检查、6 条夹具与 2 条探针（T025–T027），真机观察写进 `evidence.md` 的 E-LIVE（T028），G1 关闭（限 Web 界面）。发版与再评审见 T029/T030。

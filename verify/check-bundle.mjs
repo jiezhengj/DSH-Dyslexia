@@ -548,8 +548,17 @@ check('the settings row reads the hook the host builds, not an object it never s
   )
   // The host mounts each hooks entry with useSyncExternalStore, which calls
   // `getSnapshot`; without it the real settings page throws and the row dies.
-  assert(settings.includes('getSnapshot()'), 'the value store has no getSnapshot for the host hook')
-  return 'useVisualFirst and the store form both wired, getSnapshot present'
+  // The store itself, not the caller that reads a face: a bare substring search
+  // for `getSnapshot()` is satisfied by `face.getSnapshot()` a few lines later,
+  // so the assertion looks at the factory body the host's hook is built from.
+  const factoryAt = settings.indexOf('function createValueStore')
+  const factoryEnd = factoryAt === -1 ? -1 : settings.indexOf('\n}', factoryAt)
+  const factory = factoryAt === -1 || factoryEnd === -1 ? '' : settings.slice(factoryAt, factoryEnd)
+  assert(
+    factory.includes('getSnapshot()') && factory.includes('subscribe(listener)'),
+    'the value store does not carry the getSnapshot/subscribe pair a host hook is built from',
+  )
+  return 'useVisualFirst and the store form both wired, the store itself carries getSnapshot and subscribe'
 })
 
 check('a service the plugin never declared is read through ctx.get', () => {

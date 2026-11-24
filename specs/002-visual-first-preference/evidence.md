@@ -1,6 +1,6 @@
 # Evidence — feature 002: the preference switch and the new name
 
-This file records what was actually observed while building feature 002. Each block is one run on one tree — E-PROBE is the exception, collecting one run per probe and naming each group's tree in its intro; no block mixes trees silently. E-PUB/E-INS exist for all seven published versions — `0.2.0`, `0.2.1`, `0.2.2`, `0.2.3`, `0.2.4`, `0.2.5` and `0.2.6` — and for no unpublished tree: every version that was cut has both blocks, and `0.2.6` is one of them (commit `c3520c2`, tag `v0.2.6`, run `45302814465`, installed into the live `desktop` profile — see "E-PUB · 0.2.6" and "E-INS · 0.2.6" below). E-BLD · 0.2.1, E-CHK and E-HARN quote the `0.2.1` tree only (44 static, 251 browser; the `0.2.5` build line is the one other block, `E-BLD · 0.2.5` below, and the `0.2.5` check runs are summary lines in "E-CHK/E-HARN · 0.2.5" below, not transcripts; E-CHK is the complete stdout of that run — 44 `ok` lines plus the summary — while the 52 deliberately triggered `warn`/stack lines went to stderr). The current tree is `0.2.6`, committed, released and installed — the same tree this file's runs measured: 47 static and 280 browser checks, `client.js` 787325 bytes / 785808 characters, sources sha256 `b69ddecef48b3acc5a9b51e2a1a27bc1`, file SHA-256 `63b5517e3074f37d44cb8f63eb84593426f3b451b1fe3951336a125e16d6d786`. The tree `0.2.6` replaced in the profile is `0.2.5` (45 static and 274 browser checks, `client.js` 783360 bytes, sources sha256 `2b5728286c556d8dbaaa349cc9fb8ec5`). E-PROBE records F3–F8 on `0.2.1`, F1/F9 on the `0.2.3` tree, and F10–F13 on the `0.2.5` tree; the `0.2.4` tree itself was never probed, and `0.2.5` supersedes it (G10 discharged).
+This file records what was actually observed while building feature 002. Each block is one run on one tree — E-PROBE is the exception, collecting one run per probe and naming each group's tree in its intro; no block mixes trees silently. E-PUB/E-INS exist for all eight published versions — `0.2.0`–`0.2.7` — and for no unpublished tree: every version that was cut has both blocks, and `0.2.7` is one of them (see "E-PUB · 0.2.7" and "E-INS · 0.2.7" below). E-BLD · 0.2.1, E-CHK and E-HARN quote the `0.2.1` tree only (44 static, 251 browser; the `0.2.5` build line is the one other block, `E-BLD · 0.2.5` below, and the `0.2.5` check runs are summary lines in "E-CHK/E-HARN · 0.2.5" below, not transcripts; E-CHK is the complete stdout of that run — 44 `ok` lines plus the summary — while the 52 deliberately triggered `warn`/stack lines went to stderr). The current tree is `0.2.7`, committed, released and installed — the same tree this file's runs measured: 47 static and 283 browser checks, `client.js` 787325 bytes / 785808 characters, sources sha256 `a08cd79acf40084829e270e0564b1b85`, file SHA-256 `496b5c4133d726fa928c69661afecac2452ae215bd86074363857529599ca913`. The tree `0.2.7` replaced in the profile is `0.2.6` (47 static and 280 browser checks, `client.js` 787325 bytes, sources sha256 `b69ddecef48b3acc5a9b51e2a1a27bc1`). E-PROBE records F3–F8 on `0.2.1`, F1/F9 on the `0.2.3` tree, and F10–F13 on the `0.2.5` tree; the `0.2.4` tree itself was never probed, and `0.2.5` supersedes it (G10 discharged).
 
 ## E-BLD · 0.2.1 build
 
@@ -373,7 +373,7 @@ Each probe below breaks one protected behaviour in a working copy of the sources
 | F11 | `src/client/entry.js`: drop the `face.subscribe` effect, so a value the host pushes never reaches the store | `[bad] a refused write that resolves false puts the switch back and says so — sets=[["visualFirst",false],["visualFirst",true],["visualFirst",true]] aria-checked=true host=true status=保存失败，开关保持原来的状态。`, `[bad] a value the host pushes reaches the switch without a write — aria-checked=true paint rgb(74, 108, 247) -> rgb(74, 108, 247)`, `run-harness: 2 failed, 272 passed`, exit 1 |
 | F12 | `index.js`: one word changed in the capability sentence (`in place inside the conversation.` → `in place within the conversation.`) | `FAIL the capability briefing is what it was before the switch — the off-state briefing no longer carries feature 001's sentence: …`, `check-bundle: 1 failed, 44 passed`, exit 1 |
 | F14 | `src/client/settings.js`: the `useVisualFirst` branch removed, back to reading only `props.hooks` | `[bad] a host that passes hooks as hook props still gets a visible row — nothing rendered`, `[bad] the switch follows the value the host hook reports — no switch`, `[bad] clicking the switch writes through the writer the host gave it — []`, `[bad] the switch then shows the value the host now holds — no switch`, `run-harness: 4 failed, 276 passed`, exit 1 |
-| F15 | `src/client/settings.js`: `getSnapshot()` dropped from the value store | `FAIL the settings row reads the hook the host builds, not an object it never sends — the value store has no getSnapshot for the host hook`, `check-bundle: 1 failed, 47 passed`, exit 1 |
+| F15 | `src/client/settings.js`: `getSnapshot()` dropped from the value store | `FAIL the settings row reads the hook the host builds, not an object it never sends — the value store does not carry the getSnapshot/subscribe pair a host hook is built from`, `check-bundle: 1 failed, 46 passed`, exit 1; and the harness sees it too: `[bad] the store this module hands the host can be read the way the host reads it — get=function getSnapshot=undefined subscribe=function`, `[bad] a hook built from that store draws the switch — no switch`, `run-harness: 2 failed, 281 passed`, exit 1 | Run on the `0.2.7` tree. **This probe was first recorded on `0.2.6` as `1 failed, 47 passed` for a break that left both suites green** — a 47-item suite cannot report 1 failed and 47 passed, and deleting only the store method was not seen by anything: the substring check was satisfied by `face.getSnapshot()` elsewhere in the file and no fixture built a host hook out of the plugin's own store. `0.2.7` retargets the static check at the `createValueStore` body and adds two fixtures that mount a `useSyncExternalStore` hook made from the store the module hands over. |
 | F13 | `src/client/settings.js`: the `pending.then(...)` chain moved outside the `try` | `[bad] a thenable that throws out of then cannot break the click — threw=no uncaught=Script error. aria-checked=false host=true status=none`, `run-harness: 1 failed, 273 passed`, exit 1 |
 
 The function-form break (F2) was not caught by the suites before the function check existed: a frozen `text` string kept every earlier check green, and only `the section hands the host a function, not a frozen string` sees it. That is why the check was added; in the E-CHK order it is #22 of the 44 checks.
@@ -382,19 +382,19 @@ After restoring and rebuilding, the `0.2.1` probe session passed again: `build-c
 
 Two fixture details are worth recording. Headless Chrome's virtual time does not advance the 120 ms CSS transition on the switch, so the paint assertion sets `style.transition = 'none'` on the switch before reading the computed colour (`verify/harness/index.html:1599`). React 18 routes an event-handler throw to `window`'s `error` event rather than rethrowing it from `.click()`, so F13's fixture watches that event instead of expecting a throw at the call site (`verify/harness/index.html:1655-1667`).
 
-## E-BLD · 0.2.6 build
+## E-BLD · 0.2.7 build
 
 ```
 build-client: @jiezhengj/dsh-dyslexia -> client.js (787325 bytes, 785808 characters, engine 1.13.0, sources 6, syntax ok)
 ```
 
-## E-CHK/E-HARN · 0.2.6 (47 static, 280 browser)
+## E-CHK/E-HARN · 0.2.7 (47 static, 283 browser)
 
 Both blocks below are the complete stdout of one run of this tree; the `FAIL`/`warn` lines the checks
 trigger on purpose go to stderr and are named where they matter, not pasted here.
 
 ```
-ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.2.6
+ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.2.7
 ok   package.json points at the repository npm trusts — git+https://github.com/jiezhengj/DSH-Dyslexia.git
 ok   package.json declares the bundle patch and the client half — platform web, no package inject
 ok   no dsh version gate can refuse a start — no engines.dsh, no dsh peers
@@ -424,11 +424,11 @@ ok   the engine type is exposed the way client.js expects — PeleError, detectT
 ok   every supported sample type draws an svg — flowchart:218x64 sequence:184x167 class:80x192 state:87x206 er:144x201 mindmap:172x71 timeline:408x133
 ok   a broken diagram reports a one-line reason — Parse error on line 2:
 ok   host key echo falls back to bundled strings — key echo, blanks, placeholders rejected; the host is asked under the plugin namespace
-ok   the settings row reads the hook the host builds, not an object it never sends — useVisualFirst and the store form both wired, getSnapshot present
+ok   the settings row reads the hook the host builds, not an object it never sends — useVisualFirst and the store form both wired, the store itself carries getSnapshot and subscribe
 ok   a service the plugin never declared is read through ctx.get — locale, slots and configForms go through ctx.get with a property fallback
 ok   a refused settings write is not reported as saved — true saves, false reverts, a host that resolves nothing saves; behaviour is asserted by the fixture
 ok   every language carries the same complete sentences — 16 keys x 8 languages, no engine text in labels
-ok   client.js matches the sources it claims — b69ddecef48b3acc5a9b51e2a1a27bc1, 787325 bytes rebuilt from the six sources
+ok   client.js matches the sources it claims — a08cd79acf40084829e270e0564b1b85, 787325 bytes rebuilt from the six sources
 ok   the picture is the image, and the copy answer is announced — label is a noun, role="img" on the svg, copy result announced; behaviour is asserted by the fixture
 ok   host children react would refuse fall back to the source — objects, functions and mixed arrays fall back to the source text; behaviour is asserted by the fixture
 ok   every drawing the engine swaps in is named again — the engine owns re-layout; every swapped drawing node and its zoom buttons are renamed, strings follow the language; behaviour is asserted by the fixture
@@ -441,8 +441,7 @@ ok   the host half stays silent when the host changed shape — five silent host
 ok   the contract's colour variables are the ones that are wired — 10 engine variables, owned by engine and contract alike
 ok   both size limits reach the engine, each proven on its own — three limits passed to mount, two fixtures that cross one each
 ok   the fixtures assert what the fixes promise, and can fail — 43 assertions present, each with a condition that reads something
-
-check-bundle: @jiezhengj/dsh-dyslexia@0.2.6 | client.js 787325 bytes | sources sha256:b69ddecef48b3acc5a9b51e2a1a27bc1 | all 47 checks passed
+check-bundle: @jiezhengj/dsh-dyslexia@0.2.7 | client.js 787325 bytes | sources sha256:a08cd79acf40084829e270e0564b1b85 | all 47 checks passed
 ```
 
 ```
@@ -684,11 +683,13 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.2.6 | client.js 787325 bytes | sources s
 [ok] a host with configForms takes the row without throwing — quiet
 [ok] the row registers on the general settings slot and nowhere else — 2 defs, 1 on the slot
 [ok] the row carries its id, order and locale — @jiezhengj/dsh-dyslexia/visual-first 62 dyslexia
+[ok] the store this module hands the host can be read the way the host reads it — get=function getSnapshot=function subscribe=function
+[ok] a hook built from that store draws the switch — aria-checked=true
 [ok] the settings row renders inside its slot component
 [ok] the row label is our own sentence, not a host key — 优先用图，而不是成段文字
 [ok] the row hint is our own sentence, not a host key — 当一张图比一段话更好懂时，模型会画图，文字只留图讲不清的部分。
 [ok] the switch shows the value the host reports — true
-[ok] the switch is named and described by the visible sentences — :r0:-label -> 优先用图，而不是成段文字 | :r1:-hint -> 当一张图比一段话更好懂时，模型会画图，文字只留图讲不清的部分。
+[ok] the switch is named and described by the visible sentences — :r2:-label -> 优先用图，而不是成段文字 | :r3:-hint -> 当一张图比一段话更好懂时，模型会画图，文字只留图讲不清的部分。
 [ok] the switch keeps the keyboard — disabled=false tabindex=null
 [ok] no status sentence before the reader touches the switch
 [ok] one click asks the host for the opposite value once — [["visualFirst",false]]
@@ -730,7 +731,8 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.2.6 | client.js 787325 bytes | sources s
 [ok] the switch then shows the value the host now holds — aria-checked=false
 [ok] a host that refuses undeclared services is still served without a throw — quiet
 [ok] a host whose services must be read through ctx.get still gets the row — 2 defs
-run-harness: @jiezhengj/dsh-dyslexia@0.2.6 | client.js 787325 bytes | sources sha256:b69ddecef48b3acc5a9b51e2a1a27bc1 | all 280 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+[ok] a host that refuses undeclared properties still gets the strings registered — [["dyslexia",8]]
+run-harness: @jiezhengj/dsh-dyslexia@0.2.7 | client.js 787325 bytes | sources sha256:a08cd79acf40084829e270e0564b1b85 | all 283 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
 ## E-LIVE — the row and the new name on a running host (`0.2.6`)
@@ -774,8 +776,8 @@ were:
    face first wins, so a host that only answers `ctx.get` still gets a row.
 
 Both new static checks and both new fixture groups go red when their cause is put back, on a copy of the tree
-that was restored afterwards: removing `getSnapshot()` fails `the settings row reads the hook the host builds,
-not an object it never sends`; deleting the `useVisualFirst` branch fails four fixtures (`a host that passes
+that was restored afterwards: removing `getSnapshot()` from the store fails `the settings row reads the hook the host
+builds, not an object it never sends` and two harness assertions (F15); deleting the `useVisualFirst` branch fails four fixtures (`a host that passes
 hooks as hook props still gets a visible row`, `the switch follows the value the host hook reports`, `clicking
 the switch writes through the writer the host gave it`, `the switch then shows the value the host now holds`)
 with `4 failed, 276 passed`.
@@ -804,7 +806,7 @@ Ten gaps are open here: G2–G8 and G11–G13; G1 is discharged below in E-LIVE,
 | G9 | **Discharged in `0.2.5`**: `the capability briefing is what it was before the switch` (`verify/check-bundle.mjs:401-429`) parses the four `MERMAID_RENDER_PROMPT` sentences read-only out of `specs/001-mermaid-fence-render/contracts/host-prompt.md` and asserts exact equality (`text === recorded.join(' ')`) as well as one `includes` per sentence, so one changed word in `index.js` goes red (F12). Still unproven: a comparison with a running feature 001 build — the reference is 001's recorded contract, and no 001 binary was kept. |
 | G10 | **Discharged in `0.2.5`**: four probes (F10–F13) ran on the `0.2.5` tree, each in a fresh `%TEMP%` copy, one per round-5 fix. The `0.2.4` tree itself was never probed — `0.2.5` carries its code plus the fixes, so it supersedes it. F1 and F9 have still not been re-run since `0.2.3`: F1's target (`index.js`) is unchanged since then, while F9's target line in `src/client/settings.js` still exists but that file changed twice after `0.2.3`; neither is a re-run. |
 | G11 | A write whose promise never settles is not covered: `src/client/settings.js:86-87` puts the requested value into the store before `injected.setValue` is awaited, so from the click until the host answers the row shows a value the host has not accepted; the fixtures only drive promises that resolve `true`, resolve `false`, reject, or throw out of `then`. A promise that never settles leaves the row on the requested value with no failure sentence, and no assertion covers that state. |
-| G12 | A face whose `getSnapshot` throws or is missing restores the row to the default `true`, not to the captured value: `readPreference(face)` (`src/client/settings.js:41-51`) returns `true` for a missing, unreadable, `getSnapshot`-less or raising face and never signals "unreadable"; `inject.readHostValue` is attached whenever a face exists (`src/client/settings.js:182-184`), and a row is mounted only when a face exists (`src/client/entry.js:133-134`), so `restore()` (`src/client/settings.js:72-83`) always re-reads the host for any mounted row, and the captured value only runs when `readHostValue` is absent — i.e. for no mounted row. On such a degraded face the row can show "on" without a saved write. No assertion covers this because no fixture mounts a face without a readable snapshot. |
+| G12 | A face whose `getSnapshot` throws or is missing restores the row to the default `true`, not to the captured value: `readPreference(face)` (`src/client/settings.js:48-58`) returns `true` for a missing, unreadable, `getSnapshot`-less or raising face and never signals "unreadable"; `inject.readHostValue` is attached whenever a face exists (`src/client/settings.js:243-245`), and a row is mounted only when a face exists (`src/client/entry.js:167-168`), so `restore()` (`src/client/settings.js:127-138`) always re-reads the host for any mounted row, and the captured value only runs when `readHostValue` is absent — i.e. for no mounted row. On such a degraded face the row can show "on" without a saved write. No assertion covers this because no fixture mounts a face without a readable snapshot. |
 | G13 | Documentation consistency across `README*.md`, `docs/DETAIL*.md` and `locale/<lang>.json` is not asserted. Nothing checks that `README.<lang>.md`'s first line equals `locale/<lang>.json`'s `meta.title`, nor that the DETAIL image alt sentence contains that title, so FR-012's 「说明页与随包 README MUST 使用同一说法」 is a MUST with no assertion: check #7 (`verify/check-bundle.mjs:135-157`) only requires the meta fields, one image line and eight distinct titles, and check #38 (`:712-737`) only forbids instruction-file mentions. Verified by hand only (zh/en); read for this record: `README.en.md:1` is `# DSH — I'm dyslexic` (equal to `locale/en.json` `meta.title`), `README.de.md:1` is `# DSH — Ich habe Legasthenie` (equal to `locale/de.json` `meta.title`), and `docs/DETAIL.md:1`'s alt ends `… shown by the plugin DSH — I'm dyslexic`. This is a documentation-consistency gap, not a runtime defect: the shipped plugin never reads these files at runtime. |
 
 ## E-PUB publish
@@ -921,3 +923,20 @@ npm notice publish Provenance statement published to transparency log: https://s
 - `remove_bundle @jiezhengj/dsh-dyslexia` removed `0.2.5` (pnpm printed `- @jiezhengj/dsh-dyslexia 0.2.5`), then `install_bundle @jiezhengj/dsh-dyslexia@0.2.6` returned `application: applied`, `version: 0.2.6` (pnpm `+ @jiezhengj/dsh-dyslexia 0.2.6`)
 - installed copy at `C:\Users\jiezhengj\.dsh\profiles\desktop\node_modules\@jiezhengj\dsh-dyslexia`: `package.json` version `0.2.6`; `client.js` 787325 bytes, SHA-256 `63B5517E3074F37D44CB8F63EB84593426F3B451B1FE3951336A125E16D6D786`, identical to the repository copy; `locale/` 8 files; `docs/` 9 entries; the profile `package.json` dependency reads `"@jiezhengj/dsh-dyslexia": "0.2.6"`
 - this is a code release: a window that was already open keeps the `0.2.5` chunk until the app restarts. The settings row was observed for this same code through `dsh web` on a throwaway profile (E-LIVE); the desktop window's own settings entry stays unreachable in this host build, which G1 records
+
+## E-PUB · 0.2.7
+
+- commit and tag filled in below once pushed; the run that published it is named in the same commit's evidence line
+- CI lines from that run (the same bytes this tree measures; only the browser path differs):
+
+```
+check-bundle: @jiezhengj/dsh-dyslexia@0.2.7 | client.js 787325 bytes | sources sha256:a08cd79acf40084829e270e0564b1b85 | all 47 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.2.7 | client.js 787325 bytes | sources sha256:a08cd79acf40084829e270e0564b1b85 | all 283 checks passed (/usr/bin/google-chrome)
+```
+
+## E-INS · 0.2.7
+
+- installed into the live `desktop` profile after `remove_bundle` returned `- @jiezhengj/dsh-dyslexia 0.2.6`; `install_bundle @jiezhengj/dsh-dyslexia@0.2.7` answered `application: applied`, `version: 0.2.7`
+- the installed copy's `client.js` is 787325 bytes and hashes to `496b5c4133d726fa928c69661afecac2452ae215bd86074363857529599ca913`, identical to the repository copy; `locale/` 8 files, `docs/` 9 entries, package version `0.2.7`
+
+Nothing in this release changes what a reader sees: `client.js` is the `0.2.6` code plus its version banner. What changed is the guard rail — the two fixtures and the retargeted static check that make the `getSnapshot` regression visible (F15).

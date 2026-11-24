@@ -119,7 +119,7 @@ if (failed > 0) {
 const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'))
 const chunk = readFileSync(join(ROOT, 'client.js'), 'utf8')
 const stamped = /sources sha256:([0-9a-f]{32})/.exec(chunk)
-const EXPECTED_CHECKS = 280
+const EXPECTED_CHECKS = 283
 if (EXPECTED_CHECKS > 0 && passed !== EXPECTED_CHECKS) {
   process.stderr.write(
     `\nrun-harness: suite reported ${passed} checks, expected ${EXPECTED_CHECKS}: a check was added or removed\n`,

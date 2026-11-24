@@ -1383,6 +1383,41 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           )
           const Row = settingsDefs[0] && settingsDefs[0].component
           const rowInject = typeof settingsDef.inject === 'function' ? settingsDef.inject() : {}
+
+          // The host does not read `hooks.visualFirst` itself: it turns the
+          // store into a hook prop through `useSyncExternalStore(store.subscribe,
+          // store.getSnapshot)`. A store without `getSnapshot` throws there and
+          // the settings page loses the row even though it registered — that is
+          // the 0.2.5 defect, so the store this module hands over is read the
+          // same way here instead of being trusted as an object.
+          const ownStore = rowInject.hooks && rowInject.hooks.visualFirst
+          expect(
+            !!ownStore &&
+              typeof ownStore.subscribe === 'function' &&
+              typeof ownStore.getSnapshot === 'function' &&
+              ownStore.getSnapshot() === true,
+            'the store this module hands the host can be read the way the host reads it',
+            ownStore
+              ? `get=${typeof ownStore.get} getSnapshot=${typeof ownStore.getSnapshot} subscribe=${typeof ownStore.subscribe}`
+              : 'no store',
+          )
+          function useVisualFirstFromOwnStore(selector) {
+            const current = React.useSyncExternalStore(
+              (listener) => ownStore.subscribe(listener),
+              () => ownStore.getSnapshot(),
+            )
+            return typeof selector === 'function' ? selector(current === undefined ? true : current !== false) : current
+          }
+          const ownStoreView = mount(Row, { ...rowInject, useVisualFirst: useVisualFirstFromOwnStore })
+          await tick(40)
+          const ownStoreToggle = ownStoreView.stage.querySelector('button[role="switch"]')
+          expect(
+            !!ownStoreToggle && ownStoreToggle.getAttribute('aria-checked') === 'true',
+            'a hook built from that store draws the switch',
+            ownStoreToggle ? `aria-checked=${ownStoreToggle.getAttribute('aria-checked')}` : 'no switch',
+          )
+          ownStoreView.root.unmount()
+          ownStoreView.stage.remove()
           const rowView = mount(Row, rowInject)
           await tick(40)
           const row = rowView.stage.querySelector('.dsh-dyslexia-row')
@@ -1983,9 +2018,25 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           // A host whose strict cordis refuses a service this module never
           // declared still draws the picture and still gets the row: `ctx.get`
           // is the read that does not need `inject`.
-          const strictHost = makeContext({})
+          const strictHost = makeContext({ noLocale: true })
+          const strictLocaleCalls = []
+          const strictLocale = {
+            register(namespace, dictionary) {
+              strictLocaleCalls.push([namespace, Object.keys(dictionary || {}).length])
+              return () => undefined
+            },
+          }
+          // Reading a service as a property on this host throws; only `ctx.get`
+          // answers. A bare `ctx.locale` would lose the strings, so the strings
+          // have to arrive through the reader.
+          Object.defineProperty(strictHost.ctx, 'locale', {
+            configurable: true,
+            get() {
+              throw new Error('cannot get property "locale" without inject')
+            },
+          })
           strictHost.ctx.get = function get(name) {
-            if (name === 'locale') return undefined
+            if (name === 'locale') return strictLocale
             if (name === 'configForms') return { get: () => settingsFace }
             return undefined
           }
@@ -2004,6 +2055,11 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             strictHost.defs.some((entry) => entry.def && entry.def.name === 'settings.general.item'),
             'a host whose services must be read through ctx.get still gets the row',
             `${strictHost.defs.length} defs`,
+          )
+          expect(
+            strictLocaleCalls.length === 1 && strictLocaleCalls[0][0] === 'dyslexia' && strictLocaleCalls[0][1] >= 8,
+            'a host that refuses undeclared properties still gets the strings registered',
+            JSON.stringify(strictLocaleCalls),
           )
           strictHost.dispose()
         } catch (error) {

@@ -15,11 +15,11 @@ ctx.slots.inject('settings.general.item', () => ctx.slots.register({
 - 槽名 MUST 是 `settings.general.item`（`kind: list`、`scope: root`）。
 - 注册项 `id` MUST 为稳定字面量 `@jiezhengj/dsh-dyslexia/visual-first`；`order` MUST 为 `62`（重复注册同 id 由宿主去重）。
 - 注册条件：`ctx.slots.inject`/`ctx.slots.register` 都是函数，且 `ctx.configForms.get('dsh-dyslexia')` 返回 face；否则整行不注册（不抛错、不占位，没有"不可用"状态）。
-- 组件 MUST NOT 依赖 owner 传入的任何 props；值从 `inject.hooks.visualFirst`（store）读取，写入路径从 `inject.setValue` 取得。
+- 组件 MUST 能读两种宿主形态：宿主把 `hooks` 展开成钩子 prop 时，值来自 `props.useVisualFirst(selector)`（DSH 的真实做法，见宿主 `dsh-client-ui-settings-general` 的 `DeveloperToolsRow`）；宿主原样传 `hooks` 时，值来自 `props.hooks.visualFirst`（`useSyncExternalStore`）。两种都没有时返回 `null`，不渲染半张行。写入路径一律来自 `inject.setValue`，回退目标来自 `inject.readHostValue`。
 - `createVisualFirstRow(face)` MUST 返回 `{ store, component, inject }`；`inject` MUST 始终带 `hooks.visualFirst`，MUST 带 `readHostValue`（= 再读一次 `readPreference(face)` 的快照），`setValue` MUST 仅在 host face 的 `set` 是函数时存在，否则整个键缺席。
-- 读者点击而 `inject.setValue` 缺席时，行 MUST 把开关放回宿主当前值（`readHostValue()` 重读快照）并显示 `settingFailed` 句，MUST NOT 静默停在读者点出的新值上。`readHostValue` 在有 face 时总会挂上（`src/client/settings.js:182-184`），而设置行只在有 face 时注册（`src/client/entry.js:133-134`），所以任何已挂载的行都有它；它缺席意味着没有 face、因而没有已挂载行，此时才用点击前捕获的值兜底。face 存在但快照不可读（缺 `getSnapshot`、抛错或缺字段）时，`readPreference`（`settings.js:41-51`）返回默认 `true`，恢复目标是 `true`，不是捕获值（见 `evidence.md` G12）。
+- 读者点击而 `inject.setValue` 缺席时，行 MUST 把开关放回宿主当前值（`readHostValue()` 重读快照）并显示 `settingFailed` 句，MUST NOT 静默停在读者点出的新值上。`readHostValue` 在有 face 时总会挂上（`src/client/settings.js:243-245`），而设置行只在有 face 时注册（`src/client/entry.js:167-168`），所以任何已挂载的行都有它；它缺席意味着没有 face、因而没有已挂载行，此时才用点击前捕获的值兜底。face 存在但快照不可读（缺 `getSnapshot`、抛错或缺字段）时，`readPreference`（`settings.js:48-58`）返回默认 `true`，恢复目标是 `true`，不是捕获值（见 `evidence.md` G12）。
 
-**回退目标**：写入被拒、reject 或 thenable 抛错时，行 MUST 把开关放回**宿主当前值**，而不是点击前捕获的值。DSH 的 `config-form` 在拒绝时会先重载自己的镜像并通知订阅者，然后才 resolve `false`（`dsh-client-ui-settings/src/client/config-form.ts` 的 `recover()`），所以点击前捕获的值可能比宿主的旧；两个窗口同时改值时，放回旧捕获值会覆盖别处写入的新值。`inject.readHostValue` 缺席不代表「有 face 但读不到」：它只要有 face 就挂上（`src/client/settings.js:182-184`），而设置行只在有 face 时注册（`src/client/entry.js:133-134`），所以任何已挂载的行都有它；缺席只意味着没有 face、没有已挂载行，只有那时才用捕获值兜底。face 存在但 `getSnapshot` 缺失或抛错时，`readPreference`（`settings.js:41-51`）返回默认 `true`（G12），不表示「读不到」，所以恢复目标是 `true` 而不是捕获值。
+**回退目标**：写入被拒、reject 或 thenable 抛错时，行 MUST 把开关放回**宿主当前值**，而不是点击前捕获的值。DSH 的 `config-form` 在拒绝时会先重载自己的镜像并通知订阅者，然后才 resolve `false`（`dsh-client-ui-settings/src/client/config-form.ts` 的 `recover()`），所以点击前捕获的值可能比宿主的旧；两个窗口同时改值时，放回旧捕获值会覆盖别处写入的新值。`inject.readHostValue` 缺席不代表「有 face 但读不到」：它只要有 face 就挂上（`src/client/settings.js:243-245`），而设置行只在有 face 时注册（`src/client/entry.js:167-168`），所以任何已挂载的行都有它；缺席只意味着没有 face、没有已挂载行，只有那时才用捕获值兜底。face 存在但 `getSnapshot` 缺失或抛错时，`readPreference`（`settings.js:48-58`）返回默认 `true`（G12），不表示「读不到」，所以恢复目标是 `true` 而不是捕获值。
 
 ## 数据面
 
@@ -29,7 +29,7 @@ ctx.slots.inject('settings.general.item', () => ctx.slots.register({
 | `face.subscribe(listener)` | `() => void` | 外部改动回调；`entry.js` 用 `ctx.effect` 注册清理 |
 | `face.set('visualFirst', next)` | `Promise<boolean>` | 写入；**resolve `true` 表示宿主接受**，resolve `false` 表示拒绝或跳过（DSH 的 `config-form` 在 `!response.ok` 时 `return false`），reject 表示调用本身失败 |
 | `row.inject` | `{ hooks: { visualFirst: store }, readHostValue?: () => boolean, setValue?: (next) => Promise<boolean> }` | 传给组件的 inject 面；`readHostValue` 再读一次宿主快照（回退时用）；`setValue` 只在 `typeof face.set === 'function'` 时挂上，否则整个键缺席 |
-| `row.store` | `{ get, set, subscribe }` | 组件用 `useSyncExternalStore` 读取；它也就是 `inject.hooks.visualFirst` |
+| `row.store` | `{ get, getSnapshot, set, subscribe }` | 也就是 `inject.hooks.visualFirst`。宿主把 hooks 展开成钩子时会调用 `getSnapshot`（`useSyncExternalStore(store.subscribe, store.getSnapshot)`），缺它宿主就抛 `getSnapshot is not a function`，整行消失——0.2.5 的真实故障。`get` 是给不展开 hooks 的宿主用的读法。 |
 
 ## DOM 与可访问性
 
