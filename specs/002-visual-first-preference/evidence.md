@@ -1149,3 +1149,26 @@ dsh-dyslexia@0.2.10 | client.js 787768 bytes | sources sha256:25fe69385f73720159
   `locale/` 8 files, `docs/` 9 entries, package version `0.2.10`
 - what a reader sees is unchanged from `0.2.9`: only the checks moved — the slot's owner key, the quiet paths of
   three guards, and one piece of dead code removed from `wireSettingsRow`
+
+## E-PUB · 0.2.11
+
+- commit `5b5b200`; tag `v0.2.11`; GitHub Actions run `45323036631` — `success`
+- registry tarball `dsh-dyslexia-0.2.11.tgz` answered HEAD 200 on poll 29 (10 s apart, about five minutes after the run);
+  `npm notice shasum: 1f0c7a262c0a60559833524b64ffac173ea906c9`; `npm notice total files: 33`;
+  provenance `logIndex=4068548518`
+
+```
+check-bundle: @jiezhengj/dsh-dyslexia@0.2.11 | client.js 787768 bytes | sources sha256:25576ab91ac35a54cd3ec710e0e2ba93 | all 51 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.2.11 | client.js 787768 bytes | sources sha256:25576ab91ac35a54cd3ec710e0e2ba93 | all 292 checks passed (/usr/bin/google-chrome)
+```
+
+## E-INS · 0.2.11
+
+- installed into the live `desktop` profile after `remove_bundle` returned `- @jiezhengj/dsh-dyslexia 0.2.10`;
+  `install_bundle @jiezhengj/dsh-dyslexia@0.2.11` answered `application: applied`, `version: 0.2.11`,
+  and the profile `package.json` dependency reads `"@jiezhengj/dsh-dyslexia": "0.2.11"`
+- the installed copy's `client.js` is 787768 bytes and hashes to
+  `14C6514A5D504676C04137D943A0D6B791A1441548C1160B6149280451A35975`, identical to the repository copy;
+  `locale/` 8 files, `docs/` 9 entries, package version `0.2.11`
+- what a reader sees is unchanged from `0.2.10`: this release only adds the missing assertion for the
+  settings-page claim and makes `run-harness` fail on a stale chunk

@@ -105,7 +105,7 @@
 - [x] **T065** `package-lock.json` 的 `version` 与 `packages[""].version` 从 `0.2.0` 改成 `0.2.11`。
 - [x] **T066** 探针 **P28**（删 `claimSettingsPage(ctx)` 调用）→ `FAIL the settings page is claimed with auto off, once per context — 0 configure calls for one context`、`1 failed, 50 passed`；**P29**（改源不重建）→ `run-harness: client.js is stale: rebuild it (chunk 25576ab9…, sources 77513faf…)`、exit 1。
 - [x] **T067** 文档：`evidence.md` 头注与 E-BLD/E-CHK/E-HARN 改用 `0.2.11` 单次运行输出（51 / 292、787768 字节、sources `25576ab9…`）、E-PROBE 补 P28/P29、G16 补"缺一个属性会让 48 条夹具停摆"、E-GAPS 改 "Fourteen gaps … G11–G17"。
-- [ ] **T068** 提交 `0.2.11`、打 tag、发布、装回 `desktop`、补 E-PUB/E-INS。
+- [x] **T068** 提交 `5b5b200` → tag `v0.2.11` → Actions run `45323036631` success（CI 51 / 292，shasum `1f0c7a262c0a60559833524b64ffac173ea906c9`，33 文件，logIndex `4068548518`）→ tarball 第 29 次轮询 200 → 装回 `desktop`（依赖 `"0.2.11"`、安装副本 787768 字节、SHA-256 `14C6514A…35975` 与仓库一致）→ E-PUB/E-INS 已补。
 - [ ] **T069** 第七轮两份独立评审；两份 PASS 才把 feature 002 标记完成。
 
 ## Dependencies
