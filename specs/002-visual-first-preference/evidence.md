@@ -1,6 +1,6 @@
 # Evidence — feature 002: the preference switch and the new name
 
-This file records what was actually observed while building feature 002. Each block is one run on one tree — E-PROBE is the exception, collecting one run per probe, the tree of each probe is named in the row itself (M1–M6 on `0.2.16`, M7–M8 on the `0.2.17` work tree, P19/P20 on `0.2.8`, P21–P23 on `0.2.9`, P24–P27 on `0.2.10`, P28–P35 on `0.2.11`, P36a–P36h on `0.2.14`, P37 on `0.2.15`, and the earlier F-group in the paragraph below; P24 and P30 were re-run on `0.2.11`, P29 on `0.2.13`); no block mixes trees silently. E-PUB/E-INS exist for every published version of this feature, `0.2.0` through `0.2.18` (the package also carries the earlier `0.1.x` line and one `0.0.0-stage` placeholder, which this file does not record); the current blocks are the `0.2.18` tree (63 static, 301 browser, one run copied line for line, build line included). The `0.2.1` blocks below (44 static, 251 browser) are kept as history; the `0.2.5` build line and the `0.2.5` check runs are summary lines in their own sections, not transcripts. **The current tree is `0.2.17`** (E-PUB/E-INS recorded below): 63 static and 301 browser checks, `client.js` 788314 bytes / 786797 characters, sources sha256 `91f138aa9db9da2310e3736835b3f88c`, file SHA-256 `543BBC001E9E92A95E6C033E4BBD5B1AA418B2A4574181478AB90D3D25053A41`. It replaced `0.2.14` (62 static / 299 browser, `client.js` 787768 bytes, sources sha256 `486b90e17026855e9e7d9e769845d106`, file SHA-256 `B1B3039E5B937AA9E69B4C0C6C8728A20CAA0CF36090B158F06DB1FFBFAC0F23`), which replaced `0.2.13` (55 static / 294 browser, `client.js` 787768 bytes, sources sha256 `bec49f4eeba79400e467078384088f38`, file SHA-256 `A22E6E3AA23E14CF927CF62E61E7EBD70307AEF5DDAB4615930DEE39771B70DF`), which replaced `0.2.12` (52 static / 292 browser, `client.js` 787768 bytes, sources sha256 `838eef8dcc57b574bd405b70689df2e9`, file SHA-256 `C58A4DD653B5973C7B60E3F8EE2658989E74EEEB6BD27192DA24B25540652F2C`), which replaced `0.2.11` (51 static / 292 browser, `client.js` 787768 bytes, sources sha256 `25576ab91ac35a54cd3ec710e0e2ba93`, file SHA-256 `14C6514A5D504676C04137D943A0D6B791A1441548C1160B6149280451A35975`), which replaced `0.2.10` (50 static / 292 browser, `client.js` 787768 bytes, sources sha256 `25fe69385f7372015944ae0b18386c31`), which replaced `0.2.9` (49 static / 287 browser, `client.js` 787688 bytes, sources sha256 `b6c17c26e57f7d50cd2ed86a9002ad28`), which replaced `0.2.8` (47 / 283, `client.js` 787325 bytes, sources sha256 `a82c554f992a9871b4b8dcdff8499f7b`). E-PROBE records F3–F8 on `0.2.1`, F1/F9 on the `0.2.3` tree, F10–F13 on `0.2.5`, F14 on `0.2.6`, F15 on `0.2.7`, P19/P20 on `0.2.8`, P21–P23 on `0.2.9`, P24–P27 on `0.2.10`, P28–P30 on `0.2.11`, P31/P32 on `0.2.12`, P29's re-run with P33–P35 on `0.2.13`, P36's eight cases on `0.2.14`, and P37 on `0.2.15`; the `0.2.4` tree itself was never probed, and `0.2.5` supersedes it (G10 discharged).
+This file records what was actually observed while building feature 002. Each block is one run on one tree — E-PROBE is the exception, collecting one run per probe, the tree of each probe is named in the row itself (M1–M6 on `0.2.16`, M7–M8 on the `0.2.17` work tree, P19/P20 on `0.2.8`, P21–P23 on `0.2.9`, P24–P27 on `0.2.10`, P28–P35 on `0.2.11`, P36a–P36h on `0.2.14`, P37 on `0.2.15`, and the earlier F-group in the paragraph below; P24 and P30 were re-run on `0.2.11`, P29 on `0.2.13`); no block mixes trees silently. E-PUB/E-INS exist for every published version of this feature, `0.2.0` through `0.2.18` (the package also carries the earlier `0.1.x` line and one `0.0.0-stage` placeholder, which this file does not record); the current blocks are the `0.2.18` tree (63 static, 301 browser, one run copied line for line, build line included). The `0.2.1` blocks below (44 static, 251 browser) are kept as history; the `0.2.5` build line and the `0.2.5` check runs are summary lines in their own sections, not transcripts. **The current tree is `0.2.18`** (E-PUB/E-INS recorded below): 63 static and 301 browser checks, `client.js` 788314 bytes / 786797 characters, sources sha256 `f258984ca46233bbc30fb4a1f5fc68d6`, file SHA-256 `CF19A8E078AAFF5F7A43F131C0456380D030A0A36462A7E433879B765FD12187`. It replaced `0.2.14` (62 static / 299 browser, `client.js` 787768 bytes, sources sha256 `486b90e17026855e9e7d9e769845d106`, file SHA-256 `B1B3039E5B937AA9E69B4C0C6C8728A20CAA0CF36090B158F06DB1FFBFAC0F23`), which replaced `0.2.13` (55 static / 294 browser, `client.js` 787768 bytes, sources sha256 `bec49f4eeba79400e467078384088f38`, file SHA-256 `A22E6E3AA23E14CF927CF62E61E7EBD70307AEF5DDAB4615930DEE39771B70DF`), which replaced `0.2.12` (52 static / 292 browser, `client.js` 787768 bytes, sources sha256 `838eef8dcc57b574bd405b70689df2e9`, file SHA-256 `C58A4DD653B5973C7B60E3F8EE2658989E74EEEB6BD27192DA24B25540652F2C`), which replaced `0.2.11` (51 static / 292 browser, `client.js` 787768 bytes, sources sha256 `25576ab91ac35a54cd3ec710e0e2ba93`, file SHA-256 `14C6514A5D504676C04137D943A0D6B791A1441548C1160B6149280451A35975`), which replaced `0.2.10` (50 static / 292 browser, `client.js` 787768 bytes, sources sha256 `25fe69385f7372015944ae0b18386c31`), which replaced `0.2.9` (49 static / 287 browser, `client.js` 787688 bytes, sources sha256 `b6c17c26e57f7d50cd2ed86a9002ad28`), which replaced `0.2.8` (47 / 283, `client.js` 787325 bytes, sources sha256 `a82c554f992a9871b4b8dcdff8499f7b`). E-PROBE records F3–F8 on `0.2.1`, F1/F9 on the `0.2.3` tree, F10–F13 on `0.2.5`, F14 on `0.2.6`, F15 on `0.2.7`, P19/P20 on `0.2.8`, P21–P23 on `0.2.9`, P24–P27 on `0.2.10`, P28–P30 on `0.2.11`, P31/P32 on `0.2.12`, P29's re-run with P33–P35 on `0.2.13`, P36's eight cases on `0.2.14`, and P37 on `0.2.15`; the `0.2.4` tree itself was never probed, and `0.2.5` supersedes it (G10 discharged).
 
 ## E-BLD · 0.2.1 build
 
@@ -1387,3 +1387,44 @@ dependencies:
 | package version in the installed tree | `0.2.17` |
 
 This release changes no visible behaviour: it makes the preference paragraph and the unconditional-wording guard fail-able, adds the language-change assertion, guards the settings-row registration, and records G23.
+
+## E-PUB · 0.2.18
+
+| Field | Value |
+| --- | --- |
+| commit | `de7e0b5` |
+| tag | `v0.2.18` |
+| workflow run | `45356279461` (success) |
+| tarball shasum | `a09212822af0612f0c315422a32be6a9eb3472cf` |
+| provenance | transparency log index `4073322883` |
+| packed files | 33 |
+
+```
+check-bundle: @jiezhengj/dsh-dyslexia@0.2.18 | client.js 788314 bytes | sources sha256:f258984ca46233bbc30fb4a1f5fc68d6 | all 63 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.2.18 | client.js 788314 bytes | sources sha256:f258984ca46233bbc30fb4a1f5fc68d6 | all 301 checks passed (/usr/bin/google-chrome)
+npm notice shasum: a09212822af0612f0c315422a32be6a9eb3472cf
+npm notice total files: 33
+```
+
+The registry copy of the tarball became available on the 29th poll (10 s apart, about five minutes after the run
+finished — the version document answers earlier than the tarball, every release so far).
+
+## E-INS · 0.2.18
+
+```
+$ plugin_manager remove_bundle @jiezhengj/dsh-dyslexia   # was 0.2.17
+- @jiezhengj/dsh-dyslexia 0.2.17
+$ plugin_manager install_bundle @jiezhengj/dsh-dyslexia@0.2.18
++ @jiezhengj/dsh-dyslexia 0.2.18
+```
+
+| Checked | Observed |
+| --- | --- |
+| `profiles/desktop/package.json` dependency | `"@jiezhengj/dsh-dyslexia": "0.2.18"` |
+| installed `client.js` size | 788,314 bytes (same as the repository root) |
+| installed `client.js` SHA-256 | `CF19A8E078AAFF5F7A43F131C0456380D030A0A36462A7E433879B765FD12187` (identical to the repository root) |
+| `locale/` and `docs/` | 8 and 9 files |
+| installed `package.json` version | `0.2.18` |
+
+This release changes what the evidence says, not what a reader sees: the build line now names its own version
+and fingerprint, the probe tables name their trees, and the same `src/` produces the same chunk.

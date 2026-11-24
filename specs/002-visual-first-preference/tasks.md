@@ -175,7 +175,18 @@ has an assertion that executes the shape it protects.
 - [x] **T112** 冻结语言三种变体都无法让 T110 的断言变红，说明该路径是重挂载而非原地更新；按"没断言的行为不能写成已验证"的规矩登记 **G23**，并把 `spec.md` 的 FR-017 改成读者可见的承诺。
 - [x] **T113** 证据与计数同步到 `0.2.17`（E-BLD/E-CHK/E-HARN 由单次运行重生成、头注、E-GAPS 二十项、`spec.md`/`plan.md`/`quickstart.md`）。
 - [x] **T114** 发版 `0.2.17` 并装回 `desktop`：commit `25042b8`、tag `v0.2.17`、run `45349634062`、shasum `03f1938f1491ff1048291d87efb9e852db9471c5`、logIndex `4072512077`、33 文件；装上后依赖 `"0.2.17"`、`client.js` 788314 字节、SHA-256 `543BBC00…3A41`、locale 8、docs 9（E-PUB/E-INS · 0.2.17）。
-- [ ] **T115** 第十四轮两份独立评审；两份 PASS 才把 feature 002 标记完成。
+- [x] **T115** 第十四轮两份独立评审：实现侧 **PASS**（`review-impl-002ad`，二十条探针全红；唯一 P2 是构建行不自带版本与指纹，已由 `build-client.mjs` 报告行修复），文档侧 **FAIL**（`review-docs-002ad`，11 条，见 Phase 17）。两份未同时 PASS，feature 002 仍未标记完成。
+
+
+## Phase 17：第十四轮文档评审的 11 条与 `0.2.18`
+
+- [x] **T116** `build-client.mjs` 的报告行自带版本与指纹（`@scope/name@version -> client.js (bytes, characters, engine, sources N, sources sha256:…, syntax ok)`），三块证据行从此都能自证来源。
+- [x] **T117** `evidence.md` 里属于 `0.2.13` 树的行号改为三处并列（harness `:1711`/`:1774`/`:1838`、check-bundle `:1528-1531`/`:1536`、check `#63` 为 `0.2.18` 值）。
+- [x] **T118** 探针树归属按轮次写清（P19/P20 `0.2.8`、P21–P23 `0.2.9`、P24–P27 `0.2.10`、P28–P35 `0.2.11`、P36a–P36h `0.2.14`、P37 `0.2.15`、M1–M6 `0.2.16`、M7–M8 `0.2.17`），M1 行的"第十三轮"改"第十二轮"。
+- [x] **T119** 探针算术统一：`quickstart.md`、`checklists/implementation.md`、`plan.md` 都改成"四十八条探针、E-PROBE 四十九行（含 F2 历史行）"。
+- [x] **T120** 其余文档更正：`plan.md:54` 缺口 `G11–G23`、`tasks.md` 的 Not done 补 G11/G23、T093 的 P37 红数改 `9 failed, 54 passed`、G9 的检查范围改 `check-bundle.mjs:450-477`、T010 的 harness 行号加"当时的 `0.2.3` 树"、`evidence.md` 的 E-BLD/E-CHK/E-HARN 三块由 `0.2.18` 单次运行整段重生成。
+- [x] **T121** 发版 `0.2.18` 并装回 `desktop`：commit `de7e0b5`、tag `v0.2.18`、run `45356279461`、shasum `a09212822af0612f0c315422a32be6a9eb3472cf`、logIndex `4073322883`；依赖 `"0.2.18"`、安装副本 788314 字节、`CF19A8E0…2187`、locale 8、docs 9、包内 0.2.18。
+- [ ] **T122** 第十五轮两份独立评审；两份 PASS 才把 feature 002 标记完成。
 
 ## Dependencies
 
