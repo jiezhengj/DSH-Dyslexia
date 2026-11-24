@@ -1048,3 +1048,27 @@ npm notice publish Provenance statement published to transparency log: https://s
   `locale/` 8 files, `docs/` 9 entries, package version `0.2.9`
 - what a reader sees is unchanged from `0.2.8`: `client.js` differs only in the version banner and in the
   refusal that is no longer logged; what changed are the checks behind the optimistic frame and the degraded faces
+
+## E-PUB · 0.2.10
+
+- commit `951b28c`; tag `v0.2.10`; GitHub Actions run `45318980674` — `success`
+- registry tarball `dsh-dyslexia-0.2.10.tgz` answered HEAD 200 on poll 29 (10 s apart, about five minutes after the run);
+  `npm notice shasum: 3baa6e7922ff2fbdb320146b4448909f315e7bcd`; `npm notice total files: 33`;
+  provenance `logIndex=4067826736`
+
+```
+dsh-dyslexia@0.2.10 | client.js 787768 bytes | sources sha256:25fe69385f7372015944ae0b18386c31 | all 50 checks passed
+dsh-dyslexia@0.2.10 | client.js 787768 bytes | sources sha256:25fe69385f7372015944ae0b18386c31 | all 292 checks passed (/usr/bin/google-chrome)
+```
+
+## E-INS · 0.2.10
+
+- installed into the live `desktop` profile after `remove_bundle` returned `- @jiezhengj/dsh-dyslexia 0.2.9`;
+  `install_bundle @jiezhengj/dsh-dyslexia@0.2.10` answered `application: applied`, `version: 0.2.10`
+  (pnpm `+ @jiezhengj/dsh-dyslexia 0.2.10`), and the profile `package.json` dependency reads
+  `"@jiezhengj/dsh-dyslexia": "0.2.10"`
+- the installed copy's `client.js` is 787768 bytes and hashes to
+  `1E51881A0F20F068387F2ED2A63CE2ED25B182FB30544EFDF94A2C16ECB3495B`, identical to the repository copy;
+  `locale/` 8 files, `docs/` 9 entries, package version `0.2.10`
+- what a reader sees is unchanged from `0.2.9`: only the checks moved — the slot's owner key, the quiet paths of
+  three guards, and one piece of dead code removed from `wireSettingsRow`

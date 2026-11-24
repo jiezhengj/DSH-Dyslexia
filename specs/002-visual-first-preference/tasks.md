@@ -95,7 +95,7 @@
 - [x] **T058** 源码：`wireSettingsRow` 里不可达的 `typeof slots.inject/register` 守卫删掉（`apply` 在 `slots` 不能注入/注册时已提前返回），只留 `if (!slots) return false`；残留的不可观测性记进 E-GAPS **G15**。
 - [x] **T059** 探针：**P24** 把 `SETTINGS_SLOT` 改成 `settings.general.item-x` → 静态 `FAIL the row is claimed through the slot name the host declares — settings.js does not name the general settings slot`（`1 failed, 49 passed`）、浏览器四条红；**P25** 去掉 face 守卫 → `[bad] a host whose face lookup finds nothing stays quiet — dsh-dyslexia: settings row TypeError: Cannot read properties of null (reading 'subscribe')`；**P26** 去掉 `configForms` 守卫 → `[bad] a host with no configForms stays quiet — … TypeError: Cannot read properties of undefined (reading 'get')`；**P27** 去掉 `slots` 守卫（改为 `if (false)`）在修好夹具后仍绿——因为 `apply` 已提前返回，故该守卫按死代码删除（记进 G15）。
 - [x] **T060** 文档：`evidence.md` 头注与 E-BLD/E-CHK/E-HARN 改用 `0.2.10` 单次运行输出（50 / 292、787768 字节、sources `25fe6938…`、file `1E51881A…`）、E-PROBE 补 P24–P27、E-GAPS 改「Twelve gaps…G2–G8、G11–G16」并新增 G15/G16、G12/G13 按新证据改写；`spec.md` 的 Status 与「待复评」两段改写为当前口径；`plan.md`/`quickstart.md`/`tasks.md` 的计数与探针数同步（50/292、二十三条）。
-- [ ] **T061** 版本升 `0.2.10` → 提交 → tag `v0.2.10` → 发布 → 装回 `desktop` → 补 E-PUB/E-INS。
+- [x] **T061** 版本升 `0.2.10` → 提交 `951b28c` → tag `v0.2.10` → Actions run `45318980674` success（CI 50 / 292，shasum `3baa6e79…`，33 文件，logIndex `4067826736`）→ tarball 第 29 次轮询 200 → 装回 `desktop`（依赖 `"0.2.10"`，安装副本 787768 字节、`1E51881A…3495B`，`locale/` 8、`docs/` 9）→ E-PUB/E-INS 已补。
 - [ ] **T062** 第六轮两份独立评审（文档 + 实现），两份 PASS 才把 feature 002 标记完成。
 
 ## Dependencies
