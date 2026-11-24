@@ -782,7 +782,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.2.16 | client.js 788059 bytes | sources 
 run-harness: @jiezhengj/dsh-dyslexia@0.2.16 | client.js 788059 bytes | sources sha256:7e984e470550cfe58ad02d65d94c7b4a | all 299 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
-## E-LIVE — the row and the new name on a running host (`0.2.6`, re-checked on `0.2.8` and `0.2.9`; not re-run for `0.2.15`)
+## E-LIVE — the row and the new name on a running host (`0.2.6`, re-checked on `0.2.8` and `0.2.9`; not re-run for `0.2.15` or `0.2.16`)
 
 What was run: the shipped desktop build (`@deepseek-ai/dsh-desktop` `0.2.2-rc.5`) with the web surface, on a
 throwaway profile so nothing in the reader's own profile was touched:
