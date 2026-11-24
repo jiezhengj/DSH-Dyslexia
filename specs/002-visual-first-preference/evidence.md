@@ -1273,3 +1273,46 @@ The registry took 29 polls of the tarball URL before it answered `200`, about fi
 The live observations above are from `0.2.6`, `0.2.8` and `0.2.9`; `0.2.15` was not re-run on a host, so what it changes is covered by the two checks named here (the row itself is unchanged since `0.2.9`).
 
 Nothing a reader sees changed from `0.2.14`: the row, the switch and the drawings are the same code. What changed is that a host which refuses undeclared properties no longer produces one warning per refusal path, and a context is not marked as handled before the briefing section exists — the first has a source-shape check and a probe (P36a), the second has a static check and a probe (P37).
+
+## E-PUB · 0.2.16
+
+| item | value |
+|---|---|
+| commit | `47170a2` — `0.2.16: make the engine sentence and the refusal filter fail-able` |
+| tag | `v0.2.16` |
+| workflow run | `45345541218` (success) |
+| tarball shasum | `48e20e140732df218501cbe810d9f2675e6f899e` |
+| provenance | [log index `4071895779`](https://search.sigstore.dev/?logIndex=4071895779) |
+| package files | 33 |
+
+The workflow checked the same tree before it published: `check-bundle: @jiezhengj/dsh-dyslexia@0.2.16 | client.js 788059 bytes | sources sha256:7e984e470550cfe58ad02d65d94c7b4a | all 63 checks passed`, then `run-harness: @jiezhengj/dsh-dyslexia@0.2.16 | client.js 788059 bytes | sources sha256:7e984e470550cfe58ad02d65d94c7b4a | all 299 checks passed (/usr/bin/google-chrome)`, then `npm notice shasum: 48e20e140732df218501cbe810d9f2675e6f899e` and `npm notice total files: 33`.
+
+Registry: the version document answered `0.2.16` first; the tarball (`https://registry.npmjs.org/@jiezhengj/dsh-dyslexia/-/dsh-dyslexia-0.2.16.tgz`) returned HTTP 200 on the 29th poll (10 s apart, about 5 minutes) — the same lag every release has.
+
+## E-INS · 0.2.16
+
+Install into the live profile, after removing the version that was there:
+
+```
+{ "stage": "remove", "target": "@jiezhengj/dsh-dyslexia", "changed": true, "application": "applied" }
+  dependencies:
+  - @jiezhengj/dsh-dyslexia 0.2.15
+{ "stage": "enable", "target": "@jiezhengj/dsh-dyslexia", "enabled": true, "changed": true,
+  "application": "applied", "version": "0.2.16" }
+  dependencies:
+  + @jiezhengj/dsh-dyslexia 0.2.16
+```
+
+What the profile holds afterwards (`C:\Users\jiezhengj\.dsh\profiles\desktop`):
+
+| item | value |
+|---|---|
+| dependency in `package.json` | `"@jiezhengj/dsh-dyslexia": "0.2.16"` |
+| installed `client.js` | 788,059 bytes |
+| installed `client.js` SHA-256 | `2AB27E73F7B8E8BBFA171AADAAD6A919DB8D3DF8240CCD97275E8954A2908A1F` |
+| repository `client.js` SHA-256 | `2AB27E73F7B8E8BBFA171AADAAD6A919DB8D3DF8240CCD97275E8954A2908A1F` (identical) |
+| `locale/` files | 8 |
+| `docs/` files | 9 |
+| version inside the installed package | `0.2.16` |
+
+This version changes nothing a reader sees: `client.js` carries the same 788,059 bytes as `0.2.15` because what changed is the checks (`check-bundle.mjs`, `verify/harness/index.html`) and the records — not `src/`. The settings row, its two sentences and the eight titles are the ones E-LIVE describes.

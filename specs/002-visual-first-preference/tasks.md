@@ -161,7 +161,7 @@ has an assertion that executes the shape it protects.
 - [x] **T102** 夹具条件守卫加两道：条件必须做比较或查询（`!!x`、`x === x` 都不算），且 `needed` 里删掉那条夹具自检（`the fixture really replaced the drawing node`），换成上一条的名字（仍 43 条）。六个只靠真值判断的旧断言补上比较（样式表消失、两种 throwing getter、溢出对照）。探针：把任一 `needed` 断言的条件换成 `!!CODE` 或 `quietZoom === quietZoom` → `FAIL the fixtures assert what the fixes promise, and can fail — fixture assertions without a condition: …`。
 - [x] **T103** 裸 chunk 的 `includes` 改读 `stripComments(chunk)`（引擎守卫、槽位守卫两处），探针 M6（把 `pele.mount` 判断删掉、只留同名注释）现在红：`FAIL an engine that fails to load leaves the picture to the host — the layer does not check the engine before drawing`。
 - [x] **T104** 证据与 README 的诚实度：P37 行改成实测（把 `claimed.add(ctx)` 整行移到守卫之前 → `9 failed, 54 passed`，首行 `FAIL the host half can be loaded and apply once — host half added 0 sections on load`，浏览器套件仍全绿）；E-LIVE 标题标「未在 `0.2.15` 重跑」并补一句说明；九份 README 的「一次 Web 观察」改成三次（`0.2.6`/`0.2.8`/`0.2.9`）；G3 的窄栏措辞改成「夹具确实在 360px 舞台里渲染，但没有断言它不溢出，也没有 200% 字号」。
-- [ ] **T105** 发 `0.2.16`（63 静态 / 299 浏览器、`sources sha256:7e984e47…`、788059 字节）、发布、装回 `desktop`、补 E-PUB/E-INS。
+- [x] **T105** 发 `0.2.16`（63 静态 / 299 浏览器、`sources sha256:7e984e47…`、788059 字节）、发布会话 `45345541218`（shasum `48e20e14…`、logIndex `4071895779`、33 文件）、注册表 tarball 第 29 次轮询 200、卸 0.2.15 装 0.2.16（依赖 `"0.2.16"`、安装副本 788059 字节、SHA-256 `2AB27E73…8A1F` 与仓库根逐字节相同、`locale/` 8、`docs/` 9）、E-PUB/E-INS 已补。
 - [ ] **T106** 第十三轮两份独立评审；两份 PASS 才把 feature 002 标记完成。
 
 ## Dependencies
