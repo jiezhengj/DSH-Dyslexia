@@ -782,7 +782,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.2.16 | client.js 788059 bytes | sources 
 run-harness: @jiezhengj/dsh-dyslexia@0.2.16 | client.js 788059 bytes | sources sha256:7e984e470550cfe58ad02d65d94c7b4a | all 299 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
-## E-LIVE — the row and the new name on a running host (`0.2.6`, re-checked on `0.2.8` and `0.2.9`; not re-run for `0.2.15` or `0.2.16`)
+## E-LIVE — the row and the new name on a running host (`0.2.6`, re-checked on `0.2.8`, `0.2.9` and `0.2.16`)
 
 What was run: the shipped desktop build (`@deepseek-ai/dsh-desktop` `0.2.2-rc.5`) with the web surface, on a
 throwaway profile so nothing in the reader's own profile was touched:
@@ -862,6 +862,26 @@ The warnings are the strict-inject path working as designed: `optional()` tries 
 `locale`/`configForms` that way on this host, falls back to the bare property, is refused, and reports the
 refusal. Nothing is broken — but a plugin that logs an expected refusal on every boot teaches readers to ignore
 its log. `0.2.9` stops reporting `cannot get property "…" without inject` and keeps reporting everything else.
+
+### the 0.2.16 re-check — the published build, a throwaway profile, and a console that stays quiet
+
+The release installed into the live profile is the code in this tree, but the row had last been watched on `0.2.9`. So on 2026-11-24 the published `0.2.16` was checked the same way the earlier ones were: a throwaway profile (`webcheck4`, made with `--from-default-profile web`, deleted afterwards), `plugin add "@jiezhengj/dsh-dyslexia@0.2.16"`, then `dsh web --no-open --port 0`, which printed `dsh web: http://127.0.0.1:62093/?token=…`.
+
+- The account menu (`button "账号菜单"`, closed) offers `menuitem "设置"`; the settings dialog opens on `通用设置`.
+- The row is there: `StaticText "优先用图，而不是成段文字"`, its sentence `当一张图比一段话更好懂时，模型会画图，文字只留图讲不清的部分。`, and `switch "优先用图，而不是成段文字" [checked=true]`, sitting between `性能与用量` and `在使用官方模型 API 时上传 Session Log`.
+- Clicking the switch turns it to `[checked=false]`, shows the `role="status"` line `已保存`, and writes the choice where the host keeps it:
+
+```
+- id: dsh-dyslexia
+  name: "@jiezhengj/dsh-dyslexia"
+  config:
+    visualFirst: false
+```
+
+- The console is quiet: a plain read shows no `dsh-dyslexia:` line at all. To show that the capture was live rather than empty, a marker was written from the page itself (`console.warn('probe-marker-456')`) and came back as the only entry — so "no warning from the plugin" is an observation, not a blind spot.
+- The profile was then deleted and the server stopped, so nothing of the check remains on the machine.
+
+What this does **not** cover is still open in E-GAPS: the desktop window (its settings live in a separate document this window offers no control for), the model's side of the switch (two prompts, one effect), and the 200% zoom layout.
 
 ## E-GAPS — not proven here
 
