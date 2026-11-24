@@ -1363,10 +1363,18 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           // picture is scaled, and they have to be just as reachable then.
           if (reachable.length > 0) {
             reachable[0].click()
-            await tick(150)
-            const zoomed = Array.prototype.slice
-              .call(wideStage.querySelectorAll('button'))
-              .filter((node) => !node.closest('.dsh-dyslexia-bar'))
+            // The engine rebuilds its controls after a zoom, and how long that takes
+            // is a property of the browser, not of the plugin: poll for the second and
+            // third button instead of trusting one timeout (this assertion went red on
+            // the CI machine while it stayed green here).
+            let zoomed = []
+            for (let attempt = 0; attempt < 40; attempt += 1) {
+              await tick(50)
+              zoomed = Array.prototype.slice
+                .call(wideStage.querySelectorAll('button'))
+                .filter((node) => !node.closest('.dsh-dyslexia-bar'))
+              if (zoomed.length > 1) break
+            }
             const zoomedReachable = zoomed.filter(
               (node) => node.disabled !== true && node.offsetParent !== null && node.getClientRects().length > 0,
             )
