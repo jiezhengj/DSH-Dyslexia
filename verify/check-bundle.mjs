@@ -1053,6 +1053,20 @@ check('the settings page is claimed with auto off, once per context', () => {
   return `configure(${JSON.stringify(options)}) on the calling context`
 })
 
+check('a context is claimed only once a section is registered', () => {
+  // A context claimed before the host hands over `systemPrompt` never got its
+  // briefing, even when the service arrived a moment later: the claim was taken
+  // and the early return kept it. The claim now follows the guard.
+  const source = readCode('index.js')
+  const guardAt = source.indexOf("typeof prompt.section !== 'function') return")
+  assert(guardAt !== -1, 'index.js no longer guards the missing systemPrompt')
+  const claimAt = source.indexOf('claimed.add(ctx)', guardAt)
+  assert(claimAt !== -1, 'index.js does not claim the context after the guard')
+  const before = source.slice(0, guardAt)
+  assert(before.lastIndexOf('claimed.add(ctx)') === -1 || before.lastIndexOf('claimed.add(ctx)') < source.indexOf('export function apply'), 'index.js still claims the context before a section is registered')
+  return 'the claim is taken after a section exists, so a host that gains systemPrompt later still gets its briefing'
+})
+
 check('the host half adds one section per context, not one per call', () => {
   const sections = []
   const ctx = {
@@ -1295,15 +1309,20 @@ check('a host that refuses undeclared services is not reported as a fault', () =
   // The host answers every undeclared read with `cannot get property "…" without
   // inject`. That is the path this module plans for, so reporting it warned in
   // every reader's console on every start — and nothing failed when the guard
-  // was removed.
+  // was removed. Both reads are guarded: `ctx.get` (a strict host refuses it the
+  // same way) and the property fallback.
   const entry = readCode('src/client/entry.js')
-  const at = entry.indexOf('/without inject/')
-  assert(at !== -1, 'entry.js no longer recognises the refusal sentence')
-  const lineEnd = entry.indexOf('\n', at)
-  const line = entry.slice(entry.lastIndexOf('\n', at), lineEnd === -1 ? undefined : lineEnd)
-  assert(/if \(!\/without inject\/\.test\(/.test(line), 'the refusal is no longer guarded before it is reported')
-  assert(/report\(name, error\)/.test(line), 'the drop is no longer reported at all')
-  return 'a refusal is recognised by its sentence, and only other faults reach console.warn'
+  const guarded = (sentence, reportCall) => {
+    const at = entry.indexOf(sentence)
+    if (at === -1) return false
+    const lineEnd = entry.indexOf('\n', at)
+    const line = entry.slice(entry.lastIndexOf('\n', at), lineEnd === -1 ? undefined : lineEnd)
+    return /if \(!\/without inject\/\.test\(/.test(line) && line.indexOf(reportCall) !== -1
+  }
+  assert(entry.indexOf('/without inject/') !== -1, 'entry.js no longer recognises the refusal sentence')
+  assert(guarded("/without inject/.test(String(error && error.message))) report(name + ' via get'", "report(name + ' via get'"), 'the ctx.get refusal is reported as a fault')
+  assert(guarded("/without inject/.test(String(error && error.message))) report(name, error)", 'report(name, error)'), 'the property refusal is reported as a fault')
+  return 'both undeclared-service reads recognise the refusal sentence, and only other faults reach console.warn'
 })
 
 check('a fence that failed comes back when its source changes', () => {
@@ -1479,7 +1498,7 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
 
 /* ---------------------------------------------------------------- report */
 
-const EXPECTED_CHECKS = 62
+const EXPECTED_CHECKS = 63
 if (notices.length + failures.length !== EXPECTED_CHECKS) {
   failures.push(
     `[FAIL] the suite has ${notices.length + failures.length} checks, expected ${EXPECTED_CHECKS}: a check was added or removed without updating this number`,

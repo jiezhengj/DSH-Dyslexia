@@ -57,7 +57,10 @@ function optional(ctx, name) {
       const value = ctx.get(name)
       if (value !== undefined) return value
     } catch (error) {
-      report(name + ' via get', error)
+      // Same sentence, same meaning: a strict host answers `ctx.get` for an
+      // optional service the way it answers the property read, so both paths
+      // filter it out and neither turns a designed absence into a warning.
+      if (!/without inject/.test(String(error && error.message))) report(name + ' via get', error)
     }
   }
   try {

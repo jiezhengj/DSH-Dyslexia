@@ -81,17 +81,20 @@ function briefing(config) {
 
 export function apply(ctx, config) {
   try {
-    if (ctx !== null && ctx !== undefined && (typeof ctx === 'object' || typeof ctx === 'function')) {
-      // A host that calls `apply` twice on one context would otherwise get two
-      // identical sections, which shows up twice in the model's briefing.
-      if (claimed.has(ctx)) return
-      claimed.add(ctx)
-    }
+    // A host that calls `apply` twice on one context would otherwise get two
+    // identical sections, which shows up twice in the model's briefing. The
+    // claim is taken below, once a section is really registered.
+    if (ctx !== null && ctx !== undefined && (typeof ctx === 'object' || typeof ctx === 'function') && claimed.has(ctx)) return
     // The switch owns its own row in the client half; a generated page would be
     // a second place to change the same value.
     claimSettingsPage(ctx)
     const prompt = ctx === null || ctx === undefined ? undefined : ctx.systemPrompt
     if (!prompt || typeof prompt.section !== 'function') return
+    // Claimed only once a section is really registered: a host that gains
+    // `systemPrompt` later still gets its briefing, and the de-duplication below
+    // still holds because the second call finds the context already claimed.
+    if (claimed.has(ctx)) return
+    claimed.add(ctx)
     const result = prompt.section({
       name: SECTION_NAME,
       order: SECTION_ORDER,
