@@ -84,7 +84,7 @@
 - [x] **T050** `src/client/entry.js` 的 `optional()` 不再报告 strict cordis 的 `cannot get property "…" without inject`（预期路径），其余错误照旧上报；依据是 `0.2.8` 真机复核时控制台留下的 `dsh-dyslexia: locale` 与 `dsh-dyslexia: configForms` 两条警告。
 - [x] **T051** 真机复核 `0.2.8`（第二个 throwaway profile `webcheck2`）：设置行、点击写入 `cordis.patch.yml`、**重启后仍为关闭**、**卸载后行消失**、控制台两条我们自己的警告；入口是 `账号菜单`（更多）→ `menuitem "设置"`，菜单里标出快捷键 `Ctrl+Alt+,`。
 - [x] **T052** 文档：`evidence.md` 头注改 `0.2.9`、E-BLD/E-CHK/E-HARN 用 `0.2.9` 单次运行输出整段重写、E-PROBE 补 P21–P23、E-LIVE 增加 `0.2.8` 复核小节（重启保持、卸载回退、两条警告）并把 console 行改成按版本记录、`spec.md` Status 与完成段改 `0.2.9`、`plan.md`/`quickstart.md` 计数改 49 / 287、quickstart 探针列表补 F14/F15/P19–P23。
-- [ ] **T053** 发版 `0.2.9`：重建 → 两套全绿 → commit → tag `v0.2.9` → Actions 发布 → 装回 `desktop` → 补 E-PUB/E-INS。
+- [x] **T053** 发版 `0.2.9`：commit `dcf9293` → tag `v0.2.9` → Actions run `45314418891` success（shasum `8a1204246b01652a6c84756a2878e9ae0d695d85`、logIndex `4066763564`、33 files）→ registry 第 29 次轮询可下载 → `remove_bundle` 卸 0.2.8 → `install_bundle @0.2.9` applied（profile 依赖 `"0.2.9"`、安装副本 787688 字节 / `95DEBB6B…9981`）→ E-PUB/E-INS 已填。
 - [ ] **T054** 第五轮两份独立评审，两份 PASS 才把 feature 002 标记完成。
 
 ## Dependencies

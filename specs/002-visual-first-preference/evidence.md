@@ -1008,3 +1008,33 @@ npm notice publish Provenance statement published to transparency log: https://s
 - what a reader sees is unchanged from `0.2.7`: `client.js` carries the same code and only the version banner
   differs. What changed is two static checks that now execute the reader and read the refusal branch instead of
   matching source text (P19/P20)
+
+## E-PUB · 0.2.9
+
+- commit `dcf9293` ("0.2.9: make the optimistic frame and a degraded face assertable; stop reporting expected
+  refusals"), tag `v0.2.9` ("0.2.9: the optimistic frame and a degraded face are now observable"), both pushed
+  to `main`
+- GitHub Actions run `45314418891`, conclusion `success`, workflow `publish`, head branch `v0.2.9`
+- CI lines from that run:
+
+```
+check-bundle: @jiezhengj/dsh-dyslexia@0.2.9 | client.js 787688 bytes | sources sha256:b6c17c26e57f7d50cd2ed86a9002ad28 | all 49 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.2.9 | client.js 787688 bytes | sources sha256:b6c17c26e57f7d50cd2ed86a9002ad28 | all 287 checks passed (/usr/bin/google-chrome)
+npm notice shasum: 8a1204246b01652a6c84756a2878e9ae0d695d85
+npm notice total files: 33
+npm notice publish Provenance statement published to transparency log: https://search.sigstore.dev/?logIndex=4066763564
+```
+
+- the tarball answered HEAD 200 on poll 29 (10 s apart), about five minutes after the run
+
+## E-INS · 0.2.9
+
+- installed into the live `desktop` profile after `remove_bundle` returned `- @jiezhengj/dsh-dyslexia 0.2.8`;
+  `install_bundle @jiezhengj/dsh-dyslexia@0.2.9` answered `application: applied`, `version: 0.2.9`
+  (pnpm `+ @jiezhengj/dsh-dyslexia 0.2.9`), and the profile `package.json` dependency reads
+  `"@jiezhengj/dsh-dyslexia": "0.2.9"`
+- the installed copy's `client.js` is 787688 bytes and hashes to
+  `95DEBB6B71946111B5371B3480C3F19B09DE35516A10EF007747CAA88D9C9981`, identical to the repository copy;
+  `locale/` 8 files, `docs/` 9 entries, package version `0.2.9`
+- what a reader sees is unchanged from `0.2.8`: `client.js` differs only in the version banner and in the
+  refusal that is no longer logged; what changed are the checks behind the optimistic frame and the degraded faces
