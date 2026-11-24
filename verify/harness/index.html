@@ -1171,6 +1171,11 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
               `a hostile host block still leaves the message — ${scenario.label}`,
               view.threw ? String(view.threw).slice(0, 60) : `text=${text.slice(0, 24)}`,
             )
+            expect(
+              view.stage.textContent.indexOf(BAD) !== -1,
+              `a hostile host block still leaves the source text — ${scenario.label}`,
+              JSON.stringify(view.stage.textContent.slice(0, 40)),
+            )
             view.root.unmount()
             view.stage.remove()
           }

@@ -1,4 +1,4 @@
-/*! @jiezhengj/dsh-dyslexia 0.2.12 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:838eef8dcc57b574bd405b70689df2e9 */
+/*! @jiezhengj/dsh-dyslexia 0.2.13 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:bec49f4eeba79400e467078384088f38 */
 ;(function () {
   function reportLoadFailure(scope, error) {
     try { console.error('dsh-dyslexia: ' + scope, error) } catch (_error) {}
@@ -1564,7 +1564,7 @@ function apply(ctx) {
  * cannot write still gets a row, and the row itself treats the click as failed.
  */
 function wireSettingsRow(ctx) {
-  // pply already returned when slots cannot inject or register, so this is
+  // apply already returned when slots cannot inject or register, so this is
   // only the second call path's own check; anything deeper would be dead code.
   const slots = optional(ctx, 'slots')
   if (!slots) return false

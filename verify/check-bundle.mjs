@@ -774,7 +774,7 @@ check('every language carries the same complete sentences', () => {
   return `${keys.length} keys x 8 languages, no engine text in labels`
 })
 
-function sourceFingerprint() {
+function sourceFingerprintWith(engine) {
   // Same normalisation as the builder: CRLF and LF checkouts must agree.
   const fragments = ['styles.js', 'i18n.js', 'figure.js', 'view.js', 'settings.js', 'entry.js'].map((name) =>
     read(`src/client/${name}`).replace(/\r\n/g, '\n'),
@@ -788,7 +788,17 @@ function sourceFingerprint() {
     hash.update(text)
     hash.update('\u0000')
   })
+  hash.update(engine)
+  hash.update('\u0000')
   return hash.digest('hex').slice(0, 32)
+}
+
+// The engine bundle is embedded in the chunk too; leaving it out of the digest
+// would let two different chunks carry the same banner.
+const ENGINE_TEXT = read('vendor/pele/pele.global.js').replace(/\r\n/g, '\n')
+
+function sourceFingerprint() {
+  return sourceFingerprintWith(ENGINE_TEXT)
 }
 
 // The builder exports its assembly, so the committed chunk can be compared with
@@ -818,6 +828,41 @@ check('client.js matches the sources it claims', () => {
     `client.js is not the bytes its sources produce (${Buffer.byteLength(chunk, 'utf8')} bytes on disk vs ${Buffer.byteLength(rebuilt.chunk, 'utf8')} rebuilt; ${describeDifference(chunk, rebuilt.chunk)})`,
   )
   return `${expected}, ${Buffer.byteLength(chunk, 'utf8')} bytes rebuilt from the six sources`
+})
+
+check('the fingerprint covers the engine bundle, not only the six client sources', () => {
+  const fingerprint = sourceFingerprint()
+  const withoutEngine = sourceFingerprintWith('')
+  const oneByte = sourceFingerprintWith(ENGINE_TEXT + ' ')
+  assert(fingerprint !== withoutEngine, 'the engine bundle does not take part in the fingerprint')
+  assert(fingerprint !== oneByte, 'one character added to the engine bundle leaves the fingerprint unchanged')
+  assert(ENGINE_TEXT.length > 0, 'the engine bundle is empty')
+  return `${ENGINE_TEXT.length} characters of engine inside the digest`
+})
+
+check('the lockfile names the version the manifest ships', () => {
+  const lock = JSON.parse(read('package-lock.json'))
+  const root = (lock.packages && lock.packages['']) || {}
+  assert(lock.version === manifest.version, `package-lock.json says ${lock.version}, package.json says ${manifest.version}`)
+  assert(
+    root.version === manifest.version,
+    `the lockfile's root entry says ${root.version}, package.json says ${manifest.version}`,
+  )
+  return `package-lock.json and package.json both ${manifest.version}`
+})
+
+check('the two host-side resources are handed to ctx.effect as disposables', () => {
+  const entry = readCode('src/client/entry.js')
+  assert(/const drop = \(\) => removeFigureStyles\(styleElement\)/.test(entry), 'the stylesheet has no drop of its own')
+  assert(
+    /ctx\.effect\(\(\) => drop, 'dsh-dyslexia: figure styles'\)/.test(entry),
+    'the stylesheet drop is not returned from a ctx.effect setup',
+  )
+  assert(
+    /ctx\.effect\(register, 'dsh-dyslexia: figure strings'\)/.test(entry),
+    'the locale registration is not handed to ctx.effect, so nothing can unregister it',
+  )
+  return 'stylesheet and strings both registered as effects that return a disposer'
 })
 
 check('the picture is the image, and the copy answer is announced', () => {
@@ -1354,7 +1399,7 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
 
 /* ---------------------------------------------------------------- report */
 
-const EXPECTED_CHECKS = 52
+const EXPECTED_CHECKS = 55
 if (notices.length + failures.length !== EXPECTED_CHECKS) {
   failures.push(
     `[FAIL] the suite has ${notices.length + failures.length} checks, expected ${EXPECTED_CHECKS}: a check was added or removed without updating this number`,

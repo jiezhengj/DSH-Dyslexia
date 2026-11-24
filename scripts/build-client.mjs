@@ -31,6 +31,9 @@ const SELF = fileURLToPath(import.meta.url)
 const ROOT = dirname(dirname(SELF))
 const OUTPUT = join(ROOT, 'client.js')
 const SOURCES = ['styles.js', 'i18n.js', 'figure.js', 'view.js', 'settings.js', 'entry.js']
+// The chunk also embeds the engine bundle, so the fingerprint has to cover it:
+// otherwise two different chunks could carry the same banner.
+const ENGINE_SOURCE = 'vendor/pele/pele.global.js'
 
 function fail(message) {
   process.stderr.write(`build-client: ${message}\n`)
@@ -42,7 +45,7 @@ function fail(message) {
  * stale `client.js` can be detected instead of published. `verify/check-bundle.mjs`
  * recomputes it from the same inputs.
  */
-function sourceFingerprint(manifest, fragments) {
+function sourceFingerprint(manifest, fragments, engine) {
   const hash = createHash('sha256')
   hash.update(manifest.name)
   hash.update('\u0000')
@@ -52,6 +55,8 @@ function sourceFingerprint(manifest, fragments) {
     hash.update(text)
     hash.update('\u0000')
   })
+  hash.update(engine)
+  hash.update('\u0000')
   return hash.digest('hex').slice(0, 32)
 }
 
@@ -117,7 +122,7 @@ export function buildChunk(root = ROOT) {
   const vendorPath = join(root, 'vendor', 'pele', 'pele.global.js')
   if (!existsSync(vendorPath)) throw new Error(`missing ${vendorPath}; see quickstart.md for how to vendor it`)
 
-  const vendor = readFileSync(vendorPath, 'utf8')
+  const vendor = readFileSync(vendorPath, 'utf8').replace(/\r\n/g, '\n')
   if (!vendor.includes('var pele=(()=>{')) throw new Error('vendor/pele/pele.global.js is not the global build')
   if (!vendor.trimEnd().endsWith('})();')) throw new Error('vendor/pele/pele.global.js is truncated')
   if (vendor.includes('sourceMappingURL')) throw new Error('vendored engine must not point at a source map')
@@ -142,7 +147,7 @@ export function buildChunk(root = ROOT) {
   })
 
   const banner = [
-    `/*! ${manifest.name} ${manifest.version} | MIT | bundles Pele ${engineVersion} (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:${sourceFingerprint(manifest, fragments)} */`,
+    `/*! ${manifest.name} ${manifest.version} | MIT | bundles Pele ${engineVersion} (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:${sourceFingerprint(manifest, fragments, vendor)} */`,
     '',
   ].join('\n')
 
