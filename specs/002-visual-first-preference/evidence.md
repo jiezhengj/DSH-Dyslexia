@@ -1,6 +1,6 @@
 # Evidence — feature 002: the preference switch and the new name
 
-This file records what was actually observed while building feature 002. Each block is one run on one tree — E-PROBE is the exception, collecting one run per probe, the tree of each probe is named in the list just below the table; F1, F9, F14, F15, P24 and P30 also name it inside their row (P24 and P30 were re-run on `0.2.11` after the seventh review); no block mixes trees silently. E-PUB/E-INS exist for every published version, `0.2.0` through `0.2.11`. The `0.2.1` blocks below (44 static, 251 browser) are kept as history; the `0.2.5` build line and the `0.2.5` check runs are summary lines in their own sections, not transcripts. **The current tree is `0.2.11`**, committed, released and installed — the same tree this file's current blocks measured: 51 static and 292 browser checks, `client.js` 787768 bytes / 786251 characters, sources sha256 `25576ab91ac35a54cd3ec710e0e2ba93`, file SHA-256 `14C6514A5D504676C04137D943A0D6B791A1441548C1160B6149280451A35975`. It replaced `0.2.10` (50 static / 292 browser, `client.js` 787768 bytes, sources sha256 `25fe69385f7372015944ae0b18386c31`), which replaced `0.2.9` (49 static / 287 browser, `client.js` 787688 bytes, sources sha256 `b6c17c26e57f7d50cd2ed86a9002ad28`), which replaced `0.2.8` (47 / 283, `client.js` 787325 bytes, sources sha256 `a82c554f992a9871b4b8dcdff8499f7b`). E-PROBE records F3–F8 on `0.2.1`, F1/F9 on the `0.2.3` tree, F10–F13 on `0.2.5`, F14 on `0.2.6`, F15 on `0.2.7`, P19/P20 on `0.2.8`, P21–P23 on `0.2.9`, P24–P27 on `0.2.10`, and P28/P29 on `0.2.11`; the `0.2.4` tree itself was never probed, and `0.2.5` supersedes it (G10 discharged).
+This file records what was actually observed while building feature 002. Each block is one run on one tree — E-PROBE is the exception, collecting one run per probe, the tree of each probe is named in the list just below the table; F1, F9, F14, F15, P24 and P30 also name it inside their row (P24 and P30 were re-run on `0.2.11` after the seventh review); no block mixes trees silently. E-PUB/E-INS exist for every published version, `0.2.0` through `0.2.12`; the current blocks are the `0.2.12` tree (52 static, 292 browser). The `0.2.1` blocks below (44 static, 251 browser) are kept as history; the `0.2.5` build line and the `0.2.5` check runs are summary lines in their own sections, not transcripts. **The current tree is `0.2.11`**, committed, released and installed — the same tree this file's current blocks measured: 51 static and 292 browser checks, `client.js` 787768 bytes / 786251 characters, sources sha256 `25576ab91ac35a54cd3ec710e0e2ba93`, file SHA-256 `14C6514A5D504676C04137D943A0D6B791A1441548C1160B6149280451A35975`. It replaced `0.2.10` (50 static / 292 browser, `client.js` 787768 bytes, sources sha256 `25fe69385f7372015944ae0b18386c31`), which replaced `0.2.9` (49 static / 287 browser, `client.js` 787688 bytes, sources sha256 `b6c17c26e57f7d50cd2ed86a9002ad28`), which replaced `0.2.8` (47 / 283, `client.js` 787325 bytes, sources sha256 `a82c554f992a9871b4b8dcdff8499f7b`). E-PROBE records F3–F8 on `0.2.1`, F1/F9 on the `0.2.3` tree, F10–F13 on `0.2.5`, F14 on `0.2.6`, F15 on `0.2.7`, P19/P20 on `0.2.8`, P21–P23 on `0.2.9`, P24–P27 on `0.2.10`, and P28/P29 on `0.2.11`; the `0.2.4` tree itself was never probed, and `0.2.5` supersedes it (G10 discharged).
 
 ## E-BLD · 0.2.1 build
 
@@ -371,8 +371,10 @@ Each probe below breaks one protected behaviour in a working copy of the sources
 | P26 | `src/client/entry.js`: `if (!configForms \|\| typeof configForms.get !== 'function') return false` removed | `[bad] a host with no configForms stays quiet — dsh-dyslexia: settings row TypeError: Cannot read properties of undefined (reading 'get')`, `run-harness: 1 failed, 291 passed`. Silent before this build, for the same reason. |
 | P27 | `src/client/entry.js`: `if (!slots) return false` removed from `wireSettingsRow` | **no red line**: `run-harness: … all 292 checks passed`. `apply` already returns before this path when `slots` cannot inject or register, so the check is unreachable rather than proven; it stays as defence and is recorded in G15 instead of being called verified. |
 | P28 | `index.js`: `claimSettingsPage(ctx)` call removed from `apply` | `FAIL the settings page is claimed with auto off, once per context — 0 configure calls for one context`, `check-bundle: 1 failed, 50 passed`. Silent before this build: neither suite mentioned the call, so a regression would have shipped. |
-| P29 | `src/client/styles.js` edited without rebuilding (a stale chunk) | `run-harness: client.js is stale: rebuild it (chunk 25576ab91ac35a54cd3ec710e0e2ba93, sources 77513faf7130f39e8a164ab9a53969fd)`, exit 1. Silent before this build: the harness printed the stamp baked into the chunk and passed. The static suite was not silent — `client.js matches the sources it claims` already reds on the same edit; what this build added is the harness seeing it too. |
+| P29 | `src/client/styles.js` edited without rebuilding: one comment line appended (a stale chunk) | `run-harness: client.js is stale: rebuild it (chunk 25576ab91ac35a54cd3ec710e0e2ba93, sources c740d04e4dc52a6be90d5a113b881adb)`, exit 1. Silent before this build: the harness printed the stamp baked into the chunk and passed. The static suite was not silent — `FAIL client.js matches the sources it claims — client.js is stale: rebuild it (chunk 25576ab91ac35a54cd3ec710e0e2ba93, sources c740d04e4dc52a6be90d5a113b881adb)`, `check-bundle: 1 failed, 51 passed`, exit 1 — what this build added is the harness seeing it too. Re-run on the `0.2.12` tree with the edit above. |
 | P30 | `src/client/settings.js`: the `role: 'switch',` line dropped from the row's markup | `[bad] a hook built from that store draws the switch — no switch`, `[bad] the switch shows the value the host reports — no switch`, `[bad] the switch is named and described by the visible sentences — null -> missing \| null -> missing`, `[bad] the switch keeps the keyboard — no switch`, `[bad] fixture aborted — TypeError: Cannot read properties of null (reading 'click')` (each name printed once — the abort stops the fixture before the second mount path); `run-harness: 5 failed, 244 passed`, and 292 − (244 + 5) = 43 checks never executed. The static suite stays green (`all 51 checks passed`). Run on the `0.2.11` tree. |
+| P31 | `index.js`: `.default(true).volatile()` → `.default(true)` (the field stops being volatile) | `FAIL the switch is on for an empty configuration — visualFirst is not a live value`, `FAIL the preference field is volatile, so the settings form can show it — index.js no longer declares visualFirst as a volatile boolean defaulting to true`, `check-bundle: 2 failed, 50 passed`, exit 1. Run on the `0.2.12` tree; no browser check moves. |
+| P32 | `src/client/settings.js`: `SETTINGS_SLOT` renamed to `settings.general.item-x` **and** a decoy string `const DECOY_NOTE = "const SETTINGS_SLOT = 'settings.general.item'"` added | `FAIL the row is claimed through the slot name the host declares — settings.js declares SETTINGS_SLOT 2 times, expected exactly one`, `check-bundle: 2 failed, 50 passed` (the second is the stale-chunk line). Run on the `0.2.12` tree. The `0.2.11` check matched the sentence, so this decoy kept it green; the check now reads the assignment and refuses a second declaration. |
 **This probe was first recorded on `0.2.6` as `1 failed, 47 passed` for a break that left both suites green** — a 47-item suite cannot report 1 failed and 47 passed, and deleting only the store method was not seen by anything: the substring check was satisfied by `face.getSnapshot()` elsewhere in the file and no fixture built a host hook out of the plugin's own store. `0.2.7` retargets the static check at the `createValueStore` body and adds two fixtures that mount a `useSyncExternalStore` hook made from the store the module hands over.
 
 
@@ -384,7 +386,7 @@ After restoring and rebuilding, the `0.2.1` probe session passed again: `build-c
 
 Two fixture details are worth recording. Headless Chrome's virtual time does not advance the 120 ms CSS transition on the switch, so the paint assertion sets `style.transition = 'none'` on the switch before reading the computed colour (`verify/harness/index.html:1599` on the `0.2.5` tree, `:1634` on `0.2.7`). React 18 routes an event-handler throw to `window`'s `error` event rather than rethrowing it from `.click()`, so F13's fixture watches that event instead of expecting a throw at the call site (`verify/harness/index.html:1655-1667` on the `0.2.5` tree, `:1689-1702` on `0.2.7`).
 
-## E-BLD · 0.2.11 build
+## E-BLD · 0.2.12 build
 
 Command: `node scripts/build-client.mjs`
 
@@ -392,7 +394,7 @@ Command: `node scripts/build-client.mjs`
 build-client: @jiezhengj/dsh-dyslexia -> client.js (787768 bytes, 786251 characters, engine 1.13.0, sources 6, syntax ok)
 ```
 
-## E-CHK · 0.2.11 static and behavioural checks (51)
+## E-CHK · 0.2.12 static and behavioural checks (52)
 
 Command: `node verify/check-bundle.mjs`
 
@@ -437,26 +439,26 @@ dsh-dyslexia: prompt section skipped Error: signature changed
     at check (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:23:20)
     at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:356:1
 dsh-dyslexia: module Error: react went feral
-    at Object.get (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:871:15)
+    at Object.get (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:892:15)
     at buildModule (evalmachine.<anonymous>:777:34)
     at factory (evalmachine.<anonymous>:1611:18)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:878:18
+    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:899:18
     at check (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:23:20)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:861:1
+    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:882:1
 dsh-dyslexia: settings unavailable Error: inject exploded
-    at Object.inject (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:980:15)
+    at Object.inject (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1001:15)
     at claimSettingsPage (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/index.js:127:9)
     at Module.apply (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/index.js:92:5)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:977:14
+    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:998:14
     at check (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:23:20)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:937:1
+    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:958:1
 dsh-dyslexia: prompt section skipped Error: the host refused the first attempt
-    at Object.section (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1020:35)
+    at Object.section (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1041:35)
     at Module.apply (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/index.js:95:27)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1025:12
+    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1046:12
     at check (file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:23:20)
-    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:990:1
-ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.2.11
+    at file:///C:/Users/jiezhengj/Documents/Project/DSH-Dyslexia/verify/check-bundle.mjs:1011:1
+ok   package.json names and entry points — @jiezhengj/dsh-dyslexia@0.2.12
 ok   package.json points at the repository npm trusts — git+https://github.com/jiezhengj/DSH-Dyslexia.git
 ok   package.json declares the bundle patch and the client half — platform web, no package inject
 ok   no dsh version gate can refuse a start — no engines.dsh, no dsh peers
@@ -487,13 +489,14 @@ ok   every supported sample type draws an svg — flowchart:218x64 sequence:184x
 ok   a broken diagram reports a one-line reason — Parse error on line 2:
 ok   host key echo falls back to bundled strings — key echo, blanks, placeholders rejected; the host is asked under the plugin namespace
 ok   the settings row reads the hook the host builds, not an object it never sends — useVisualFirst and the store form both wired, the store itself carries getSnapshot and subscribe
+ok   the preference field is volatile, so the settings form can show it — visualFirst is a volatile boolean, default true
 ok   the row is claimed through the slot name the host declares — claimed and registered under settings.general.item
 ok   a service the plugin never declared is read through ctx.get — the reader asked ctx.get first and fell back to the property, for locale and configForms alike
 ok   a refused settings write is not reported as saved — the resolved boolean reaches the branch: true saves, false or a skipped write reverts and says so
 ok   a face that cannot answer still reads as on — missing field, missing getter, a throwing getter and a null snapshot all read as on
 ok   a host word is used only when it is a real translation — echoes, blanks, placeholders and non-strings are refused; a real sentence is used
 ok   every language carries the same complete sentences — 16 keys x 8 languages, no engine text in labels
-ok   client.js matches the sources it claims — 25576ab91ac35a54cd3ec710e0e2ba93, 787768 bytes rebuilt from the six sources
+ok   client.js matches the sources it claims — 838eef8dcc57b574bd405b70689df2e9, 787768 bytes rebuilt from the six sources
 ok   the picture is the image, and the copy answer is announced — label is a noun, role="img" on the svg, copy result announced; behaviour is asserted by the fixture
 ok   host children react would refuse fall back to the source — objects, functions and mixed arrays fall back to the source text; behaviour is asserted by the fixture
 ok   every drawing the engine swaps in is named again — the engine owns re-layout; every swapped drawing node and its zoom buttons are renamed, strings follow the language; behaviour is asserted by the fixture
@@ -508,10 +511,10 @@ ok   the contract's colour variables are the ones that are wired — 10 engine v
 ok   both size limits reach the engine, each proven on its own — three limits passed to mount, two fixtures that cross one each
 ok   the fixtures assert what the fixes promise, and can fail — 43 assertions present, each with a condition that reads something
 
-check-bundle: @jiezhengj/dsh-dyslexia@0.2.11 | client.js 787768 bytes | sources sha256:25576ab91ac35a54cd3ec710e0e2ba93 | all 51 checks passed
+check-bundle: @jiezhengj/dsh-dyslexia@0.2.12 | client.js 787768 bytes | sources sha256:838eef8dcc57b574bd405b70689df2e9 | all 52 checks passed
 ```
 
-## E-HARN · 0.2.11 browser checks (292) — `node verify/run-harness.mjs --list`
+## E-HARN · 0.2.12 browser checks (292) — `node verify/run-harness.mjs --list`
 
 ```text
 [ok] loading client.js registers one factory
@@ -810,7 +813,7 @@ check-bundle: @jiezhengj/dsh-dyslexia@0.2.11 | client.js 787768 bytes | sources 
 [ok] a host that refuses undeclared services is still served without a throw — quiet
 [ok] a host whose services must be read through ctx.get still gets the row — 2 defs
 [ok] a host that refuses undeclared properties still gets the strings registered — [["dyslexia",8]]
-run-harness: @jiezhengj/dsh-dyslexia@0.2.11 | client.js 787768 bytes | sources sha256:25576ab91ac35a54cd3ec710e0e2ba93 | all 292 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
+run-harness: @jiezhengj/dsh-dyslexia@0.2.12 | client.js 787768 bytes | sources sha256:838eef8dcc57b574bd405b70689df2e9 | all 292 checks passed (C:/Program Files/Google/Chrome/Application/chrome.exe)
 ```
 
 ## E-LIVE — the row and the new name on a running host (`0.2.6`, re-checked on `0.2.8` and `0.2.9`)
@@ -919,7 +922,7 @@ Seventeen gaps are open here: G2–G8, G11–G20; G1 is discharged below in E-LI
 | G17 | One missing attribute aborts part of the settings fixture: probe **P30** (dropping `role: 'switch'`) reds 5 distinct checks and reports `run-harness: 5 failed, 244 passed`, but 292 − (244 + 5) = 43 checks never executed, because the fixture's later steps click a switch that no longer exists. The run still fails, so nothing can pass silently; the cost is that a reader of a green run learns nothing about the checks one wrong attribute would hide. |
 | G18 | The `0.2.9` behaviour change recorded in E-LIVE — a strict-inject host no longer produces `dsh-dyslexia:` warnings of our own — has no assertion: putting the unconditional `report(name, error)` back in `optional()` leaves both suites green (51 / 292). The quiet is real but unwatched. |
 | G19 | A `Config` getter that throws is not asserted: `prefersPictures` (`index.js`) catches the throw, warns `dsh-dyslexia: visualFirst unreadable` and falls back to the capability briefing, keeping the section present — seen by hand on the `0.2.11` tree, by neither suite. |
-| G20 | What persistence means for this Config is unasserted: `visualFirst` is `.volatile()` and the click writes `cordis.patch.yml`, as E-LIVE observed on `0.2.8`, but no suite reads that file, and the reason it is volatile is recorded in `research.md` D2 rather than asserted. If a host kept volatile fields in memory only, the switch would revert after a restart and no check would notice. |
+| G20 | What persistence means for this Config is unasserted: the click writes `cordis.patch.yml`, as E-LIVE observed on `0.2.8`, but no suite reads that file, so a host that kept volatile fields in memory only would drop the preference on restart unnoticed. What *is* asserted since `0.2.12` is the other half — that the field is volatile at all (`the preference field is volatile, so the settings form can show it`; probe P31), because the host's form projects volatile fields only and a plain boolean would make the switch disappear. |
 
 ## E-PUB · 0.2.0 publish
 

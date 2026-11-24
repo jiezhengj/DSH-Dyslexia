@@ -595,15 +595,36 @@ check('the settings row reads the hook the host builds, not an object it never s
   return 'useVisualFirst and the store form both wired, the store itself carries getSnapshot and subscribe'
 })
 
+check('the preference field is volatile, so the settings form can show it', () => {
+  // The host's settings form projects volatile fields only; a plain boolean never
+  // appears there, so the switch would vanish while both suites stayed green.
+  const host = readCode('index.js')
+  assert(
+    /visualFirst:\s*z\.boolean\(\)\.default\(true\)\.volatile\(\)/.test(host),
+    'index.js no longer declares visualFirst as a volatile boolean defaulting to true',
+  )
+  return 'visualFirst is a volatile boolean, default true'
+})
+
 check('the row is claimed through the slot name the host declares', () => {
   // `slots.inject(ownerKey, fn)` runs `fn` only while the host has that slot's
   // owner declaration. A mutated key left the callback pending forever and both
   // suites stayed green, because nothing looked at the first argument.
+  //
+  // Read the assignment rather than matching the text: a decoy string carrying
+  // the same sentence used to satisfy the old regexp while the real constant
+  // pointed elsewhere, so a second declaration has to be a failure.
   const settings = readCode('src/client/settings.js')
   const entry = readCode('src/client/entry.js')
+  const declared = settings.match(/SETTINGS_SLOT\s*=\s*'([^']*)'/g) || []
   assert(
-    /const SETTINGS_SLOT = 'settings\.general\.item'/.test(settings),
-    'settings.js does not name the general settings slot',
+    declared.length === 1,
+    `settings.js declares SETTINGS_SLOT ${declared.length} times, expected exactly one`,
+  )
+  const value = (settings.match(/SETTINGS_SLOT\s*=\s*'([^']*)'/) || [])[1]
+  assert(
+    value === 'settings.general.item',
+    `settings.js names the slot ${JSON.stringify(value)}, expected "settings.general.item"`,
   )
   assert(
     entry.includes('slots.inject(SETTINGS_SLOT, () =>'),
@@ -1333,7 +1354,7 @@ check('the fixtures assert what the fixes promise, and can fail', () => {
 
 /* ---------------------------------------------------------------- report */
 
-const EXPECTED_CHECKS = 51
+const EXPECTED_CHECKS = 52
 if (notices.length + failures.length !== EXPECTED_CHECKS) {
   failures.push(
     `[FAIL] the suite has ${notices.length + failures.length} checks, expected ${EXPECTED_CHECKS}: a check was added or removed without updating this number`,
