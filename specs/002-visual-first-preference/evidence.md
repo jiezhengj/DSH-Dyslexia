@@ -954,8 +954,32 @@ Nothing in this release changes what a reader sees: `client.js` is the `0.2.6` c
 
 ## E-PUB · 0.2.8
 
-- filled in after the run that publishes it
+- commit `6edaef3` ("0.2.8: make the two shape-only static checks execute"), tag `v0.2.8`
+  ("0.2.8: make the two shape-only static checks execute"), both pushed to `main`
+- GitHub Actions run `45310290797`, conclusion `success`, workflow `publish`, head branch `v0.2.8`
+- CI lines from that run (the same bytes this tree measures; only the browser path differs):
+
+```
+check-bundle: @jiezhengj/dsh-dyslexia@0.2.8 | client.js 787325 bytes | sources sha256:a82c554f992a9871b4b8dcdff8499f7b | all 47 checks passed
+run-harness: @jiezhengj/dsh-dyslexia@0.2.8 | client.js 787325 bytes | sources sha256:a82c554f992a9871b4b8dcdff8499f7b | all 283 checks passed (/usr/bin/google-chrome)
+npm notice shasum: ab9f82fbec6c6553b3f0031586785af0417ac52e
+npm notice total files: 33
+npm notice publish Provenance statement published to transparency log: https://search.sigstore.dev/?logIndex=4065743074
+```
+
+- registry `https://registry.npmjs.org/@jiezhengj/dsh-dyslexia/0.2.8` answered `version: 0.2.8`,
+  `shasum: ab9f82fbec6c6553b3f0031586785af0417ac52e`; the tarball answered HEAD 200 on poll 29 of 40 (10 s
+  apart), about five minutes after the run
 
 ## E-INS · 0.2.8
 
-- filled in after `install_bundle` returns
+- installed into the live `desktop` profile after `remove_bundle` returned `- @jiezhengj/dsh-dyslexia 0.2.7`;
+  `install_bundle @jiezhengj/dsh-dyslexia@0.2.8` answered `application: applied`, `version: 0.2.8`
+  (pnpm `+ @jiezhengj/dsh-dyslexia 0.2.8`), and the profile `package.json` dependency reads
+  `"@jiezhengj/dsh-dyslexia": "0.2.8"`
+- the installed copy's `client.js` is 787325 bytes and hashes to
+  `35397283cd5f8f89ec9469c503176922bdf49c57551d5d8c4e40a49dfd5a24fd`, identical to the repository copy;
+  `locale/` 8 files, `docs/` 9 entries, package version `0.2.8`
+- what a reader sees is unchanged from `0.2.7`: `client.js` carries the same code and only the version banner
+  differs. What changed is two static checks that now execute the reader and read the refusal branch instead of
+  matching source text (P19/P20)

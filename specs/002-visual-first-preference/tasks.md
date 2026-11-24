@@ -72,7 +72,7 @@
 - [x] **T041** 探针（原地破坏→跑→立刻还原，`git status` 只留检查文件的改动）：P19 把 `ctx.get` 分支改成 `if (false)` → `FAIL a service the plugin never declared is read through ctx.get — ctx.get was not consulted for locale`、`check-bundle: 2 failed, 45 passed`、exit 1；P20 把 `if (accepted)` 改成 `if (true)` → `FAIL a refused settings write is not reported as saved — the settle handler does not branch on what the host answered`、`check-bundle: 2 failed, 45 passed`、exit 1。（两条在 `0.2.7` 树上破坏后静态套件都是全绿，这就是 P0。）
 - [x] **T042** 版本升 `0.2.8`、重建（`787325 bytes, 785808 characters, engine 1.13.0, sources 6, syntax ok`，`sources sha256:a82c554f992a9871b4b8dcdff8499f7b`、文件 SHA-256 `35397283cd5f8f89ec9469c503176922bdf49c57551d5d8c4e40a49dfd5a24fd`），两套与 `0.2.7` 同为 47 / 283 全绿。
 - [x] **T043** `evidence.md`：头注改 `0.2.8` 与九个版本、E-BLD/E-CHK/E-HARN 三块用 `0.2.8` 单次运行输出整段重写、F14 行补上当时漏记的静态红行、把"F14 与 F15 都在 `0.2.6` 树上跑过"的错误说法改成 F14 在 `0.2.6`、F15 在 `0.2.7`、新增 P19/P20 两行（并写明它们在 `0.2.7` 上曾全绿）、E-PUB/E-INS 补 `0.2.8` 占位块。
-- [ ] **T044** 发版 `0.2.8`：commit → tag `v0.2.8` → GitHub Actions → registry 装回 `desktop` → E-PUB/E-INS 填实测。
+- [x] **T044** 发版 `0.2.8`：commit `6edaef3` → tag `v0.2.8` → Actions run `45310290797` success（shasum `ab9f82fbec6c6553b3f0031586785af0417ac52e`、logIndex `4065743074`、33 files）→ registry 第 29 次轮询可下载→ `remove_bundle` 卸 0.2.7 → `install_bundle @0.2.8` applied（profile 依赖 `"0.2.8"`、安装副本 787325 字节 / `35397283…24FD`）→ E-PUB/E-INS 已填。
 - [ ] **T045** 第四轮两份独立评审，两份 PASS 才把 feature 002 标记完成。
 
 ## Dependencies
