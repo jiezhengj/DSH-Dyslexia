@@ -536,8 +536,68 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             '  bar [3.7, 8.5]',
           ].join('\n'),
           kanban: ['kanban', '  Backlog', '    one task', '  Done', '    another task'].join('\n'),
+          block: ['block-beta', '  columns 2', '  a b'].join('\n'),
+          requirement: ['requirementDiagram', '  requirement r1 {', '    id: 1', '    text: "must"', '    risk: high', '    verifymethod: test', '  }'].join('\n'),
+          architecture: ['architecture-beta', '  service db(database)[DB]', '  service api(server)[API]', '  db:R -- L:api'].join('\n'),
+          c4: ['C4Context', '  title System', '  Person(u, "User")', '  System(s, "Plugin")', '  Rel(u, s, "uses")'].join('\n'),
+          agentflow: ['agentflow-beta', '  a --> b'].join('\n'),
+          journey: ['journey', '  title A day', '  section Read', '    Open: 5: Reader', '    Look: 3: Reader'].join('\n'),
+          treemap: ['treemap', '  "root"', '    "a": 3', '    "b": 5'].join('\n'),
+          wardley: ['wardley-beta', '  title Map', '  component a [0.5, 0.5]'].join('\n'),
+          packet: ['packet-beta', '  title Frame', '  0-7: "a"', '  8-15: "b"'].join('\n'),
+          sankey: ['sankey-beta', '', 'A,B,10', 'B,C,5'].join('\n'),
+          radar: ['radar-beta', '  title Shape', '  axis a, b, c', '  curve one { 1, 2, 3 }'].join('\n'),
+          quadrantChart: ['quadrantChart', '  title Fit', '  x-axis low --> high', '  y-axis low --> high', '  quadrant-1 A', '  quadrant-2 B', '  quadrant-3 C', '  quadrant-4 D', '  Point: [0.3, 0.6]'].join('\n'),
+          gitGraph: ['gitGraph', '  commit', '  branch dev', '  checkout dev', '  commit'].join('\n'),
+          info: 'info',
+          cynefin: ['cynefin-beta', '  title Space'].join('\n'),
+          ishikawa: ['ishikawa', '  title Cause', '  cause A', '  cause B'].join('\n'),
         }
 
+        // Every shape the engine can draw (its own table, checked by
+        // `verify/check-bundle.mjs`), grouped by the role the plugin paints it
+        // with. A shape the engine gains but this list misses fails a check
+        // instead of waiting for someone to notice a grey box.
+        const SHAPE_ROLES = {
+          'start-end': ['stadium','circle','odd','sm-circ','fr-circ','dbl-circ','cross-circ','f-circ'],
+          decision: ['diam','hex','bang'],
+          data: ['cyl','datastore','folder','bucket','doc','docs','lin-doc','tag-doc','tag-rect','st-rect','win-pane'],
+          io: ['lean-r','lean-l','trap-b','trap-t','curv-trap','person','browser','cloud'],
+          process: ['rect','rounded','fr-rect','notch-rect','lin-rect','console','delay','div-rect','tri','flip-tri','sl-rect','bow-rect','brace','brace-r','braces','bolt','fork','hourglass','h-cyl','lin-cyl','notch-pent','flag','text'],
+        }
+        // The same assignment for the diagrams that name their nodes after
+        // what they are instead of after a shape.
+        const NODE_ROLES = {
+          'start-end': ['pele-state-start', 'pele-state-end'],
+          data: ['pele-state', 'pele-class', 'pele-entity', 'pele-actor-participant', 'pele-card', 'pele-requirement', 'pele-service', 'pele-wardley-component', 'pele-task'],
+          io: ['pele-c4-person'],
+          process: ['pele-c4-system'],
+        }
+        const roleOfNode = (classes) => {
+          let role = null
+          for (let index = 0; index < classes.length; index += 1) {
+            const token = classes[index]
+            if (token.indexOf('pele-shape-') === 0) {
+              const shape = token.slice('pele-shape-'.length)
+              Object.keys(SHAPE_ROLES).forEach((name) => {
+                if (SHAPE_ROLES[name].indexOf(shape) >= 0) role = name
+              })
+              continue
+            }
+            Object.keys(NODE_ROLES).forEach((name) => {
+              if (NODE_ROLES[name].indexOf(token) >= 0) role = name
+            })
+          }
+          return role
+        }
+        const SHAPES = Object.keys(SHAPE_ROLES).reduce((all, role) => all.concat(SHAPE_ROLES[role]), [])
+        const SHAPE_CODE = 'flowchart LR\n' + SHAPES.map((shape, at) => 'S' + at + '@{ shape: ' + shape + ', label: "' + shape + '" }').join('\n')
+
+        // A node the engine paints is the thing a diagram is about; if the
+        // engine grows a kind of node the plugin has no rule for, the reader
+        // gets a grey box. Tokens that only group or frame are listed here.
+        const UNCOLOURED_NODE_TOKENS = ['pele-node', 'pele-nodes', 'pele-section']
+        const seenNodeTokens = new Set()
         // The surface a shape or a word is actually seen against: the nearest
         // painted ancestor. `color-mix()` channels arrive as 0–1 already.
         function surfaceAt(node) {
@@ -559,6 +619,7 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
         // paint that shape faintly (`fill-opacity`), so the fill is composited
         // over what is behind it before the ink is judged.
         function paintBehind(textNode) {
+          let behind = null
           for (let group = textNode.parentElement; group && group.tagName.toLowerCase() === 'g'; group = group.parentElement) {
             const shapes = group.querySelectorAll(':scope > rect, :scope > path, :scope > polygon, :scope > circle, :scope > ellipse, :scope > polyline')
             for (let index = 0; index < shapes.length; index += 1) {
@@ -568,8 +629,25 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
               if (!fill || fill.a <= 0) continue
               const raw = shape.getAttribute('fill-opacity')
               const opacity = raw === null ? 1 : parseFloat(raw)
-              const faint = { r: fill.r, g: fill.g, b: fill.b, a: fill.a * (isNaN(opacity) ? 1 : opacity) }
-              return layered(faint, surfaceAt(group))
+              // An arrow head is painted on top of nothing: the label sits on
+              // the last shape drawn under it, which is the box itself.
+              behind = { fill: fill, opacity: isNaN(opacity) ? 1 : opacity, group: group }
+            }
+            if (behind) {
+              const faint = { r: behind.fill.r, g: behind.fill.g, b: behind.fill.b, a: behind.fill.a * behind.opacity }
+              return layered(faint, surfaceAt(behind.group))
+            }
+          }
+          // A treemap leaf writes its label in a group of its own, beside the
+          // tile it belongs to: the tile is the background even then.
+          const tile = textNode.closest ? textNode.closest('.pele-leaf, .pele-series, .pele-section') : null
+          if (tile) {
+            const painted = tile.querySelector('rect, polygon, circle, path, ellipse')
+            const fill = painted ? cssColour(styleValue(painted, 'fill')) : null
+            if (fill && fill.a > 0) {
+              const raw = painted.getAttribute('fill-opacity')
+              const opacity = raw === null ? 1 : parseFloat(raw)
+              return layered({ r: fill.r, g: fill.g, b: fill.b, a: fill.a * (isNaN(opacity) ? 1 : opacity) }, surfaceAt(tile))
             }
           }
           return null
@@ -1451,6 +1529,9 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
                 // in the surface colour on purpose: they separate, they do not
                 // inform, so they are not lines a reader has to see.
                 if (/pele-dot|pele-slice|pele-grid/.test(classes)) continue
+                // A radar's web of spokes and rings is a grid, not a line that
+                // carries meaning: it is measured on its own, calmly, below.
+                if (label === 'radar' && (shape.tagName === 'circle' || shape.tagName === 'line')) continue
                 const stroke = cssColour(styleValue(shape, 'stroke'))
                 if (!stroke || stroke.a <= 0) continue
                 lines.push({ ratio: ratioBetween(stroke, canvas), where: classes || shape.tagName })
@@ -1502,6 +1583,16 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
               // participant are what the picture is about, and a reader who gets the
               // same grey box for all of them learns nothing from the colour. One
               // node of the drawing has to carry a hue of its own.
+              const nodeGroups = svg.querySelectorAll('.pele-node')
+              let colourRoleNodes = 0
+              for (let index = 0; index < nodeGroups.length; index += 1) {
+                const classes = (nodeGroups[index].getAttribute('class') || '').split(/\s+/)
+                for (let token = 0; token < classes.length; token += 1) {
+                  if (classes[token].indexOf('pele-') === 0) seenNodeTokens.add(classes[token])
+                }
+                const role = roleOfNode(classes)
+                if (role && role !== 'process') colourRoleNodes += 1
+              }
               const carried = []
               const painted = svg.querySelectorAll(
                 '.pele-node > :is(rect, polygon, circle, path, ellipse, polyline), .pele-task > *, .pele-slice, .pele-series > *',
@@ -1513,11 +1604,15 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
                 if (spread !== null) carried.push(spread)
               }
               const widest = carried.length > 0 ? Math.max.apply(null, carried) : null
-              expect(
-                widest !== null && widest >= 8,
-                name(label + ' colours a node of its own (channel spread ≥8)'),
-                widest === null ? 'nothing filled' : 'widest spread ' + widest.toFixed(1),
-              )
+              // A board, a sankey or a packet frame draws no nodes: it must not
+              // be failed for the absence of something it never drew.
+              if (colourRoleNodes > 0 || label === 'xychart') {
+                expect(
+                  widest !== null && widest >= 8,
+                  name(label + ' colours a node of its own (channel spread ≥8)'),
+                  widest === null ? 'nothing filled' : 'widest spread ' + widest.toFixed(1),
+                )
+              }
               if (label === 'xychart') {
                 const grid = svg.querySelector('.pele-grid')
                 const ratio = grid ? ratioBetween(cssColour(styleValue(grid, 'stroke')), canvas) : null
@@ -1527,9 +1622,88 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
                   ratio === null ? 'no grid' : ratio.toFixed(2) + ':1',
                 )
               }
+              if (label === 'radar') {
+                const web = svg.querySelector('circle, line')
+                const ratio = web ? ratioBetween(cssColour(styleValue(web, 'stroke')), canvas) : null
+                expect(
+                  ratio !== null && ratio >= 1.4,
+                  name('the radar web is drawn at all, quiet but not absent (≥1.4:1)'),
+                  ratio === null ? 'no web' : ratio.toFixed(2) + ':1',
+                )
+              }
               view.root.unmount()
               view.stage.remove()
             }
+          }
+
+          // The engine's own shape table, painted through the plugin's role
+          // rules: every shape the reader can ask for is measured, so a shape
+          // the plugin forgot shows up here as a grey box instead of a bug
+          // report from the chat.
+          async function shapesPass(theme) {
+            const name = (text) => '[' + theme + '] shape ' + text
+            const view = mount(Layer, { code: SHAPE_CODE, streaming: false, children: hostBlock(SHAPE_CODE) })
+            await tick(240)
+            const figure = view.stage.querySelector('.dsh-dyslexia-figure')
+            const svg = figure ? figure.querySelector('svg[role="img"]') : null
+            expect(!!svg, name('table is drawn at all'), svg ? 'drawn' : 'nothing drawn')
+            if (!svg) {
+              view.root.unmount()
+              view.stage.remove()
+              return
+            }
+            const canvas = surfaceAt(figure)
+            const roleOf = {}
+            Object.keys(SHAPE_ROLES).forEach((role) => {
+              SHAPE_ROLES[role].forEach((shape) => {
+                roleOf[shape] = role
+              })
+            })
+            const grey = []
+            const quiet = []
+            const nodes = svg.querySelectorAll('.pele-node')
+            let measured = 0
+            for (let index = 0; index < nodes.length; index += 1) {
+              const group = nodes[index]
+              const classes = (group.getAttribute('class') || '').split(/\s+/)
+              const shapeClass = classes.filter((one) => one.indexOf('pele-shape-') === 0)[0]
+              if (!shapeClass) continue
+              const shape = shapeClass.slice('pele-shape-'.length)
+              const role = roleOf[shape]
+              if (!role) continue
+              const painted = group.querySelector('rect, polygon, circle, path, ellipse, polyline')
+              if (!painted) continue
+              measured += 1
+              const fill = cssColour(styleValue(painted, 'fill'))
+              const stroke = cssColour(styleValue(painted, 'stroke'))
+              if (role === 'process') {
+                const plain = fill ? ratioBetween(fill, canvas) : null
+                const edge = stroke ? ratioBetween(stroke, canvas) : null
+                if (plain === null || plain < 1.05 || edge === null || edge < 3) {
+                  quiet.push(shape + ' (' + (plain === null ? 'none' : plain.toFixed(2)) + '/' + (edge === null ? 'none' : edge.toFixed(2)) + ')')
+                }
+                continue
+              }
+              const spread = spreadOf(styleValue(painted, 'fill'))
+              if (spread === null || spread < 8) grey.push(shape + ' (' + (spread === null ? 'none' : spread.toFixed(1)) + ')')
+            }
+            expect(
+              measured === SHAPES.length,
+              name('every shape in the engine table is drawn once'),
+              measured + ' of ' + SHAPES.length,
+            )
+            expect(
+              grey.length === 0,
+              name('every shape in a coloured role carries its hue'),
+              grey.length === 0 ? 'all ' + measured + ' measured' : grey.join(', '),
+            )
+            expect(
+              quiet.length === 0,
+              name('the plain shapes stay plain yet visible'),
+              quiet.length === 0 ? 'all quiet as intended' : quiet.join(', '),
+            )
+            view.root.unmount()
+            view.stage.remove()
           }
 
           // FR-007: if the host never hands over its tokens, every `color-mix()`
@@ -1582,10 +1756,41 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             await authoredPass(theme)
             await piePass(theme)
             await typesPass(theme)
+            await shapesPass(theme)
             if (theme === 'dark') document.body.removeAttribute('data-ds-dark-theme')
           }
           await tick(60)
           await defaultsPass()
+
+          // Every kind of node the engine painted above has to have a rule of
+          // its own. A new kind of node in a future engine fails this check,
+          // which is the whole point: the gap is found here, not in the chat.
+          {
+            const sheets = []
+            for (let index = 0; index < document.styleSheets.length; index += 1) {
+              const sheet = document.styleSheets[index]
+              let rules = []
+              try {
+                rules = Array.prototype.slice.call(sheet.cssRules)
+              } catch (error) {
+                rules = []
+              }
+              for (let rule = 0; rule < rules.length; rule += 1) {
+                sheets.push(rules[rule].cssText || '')
+              }
+            }
+            const css = sheets.join('\n')
+            const unruled = Array.prototype.slice.call(seenNodeTokens).filter((token) => {
+              if (UNCOLOURED_NODE_TOKENS.indexOf(token) >= 0) return false
+              if (/%/.test(token)) return false
+              return css.indexOf('.' + token) < 0
+            })
+            expect(
+              unruled.length === 0,
+              'every kind of node the engine paints has a rule of its own',
+              unruled.length === 0 ? seenNodeTokens.size + ' kinds, all ruled' : 'no rule for ' + unruled.join(', '),
+            )
+          }
 
           // The negative check: put the old line colour back on one picture and
           // demand that the line check above would fail. An assertion nobody has

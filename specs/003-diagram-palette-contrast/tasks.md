@@ -303,3 +303,25 @@ Task: "index.js CAPABILITY_TEXT 追加一句"      # T017
   实现：`check-bundle.mjs` 新增 `records, states and participants are coloured too`（7 个主体类必须各有规则、类名主干必须被引擎使用），78 → 79；`docs/colours.md` 新增一节（状态机示例 + 实测表）；`contracts/palette-mapping.md` 补主体类映射；`scripts/build-evidence.mjs` 的证据页加上浅/深两块状态机与量测行。
 
 - 收口：`npm run build && npm test` = 静态 79 条 + 浏览器 429 条全绿；版本 0.3.2，随 tag `v0.3.2` 由 GitHub Actions 发布。
+
+## Phase 13: 把"发现缺口"从人工变成构建期（用户问）
+
+用户问（原文）：「这个只能靠不断地发现 bad case 吗？不能提前找到缺口吗？」——上一轮的答案只是"以后哪个图种发灰就发我截图"，等于继续靠人肉发现。本阶段改为把**引擎自己的词汇表**当成权威来源，用构建期检查覆盖它：引擎支持哪些图种、能画哪些形状、每个图种画出哪些节点类，缺一个就红。
+
+- [x] T042 引擎的 53 个形状全部接角色规则 per FR-004
+
+  实现：`src/client/styles.js` 的角色规则从 13 个形状扩到 `var G_` 表里的全部 53 个（起止 8、判断 3、数据 11、输入输出 8、处理 23）；选择器从直系子代改为后代 `:is(rect, polygon, circle, path, ellipse, polyline)`，因为 `docs`、`brace`、`braces` 把 `<path>` 包在 `<g transform>` 里。实测 30 个彩色形状通道极差 20–29，23 个处理类保持 2–3 的中性档。
+
+- [x] T043 图种覆盖扩到 26 个样例 + 9 个"解析失败但有理由"的登记 per SC-001/SC-002
+
+  实现：`verify/harness/index.html` 的 `TYPE_CODES` 新增 `block`、`requirement`、`architecture`、`c4`、`agentflow`、`journey`、`treemap`、`wardley`、`packet`、`sankey`、`radar`、`quadrantChart`、`gitGraph`、`info`、`cynefin`、`ishikawa`；`usecase`/`railroad` 族/`eventmodeling`/`swimlane`/`venn`/`treeView` 记入 `TYPE_NOT_SAMPLED` 并附解析器原话。雷达的蛛网、图表的网格按装饰线单测（≥1.4:1）。
+
+- [x] T044 非流程图的节点类补齐 + "每种节点类必须有规则"断言 per FR-012
+
+  实现：数据规则加 `pele-requirement`、`pele-service`、`pele-leaf`（后撤，见下）、`pele-wardley-component`；C4 的 `pele-c4-person` 归输入输出、`pele-c4-system` 归处理；`typesPass` 在遍历每个图种时把 `.pele-node` 的类名收进 `seenNodeTokens`，闭合后断言"每个类都能在样式表里找到规则"（分组类 `pele-node`/`pele-nodes`/`pele-section` 除外）。**`pele-leaf` 随后被撤掉**：树图叶子就是数据，引擎用 `--pele-series-N` 铺满、用画布色写标签，接管后白字压浅紫只剩 1.17:1（夹具当场发现）。
+
+- [x] T045 静态守卫：形状表与图种登记表都从引擎源码解析 per FR-006
+
+  实现：`verify/check-bundle.mjs` 的 `SHAPE_CLASSES` 改为解析 `vendor/pele/pele.global.js` 的 `var G_=[[…]]`（不再是手写 13 个）；新增 `every diagram type the engine registers is sampled or explained`，解析 `["id","keyword",/^…/]` 登记表（35 个图种），要求每个都在夹具里被采样或在 `TYPE_NOT_SAMPLED` 里有理由，反向也查（列表过期 / 夹具采样了引擎没有的图种）。静态检查 79 → 80 条。
+
+- 收口：`npm run build && npm test` = 静态 80 条 + 浏览器 540 条全绿；证据图 `evidence/all-shapes.png`（53 形状 × 浅/深 × 五角色）与 `evidence/all-types.png`（12 个额外图种）；版本 0.3.3。

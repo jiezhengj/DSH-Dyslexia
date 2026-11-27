@@ -1951,10 +1951,62 @@ check('every class the row writes has a rule in the stylesheet', () => {
 // looks right in one theme, a fixture that hand-types a token still passes its
 // own assertions, and a preview drawn from an invented palette still renders.
 // These checks read the three of them against the host snapshot.
-const SHAPE_CLASSES = [
-  'stadium', 'circle', 'odd', 'diam', 'hex', 'cyl',
-  'lean-r', 'lean-l', 'trap-b', 'trap-t', 'rect', 'rounded', 'fr-rect',
-]
+// The engine's own shape table is the list of shapes a reader can ask for, so
+// it is also the list the stylesheet has to cover: a shape added to the engine
+// fails here until the plugin paints it, instead of turning up as a grey box.
+const engineSource = () => readFileSync(join(ROOT, 'vendor', 'pele', 'pele.global.js'), 'utf8')
+const SHAPE_CLASSES = (() => {
+  const engine = engineSource()
+  const at = engine.indexOf('var G_=[[\"rect\"')
+  assert(at >= 0, 'the engine shape table is gone: the guard has lost its source')
+  const end = engine.indexOf(']]', at)
+  const table = engine.slice(at, end + 2)
+  const names = [...table.matchAll(/\[\"([a-z0-9-]+)\"/g)].map((match) => match[1])
+  assert(names.length > 20, `the engine shape table reads as ${names.length} shapes, which cannot be right`)
+  return names
+})()
+
+// Every diagram type the engine registers, and what the fixture draws for it.
+// A new type has to be sampled in the fixture or listed here with the reason it
+// cannot be: the point is that nobody has to notice a grey box in the chat.
+const TYPE_SAMPLES = {
+  flowchart: 'flowchart LR',
+  mindmap: 'mindmap',
+  architecture: 'architecture-beta',
+  agentflow: 'agentflow-beta',
+  c4: 'C4Context',
+  kanban: 'kanban',
+  class: 'classDiagram',
+  er: 'erDiagram',
+  gantt: 'gantt',
+  info: "info: 'info'",
+  pie: 'pieDiagram: PIE_CODE',
+  requirement: 'requirementDiagram',
+  sequence: 'sequenceDiagram',
+  timeline: 'timeline',
+  gitGraph: 'gitGraph',
+  state: 'stateDiagram-v2',
+  journey: 'journey',
+  quadrantChart: 'quadrantChart',
+  sankey: 'sankey-beta',
+  packet: 'packet-beta',
+  xychart: 'xychart',
+  block: 'block-beta',
+  radar: 'radar-beta',
+  ishikawa: 'ishikawa',
+  treemap: 'treemap',
+  wardley: 'wardley-beta',
+  cynefin: 'cynefin-beta',
+}
+
+const TYPE_NOT_SAMPLED = {
+  swimlane: 'its grammar refuses every sample that was tried: `Expecting NODE_STRING`',
+  eventmodeling: 'its grammar refuses every sample that was tried: `Expecting token of type EM_ID`',
+  treeView: 'the engine registers the name but its lexer matches no header',
+  venn: 'its grammar refuses every sample that was tried: `Expecting TITLE, SET`',
+  usecase: 'no diagram type is detected for any sample that was tried',
+  railroad: 'its grammar refuses every sample that was tried: `No diagram type detected`',
+}
 
 /**
  * The stylesheet as CSS: `FIGURE_CSS` is a JS array joined with newlines, so
@@ -2049,6 +2101,30 @@ check('every shape class has a role rule of its own', () => {
   const invented = SHAPE_CLASSES.filter((name) => !engine.includes(`"${name}"`))
   assert(invented.length === 0, `the stylesheet styles shapes the engine never draws: ${invented.join(', ')}`)
   return `${SHAPE_CLASSES.length} shapes, every name known to the engine`
+})
+
+check('every diagram type the engine registers is sampled or explained', () => {
+  const engine = engineSource()
+  const anchor = engine.indexOf('["kanban","kanban"')
+  assert(anchor >= 0, 'the engine type registry is gone: the guard has lost its source')
+  const at = engine.lastIndexOf('[[', anchor)
+  const stop = engine.indexOf(']]', anchor)
+  const registry = engine.slice(at, stop + 2)
+  const ids = [...registry.matchAll(/\["([A-Za-z][A-Za-z0-9]*)","[^"]+",\s*\/\^/g)].map((match) => match[1])
+  assert(ids.length >= 30, `the engine registry reads as ${ids.length} types, which cannot be right`)
+  const fixture = read('verify/harness/index.html')
+  const drawn = Object.keys(TYPE_SAMPLES).filter((id) => fixture.includes(TYPE_SAMPLES[id]))
+  const explained = Object.keys(TYPE_NOT_SAMPLED)
+  const missing = ids.filter((id) => drawn.indexOf(id) < 0 && explained.indexOf(id) < 0)
+  assert(
+    missing.length === 0,
+    `the engine draws ${missing.join(', ')} and nothing tests it: sample it in the fixture or say why not`,
+  )
+  const stale = explained.filter((id) => ids.indexOf(id) < 0)
+  assert(stale.length === 0, `the not-sampled list names types the engine no longer has: ${stale.join(', ')}`)
+  const unknown = drawn.filter((id) => ids.indexOf(id) < 0)
+  assert(unknown.length === 0, `the fixture samples types the engine does not register: ${unknown.join(', ')}`)
+  return `${drawn.length} drawn, ${explained.length} explained, ${ids.length} registered`
 })
 
 // Class, state, entity, sequence and board diagrams do not draw flowchart shapes:
@@ -2192,7 +2268,7 @@ check('the fixture can fail: its contrast helpers are exercised', () => {
 
 /* ---------------------------------------------------------------- report */
 
-const EXPECTED_CHECKS = 79
+const EXPECTED_CHECKS = 80
 if (notices.length + failures.length !== EXPECTED_CHECKS) {
   failures.push(
     `[FAIL] the suite has ${notices.length + failures.length} checks, expected ${EXPECTED_CHECKS}: a check was added or removed without updating this number`,

@@ -8,13 +8,15 @@
 
 | 角色 | 形状 | 宿主色相 | 浅色填充 / 文字 | 深色填充 / 文字 |
 | --- | --- | --- | --- | --- |
-| 起止 start / end | `stadium` `circle` `odd` | `--dsw-static-green-500` `#22c55e` | `#d7f5e2` · 16.20:1 | `#23402e` · 10.87:1 |
-| 判断 decision | `diam` `hex` | `--dsw-static-amber-500` `#f59e0b` | `#fdeed3` · 16.47:1 | `#493920` · 10.63:1 |
-| 数据 data | `cyl` | `--dsw-static-violet-400` `#a78bfa` | `#efeafe` · 16.10:1 | `#3b364b` · 11.12:1 |
-| 输入输出 input / output | `lean-r` `lean-l` `trap-b` `trap-t` | `--dsw-alias-link` `#4176e6` | `#dde6fb` · 15.13:1 | `#333b4b` · 10.73:1 |
-| 处理 step | `rect` `rounded` `fr-rect` | `--dsw-static-neutral-bluish-400` `#adb2b8` | `#f0f1f2` · 16.73:1 | `#3c3d3f` · 10.44:1 |
+| 起止 start / end | `stadium` `circle` `odd` `sm-circ` `fr-circ` `dbl-circ` `cross-circ` `f-circ` | `--dsw-static-green-500` `#22c55e` | `#d7f5e2` · 16.20:1 | `#23402e` · 10.87:1 |
+| 判断 decision | `diam` `hex` `bang` | `--dsw-static-amber-500` `#f59e0b` | `#fdeed3` · 16.47:1 | `#493920` · 10.63:1 |
+| 数据 data | `cyl` `datastore` `folder` `bucket` `doc` `docs` `lin-doc` `tag-doc` `tag-rect` `st-rect` `win-pane` | `--dsw-static-violet-400` `#a78bfa` | `#efeafe` · 16.10:1 | `#3b364b` · 11.12:1 |
+| 输入输出 input / output | `lean-r` `lean-l` `trap-b` `trap-t` `curv-trap` `person` `browser` `cloud` | `--dsw-alias-link` `#4176e6` | `#dde6fb` · 15.13:1 | `#333b4b` · 10.73:1 |
+| 处理 step | `rect` `rounded` `fr-rect` `notch-rect` `lin-rect` `console` `delay` `div-rect` `tri` `flip-tri` `sl-rect` `bow-rect` `brace` `brace-r` `braces` `bolt` `fork` `hourglass` `h-cyl` `lin-cyl` `notch-pent` `flag` `text` | `--dsw-static-neutral-bluish-400` `#adb2b8` | `#f0f1f2` · 16.73:1 | `#3c3d3f` · 10.44:1 |
 
 描边对画布：浅色 4.87–8.05:1，深色 8.71–10.02:1。
+
+这张表是**引擎自己的 53 个形状**，一个不漏：形状名单不是手写的，是从 `vendor/pele/pele.global.js` 的形状表里读出来再和样式表比对（`verify/check-bundle.mjs` 的 `every shape class has a role rule of its own`）。引擎哪天多出一个形状，构建就会红，不会等到聊天里出现一个灰方块才发现。
 
 ## 八个系列色
 
@@ -33,7 +35,7 @@
 
 ## 不是流程图的时候
 
-`classDiagram`、`stateDiagram-v2`、`erDiagram`、`sequenceDiagram`、`kanban` 不画流程图形状，节点分别是类、状态、实体、参与者、卡片。它们的"名词"统一用**数据**紫，起止符（状态机的 `[*]`）用**起止**绿；一张状态机因此是绿端点 + 紫状态，而不是一屏灰方块。
+`classDiagram`、`stateDiagram-v2`、`erDiagram`、`sequenceDiagram`、`kanban`、`journey`、`requirementDiagram`、`architecture-beta`、`C4Context`、`agentflow-beta`、`block-beta` 不画流程图形状，节点分别是类、状态、实体、参与者、卡片、任务、需求、服务、C4 元素、智能体步骤、块。它们的主体节点按"这是什么"取色：类/状态/实体/参与者/卡片/需求/树图节点是**数据**紫，C4 的人与块图的节点按形状落到起止或处理，起止符（状态机的 `[*]`）是**起止**绿。一张状态机因此是绿端点 + 紫状态，而不是一屏灰方块。
 
 ```mermaid
 stateDiagram-v2
@@ -51,6 +53,12 @@ stateDiagram-v2
 | `pele-state-start` / `-end` 填充 | `#d7f5e2` · 描边 5.18:1 | `#23402e` · 描边 10.71:1 |
 
 饼图、时间线、甘特、多系列图用的是八个**系列色**（上一节），与角色色互不冲突：系列色区分"第几条数据"，角色色区分"这是什么"。
+
+树图（`treemap`）的叶子是数据本身，引擎直接拿 `--pele-series-N` 铺满，标签用画布色写，所以叶子保持系列色、不再叠角色色——插件故意**不**接管 `.pele-leaf`。
+
+`sankey-beta`、`packet-beta`、`radar-beta`、`quadrantChart`、`gitGraph`、`info`、`cynefin-beta`、`ishikawa` 这些没有"一种东西一个框"的图种，看的是线、字与少量强调色：线用 `--pele-line`（≥3:1）、字用墨色（≥4.5:1），雷达的蛛网与图表的网格按装饰线处理（≥1.4:1，安静但存在）。
+
+完整的 53 个形状与 12 个额外图种的实测图在 `specs/003-diagram-palette-contrast/evidence/all-shapes.png` 与 `all-types.png`。
 
 ## 作者优先
 

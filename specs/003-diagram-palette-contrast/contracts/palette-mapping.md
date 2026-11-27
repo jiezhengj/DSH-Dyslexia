@@ -43,8 +43,8 @@
 因此规则形如（以"判断"为例，其余四类同构）：
 
 ```css
-.dsh-dyslexia-figure .pele-shape-diam > polygon,
-.dsh-dyslexia-figure .pele-shape-hex > polygon {
+.dsh-dyslexia-figure .pele-shape-diam :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-hex :is(rect, polygon, circle, path, ellipse, polyline) {
   fill: var(--pele-surface);                                  /* 回退声明，先写 */
   fill: color-mix(in srgb, var(--dx-hue-decision) 18%, var(--pele-bg));
   stroke: var(--pele-border);
@@ -61,6 +61,30 @@
 - 每条规则必须先写回退声明（`var(--pele-surface)` / `var(--pele-border)`），再写 `color-mix` 版本
 
 **非流程图的主体节点**：`class`、`state`、`er`、`sequence`、`kanban` 画出来的节点类不是 `pele-shape-*`，而是 `pele-state`、`pele-state-start`、`pele-state-end`、`pele-class`、`pele-entity`、`pele-actor-participant`、`pele-card`。这些类一并接角色色：起止符用"起止"绿，其余主体节点用"数据"紫——图的"名词"只有一个可辨认的色相，读者不会把每个状态看成同一个灰方块。检查项：`check-bundle.mjs` 的 `records, states and participants are coloured too`、夹具里每种图的 `colours a node of its own`。
+
+### 2.1 形状清单来自引擎，不来自手写
+
+53 个形状按角色分组，名单由 `vendor/pele/pele.global.js` 的 `var G_=[[…]]` 形状表解析得到（`verify/check-bundle.mjs`）：
+
+| 角色 | 形状（引擎名） |
+| --- | --- |
+| 起止 | `stadium` `circle` `odd` `sm-circ` `fr-circ` `dbl-circ` `cross-circ` `f-circ` |
+| 判断 | `diam` `hex` `bang` |
+| 数据 | `cyl` `datastore` `folder` `bucket` `doc` `docs` `lin-doc` `tag-doc` `tag-rect` `st-rect` `win-pane` |
+| 输入输出 | `lean-r` `lean-l` `trap-b` `trap-t` `curv-trap` `person` `browser` `cloud` |
+| 处理 | `rect` `rounded` `fr-rect` `notch-rect` `lin-rect` `console` `delay` `div-rect` `tri` `flip-tri` `sl-rect` `bow-rect` `brace` `brace-r` `braces` `bolt` `fork` `hourglass` `h-cyl` `lin-cyl` `notch-pent` `flag` `text` |
+
+不变量（构建期检查）：
+
+1. 引擎形状表里的每个形状，样式表里必须有一条角色规则；样式表里不得出现引擎没有的形状名。
+2. 同一条规则只许用后代选择器 `:is(… )`（`docs`、`brace` 等把 `<path>` 包在 `<g>` 里，直系子代选不到），且选择器列表中除最后一条外，逗号必须写在 CSS 字符串内部——否则整组选择器会被解析成一个永不匹配的后代选择器（0.3.2 的真实事故）。
+3. 多选择器规则的最后一个选择器**不得**带尾逗号（`a, b, c, { … }` 会让整条规则被丢弃）。
+4. 处理类只给中性明度档，不给色相；彩色角色（起止/判断/数据/输入输出）必须四类齐全。
+5. 树图 `.pele-leaf` 不接管：叶子就是数据，引擎用 `--pele-series-N` 铺满并用画布色写标签，插件不叠角色色。
+
+### 2.2 图种登记表同样来自引擎
+
+引擎注册了 35 个图种（`["id","keyword",/^…/]` 表）。`verify/check-bundle.mjs` 的 `every diagram type the engine registers is sampled or explained` 要求：每个图种要么在夹具里有一个样例（`TYPE_SAMPLES`），要么写进 `TYPE_NOT_SAMPLED` 并说明为什么（当前的解析失败者：`usecase`、`railroad` 族、`eventmodeling`、`swimlane`、`venn`、`treeView`）。夹具的 `typesPass` 对每个样例断言结构线 ≥3:1、文字 ≥4.5:1、节点有独立色相（通道极差 ≥8，仅对彩色角色的形状）；`shapesPass` 对 53 个形状逐主题实测。
 
 ## 3. 禁止项（检查会拦住）
 

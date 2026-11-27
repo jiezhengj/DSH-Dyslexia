@@ -8,6 +8,8 @@
 | `probe-types.html` | 11 种图在插件现有映射下的逐类彩色元素计数（flowchart/sequence/state/class/er/gantt/kanban 全为 0；`xychart-beta` 引擎不支持，`svg:false`） | `types.png` |
 | `probe-shapes.html` | 引擎为 flowchart 输出的 13 个形状类名，以及节点 DOM 结构（`g.pele-node.pele-shape-X > 图元` + 表现属性 `fill="var(--_s)"`） | — |
 | `candidate-palette.html` | 候选配色原型：`--pele-line` 改 `label-tertiary`、五类角色按形状类上色，浅色与深色并排（已被 `shipped.html` 取代，留作设计过程记录） | `candidate-palette.png` |
+| `all-shapes.png` | 引擎形状表里的全部 53 个形状，按五个角色分行、浅/深各一套：彩色角色 30 个（起止绿、判断琥珀、数据紫、输入输出蓝）、处理类 23 个中性档 | — |
+| `all-types.png` | 流程图之外的 12 个图种实测：状态机、类图、实体图、时序图、看板、旅程、树图、需求、架构、C4、智能体流、块图 | — |
 | `shipped.html` | **落地后的真实配色**：`src/client/styles.js` 的样式表 + `verify/host-tokens.json` 的真实浅/深令牌 + 引擎，同一张流程图上下并排，页面底部打印每类角色的填充、文字与描边对比度 | `shipped.png` |
 
 ## 怎么复现量测
