@@ -49,6 +49,13 @@ const CODE = `flowchart LR
   C --> E[Reads on]
   E --> A`
 
+const STATE_CODE = `stateDiagram-v2
+  [*] --> Idle: new order
+  Idle --> Paid: checkout
+  Paid --> Locked: 30 days unused
+  Locked --> Paid: unlocked
+  Paid --> [*]`
+
 const PAGE = `<!doctype html>
 <meta charset="utf-8">
 <title>003 evidence: the shipped palette under the real host colours</title>
@@ -67,12 +74,15 @@ ${darkStatics}
 </style>
 <h1>The shipped palette, drawn with the host's own colours</h1>
 <p class="lead">Stylesheet from <code>src/client/styles.js</code>, tokens from <code>verify/host-tokens.json</code> (${host.version}), engine 1.13.0. One diagram, light above, dark below.</p>
-<section class="light-tokens"><h2>Light · :root tokens</h2><div class="stage" id="light"></div></section>
-<section class="dark-tokens"><h2>Dark · body[data-ds-dark-theme] tokens</h2><div class="stage" id="dark"></div></section>
+<section class="light-tokens"><h2>Light · :root tokens · flowchart</h2><div class="stage" id="light"></div></section>
+<section class="dark-tokens"><h2>Dark · body[data-ds-dark-theme] tokens · flowchart</h2><div class="stage" id="dark"></div></section>
+<section class="light-tokens"><h2>Light · a state machine</h2><div class="stage" id="light-state"></div></section>
+<section class="dark-tokens"><h2>Dark · a state machine</h2><div class="stage" id="dark-state"></div></section>
 <pre id="report"></pre>
 <script src="../../../vendor/pele/pele.global.js"></script>
 <script>
 const CODE = ${JSON.stringify(CODE)}
+const STATE_CODE = ${JSON.stringify(STATE_CODE)}
 const SHAPES = ['stadium', 'circle', 'odd', 'diam', 'hex', 'cyl', 'lean-r', 'lean-l', 'trap-b', 'trap-t', 'rect', 'rounded', 'fr-rect']
 // Chrome reports a resolved color-mix() as color(srgb 0.84 0.95 0.88), so the
 // reader has to take both that and the plain rgb()/rgba() form.
@@ -146,9 +156,47 @@ async function draw(stage) {
 }
 draw(document.getElementById('light')).then((lightRows) => {
   draw(document.getElementById('dark')).then((darkRows) => {
-    document.getElementById('report').textContent = lightRows + '\\n\\n' + darkRows
+    const lightState = drawState(document.getElementById('light-state'))
+    const darkState = drawState(document.getElementById('dark-state'))
+    document.getElementById('report').textContent =
+      lightRows + '\\n\\n' + darkRows +
+      '\\n\\nSTATE MACHINE\\nLIGHT\\n' + lightState.join('\\n') +
+      '\\n\\nDARK\\n' + darkState.join('\\n')
   })
 })
+
+// A state machine draws no flowchart shapes: its nodes are pele-state,
+// pele-state-start and pele-state-end. They must be coloured too, or the
+// reader gets one grey box per state.
+function drawState(stage) {
+  const drawn = pele.render(STATE_CODE, { fontSize: 13, padding: 12, maxWidth: 560, autoDirection: false })
+  const wrap = document.createElement('div')
+  wrap.className = 'dsh-dyslexia-figure'
+  wrap.innerHTML = drawn.svg
+  stage.append(wrap)
+  const canvas = (function canvasOf(node) {
+    for (let element = node; element; element = element.parentElement) {
+      const value = getComputedStyle(element).backgroundColor
+      if (colourOf(value) && colourOf(value).a > 0) return value
+    }
+    return 'rgb(255, 255, 255)'
+  })(stage)
+  const rows = []
+  for (const kind of ['pele-state-start', 'pele-state', 'pele-state-end']) {
+    const node = wrap.querySelector('.pele-node.' + kind)
+    if (!node) continue
+    const shape = node.querySelector('rect, circle, path, polygon, ellipse, polyline')
+    const label = node.querySelector('text')
+    if (!shape) continue
+    const fill = getComputedStyle(shape).fill
+    const stroke = getComputedStyle(shape).stroke
+    rows.push(
+      kind + ' | fill ' + fill + ' | stroke ' + stroke + ' | stroke/bg ' + ratio(stroke, canvas) + ':1' +
+        (label ? ' | text ' + ratio(getComputedStyle(label).fill, fill) + ':1' : ''),
+    )
+  }
+  return rows
+}
 </script>
 `
 

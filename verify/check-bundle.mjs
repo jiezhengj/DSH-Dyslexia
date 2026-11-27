@@ -2051,6 +2051,24 @@ check('every shape class has a role rule of its own', () => {
   return `${SHAPE_CLASSES.length} shapes, every name known to the engine`
 })
 
+// Class, state, entity, sequence and board diagrams do not draw flowchart shapes:
+// their nodes are records, states and participants. They must still be coloured,
+// or the reader gets one grey box for every kind of thing in the picture.
+const ENTITY_CLASSES = ['pele-state', 'pele-state-start', 'pele-state-end', 'pele-class', 'pele-entity', 'pele-actor-participant', 'pele-card']
+
+check('records, states and participants are coloured too', () => {
+  const styles = read('src/client/styles.js')
+  const bare = ENTITY_CLASSES.filter((name) => !new RegExp(`\\.${name}(?![\\w-])`).test(styles))
+  assert(bare.length === 0, `no role rule for ${bare.join(', ')}`)
+  const engine = readFileSync(join(ROOT, 'vendor', 'pele', 'pele.global.js'), 'utf8')
+  const invented = ENTITY_CLASSES.filter((name) => {
+    const stem = name.split('-').slice(0, 2).join('-')
+    return !engine.includes(stem)
+  })
+  assert(invented.length === 0, `the stylesheet styles nodes the engine never draws: ${invented.join(', ')}`)
+  return `${ENTITY_CLASSES.length} record-ish nodes, every stem known to the engine`
+})
+
 check('role rules colour the shape and leave the label alone', () => {
   const css = figureCss()
   const coloured = cssBlocks(css).filter((block) => /(^|[\s;])(fill|stroke)\s*:/.test(block.body))
@@ -2174,7 +2192,7 @@ check('the fixture can fail: its contrast helpers are exercised', () => {
 
 /* ---------------------------------------------------------------- report */
 
-const EXPECTED_CHECKS = 78
+const EXPECTED_CHECKS = 79
 if (notices.length + failures.length !== EXPECTED_CHECKS) {
   failures.push(
     `[FAIL] the suite has ${notices.length + failures.length} checks, expected ${EXPECTED_CHECKS}: a check was added or removed without updating this number`,

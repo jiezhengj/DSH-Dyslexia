@@ -1,4 +1,4 @@
-/*! @jiezhengj/dsh-dyslexia 0.3.1 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:36f6de3b72f9d76e04b7785390a5c82e */
+/*! @jiezhengj/dsh-dyslexia 0.3.2 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:5d89ac8c8c7c352c3012fa31baa96b6f */
 ;(function () {
   function reportLoadFailure(scope, error) {
     try { console.error('dsh-dyslexia: ' + scope, error) } catch (_error) {}
@@ -285,12 +285,25 @@ const FIGURE_CSS = [
     'stroke: var(--pele-border);',
     'stroke: color-mix(in srgb, var(--dx-hue-decision) 60%, var(--pele-fg));',
   '}',
-  `.${FIGURE_CLASS} .pele-shape-cyl > :is(rect, polygon, circle, path, ellipse, polyline)`,
+  `.${FIGURE_CLASS} .pele-shape-cyl > :is(rect, polygon, circle, path, ellipse, polyline),`,
+  `.${FIGURE_CLASS} .pele-state > :is(rect, polygon, circle, path, ellipse, polyline),`,
+  `.${FIGURE_CLASS} .pele-class > :is(rect, polygon, circle, path, ellipse, polyline),`,
+  `.${FIGURE_CLASS} .pele-entity > :is(rect, polygon, circle, path, ellipse, polyline),`,
+  `.${FIGURE_CLASS} .pele-actor-participant > :is(rect, polygon, circle, path, ellipse, polyline),`,
+  `.${FIGURE_CLASS} .pele-card > :is(rect, polygon, circle, path, ellipse, polyline)`,
   '{',
     'fill: var(--pele-surface);',
     'fill: color-mix(in srgb, var(--dx-hue-data) 18%, var(--pele-bg));',
     'stroke: var(--pele-border);',
     'stroke: color-mix(in srgb, var(--dx-hue-data) 60%, var(--pele-fg));',
+  '}',
+  `.${FIGURE_CLASS} .pele-state-start > :is(rect, polygon, circle, path, ellipse, polyline),`,
+  `.${FIGURE_CLASS} .pele-state-end > :is(rect, polygon, circle, path, ellipse, polyline)`,
+  '{',
+    'fill: var(--pele-surface);',
+    'fill: color-mix(in srgb, var(--dx-hue-start-end) 18%, var(--pele-bg));',
+    'stroke: var(--pele-border);',
+    'stroke: color-mix(in srgb, var(--dx-hue-start-end) 60%, var(--pele-fg));',
   '}',
   `.${FIGURE_CLASS} .pele-shape-lean-r > :is(rect, polygon, circle, path, ellipse, polyline),`,
   `.${FIGURE_CLASS} .pele-shape-lean-l > :is(rect, polygon, circle, path, ellipse, polyline),`,

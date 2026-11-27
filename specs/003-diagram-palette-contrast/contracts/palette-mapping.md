@@ -60,6 +60,8 @@
 - 描边 `color-mix(in srgb, <hue> 60%, var(--pele-fg))`
 - 每条规则必须先写回退声明（`var(--pele-surface)` / `var(--pele-border)`），再写 `color-mix` 版本
 
+**非流程图的主体节点**：`class`、`state`、`er`、`sequence`、`kanban` 画出来的节点类不是 `pele-shape-*`，而是 `pele-state`、`pele-state-start`、`pele-state-end`、`pele-class`、`pele-entity`、`pele-actor-participant`、`pele-card`。这些类一并接角色色：起止符用"起止"绿，其余主体节点用"数据"紫——图的"名词"只有一个可辨认的色相，读者不会把每个状态看成同一个灰方块。检查项：`check-bundle.mjs` 的 `records, states and participants are coloured too`、夹具里每种图的 `colours a node of its own`。
+
 ## 3. 禁止项（检查会拦住）
 
 1. `!important` —— 会压过作者 `classDef` 的行内样式（FR-010）。

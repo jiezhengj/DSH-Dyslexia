@@ -31,6 +31,27 @@
 | 7 | `--dsw-static-violet-400` `#a78bfa` | `#53487c` · 8.12:1 | `#d4c8fb` · 10.06:1 |
 | 8 | `--dsw-static-neutral-bluish-400` `#adb2b8` | `#56595e` · 6.99:1 | `#d7dadd` · 11.15:1 |
 
+## 不是流程图的时候
+
+`classDiagram`、`stateDiagram-v2`、`erDiagram`、`sequenceDiagram`、`kanban` 不画流程图形状，节点分别是类、状态、实体、参与者、卡片。它们的"名词"统一用**数据**紫，起止符（状态机的 `[*]`）用**起止**绿；一张状态机因此是绿端点 + 紫状态，而不是一屏灰方块。
+
+```mermaid
+stateDiagram-v2
+  [*] --> Idle: new order
+  Idle --> Paid: checkout
+  Paid --> [*]
+```
+
+实测（同样来自 `verify/host-tokens.json`）：
+
+| 节点 | 浅色 | 深色 |
+| --- | --- | --- |
+| `pele-state` 填充 | `#efeafe` · 文字 16.10:1 | `#3b364b` · 文字 11.12:1 |
+| `pele-state` 描边对画布 | 5.86:1 | 10.11:1 |
+| `pele-state-start` / `-end` 填充 | `#d7f5e2` · 描边 5.18:1 | `#23402e` · 描边 10.71:1 |
+
+饼图、时间线、甘特、多系列图用的是八个**系列色**（上一节），与角色色互不冲突：系列色区分"第几条数据"，角色色区分"这是什么"。
+
 ## 作者优先
 
 `classDef` 与行内 `style` 落在形状元素上，浏览器里行内样式永远压过插件的样式表，所以作者写 `classDef important fill:#dbeafe,stroke:#2563eb` 就是最终颜色。引擎会按填充深浅自动挑墨色，插件只负责把 `--pele-fg-on-light` / `--pele-fg-on-dark` 接到宿主令牌，保证这个墨色在两套主题里都读得出来。

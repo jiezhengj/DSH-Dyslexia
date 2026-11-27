@@ -1498,6 +1498,26 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
                 name(label + ' words read on what they sit on (≥4.5:1)'),
                 worstWord === null ? 'no words found' : worstWord.toFixed(2) + ':1 (' + softest.where + ')',
               )
+              // A diagram is more than its lines: a state, a class, an entity and a
+              // participant are what the picture is about, and a reader who gets the
+              // same grey box for all of them learns nothing from the colour. One
+              // node of the drawing has to carry a hue of its own.
+              const carried = []
+              const painted = svg.querySelectorAll(
+                '.pele-node > :is(rect, polygon, circle, path, ellipse, polyline), .pele-task > *, .pele-slice, .pele-series > *',
+              )
+              for (let index = 0; index < painted.length; index += 1) {
+                const value = styleValue(painted[index], 'fill')
+                if (!value || value === 'none') continue
+                const spread = spreadOf(value)
+                if (spread !== null) carried.push(spread)
+              }
+              const widest = carried.length > 0 ? Math.max.apply(null, carried) : null
+              expect(
+                widest !== null && widest >= 8,
+                name(label + ' colours a node of its own (channel spread ≥8)'),
+                widest === null ? 'nothing filled' : 'widest spread ' + widest.toFixed(1),
+              )
               if (label === 'xychart') {
                 const grid = svg.querySelector('.pele-grid')
                 const ratio = grid ? ratioBetween(cssColour(styleValue(grid, 'stroke')), canvas) : null

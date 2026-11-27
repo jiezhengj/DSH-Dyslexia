@@ -285,3 +285,21 @@ Task: "index.js CAPABILITY_TEXT 追加一句"      # T017
 - 2026-11-27 `/speckit-converge` 判定的 7 条缺口（T032–T038）全部落地：系列色/强调色按主题派生、全图种对比度断言、网格可见、`docs/colours.md`、令牌缺失回退、能力说明补 `style`、真机取证。
 - 收口验证：`npm run build && npm test` = 静态 78 条 + 浏览器 409 条全绿；`client.js` 796627 bytes / `sources sha256:215cb427bb57b2d7a8f106a7b3b04637`；`verify/host-tokens.json` 与宿主 0.2.2-rc.5 一致。
 - 真机：取证用的 0.3.0 tarball 已删除；`desktop` profile 现装 npm 上的 0.3.1（CI 发布、带 provenance）。六张真机截图与量测见 `evidence/README.md`。
+
+## Phase 12: 非流程图的主体节点（真机复现后补）
+
+用户报告：0.3.1 装上后，会话里的 `stateDiagram-v2` 依然不是彩色。原因是角色规则只覆盖 `pele-shape-*`，而 class/state/er/sequence/kanban 的节点类是 `pele-state` / `pele-class` / `pele-entity` / `pele-actor-participant` / `pele-card`，整张图退回中性填充，只剩浅灰方块。
+
+- [x] T039 给非流程图的主体节点接角色色：起止符（`pele-state-start` / `pele-state-end`）用起止绿，其余主体节点（`pele-state`、`pele-class`、`pele-entity`、`pele-actor-participant`、`pele-card`）用数据紫 per FR-004/FR-012
+
+  实现：`src/client/styles.js` 的"数据"规则扩到五个主体类，新增"起止"规则覆盖 `pele-state-start`/`-end`；四条声明顺序与回退声明沿用原有约定。实测状态机：浅色端点填充 `#d7f5e2`、状态填充 `#efeafe`（文字 16.10:1）、状态描边对画布 5.86:1；深色 10.71:1 / 11.12:1 / 10.11:1。
+
+- [x] T040 夹具断言每种图都至少有一个节点带自己的色相 per SC-001/SC-002
+
+  实现：`typesPass(theme)` 每种图新增一条 `colours a node of its own (channel spread ≥8)`，取 `.pele-node` 的形状、`.pele-task`/`.pele-series` 的子元素与 `.pele-slice` 的填充，按 0–255 通道极差判定；浏览器检查 409 → 429。
+
+- [x] T041 静态检查与文档同步：主体类必须有规则、`docs/colours.md` 写清"不是流程图的时候" per FR-004
+
+  实现：`check-bundle.mjs` 新增 `records, states and participants are coloured too`（7 个主体类必须各有规则、类名主干必须被引擎使用），78 → 79；`docs/colours.md` 新增一节（状态机示例 + 实测表）；`contracts/palette-mapping.md` 补主体类映射；`scripts/build-evidence.mjs` 的证据页加上浅/深两块状态机与量测行。
+
+- 收口：`npm run build && npm test` = 静态 79 条 + 浏览器 429 条全绿；版本 0.3.2，随 tag `v0.3.2` 由 GitHub Actions 发布。

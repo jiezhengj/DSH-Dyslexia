@@ -39,6 +39,20 @@
 - 截图与数字来自 2026-11-27 的宿主令牌值；宿主升级后需按 [quickstart.md](../quickstart.md) 第 4 节刷新快照并重拍、重跑。
 - 真机会话截图（装进 profile 后在聊天里看）已于 2026-11-27 补齐，见下面一节；`desktop` profile 现在是 npm 上的 0.3.1（由 GitHub Actions 以 OIDC 发布并带 provenance）。
 
+## 非流程图的主体节点（2026-11-27，Phase 12）
+
+0.3.1 装上后，会话里的 `stateDiagram-v2` 仍不是彩色：角色规则只覆盖 `pele-shape-*`，而状态机的节点类是 `pele-state` / `pele-state-start` / `pele-state-end`，整张图退回中性填充。0.3.2 起，主体节点（`pele-state`、`pele-class`、`pele-entity`、`pele-actor-participant`、`pele-card`）接"数据"紫，端点接"起止"绿。
+
+`evidence/shipped.html` 现在同时渲染五角色流程图与一台状态机（浅/深各两块），页面底部 `<pre id="report">` 打印每类节点实测值：
+
+| 节点 | 浅色 | 深色 |
+| --- | --- | --- |
+| `pele-state` 填充 / 文字 | `#efeafe` · 16.10:1 | `#3b364b` · 11.12:1 |
+| `pele-state` 描边对画布 | 5.86:1 | 10.11:1 |
+| `pele-state-start` / `-end` 填充 | `#d7f5e2` · 描边 5.18:1 | `#23402e` · 描边 10.71:1 |
+
+夹具新增每种图一条 `colours a node of its own`：静态 79 + 浏览器 429 全绿。
+
 ## 真机会话取证（2026-11-27，T033）
 
 做法：`npm pack` → `dsh plugin --profile desktop add jiezhengj-dsh-dyslexia-0.3.0.tgz`（真实 `desktop` profile 已是 0.3.0）。桌面应用独占该 profile，故复制一份为 `desktop-check`，用 CLI 起真实宿主实例（`dsh --profile desktop-check --no-open --port 50991`），在实例里新开会话、让模型自己按能力说明写 mermaid，再用浏览器量测计算样式并截图。
