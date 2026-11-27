@@ -37,7 +37,7 @@
 
 - 原型里的深色作用域是测试页面自己声明的 `body[data-ds-dark-theme]`，仅用于取证；插件源码不得引用该属性（`check-bundle.mjs` 断言）。`shipped.html` 把深色令牌放在一个容器类上，不触碰 `body` 属性。
 - 截图与数字来自 2026-11-27 的宿主令牌值；宿主升级后需按 [quickstart.md](../quickstart.md) 第 4 节刷新快照并重拍、重跑。
-- 真机会话截图（装进 profile 后在聊天里看）已于 2026-11-27 补齐，见下面一节；`desktop` profile 现在是本地 0.3.0（tarball 安装），registry 上仍是 0.2.24。
+- 真机会话截图（装进 profile 后在聊天里看）已于 2026-11-27 补齐，见下面一节；`desktop` profile 现在是 npm 上的 0.3.1（由 GitHub Actions 以 OIDC 发布并带 provenance）。
 
 ## 真机会话取证（2026-11-27，T033）
 
@@ -52,5 +52,7 @@
 | `zoom200-light.png` | 页面 200% 缩放 | 图宽 578px，无横向溢出 |
 | `uninstalled-fallback-light.png` | 同一会话卸掉插件后 | 0 个 `dsh-dyslexia-*` 元素，mermaid 块回到代码块文本（`flowchart TD …`） |
 
-容器与临时物：测试用的 `desktop-check` profile 与 `50991` 实例已在取证后删除；`desktop` profile 保留 0.3.0，回退用 `dsh plugin --profile desktop add @jiezhengj/dsh-dyslexia@0.2.24`（或 `/tmp/desktop-package.json.bak`、`/tmp/desktop-pnpm-lock.yaml.bak` 两份备份）。
+容器与临时物：测试用的 `desktop-check` profile 与 `50991` 实例、`npm pack` 的 tarball 都已在取证后删除；`desktop` profile 里是 npm 的 0.3.1，回退用 `dsh plugin --profile desktop add @jiezhengj/dsh-dyslexia@0.2.24`。
+
+发布记录：0.3.0 曾从本机 `npm publish`（无 provenance、无 git 提交），已被 deprecate 指向 0.3.1；0.3.1 走仓库既有流程——提交 → 打标签 `v0.3.1` → 推送 → `.github/workflows/publish.yml` 在 CI 里以 OIDC 发布（`npm view @jiezhengj/dsh-dyslexia@0.3.1 dist.attestations` 可见）。
 - `preview.png` —— `docs/preview.svg` 的渲染截图（7649 chars，drawing 529x140），用真实宿主令牌复算后的预览图赏，五类角色同色系。

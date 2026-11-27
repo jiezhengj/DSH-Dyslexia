@@ -99,7 +99,7 @@ dsh plugin add ./jiezhengj-dsh-dyslexia-0.3.0.tgz   # 或按项目既有安装�
 
 截图存到 `specs/003-diagram-palette-contrast/evidence/`，文件名带主题与日期。
 
-**本次落地状态**：仓库内证据（`evidence/shipped.html` + `shipped.png`）与**真机会话**五项都已在 2026-11-27 完成：`npm pack` 的 0.3.0 已装进 `desktop` profile（registry 仍是 0.2.24），用复制出的 `desktop-check` profile 起真实宿主实例后逐项截图，文件与量测数字见 [evidence/README.md](evidence/README.md) 的"真机会话取证"一节（`light-flowchart.png`、`dark-flowchart.png`、`dark-pie.png`、`narrow360-light.png`、`zoom200-light.png`、`uninstalled-fallback-light.png`）。宿主升级后仍需按上面第 4、5 节重刷快照并重拍。
+**本次落地状态**：仓库内证据（`evidence/shipped.html` + `shipped.png`）与**真机会话**五项都已在 2026-11-27 完成：0.3.1 由 GitHub Actions 在 `v0.3.1` 标签上发布并已装进 `desktop` profile，用复制出的 `desktop-check` profile 起真实宿主实例后逐项截图，文件与量测数字见 [evidence/README.md](evidence/README.md) 的"真机会话取证"一节（`light-flowchart.png`、`dark-flowchart.png`、`dark-pie.png`、`narrow360-light.png`、`zoom200-light.png`、`uninstalled-fallback-light.png`）。宿主升级后仍需按上面第 4、5 节重刷快照并重拍。
 
 ## 6. 常见疑问
 

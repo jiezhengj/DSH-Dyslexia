@@ -284,4 +284,4 @@ Task: "index.js CAPABILITY_TEXT 追加一句"      # T017
 
 - 2026-11-27 `/speckit-converge` 判定的 7 条缺口（T032–T038）全部落地：系列色/强调色按主题派生、全图种对比度断言、网格可见、`docs/colours.md`、令牌缺失回退、能力说明补 `style`、真机取证。
 - 收口验证：`npm run build && npm test` = 静态 78 条 + 浏览器 409 条全绿；`client.js` 796627 bytes / `sources sha256:215cb427bb57b2d7a8f106a7b3b04637`；`verify/host-tokens.json` 与宿主 0.2.2-rc.5 一致。
-- 真机：0.3.0 已装进 `desktop` profile；六张真机截图与量测见 `evidence/README.md`。
+- 真机：取证用的 0.3.0 tarball 已删除；`desktop` profile 现装 npm 上的 0.3.1（CI 发布、带 provenance）。六张真机截图与量测见 `evidence/README.md`。
