@@ -4,20 +4,64 @@
     <meta charset="utf-8" />
     <title>dsh-dyslexia fixture</title>
     <style>
+      /* Real host colours, copied from verify/host-tokens.json (the snapshot
+         check-bundle compares against). They used to be hand-typed and much
+         friendlier than the host: #f6f7fb for the layer colour and a blue
+         brand colour where the host uses near-black, which is why 325 green
+         checks could not see that diagrams were drawn white on white. */
       :root {
-        --dsw-alias-bg-base: #ffffff;
-        --dsw-alias-bg-layer-1: #f6f7fb;
-        --dsw-alias-bg-layer-2: #eceef7;
-        --dsw-alias-border-l1: #d8dae6;
-        --dsw-alias-border-l2: #b9bdd0;
-        --dsw-alias-brand-primary: #4a6cf7;
-        --dsw-alias-label-primary: #101014;
-        --dsw-alias-label-secondary: #5b5f72;
-        --dsw-alias-state-error-primary: #d93025;
-        --dsw-alias-state-idle-primary: #8a8f9e;
-        --dsw-alias-state-success-primary: #1f9d55;
-        --dsw-alias-state-warn-primary: #c98a00;
-        --dsw-specific-sidebar-fill: #f2f3f8;
+        --dsw-alias-bg-base: rgb(255, 255, 255);
+        --dsw-alias-bg-layer-1: rgb(255, 255, 255);
+        --dsw-alias-bg-layer-2: rgb(255, 255, 255);
+        --dsw-alias-border-l1: rgba(0, 0, 0, 0.04);
+        --dsw-alias-border-l2: rgba(0, 0, 0, 0.1);
+        --dsw-alias-border-l3: rgba(0, 0, 0, 0.12);
+        --dsw-alias-brand-primary: rgb(15, 17, 21);
+        --dsw-alias-label-primary: rgb(15, 17, 21);
+        --dsw-alias-label-primary-foreground: rgb(255, 255, 255);
+        --dsw-alias-label-secondary: rgb(97, 102, 107);
+        --dsw-alias-label-tertiary: rgb(129, 133, 140);
+        --dsw-alias-link: rgb(65, 118, 230);
+        --dsw-alias-chart-messages: rgb(77, 147, 248);
+        --dsw-alias-chart-system: rgb(173, 178, 184);
+        --dsw-alias-chart-tools: rgb(167, 139, 250);
+        --dsw-alias-switch-thumb: rgb(255, 255, 255);
+        --dsw-alias-state-error-primary: rgb(236, 19, 19);
+        --dsw-static-amber-500: rgb(245, 158, 11);
+        --dsw-static-blue-400: rgb(96, 165, 250);
+        --dsw-static-blue-450: rgb(77, 147, 248);
+        --dsw-static-deepseek-400: rgb(122, 170, 255);
+        --dsw-static-deepseek-500: rgb(65, 118, 230);
+        --dsw-static-green-500: rgb(34, 197, 94);
+        --dsw-static-neutral-bluish-50: rgb(249, 250, 251);
+        --dsw-static-neutral-bluish-400: rgb(173, 178, 184);
+        --dsw-static-neutral-bluish-600: rgb(129, 133, 140);
+        --dsw-static-neutral-bluish-1000: rgb(15, 17, 21);
+        --dsw-static-red-400: rgb(242, 90, 90);
+        --dsw-static-red-500: rgb(239, 68, 68);
+        --dsw-static-violet-400: rgb(167, 139, 250);
+      }
+      /* The dark theme, simulated for this fixture only: the host flips these
+         on <body data-ds-dark-theme>. The plugin must not know this selector
+         exists (check-bundle forbids it in src/), so this block stays here. */
+      body[data-ds-dark-theme] {
+        --dsw-alias-bg-base: rgb(21, 21, 23);
+        --dsw-alias-bg-layer-1: rgb(35, 35, 36);
+        --dsw-alias-bg-layer-2: rgb(44, 44, 46);
+        --dsw-alias-border-l1: rgba(255, 255, 255, 0.06);
+        --dsw-alias-border-l2: rgba(255, 255, 255, 0.12);
+        --dsw-alias-border-l3: rgba(255, 255, 255, 0.16);
+        --dsw-alias-brand-primary: rgb(249, 250, 251);
+        --dsw-alias-label-primary: rgb(249, 250, 251);
+        --dsw-alias-label-primary-foreground: rgb(15, 17, 21);
+        --dsw-alias-label-secondary: rgb(207, 211, 214);
+        --dsw-alias-label-tertiary: rgb(173, 178, 184);
+        --dsw-alias-link: rgb(122, 170, 255);
+        --dsw-alias-chart-messages: rgb(77, 147, 248);
+        --dsw-alias-chart-system: rgb(173, 178, 184);
+        --dsw-alias-chart-tools: rgb(167, 139, 250);
+        --dsw-alias-switch-thumb: rgb(173, 178, 184);
+        --dsw-alias-state-error-primary: rgb(242, 90, 90);
       }
       body {
         margin: 0;
@@ -311,6 +355,273 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
             console.warn = original
           }
           return seen
+        }
+
+        /* ---------------------------------------- colours a reader can see */
+        // Every claim below is a ratio computed the way WCAG computes it. The
+        // fixture carries the host's own colours now, so "did the picture get
+        // easier to read" is a number, not an opinion. Chrome reports the
+        // result of `color-mix()` as `color(srgb ...)`, hence both spellings.
+        function cssColour(text) {
+          if (text === undefined || text === null) return null
+          const value = String(text).trim().toLowerCase()
+          if (value === '' || value === 'none' || value === 'transparent' || value === 'currentcolor') return null
+          const rgba = /^rgba?\(([^)]*)\)$/.exec(value)
+          if (rgba) {
+            const parts = rgba[1].split(/[\s,\/]+/).filter((part) => part.length > 0)
+            if (parts.length < 3) return null
+            const channel = (part) => (part.indexOf('%') !== -1 ? parseFloat(part) / 100 : parseFloat(part) / 255)
+            const alpha = parts.length > 3 ? (parts[3].indexOf('%') !== -1 ? parseFloat(parts[3]) / 100 : parseFloat(parts[3])) : 1
+            const colour = { r: channel(parts[0]), g: channel(parts[1]), b: channel(parts[2]), a: alpha }
+            if (isNaN(colour.r) || isNaN(colour.g) || isNaN(colour.b)) return null
+            return colour
+          }
+          const srgb = /^color\(\s*srgb\s+([-\d.e]+)\s+([-\d.e]+)\s+([-\d.e]+)\s*(?:\/\s*([-\d.e]+%?))?\s*\)$/.exec(value)
+          if (srgb) {
+            const alpha = srgb[4] === undefined ? 1 : (srgb[4].indexOf('%') !== -1 ? parseFloat(srgb[4]) / 100 : parseFloat(srgb[4]))
+            return { r: parseFloat(srgb[1]), g: parseFloat(srgb[2]), b: parseFloat(srgb[3]), a: alpha }
+          }
+          return null
+        }
+
+        // A translucent stroke (the host's borders are 4%–16% alpha) is only as
+        // visible as what it makes with the surface under it.
+        function layered(front, back) {
+          if (!front) return null
+          if (front.a >= 1) return front
+          const canvas = back || { r: 1, g: 1, b: 1, a: 1 }
+          const alpha = front.a
+          return {
+            r: front.r * alpha + canvas.r * (1 - alpha),
+            g: front.g * alpha + canvas.g * (1 - alpha),
+            b: front.b * alpha + canvas.b * (1 - alpha),
+            a: 1,
+          }
+        }
+
+        function relativeLuminance(colour) {
+          const channel = (part) => (part <= 0.03928 ? part / 12.92 : Math.pow((part + 0.055) / 1.055, 2.4))
+          return 0.2126 * channel(colour.r) + 0.7152 * channel(colour.g) + 0.0722 * channel(colour.b)
+        }
+
+        function contrastOf(frontText, backText) {
+          const back = cssColour(backText)
+          const front = layered(cssColour(frontText), back)
+          if (!front || !back) return null
+          const frontLum = relativeLuminance(front)
+          const backLum = relativeLuminance(back)
+          return (Math.max(frontLum, backLum) + 0.05) / (Math.min(frontLum, backLum) + 0.05)
+        }
+
+        function ratioText(frontText, backText) {
+          const ratio = contrastOf(frontText, backText)
+          return ratio === null ? 'unreadable: ' + frontText + ' on ' + backText : ratio.toFixed(2) + ':1'
+        }
+
+        // How far a colour is from grey, 0–255: a neutral surface stays under 5.
+        function spreadOf(text) {
+          const colour = cssColour(text)
+          if (!colour) return null
+          const parts = [colour.r * 255, colour.g * 255, colour.b * 255]
+          return Math.max.apply(null, parts) - Math.min.apply(null, parts)
+        }
+
+        function hueOf(text) {
+          const colour = cssColour(text)
+          if (!colour) return null
+          const max = Math.max(colour.r, colour.g, colour.b)
+          const min = Math.min(colour.r, colour.g, colour.b)
+          const delta = max - min
+          if (delta === 0) return 0
+          let hue
+          if (max === colour.r) hue = ((colour.g - colour.b) / delta) % 6
+          else if (max === colour.g) hue = (colour.b - colour.r) / delta + 2
+          else hue = (colour.r - colour.g) / delta + 4
+          hue *= 60
+          return hue < 0 ? hue + 360 : hue
+        }
+
+        function hueGap(one, other) {
+          const gap = Math.abs(one - other) % 360
+          return gap > 180 ? 360 - gap : gap
+        }
+
+        function styleValue(element, property) {
+          return element ? getComputedStyle(element)[property] : ''
+        }
+
+        // The five shapes a flow chart can use, in the order the palette was
+        // designed around them: start and end, decision, data, input/output,
+        // and a plain step. Each is written in the syntax a reader knows.
+        const ROLES = [
+          { key: 'start-end', shape: 'stadium', syntax: '([Start])', label: '起止' },
+          { key: 'decision', shape: 'diam', syntax: '{Decision}', label: '判断' },
+          { key: 'data', shape: 'cyl', syntax: '[(Data)]', label: '数据' },
+          { key: 'io', shape: 'lean-r', syntax: '[/Input/]', label: '输入输出' },
+          { key: 'process', shape: 'rect', syntax: '[Step]', label: '处理' },
+        ]
+        const COLOURED_ROLES = ['start-end', 'decision', 'data', 'io']
+
+        const PALETTE_CODE = [
+          'flowchart TD',
+          '  A([Start]) --> B{Decision}',
+          '  B -->|yes| C[(Data)]',
+          '  B -->|no| D[/Input/]',
+          '  C --> E[Step]',
+          '  D --> E',
+          '  E --> F([End])',
+        ].join('\n')
+        // A colour the author wrote. The engine turns `classDef` into an inline
+        // style on the shape and picks the ink for it from `--pele-fg-on-light`.
+        const AUTHOR_CODE = [
+          'flowchart TD',
+          '  A[Step] --> B[Step]',
+          '  classDef authored fill:#dbeafe,stroke:#2563eb',
+          '  class A authored',
+        ].join('\n')
+        const PIE_CODE = 'pie title Share\n  "One": 40\n  "Two": 30\n  "Three": 20\n  "Four": 10'
+
+        // Every diagram family the engine draws, written the way a reader
+        // writes it. SC-001 and SC-002 say every supported family, no
+        // exception, so each one is mounted and measured below.
+        const TYPE_CODES = {
+          sequence: [
+            'sequenceDiagram',
+            '  participant R as Reader',
+            '  participant E as Engine',
+            '  R->>E: asks for a picture',
+            '  E-->>R: draws one',
+            '  Note over R,E: both stay in the message',
+          ].join('\n'),
+          classDiagram: [
+            'classDiagram',
+            '  class Host { +token() }',
+            '  class Plugin { +render() }',
+            '  Host <|-- Plugin',
+            '  Plugin --> Host : follows',
+          ].join('\n'),
+          stateDiagram: [
+            'stateDiagram-v2',
+            '  [*] --> Idle',
+            '  Idle --> Busy : click',
+            '  Busy --> Idle : done',
+            '  Busy --> Broken : throw',
+            '  Broken --> [*]',
+          ].join('\n'),
+          er: [
+            'erDiagram',
+            '  HOST ||--o{ MESSAGE : carries',
+            '  HOST {',
+            '    string id',
+            '  }',
+            '  MESSAGE {',
+            '    string text',
+            '  }',
+          ].join('\n'),
+          gantt: [
+            'gantt',
+            '  title Build',
+            '  dateFormat YYYY-MM-DD',
+            '  section Design',
+            '  Sketch :a1, 2024-01-01, 3d',
+            '  Review :a2, after a1, 2d',
+          ].join('\n'),
+          timeline: ['timeline', '  title Ship', '  0.2 : mist', '  0.3 : colour'].join('\n'),
+          mindmap: ['mindmap', '  root((colours))', '    roles', '      start', '    palette', '      series'].join('\n'),
+          pieDiagram: PIE_CODE,
+          xychart: [
+            'xychart',
+            '  x-axis [light, dark]',
+            '  y-axis "ratio" 0 --> 10',
+            '  bar [3.7, 8.5]',
+          ].join('\n'),
+          kanban: ['kanban', '  Backlog', '    one task', '  Done', '    another task'].join('\n'),
+        }
+
+        // The surface a shape or a word is actually seen against: the nearest
+        // painted ancestor. `color-mix()` channels arrive as 0–1 already.
+        function surfaceAt(node) {
+          for (let step = node; step; step = step.parentElement) {
+            const colour = cssColour(styleValue(step, 'backgroundColor'))
+            if (colour && colour.a > 0) return layered(colour, { r: 1, g: 1, b: 1, a: 1 })
+          }
+          return { r: 1, g: 1, b: 1, a: 1 }
+        }
+
+        function ratioBetween(front, back) {
+          const painted = layered(front, back)
+          const ONE = relativeLuminance(painted)
+          const TWO = relativeLuminance(back)
+          return (Math.max(ONE, TWO) + 0.05) / (Math.min(ONE, TWO) + 0.05)
+        }
+
+        // A label sits on the shape its own group drew, and the engine may
+        // paint that shape faintly (`fill-opacity`), so the fill is composited
+        // over what is behind it before the ink is judged.
+        function paintBehind(textNode) {
+          for (let group = textNode.parentElement; group && group.tagName.toLowerCase() === 'g'; group = group.parentElement) {
+            const shapes = group.querySelectorAll(':scope > rect, :scope > path, :scope > polygon, :scope > circle, :scope > ellipse, :scope > polyline')
+            for (let index = 0; index < shapes.length; index += 1) {
+              const shape = shapes[index]
+              if (shape.contains(textNode)) continue
+              const fill = cssColour(styleValue(shape, 'fill'))
+              if (!fill || fill.a <= 0) continue
+              const raw = shape.getAttribute('fill-opacity')
+              const opacity = raw === null ? 1 : parseFloat(raw)
+              const faint = { r: fill.r, g: fill.g, b: fill.b, a: fill.a * (isNaN(opacity) ? 1 : opacity) }
+              return layered(faint, surfaceAt(group))
+            }
+          }
+          return null
+        }
+
+        // One measurement of one picture, under whichever theme is on <body>.
+        function measurePalette(stage) {
+          const figure = stage.querySelector('.dsh-dyslexia-figure')
+          const canvas = figure ? styleValue(figure, 'backgroundColor') : ''
+          const measured = {}
+          for (const role of ROLES) {
+            const node = figure ? figure.querySelector('.pele-node.pele-shape-' + role.shape) : null
+            const shape = node ? node.querySelector('rect, polygon, circle, path, ellipse, polyline') : null
+            const text = node ? node.querySelector('text.pele-label') : null
+            measured[role.key] = {
+              fill: shape ? styleValue(shape, 'fill') : '',
+              stroke: shape ? styleValue(shape, 'stroke') : '',
+              text: text ? styleValue(text, 'fill') : '',
+              count: figure ? figure.querySelectorAll('.pele-node.pele-shape-' + role.shape).length : 0,
+            }
+          }
+          const edges = figure ? figure.querySelector('g.pele-edges') : null
+          // Arrowheads are filled with the line colour (`fill="var(--_l)"`)
+          // while the line itself is stroked — measure the paint each uses.
+          const marker = figure ? figure.querySelector('path.pele-marker') : null
+          return {
+            figure,
+            canvas,
+            roles: measured,
+            edgeStroke: edges ? styleValue(edges, 'stroke') : '',
+            markerFill: marker ? styleValue(marker, 'fill') : '',
+            markerStroke: marker ? styleValue(marker, 'stroke') : '',
+          }
+        }
+
+        function measureAuthored(stage) {
+          const figure = stage.querySelector('.dsh-dyslexia-figure')
+          const node = figure ? figure.querySelector('.pele-node') : null
+          const shape = node ? node.querySelector('rect, polygon, circle, path, ellipse, polyline') : null
+          const text = node ? node.querySelector('text.pele-label') : null
+          return {
+            fill: shape ? styleValue(shape, 'fill') : '',
+            stroke: shape ? styleValue(shape, 'stroke') : '',
+            text: text ? styleValue(text, 'fill') : '',
+          }
+        }
+
+        const sameColour = (one, other) => {
+          const a = cssColour(one)
+          const b = cssColour(other)
+          if (!a || !b) return false
+          return Math.abs(a.r - b.r) < 0.004 && Math.abs(a.g - b.g) < 0.004 && Math.abs(a.b - b.b) < 0.004 && Math.abs(a.a - b.a) < 0.004
         }
 
         /* ------------------------------------------------ module and layer */
@@ -984,6 +1295,298 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           narrow.root.unmount()
           narrow.stage.remove()
 
+          /* --------------------------- is the picture readable? (003) */
+          // The three P1 stories of feature 003 are numbers here: lines at
+          // 3:1 or better, text at 7:1, and five roles told apart by four hues
+          // plus one neutral step. The fixture carries the host's own colours,
+          // so this measures what a reader sees — and the negative check at the
+          // end proves these assertions can fail at all. Before 003 the fixture
+          // had friendlier colours than the host and 325 checks stayed green
+          // while diagrams were drawn white on white.
+          async function palettePass(theme) {
+            const view = mount(Layer, { code: PALETTE_CODE, streaming: false, children: hostBlock(PALETTE_CODE) })
+            await tick(180)
+            const shot = measurePalette(view.stage)
+            const name = (text) => '[' + theme + '] ' + text
+            const each = (role) => shot.roles[role.key]
+
+            const edgeRatio = contrastOf(shot.edgeStroke, shot.canvas)
+            expect(
+              edgeRatio !== null && edgeRatio >= 3,
+              name('flow lines are no longer mist (≥3:1)'),
+              ratioText(shot.edgeStroke, shot.canvas),
+            )
+            expect(
+              sameColour(shot.markerFill, shot.edgeStroke),
+              name('arrowheads read the same colour as their line'),
+              shot.markerFill + ' vs ' + shot.edgeStroke,
+            )
+
+            const readable = ROLES.map((role) => ({
+              label: role.label,
+              count: each(role).count,
+              ratio: contrastOf(each(role).text, each(role).fill),
+            }))
+            const drawn = readable.filter((entry) => entry.count > 0)
+            const weak = drawn.filter((entry) => entry.ratio === null || entry.ratio < 7)
+            expect(
+              drawn.length === ROLES.length && weak.length === 0,
+              name('labels stay readable on every role fill (≥7:1)'),
+              drawn.map((entry) => entry.label + ' ' + (entry.ratio === null ? 'n/a' : entry.ratio.toFixed(1))).join(' '),
+            )
+
+            const fills = ROLES.map((role) => each(role).fill)
+            const distinct = new Set(fills.map((text) => {
+              const colour = cssColour(text)
+              return colour ? [colour.r, colour.g, colour.b].map((part) => Math.round(part * 255)).join(',') : 'none:' + text
+            }))
+            expect(distinct.size === ROLES.length, name('each of the five roles gets its own fill'), distinct.size + ' colours: ' + fills.join(' '))
+
+            const chromatic = ROLES.filter((role) => COLOURED_ROLES.indexOf(role.key) !== -1)
+              .map((role) => ({ label: role.label, spread: spreadOf(each(role).fill) }))
+            // The violet data fill is the quietest hue and lands at 20.0, so the
+            // bar sits at 18: far above a grey (under 5) and clear of the old
+            // palette (0–2), without failing on a float rounding hair.
+            expect(
+              chromatic.every((entry) => entry.spread !== null && entry.spread >= 18),
+              name('the four coloured roles are actually coloured (channel spread ≥18)'),
+              chromatic.map((entry) => entry.label + ' ' + (entry.spread === null ? 'n/a' : entry.spread.toFixed(0))).join(' '),
+            )
+
+            const hues = COLOURED_ROLES.map((key) => hueOf(shot.roles[key].fill))
+            const gaps = hues.slice(1).map((hue, index) => (hue === null || hues[index] === null ? null : hueGap(hues[index], hue)))
+            expect(
+              gaps.length === COLOURED_ROLES.length - 1 && gaps.every((gap) => gap !== null && gap >= 20),
+              name('neighbouring role hues stay apart (≥20°)'),
+              gaps.map((gap) => (gap === null ? 'n/a' : gap.toFixed(0) + '°')).join(' '),
+            )
+
+            const processFill = contrastOf(each(ROLES[4]).fill, shot.canvas)
+            const processStroke = contrastOf(each(ROLES[4]).stroke, shot.canvas)
+            expect(
+              processFill !== null && processFill > 1.05,
+              name('a plain step still sits on the surface it is drawn on (>1.05)'),
+              ratioText(each(ROLES[4]).fill, shot.canvas),
+            )
+            expect(
+              processStroke !== null && processStroke >= 3,
+              name('a plain step keeps a visible outline (≥3:1)'),
+              ratioText(each(ROLES[4]).stroke, shot.canvas),
+            )
+
+            view.root.unmount()
+            view.stage.remove()
+          }
+
+          async function authoredPass(theme) {
+            const view = mount(Layer, { code: AUTHOR_CODE, streaming: false, children: hostBlock(AUTHOR_CODE) })
+            await tick(180)
+            const shot = measureAuthored(view.stage)
+            const ink = contrastOf(shot.text, shot.fill)
+            expect(
+              sameColour(shot.fill, 'rgb(219, 234, 254)') && sameColour(shot.stroke, 'rgb(37, 99, 235)') && ink !== null && ink >= 7,
+              '[' + theme + '] a colour the author wrote wins, and its label stays readable',
+              'fill ' + shot.fill + ' stroke ' + shot.stroke + ' ink ' + ratioText(shot.text, shot.fill),
+            )
+            view.root.unmount()
+            view.stage.remove()
+          }
+
+          async function piePass(theme) {
+            const view = mount(Layer, { code: PIE_CODE, streaming: false, children: hostBlock(PIE_CODE) })
+            await tick(180)
+            const figure = view.stage.querySelector('.dsh-dyslexia-figure')
+            const slices = figure ? Array.prototype.slice.call(figure.querySelectorAll('path')) : []
+            const fills = slices.map((slice) => styleValue(slice, 'fill')).filter((text) => cssColour(text))
+            const distinct = new Set(fills.map((text) => {
+              const colour = cssColour(text)
+              return [colour.r, colour.g, colour.b].map((part) => Math.round(part * 255)).join(',')
+            }))
+            // The custom property holds the recipe (`color-mix(...)`), not a
+            // colour, so each one is resolved by asking the browser to paint it.
+            const probe = document.createElement('span')
+            probe.style.display = 'none'
+            ;(figure || view.stage).appendChild(probe)
+            const series = []
+            for (let index = 1; index <= 8; index += 1) {
+              probe.style.color = 'var(--pele-series-' + index + ')'
+              const resolved = getComputedStyle(probe).color
+              if (resolved) series.push(resolved)
+            }
+            probe.remove()
+            const fromSeries = fills.filter((text) => series.some((entry) => entry !== '' && sameColour(entry, text)))
+            expect(
+              fills.length > 0 && distinct.size >= 3 && fromSeries.length === fills.length,
+              '[' + theme + '] pie slices take the host colour series, not the engine default',
+              fills.length + ' slices, ' + distinct.size + ' colours, ' + fromSeries.length + ' from the series',
+            )
+            view.root.unmount()
+            view.stage.remove()
+          }
+
+          // One pass per diagram family: the lines have to be read against the
+          // surface, and every word against the paint under it. Two ratios per
+          // family, plus the chart grid — a family that drifts fails here.
+          async function typesPass(theme) {
+            const name = (text) => '[' + theme + '] ' + text
+            for (const label of Object.keys(TYPE_CODES)) {
+              const code = TYPE_CODES[label]
+              const view = mount(Layer, { code: code, streaming: false, children: hostBlock(code) })
+              await tick(200)
+              const figure = view.stage.querySelector('.dsh-dyslexia-figure')
+              const svg = figure ? figure.querySelector('svg[role="img"]') : null
+              expect(!!svg, name('the engine draws a ' + label + ' diagram'), svg ? 'drawn' : 'nothing drawn')
+              if (!svg) {
+                view.root.unmount()
+                view.stage.remove()
+                continue
+              }
+              const canvas = surfaceAt(figure)
+              const lines = []
+              const shapes = svg.querySelectorAll('path, line, rect, polyline, polygon, circle, ellipse')
+              for (let index = 0; index < shapes.length; index += 1) {
+                const shape = shapes[index]
+                const classes = shape.getAttribute('class') || ''
+                // The timeline halo and the gaps between pie slices are drawn
+                // in the surface colour on purpose: they separate, they do not
+                // inform, so they are not lines a reader has to see.
+                if (/pele-dot|pele-slice|pele-grid/.test(classes)) continue
+                const stroke = cssColour(styleValue(shape, 'stroke'))
+                if (!stroke || stroke.a <= 0) continue
+                lines.push({ ratio: ratioBetween(stroke, canvas), where: classes || shape.tagName })
+              }
+              const words = []
+              const texts = svg.querySelectorAll('text')
+              for (let index = 0; index < texts.length; index += 1) {
+                const text = texts[index]
+                const ink = cssColour(styleValue(text, 'fill'))
+                if (!ink) continue
+                let back = paintBehind(text)
+                const slices = []
+                if (text.closest('.pele-slice-labels')) {
+                  // a slice label is read on whichever slice ends up under it
+                  const painted = svg.querySelectorAll('.pele-slice')
+                  for (let sliceIndex = 0; sliceIndex < painted.length; sliceIndex += 1) {
+                    const colour = cssColour(styleValue(painted[sliceIndex], 'fill'))
+                    if (colour) slices.push(layered(colour, canvas))
+                  }
+                }
+                if (slices.length > 0) {
+                  const worst = Math.min.apply(null, slices.map((slice) => ratioBetween(ink, slice)))
+                  words.push({ ratio: worst, where: 'slice ' + (text.textContent || '').slice(0, 12) })
+                  continue
+                }
+                // A legend entry and an axis tick sit on the canvas, not on the
+                // swatch or the slot drawn beside them.
+                if (text.closest('.pele-legend-item, .pele-legend, .pele-axis, .pele-axis-labels, .pele-section-labels')) back = canvas
+                if (!back) back = surfaceAt(text.parentElement || text)
+                words.push({ ratio: ratioBetween(ink, back), where: (text.textContent || '').slice(0, 12) })
+              }
+              const worstLine = lines.length > 0 ? Math.min.apply(null, lines.map((entry) => entry.ratio)) : null
+              const faintest = lines.slice().sort((one, two) => one.ratio - two.ratio)[0]
+              // A pie or a board has no lines to read; it must not be failed
+              // for the absence of something it never drew.
+              expect(
+                worstLine === null || worstLine >= 3,
+                name(label + ' lines read against their surface (≥3:1)'),
+                worstLine === null ? 'no lines, only filled areas' : worstLine.toFixed(2) + ':1 (' + faintest.where + ')',
+              )
+              const worstWord = words.length > 0 ? Math.min.apply(null, words.map((entry) => entry.ratio)) : null
+              const softest = words.slice().sort((one, two) => one.ratio - two.ratio)[0]
+              expect(
+                worstWord !== null && worstWord >= 4.5,
+                name(label + ' words read on what they sit on (≥4.5:1)'),
+                worstWord === null ? 'no words found' : worstWord.toFixed(2) + ':1 (' + softest.where + ')',
+              )
+              if (label === 'xychart') {
+                const grid = svg.querySelector('.pele-grid')
+                const ratio = grid ? ratioBetween(cssColour(styleValue(grid, 'stroke')), canvas) : null
+                expect(
+                  ratio !== null && ratio >= 1.4,
+                  name('the chart grid is drawn at all, quiet but not absent (≥1.4:1)'),
+                  ratio === null ? 'no grid' : ratio.toFixed(2) + ':1',
+                )
+              }
+              view.root.unmount()
+              view.stage.remove()
+            }
+          }
+
+          // FR-007: if the host never hands over its tokens, every `color-mix()`
+          // collapses and the picture must fall back to the engine's own theme
+          // instead of vanishing. The fixture strips the tokens on one stage.
+          const HOST_TOKEN_NAMES = [
+            '--dsw-alias-bg-base',
+            '--dsw-alias-bg-layer-1',
+            '--dsw-alias-label-primary',
+            '--dsw-alias-label-secondary',
+            '--dsw-alias-label-tertiary',
+            '--dsw-alias-link',
+            '--dsw-alias-chart-messages',
+            '--dsw-alias-state-error-primary',
+            '--dsw-static-green-500',
+            '--dsw-static-amber-500',
+            '--dsw-static-violet-400',
+            '--dsw-static-blue-400',
+            '--dsw-static-deepseek-400',
+            '--dsw-static-red-500',
+            '--dsw-static-neutral-bluish-400',
+            '--dsw-static-neutral-bluish-1000',
+            '--dsw-static-neutral-bluish-50',
+          ]
+
+          async function defaultsPass() {
+            const view = mount(Layer, { code: CODE, streaming: false, children: hostBlock(CODE) })
+            HOST_TOKEN_NAMES.forEach((name) => view.stage.style.setProperty(name, 'initial'))
+            await tick(200)
+            const figure = view.stage.querySelector('.dsh-dyslexia-figure')
+            const svg = figure ? figure.querySelector('svg[role="img"]') : null
+            const canvas = surfaceAt(view.stage)
+            const edge = svg ? svg.querySelector('g.pele-edges') : null
+            const lineRatio = edge ? ratioBetween(cssColour(styleValue(edge, 'stroke')), canvas) : null
+            const text = svg ? svg.querySelector('text') : null
+            const inkRatio = text ? ratioBetween(cssColour(styleValue(text, 'fill')), paintBehind(text) || canvas) : null
+            expect(
+              !!svg && lineRatio !== null && lineRatio >= 3 && inkRatio !== null && inkRatio >= 4.5,
+              'without host tokens the engine theme still draws a readable picture',
+              'lines ' + (lineRatio === null ? 'none' : lineRatio.toFixed(2) + ':1') + ', words ' + (inkRatio === null ? 'none' : inkRatio.toFixed(2) + ':1'),
+            )
+            view.root.unmount()
+            view.stage.remove()
+          }
+
+          for (const theme of ['light', 'dark']) {
+            if (theme === 'dark') document.body.setAttribute('data-ds-dark-theme', '')
+            await tick(80)
+            await palettePass(theme)
+            await authoredPass(theme)
+            await piePass(theme)
+            await typesPass(theme)
+            if (theme === 'dark') document.body.removeAttribute('data-ds-dark-theme')
+          }
+          await tick(60)
+          await defaultsPass()
+
+          // The negative check: put the old line colour back on one picture and
+          // demand that the line check above would fail. An assertion nobody has
+          // seen fail is a wish; this one prints a number instead.
+          {
+            const teeth = mount(Layer, { code: PALETTE_CODE, streaming: false, children: hostBlock(PALETTE_CODE) })
+            await tick(160)
+            const figure = teeth.stage.querySelector('.dsh-dyslexia-figure')
+            if (figure) figure.style.setProperty('--pele-line', 'var(--dsw-alias-border-l2)')
+            await tick(80)
+            const shot = measurePalette(teeth.stage)
+            const ratio = contrastOf(shot.edgeStroke, shot.canvas)
+            expect(
+              ratio !== null && ratio < 3,
+              'assertion has teeth: the old border colour reads below 3:1',
+              ratioText(shot.edgeStroke, shot.canvas),
+            )
+            teeth.root.unmount()
+            teeth.stage.remove()
+          }
+
           /* ---------------------------------------------- host that says no */
           const retry = makeContext({ rejectLocale: true })
           let retryThrew = null
@@ -1648,8 +2251,11 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           const toggle = rowView.stage.querySelector('button[role="switch"]')
           expect(!!row, 'the settings row renders inside its slot component')
           const rowBox = row ? getComputedStyle(row) : null
+          // Chrome 158 reports `align-items: flex-start` as `flow-start`; both
+          // spellings are the same layout, so the check accepts either.
+          const alignsAtStart = !!rowBox && (rowBox.alignItems === 'flex-start' || rowBox.alignItems === 'flow-start')
           expect(
-            !!rowBox && rowBox.display === 'flex' && rowBox.alignItems === 'flex-start',
+            !!rowBox && rowBox.display === 'flex' && alignsAtStart,
             'the row lays itself out as the stylesheet promises',
             rowBox ? `${rowBox.display}/${rowBox.alignItems}` : 'no row',
           )

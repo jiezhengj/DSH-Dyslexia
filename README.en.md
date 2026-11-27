@@ -25,6 +25,7 @@ The code block is never consumed. It stays in the message as text: it can be cop
 - On a phone or a narrow window the drawing reflows to the column width and zoom stays inside the drawing, so the page never scrolls sideways.
 - Eight interface languages, the same set DeepSeek Harness ships.
 - Nothing is fetched at runtime: the engine is inside the plugin.
+- A box is drawn by what it does: a start or end is green, a decision amber, stored data violet, input and output blue, and a plain step stays neutral; a `classDef` of your own wins. Lines and arrows come from the theme's tertiary label colour, so they read in light and dark alike.
 
 ## Data and privacy
 
@@ -40,8 +41,9 @@ Requirements: Node.js 22 or newer, and Chrome/Chromium for the browser checks.
 
 - `node verify/check-bundle.mjs` — static and engine checks of the shipped bundle (manifest, no network calls, no version gate, the vendored engine, eight interface languages, seven sample diagrams, drawn by the vendored engine). Prints one line per check and exits non-zero on failure.
 - `node verify/run-harness.mjs` — runs the browser checks in headless Chrome against `verify/harness/index.html` (drawing, eight languages, hostile hosts, broken diagrams, copy, narrow 360 px column, theme colours). Set `DSH_DYSLEXIA_CHROME` to point at a specific Chrome executable if auto-detection fails.
+- `node scripts/extract-host-tokens.mjs` — reads the interface theme colours out of the installed app into `verify/host-tokens.json`; the browser fixture and the detail-picture preview draw with those values, so a host theme change is caught rather than assumed. `--check` compares without writing.
 
-Both commands are in the repository, so the claims in this file can be re-checked at any time; they are also what CI runs before publishing.
+These commands are in the repository, so the claims in this file can be re-checked at any time; they are also what CI runs before publishing.
 
 ## Known limits
 

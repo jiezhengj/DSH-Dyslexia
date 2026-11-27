@@ -1,0 +1,326 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>003 evidence: the shipped palette under the real host colours</title>
+<style>
+:root {
+  --dsw-alias-bg-base: rgb(255, 255, 255);
+  --dsw-alias-bg-layer-1: rgb(255, 255, 255);
+  --dsw-alias-bg-layer-2: rgb(255, 255, 255);
+  --dsw-alias-border-l1: rgba(0, 0, 0, 0.04);
+  --dsw-alias-border-l2: rgba(0, 0, 0, 0.1);
+  --dsw-alias-border-l3: rgba(0, 0, 0, 0.12);
+  --dsw-alias-brand-primary: rgb(15, 17, 21);
+  --dsw-alias-label-primary: rgb(15, 17, 21);
+  --dsw-alias-label-primary-foreground: rgb(255, 255, 255);
+  --dsw-alias-label-secondary: rgb(97, 102, 107);
+  --dsw-alias-label-tertiary: rgb(129, 133, 140);
+  --dsw-alias-link: rgb(65, 118, 230);
+  --dsw-alias-chart-messages: rgb(77, 147, 248);
+  --dsw-alias-chart-system: rgb(173, 178, 184);
+  --dsw-alias-chart-tools: rgb(167, 139, 250);
+  --dsw-alias-switch-thumb: rgb(255, 255, 255);
+  --dsw-alias-state-error-primary: rgb(236, 19, 19);
+  --dsw-static-amber-500: rgb(245, 158, 11);
+  --dsw-static-blue-400: rgb(96, 165, 250);
+  --dsw-static-blue-450: rgb(77, 147, 248);
+  --dsw-static-deepseek-400: rgb(122, 170, 255);
+  --dsw-static-deepseek-500: rgb(65, 118, 230);
+  --dsw-static-green-500: rgb(34, 197, 94);
+  --dsw-static-neutral-bluish-50: rgb(249, 250, 251);
+  --dsw-static-neutral-bluish-400: rgb(173, 178, 184);
+  --dsw-static-neutral-bluish-600: rgb(129, 133, 140);
+  --dsw-static-neutral-bluish-1000: rgb(15, 17, 21);
+  --dsw-static-red-400: rgb(242, 90, 90);
+  --dsw-static-red-500: rgb(239, 68, 68);
+  --dsw-static-violet-400: rgb(167, 139, 250);
+}
+.dark-tokens {
+  --dsw-alias-bg-base: rgb(21, 21, 23);
+  --dsw-alias-bg-layer-1: rgb(35, 35, 36);
+  --dsw-alias-bg-layer-2: rgb(44, 44, 46);
+  --dsw-alias-border-l1: rgba(255, 255, 255, 0.06);
+  --dsw-alias-border-l2: rgba(255, 255, 255, 0.12);
+  --dsw-alias-border-l3: rgba(255, 255, 255, 0.16);
+  --dsw-alias-brand-primary: rgb(249, 250, 251);
+  --dsw-alias-label-primary: rgb(249, 250, 251);
+  --dsw-alias-label-primary-foreground: rgb(15, 17, 21);
+  --dsw-alias-label-secondary: rgb(207, 211, 214);
+  --dsw-alias-label-tertiary: rgb(173, 178, 184);
+  --dsw-alias-link: rgb(122, 170, 255);
+  --dsw-alias-chart-messages: rgb(77, 147, 248);
+  --dsw-alias-chart-system: rgb(173, 178, 184);
+  --dsw-alias-chart-tools: rgb(167, 139, 250);
+  --dsw-alias-switch-thumb: rgb(173, 178, 184);
+  --dsw-alias-state-error-primary: rgb(242, 90, 90);
+  --dsw-static-amber-500: rgb(245, 158, 11);
+  --dsw-static-blue-400: rgb(96, 165, 250);
+  --dsw-static-blue-450: rgb(77, 147, 248);
+  --dsw-static-deepseek-400: rgb(122, 170, 255);
+  --dsw-static-deepseek-500: rgb(65, 118, 230);
+  --dsw-static-green-500: rgb(34, 197, 94);
+  --dsw-static-neutral-bluish-50: rgb(249, 250, 251);
+  --dsw-static-neutral-bluish-400: rgb(173, 178, 184);
+  --dsw-static-neutral-bluish-600: rgb(129, 133, 140);
+  --dsw-static-neutral-bluish-1000: rgb(15, 17, 21);
+  --dsw-static-red-400: rgb(242, 90, 90);
+  --dsw-static-red-500: rgb(239, 68, 68);
+  --dsw-static-violet-400: rgb(167, 139, 250);
+}
+.dark-tokens {
+  --dsw-static-amber-500: rgb(245, 158, 11);
+  --dsw-static-blue-400: rgb(96, 165, 250);
+  --dsw-static-blue-450: rgb(77, 147, 248);
+  --dsw-static-deepseek-400: rgb(122, 170, 255);
+  --dsw-static-deepseek-500: rgb(65, 118, 230);
+  --dsw-static-green-500: rgb(34, 197, 94);
+  --dsw-static-neutral-bluish-50: rgb(249, 250, 251);
+  --dsw-static-neutral-bluish-400: rgb(173, 178, 184);
+  --dsw-static-neutral-bluish-600: rgb(129, 133, 140);
+  --dsw-static-neutral-bluish-1000: rgb(15, 17, 21);
+  --dsw-static-red-400: rgb(242, 90, 90);
+  --dsw-static-red-500: rgb(239, 68, 68);
+  --dsw-static-violet-400: rgb(167, 139, 250);
+}
+  body { margin: 0; padding: 16px; font: 13px/1.5 system-ui, sans-serif; color: var(--dsw-alias-label-primary); background: var(--dsw-alias-bg-base); }
+  h1 { font-size: 15px; margin: 0 0 4px; }
+  p.lead { margin: 0 0 14px; color: var(--dsw-alias-label-secondary); }
+  section { margin: 0 0 18px; padding: 12px; border: 1px solid var(--dsw-alias-border-l2); border-radius: 8px; max-width: 620px; }
+  section h2 { font-size: 13px; margin: 0 0 10px; font-weight: 600; }
+  .dark-tokens { background: var(--dsw-alias-bg-base); color: var(--dsw-alias-label-primary); }
+  pre#report { white-space: pre-wrap; font: 11px/1.45 ui-monospace, monospace; }
+  .dsh-dyslexia-section { display: flex; flex-direction: column; gap: 4px; padding: 4px 0 8px; max-width: 720px; }
+.dsh-dyslexia-section-title { margin: 0; font-size: 16px; line-height: 24px; font-weight: 600; color: var(--dsw-alias-label-primary); }
+.dsh-dyslexia-section-intro { margin: 0 0 8px; font-size: 13px; line-height: 20px; color: var(--dsw-alias-label-secondary); }
+.dsh-dyslexia-row { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 8px 12px; padding: 12px 0; }
+.dsh-dyslexia-row-text { flex: 1 1 220px; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.dsh-dyslexia-row-label { font-size: 14px; line-height: 22px; color: var(--dsw-alias-label-primary); }
+.dsh-dyslexia-row-hint { font-size: 12px; line-height: 20px; color: var(--dsw-alias-label-secondary); }
+.dsh-dyslexia-switch { position: relative; flex: 0 0 auto; box-sizing: border-box; width: 36px; height: 20px; margin: 2px 0 0 0; padding: 2px; border: 0; border-radius: 999px; background: var(--dsw-alias-border-l3); cursor: pointer; transition: background 120ms ease; }
+.dsh-dyslexia-switch[aria-checked="true"] { background: var(--dsw-alias-brand-primary); }
+.dsh-dyslexia-switch-knob { display: block; width: 16px; height: 16px; border-radius: 50%; background: var(--dsw-alias-switch-thumb); transition: transform 120ms ease; }
+.dsh-dyslexia-switch[aria-checked="false"] .dsh-dyslexia-switch-knob { background: var(--dsw-alias-switch-thumb); }
+.dsh-dyslexia-switch[aria-checked="true"] .dsh-dyslexia-switch-knob { background: var(--dsw-alias-label-primary-foreground); transform: translateX(16px); }
+.dsh-dyslexia-switch:focus-visible { outline: var(--dsw-focus-ring-width, 2px) solid var(--dsw-focus-ring-color, var(--dsw-alias-brand-primary)); outline-offset: 2px; }
+.dsh-dyslexia-row-state { flex: 1 1 100%; font-size: 12px; line-height: 20px; color: var(--dsw-alias-label-secondary); }
+.dsh-dyslexia-row-state[data-failed="true"] { color: var(--dsw-alias-state-error-primary); }
+.dsh-dyslexia-group {
+  max-width: 100%;
+  min-width: 0;
+}
+.dsh-dyslexia-figure {
+  --pele-bg: var(--dsw-alias-bg-layer-1, #fff);
+  --pele-fg: var(--dsw-alias-label-primary, #1f1f1f);
+  --pele-muted: var(--dsw-alias-label-secondary, #6e6e6e);
+  --pele-line: var(--dsw-alias-label-tertiary, #1f1f1f);
+  --pele-surface: color-mix(in srgb, var(--dsw-alias-label-primary, #1f1f1f) 4%, var(--pele-bg, #fff));
+  --pele-surface-alt: color-mix(in srgb, var(--dsw-alias-label-primary, #1f1f1f) 20%, var(--pele-bg, #fff));
+  --pele-border: var(--dsw-alias-label-tertiary, #8a8a8a);
+  --pele-accent: color-mix(in srgb, var(--dsw-alias-link, #5b7bd5) 55%, var(--pele-fg, #1f1f1f));
+  --pele-critical: var(--dsw-alias-state-error-primary, #e45756);
+  --pele-fg-on-light: var(--dsw-static-neutral-bluish-1000, #0f1115);
+  --pele-fg-on-dark: var(--dsw-static-neutral-bluish-50, #f9fafb);
+  --pele-font: inherit;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 8px;
+  border: 1px solid var(--dsw-alias-border-l1, rgba(0, 0, 0, 0.04));
+  border-radius: 8px;
+  background: var(--dsw-alias-bg-layer-1, #fff);
+  overflow: auto;
+}
+.dsh-dyslexia-figure {
+  --dx-hue-start-end: var(--dsw-static-green-500, #22c55e);
+  --dx-hue-decision: var(--dsw-static-amber-500, #f59e0b);
+  --dx-hue-data: var(--dsw-static-violet-400, #a78bfa);
+  --dx-hue-io: var(--dsw-alias-link, #5b7bd5);
+  --dx-hue-process: var(--dsw-static-neutral-bluish-400, #adb2b8);
+  --pele-series-1: color-mix(in srgb, var(--dsw-alias-chart-messages, #4c78a8) 55%, var(--pele-fg, #1f1f1f));
+  --pele-series-2: color-mix(in srgb, var(--dsw-static-green-500, #54a24b) 55%, var(--pele-fg, #1f1f1f));
+  --pele-series-3: color-mix(in srgb, var(--dsw-static-blue-400, #f58518) 55%, var(--pele-fg, #1f1f1f));
+  --pele-series-4: color-mix(in srgb, var(--dsw-static-amber-500, #e45756) 55%, var(--pele-fg, #1f1f1f));
+  --pele-series-5: color-mix(in srgb, var(--dsw-static-deepseek-400, #72b7b2) 55%, var(--pele-fg, #1f1f1f));
+  --pele-series-6: color-mix(in srgb, var(--dsw-static-red-500, #eeca3b) 55%, var(--pele-fg, #1f1f1f));
+  --pele-series-7: color-mix(in srgb, var(--dsw-static-violet-400, #b279a2) 55%, var(--pele-fg, #1f1f1f));
+  --pele-series-8: color-mix(in srgb, var(--dsw-static-neutral-bluish-400, #9d755d) 55%, var(--pele-fg, #1f1f1f));
+}
+.dsh-dyslexia-figure .pele-shape-stadium > :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-circle > :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-odd > :is(rect, polygon, circle, path, ellipse, polyline)
+{
+fill: var(--pele-surface);
+fill: color-mix(in srgb, var(--dx-hue-start-end) 18%, var(--pele-bg));
+stroke: var(--pele-border);
+stroke: color-mix(in srgb, var(--dx-hue-start-end) 60%, var(--pele-fg));
+}
+.dsh-dyslexia-figure .pele-shape-diam > :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-hex > :is(rect, polygon, circle, path, ellipse, polyline)
+{
+fill: var(--pele-surface);
+fill: color-mix(in srgb, var(--dx-hue-decision) 18%, var(--pele-bg));
+stroke: var(--pele-border);
+stroke: color-mix(in srgb, var(--dx-hue-decision) 60%, var(--pele-fg));
+}
+.dsh-dyslexia-figure .pele-shape-cyl > :is(rect, polygon, circle, path, ellipse, polyline)
+{
+fill: var(--pele-surface);
+fill: color-mix(in srgb, var(--dx-hue-data) 18%, var(--pele-bg));
+stroke: var(--pele-border);
+stroke: color-mix(in srgb, var(--dx-hue-data) 60%, var(--pele-fg));
+}
+.dsh-dyslexia-figure .pele-shape-lean-r > :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-lean-l > :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-trap-b > :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-trap-t > :is(rect, polygon, circle, path, ellipse, polyline)
+{
+fill: var(--pele-surface);
+fill: color-mix(in srgb, var(--dx-hue-io) 18%, var(--pele-bg));
+stroke: var(--pele-border);
+stroke: color-mix(in srgb, var(--dx-hue-io) 60%, var(--pele-fg));
+}
+.dsh-dyslexia-figure .pele-shape-rect > :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-rounded > :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-fr-rect > :is(rect, polygon, circle, path, ellipse, polyline)
+{
+fill: var(--pele-surface);
+fill: color-mix(in srgb, var(--dx-hue-process) 18%, var(--pele-bg));
+stroke: var(--pele-border);
+stroke: color-mix(in srgb, var(--dx-hue-process) 60%, var(--pele-fg));
+}
+.dsh-dyslexia-figure svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+.dsh-dyslexia-figure text {
+  font-family: inherit;
+}
+.dsh-dyslexia-note {
+  margin: 0 0 6px;
+  font-size: 12px;
+  color: var(--dsw-alias-label-secondary);
+}
+.dsh-dyslexia-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+.dsh-dyslexia-button {
+  font: inherit;
+  font-size: 12px;
+  line-height: 18px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--dsw-alias-border-l2);
+  background: var(--dsw-alias-bg-layer-2);
+  color: var(--dsw-alias-label-primary);
+  cursor: pointer;
+}
+.dsh-dyslexia-button:hover { border-color: var(--dsw-alias-border-l1); }
+.dsh-dyslexia-button:focus-visible {
+  outline: 2px solid var(--dsw-alias-brand-primary);
+  outline-offset: 1px;
+}
+.dsh-dyslexia-status {
+  font: inherit;
+  font-size: 12px;
+  line-height: 20px;
+  white-space: nowrap;
+  color: var(--dsw-alias-label-secondary);
+}
+.dsh-dyslexia-source {
+  margin: 6px 0 0;
+  padding: 8px;
+  max-height: 320px;
+  overflow: auto;
+  font-size: 12px;
+  border-radius: 6px;
+  background: var(--dsw-alias-bg-base);
+  border: 1px solid var(--dsw-alias-border-l1);
+}
+</style>
+<h1>The shipped palette, drawn with the host's own colours</h1>
+<p class="lead">Stylesheet from <code>src/client/styles.js</code>, tokens from <code>verify/host-tokens.json</code> (0.2.2-rc.5), engine 1.13.0. One diagram, light above, dark below.</p>
+<section class="light-tokens"><h2>Light · :root tokens</h2><div class="stage" id="light"></div></section>
+<section class="dark-tokens"><h2>Dark · body[data-ds-dark-theme] tokens</h2><div class="stage" id="dark"></div></section>
+<pre id="report"></pre>
+<script src="../../../vendor/pele/pele.global.js"></script>
+<script>
+const CODE = "flowchart LR\n  A([Reads]) --> B{Clear?}\n  B -->|yes| C[(Shows)]\n  B -->|no| D[/Rewrites/]\n  C --> E[Reads on]\n  E --> A"
+const SHAPES = ['stadium', 'circle', 'odd', 'diam', 'hex', 'cyl', 'lean-r', 'lean-l', 'trap-b', 'trap-t', 'rect', 'rounded', 'fr-rect']
+// Chrome reports a resolved color-mix() as color(srgb 0.84 0.95 0.88), so the
+// reader has to take both that and the plain rgb()/rgba() form.
+function colourOf(value) {
+  const text = value || ''
+  const srgb = /color\(srgb\s+([0-9.]+)\s+([0-9.]+)\s+([0-9.]+)(?:\s*\/\s*([0-9.]+))?\)/.exec(text)
+  if (srgb) {
+    const a = srgb[4] === undefined ? 1 : Number(srgb[4])
+    return { r: Number(srgb[1]) * 255, g: Number(srgb[2]) * 255, b: Number(srgb[3]) * 255, a }
+  }
+  const match = /rgba?\(([^)]+)\)/.exec(text)
+  if (!match) return null
+  const parts = match[1].split(',').map((part) => Number(part.trim()))
+  return { r: parts[0], g: parts[1], b: parts[2], a: parts.length > 3 ? parts[3] : 1 }
+}
+function mix(front, back) {
+  const f = colourOf(front)
+  const b = colourOf(back)
+  if (!f || !b) return null
+  if (f.a >= 1) return f
+  const a = f.a
+  return { r: f.r * a + b.r * (1 - a), g: f.g * a + b.g * (1 - a), b: f.b * a + b.b * (1 - a), a: 1 }
+}
+function luminance(c) {
+  const channel = (value) => {
+    const v = value / 255
+    return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)
+  }
+  return 0.2126 * channel(c.r) + 0.7152 * channel(c.g) + 0.0722 * channel(c.b)
+}
+function ratio(front, back) {
+  const f = mix(front, back)
+  const b = mix(back, back)
+  if (!f || !b) return 'n/a'
+  const l1 = luminance(f)
+  const l2 = luminance(b)
+  return ((Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05)).toFixed(2)
+}
+async function draw(stage) {
+  const host = stage.closest('section')
+  const drawn = pele.render(CODE, { fontSize: 13, padding: 12, maxWidth: 560, autoDirection: false })
+  const wrap = document.createElement('div')
+  wrap.className = 'dsh-dyslexia-figure'
+  wrap.innerHTML = drawn.svg
+  stage.append(wrap)
+  // A bare stage has no background of its own; the picture sits on the first
+  // painted ancestor, so that is the colour the lines are judged against.
+  const canvas = (function canvasOf(node) {
+    for (let element = node; element; element = element.parentElement) {
+      const value = getComputedStyle(element).backgroundColor
+      if (colourOf(value) && colourOf(value).a > 0) return value
+    }
+    return 'rgb(255, 255, 255)'
+  })(stage)
+  const rows = []
+  for (const shape of SHAPES) {
+    const node = wrap.querySelector('.pele-shape-' + shape)
+    if (!node) continue
+    const kind = node.querySelector('rect, polygon, circle, path, ellipse, polyline')
+    const label = node.querySelector('text')
+    if (!kind) continue
+    const fill = getComputedStyle(kind).fill
+    const stroke = getComputedStyle(kind).stroke
+    rows.push(shape + ' | fill ' + fill + ' | text ' + ratio(getComputedStyle(label).fill, fill) + ':1 | stroke ' + stroke + ' | stroke/bg ' + ratio(stroke, canvas) + ':1')
+  }
+  const edges = wrap.querySelector('.pele-edges')
+  const marker = wrap.querySelector('.pele-marker')
+  if (edges) rows.push('edges | ' + getComputedStyle(edges).stroke + ' | edge/bg ' + ratio(getComputedStyle(edges).stroke, canvas) + ':1')
+  if (marker) rows.push('arrow | ' + getComputedStyle(marker).fill + ' | arrow/bg ' + ratio(getComputedStyle(marker).fill, canvas) + ':1')
+  return (host.className.includes('dark') ? 'DARK\n' : 'LIGHT\n') + rows.join('\n')
+}
+draw(document.getElementById('light')).then((lightRows) => {
+  draw(document.getElementById('dark')).then((darkRows) => {
+    document.getElementById('report').textContent = lightRows + '\n\n' + darkRows
+  })
+})
+</script>

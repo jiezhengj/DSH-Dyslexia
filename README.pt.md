@@ -25,6 +25,7 @@ O bloco de código nunca é consumido. Continua sendo o texto da mensagem: pode 
 - No celular ou numa janela estreita o desenho se reorganiza na largura da coluna e o zoom acontece dentro do desenho, então a página nunca rola na horizontal.
 - Oito idiomas de interface, os mesmos que o DeepSeek Harness traz.
 - Nada é buscado em tempo de execução: o motor está dentro do plugin.
+- Cada caixa é colorida pelo que faz: início ou fim em verde, decisão em âmbar, dados em violeta, entrada e saída em azul, e um passo comum fica neutro; um `classDef` seu tem precedência. Linhas e setas usam a cor de rótulo terciária do tema, legíveis no claro e no escuro.
 
 ## Dados e privacidade
 

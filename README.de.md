@@ -25,6 +25,7 @@ Der Codeblock wird nie verbraucht. Er bleibt der Text der Nachricht: kopierbar, 
 - Auf dem Telefon oder in einem schmalen Fenster passt sich das Diagramm der Spaltenbreite an, und der Zoom bleibt im Diagramm – die Seite scrollt nie seitwärts.
 - Acht Oberflächensprachen, dieselben, die DeepSeek Harness mitbringt.
 - Zur Laufzeit wird nichts geladen: Die Engine steckt im Plugin.
+- Jede Box wird nach ihrer Rolle gefärbt: Start oder Ende grün, Entscheidung bernstein, Daten violett, Ein- und Ausgabe blau, ein gewöhnlicher Schritt bleibt neutral; ein eigenes `classDef` hat Vorrang. Linien und Pfeile nutzen die tertiäre Beschriftungsfarbe des Themes und sind damit hell wie dunkel lesbar.
 
 ## Daten und Datenschutz
 

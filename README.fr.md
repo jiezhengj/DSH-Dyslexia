@@ -25,6 +25,7 @@ Le bloc de code n’est jamais consommé. Il reste le texte du message : on peut
 - Sur un téléphone ou dans une fenêtre étroite, le schéma se recompose à la largeur de la colonne et le zoom reste à l’intérieur du schéma : la page ne défile jamais horizontalement.
 - Huit langues d’interface, les mêmes que celles livrées avec DeepSeek Harness.
 - Aucun téléchargement à l’exécution : le moteur est dans le greffon.
+- Chaque boîte est colorée selon son rôle : début ou fin en vert, décision en ambre, données en violet, entrée et sortie en bleu, une étape ordinaire reste neutre ; un `classDef` que vous écrivez l'emporte. Les traits et les flèches prennent la couleur de libellé tertiaire du thème, lisibles en clair comme en sombre.
 
 ## Données et confidentialité
 

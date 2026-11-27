@@ -25,6 +25,7 @@ El bloque de código no se consume: sigue en el mensaje como texto, de modo que 
 - En un teléfono o una ventana estrecha el dibujo se recompone al ancho de la columna y el zoom ocurre dentro del dibujo, así que la página nunca se desplaza en horizontal.
 - Ocho idiomas de interfaz, los mismos que incluye DeepSeek Harness.
 - Nada se descarga en tiempo de ejecución: el motor está dentro del complemento.
+- Cada caja se colorea según lo que hace: inicio o fin en verde, decisión en ámbar, datos en violeta, entrada y salida en azul, y un paso normal queda neutro; un `classDef` propio tiene prioridad. Las líneas y flechas usan el color de etiqueta terciario del tema, así que se leen igual en claro y en oscuro.
 
 ## Datos y privacidad
 

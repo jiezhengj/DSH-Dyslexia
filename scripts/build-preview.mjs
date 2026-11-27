@@ -20,29 +20,94 @@ import vm from 'node:vm'
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const CANVAS_WIDTH = 640
 const CANVAS_HEIGHT = 300
-const SAMPLE = 'flowchart LR\n  A[Code block] --> B[Diagram]\n  A --> C[Source text]'
-const SAMPLE_OPTIONS = { fontSize: 13, padding: 12, maxWidth: 300, autoDirection: false }
+// The sample uses one shape per role, so the illustration shows the mapping the
+// chat applies: a start, a decision, stored data, input, and a plain step.
+const SAMPLE = [
+  'flowchart LR',
+  '  A([Reads]) --> B{Clear?}',
+  '  B -->|yes| C[(Shows)]',
+  '  B -->|no| D[/Rewrites/]',
+  '  C --> E[Reads on]',
+].join('\n')
+const SAMPLE_OPTIONS = { fontSize: 12, padding: 12, maxWidth: 320, autoDirection: false }
 
-const INK = '#1F2430'
-const MUTED = '#B9C1D9'
-const LINE = '#E4E8F6'
-const PAPER = '#FFFFFF'
-const BLUE = '#658EFF'
-const MINT = '#41E1AC'
+/**
+ * The real theme, not an invented one: `verify/host-tokens.json` is extracted
+ * from the installed chat by `scripts/extract-host-tokens.mjs`, so the preview
+ * goes grey and thinly drawn exactly when the chat does. A hand-picked palette
+ * here is what let 0.2.x ship a preview that looked nothing like the product.
+ */
+const host = JSON.parse(await readFile(join(root, 'verify', 'host-tokens.json'), 'utf8'))
+const LIGHT = host.light
 
-/** Theme colours handed to the engine, matching what the chat maps from its tokens. */
+function channels(value) {
+  const match = /rgba?\(([^)]+)\)/.exec(value)
+  if (!match) throw new Error(`host token is not a colour: ${value}`)
+  return match[1].split(',').map((part) => Number(part.trim()))
+}
+
+/** `color-mix(in srgb, <colour> <share>%, <base>)`, done in the same space. */
+function mix(colour, share, base) {
+  const front = channels(colour)
+  const back = channels(base)
+  const alpha = share / 100
+  const channelsOut = [0, 1, 2].map((index) => Math.round(front[index] * alpha + back[index] * (1 - alpha)))
+  return `rgb(${channelsOut.join(', ')})`
+}
+
+const B = (name) => LIGHT[`--dsw-alias-${name}`]
+const S = (name) => LIGHT[`--dsw-static-${name}`]
+
+const PAPER = B('bg-layer-1')
+const INK = B('label-primary')
+const MUTED = B('label-secondary')
+const LINE = B('border-l2')
+const BLUE = B('link')
+const MINT = S('green-500')
+
+const HUE = {
+  startEnd: S('green-500'),
+  decision: S('amber-500'),
+  data: S('violet-400'),
+  io: B('link'),
+  process: S('neutral-bluish-400'),
+}
+
+// The nine engine variables, resolved through the plugin's own mapping.
 const THEME_VARS = [
-  '--pele-bg:#ffffff',
-  '--pele-fg:#1f2430',
-  '--pele-muted:#6b7387',
-  '--pele-line:#4a5a86',
-  '--pele-surface:#eef2fb',
-  '--pele-surface-alt:#e2e9f8',
-  '--pele-border:#b9cbef',
-  '--pele-accent:#658eff',
+  `--pele-bg:${PAPER}`,
+  `--pele-fg:${INK}`,
+  `--pele-muted:${MUTED}`,
+  `--pele-line:${B('label-tertiary')}`,
+  `--pele-surface:${mix(B('label-primary'), 4, PAPER)}`,
+  `--pele-surface-alt:${B('bg-base')}`,
+  `--pele-border:${B('label-tertiary')}`,
+  `--pele-accent:${BLUE}`,
+  `--pele-fg-on-light:${S('neutral-bluish-1000')}`,
+  `--pele-fg-on-dark:${S('neutral-bluish-50')}`,
   '--pele-font:system-ui, sans-serif',
-  '--pele-font-mono:ui-monospace, monospace',
 ].join(';')
+
+/**
+ * The role rules, copied from `src/client/styles.js` in shape but resolved to
+ * literal colours: an SVG file cannot run `color-mix()`, and a preview that
+ * dropped them would show five grey boxes where the chat shows five hues.
+ */
+const ROLE_CSS = Object.entries({
+  startEnd: ['stadium', 'circle', 'odd'],
+  decision: ['diam', 'hex'],
+  data: ['cyl'],
+  io: ['lean-r', 'lean-l', 'trap-b', 'trap-t'],
+  process: ['rect', 'rounded', 'fr-rect'],
+})
+  .map(([role, shapes]) => {
+    const hue = HUE[role]
+    const selectors = shapes
+      .map((shape) => `.dsh-dyslexia-figure .pele-shape-${shape} > :is(rect, polygon, circle, path, ellipse, polyline)`)
+      .join(', ')
+    return `${selectors} { fill: ${mix(hue, 18, PAPER)}; stroke: ${mix(hue, 60, INK)}; }`
+  })
+  .join('\n')
 
 /** Runs the shipped engine in a sandbox and returns the drawing it produces. */
 async function renderSample() {
@@ -120,7 +185,8 @@ function figure(drawn) {
   const offsetY = boxY + padTop + ((boxHeight - padTop - padBottom) - drawn.height * scale) / 2
   return `<g id="figure">
     <rect x="${boxX}" y="${boxY}" width="${boxWidth}" height="${boxHeight}" rx="14" fill="${PAPER}" stroke="${LINE}" stroke-width="2"/>
-    <g style="${THEME_VARS}" transform="translate(${offsetX.toFixed(2)} ${offsetY.toFixed(2)}) scale(${scale.toFixed(4)})">
+    <g class="dsh-dyslexia-figure" style="${THEME_VARS}" transform="translate(${offsetX.toFixed(2)} ${offsetY.toFixed(2)}) scale(${scale.toFixed(4)})">
+      <style>${ROLE_CSS}</style>
       ${drawn.svg}
     </g>
     <path d="M${boxX + 18} 202h${boxWidth - 36}" stroke="${LINE}" stroke-width="2" stroke-linecap="round"/>
@@ -137,7 +203,7 @@ function arrow() {
 async function main() {
   const drawn = await renderSample()
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${CANVAS_WIDTH}" height="${CANVAS_HEIGHT}" viewBox="0 0 ${CANVAS_WIDTH} ${CANVAS_HEIGHT}">
-  <rect width="${CANVAS_WIDTH}" height="${CANVAS_HEIGHT}" fill="#F5F6FC"/>
+  <rect width="${CANVAS_WIDTH}" height="${CANVAS_HEIGHT}" fill="${B('bg-base')}"/>
   ${sourceCard()}
   ${arrow()}
   ${figure(drawn)}

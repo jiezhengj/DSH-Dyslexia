@@ -13,6 +13,9 @@ A reply often explains a structure in words a diagram would show in a glance. Th
 The plugin now asks the assistant for a picture when a picture is easier to follow than a paragraph, and keeps the text for what the picture cannot show. Settings → General has the switch; turn it off and the plugin renders only, as before.
 当一张图比一段话更好懂时，插件现在会请助手画图，文字只留图讲不清的部分。设置 → 通用设置里有这个开关；关掉后插件就只负责渲染，和以前一样。
 
+A box is drawn by what it does: a start or end is green, a decision amber, stored data violet, input and output blue, and a plain step stays neutral; a `classDef` or `style` of your own wins. Charts read a series of eight host colours for their slices, bars and branches. Lines and arrows come from the theme's tertiary label colour, so they read in light and dark alike. The measured values are in [docs/colours.md](docs/colours.md).
+方框按它做的事上色：起止是绿色、判断是琥珀色、数据是紫色、输入输出是蓝色，普通步骤保持中性；你自己写的 `classDef` 或 `style` 优先。饼图、甘特、时间线、思维导图与柱状图从八个宿主系列色取色。连线与箭头取自主题的三级文字色，明暗两套主题下都看得清。完整实测值见 [docs/colours.md](docs/colours.md)。
+
 ## Data and privacy / 数据与隐私
 
 - The plugin makes no network requests at runtime; the diagram engine is bundled inside `client.js`.
@@ -35,9 +38,11 @@ Requirements: Node.js 22 or newer, and Chrome/Chromium for the browser checks.
   `node verify/check-bundle.mjs` — 对随包产物执行静态与引擎检查（manifest、无网络调用、无版本门、内联引擎、八种界面语言、七种图形的示例图；其他图种未测，见 feature 001 的 E-GAPS 里的 G21）。每项检查打印一行，失败时以非零状态码退出。
 - `node verify/run-harness.mjs` — runs the browser checks in headless Chrome against `verify/harness/index.html` (drawing, eight languages, hostile hosts, broken diagrams, copy, narrow 360 px column, theme colours). Set `DSH_DYSLEXIA_CHROME` to point at a specific Chrome executable if auto-detection fails.
   `node verify/run-harness.mjs` — 在无头 Chrome 中针对 `verify/harness/index.html` 运行浏览器检查（成图、八种语言、异常宿主环境、损坏的图形语法、复制、360 px 窄栏、主题颜色）。若自动探测失败，可设置 `DSH_DYSLEXIA_CHROME` 指向指定的 Chrome 可执行文件。
+- `node scripts/extract-host-tokens.mjs` — reads the interface theme colours out of the installed app into `verify/host-tokens.json`; the browser fixture and the detail-picture preview draw with those values, so a host theme change is caught rather than assumed. `--check` compares without writing.
+  `node scripts/extract-host-tokens.mjs` — 从已安装的宿主里读出界面主题颜色写入 `verify/host-tokens.json`；浏览器夹具与详情页预览都用这些取值，宿主主题变化会被发现而不是被假设。`--check` 只比对不写盘。
 
-Both commands are in the repository, so the claims in this file can be re-checked at any time; they are also what CI runs before publishing.
-两条命令都在仓库中，可随时重新验证本文所述内容；它们也是发布前 CI 运行的检查。
+These commands are in the repository, so the claims in this file can be re-checked at any time; they are also what CI runs before publishing.
+三条命令都在仓库中，可随时重新验证本文所述内容；它们也是发布前 CI 运行的检查。
 
 ## Known limits / 已知限制
 

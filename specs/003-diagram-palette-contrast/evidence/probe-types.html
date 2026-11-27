@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>mermaid per-type colour probe</title>
+<style>
+  body {
+    --dsw-alias-bg-base: rgb(255,255,255);
+    --dsw-alias-bg-layer-1: rgb(255,255,255);
+    --dsw-alias-bg-layer-2: rgb(255,255,255);
+    --dsw-alias-border-l1: rgba(0,0,0,0.04);
+    --dsw-alias-border-l2: rgba(0,0,0,0.10);
+    --dsw-alias-brand-primary: rgb(15,17,21);
+    --dsw-alias-label-primary: rgb(15,17,21);
+    --dsw-alias-label-secondary: rgb(97,102,107);
+    --dsw-alias-state-error-primary: rgb(236,19,19);
+    background: #fff; color: #0f1115; font: 13px system-ui; padding: 12px;
+  }
+  .dsh-dyslexia-figure {
+    --pele-bg: var(--dsw-alias-bg-layer-1);
+    --pele-fg: var(--dsw-alias-label-primary);
+    --pele-muted: var(--dsw-alias-label-secondary);
+    --pele-line: var(--dsw-alias-border-l2);
+    --pele-surface: var(--dsw-alias-bg-layer-2);
+    --pele-surface-alt: var(--dsw-alias-bg-base);
+    --pele-border: var(--dsw-alias-border-l1);
+    --pele-accent: var(--dsw-alias-brand-primary);
+    --pele-critical: var(--dsw-alias-state-error-primary);
+    --pele-font: inherit;
+    padding: 6px; margin: 4px 0 10px; border: 1px solid rgba(0,0,0,.08); border-radius: 6px;
+  }
+  h3 { margin: 10px 0 2px; font-size: 12px; color: #666 }
+</style>
+</head>
+<body>
+<div id="stages"></div>
+<pre id="report"></pre>
+<script src="../../../vendor/pele/pele.global.js"></script>
+<script>
+const DIAGRAMS = {
+  flowchart: `flowchart LR
+  A[开始] --> B{判断}
+  B -->|是| C[执行]
+  B -->|否| D[跳过]
+  C --> E[结束]
+  D --> E`,
+  sequence: `sequenceDiagram
+  participant U as 用户
+  participant S as 服务
+  U->>S: 请求
+  S-->>U: 响应`,
+  state: `stateDiagram-v2
+  [*] --> 空闲
+  空闲 --> 运行: 开始
+  运行 --> [*]: 完成`,
+  class: `classDiagram
+  class 订单 {
+    +String id
+    +支付()
+  }
+  订单 <|-- 退款单`,
+  er: `erDiagram
+  USER ||--o{ ORDER : places
+  USER { string name }
+  ORDER { string id }`,
+  gantt: `gantt
+  title 发布
+  dateFormat YYYY-MM-DD
+  section 准备
+  评审 :a1, 2026-01-01, 3d
+  开发 :a2, after a1, 5d`,
+  timeline: `timeline
+  title 版本
+  2025 : 0.1
+  2026 : 0.2 : 0.3`,
+  mindmap: `mindmap
+  root((主题))
+    分支A
+      子项1
+    分支B
+      子项2`,
+  kanban: `kanban
+  待办
+    [任务一]
+  完成
+    [任务二]`,
+  xychart: `xychart-beta
+  title 销量
+  x-axis [一月, 二月, 三月]
+  y-axis "件" 0 --> 100
+  bar [30, 60, 90]
+  line [20, 50, 80]`,
+  pie: `pie title 占比
+  "甲" : 40
+  "乙" : 35
+  "丙" : 25`,
+};
+const stages = document.getElementById('stages');
+const entries = Object.entries(DIAGRAMS);
+for (const [type] of entries) {
+  const h = document.createElement('h3'); h.textContent = type; stages.appendChild(h);
+  const d = document.createElement('div'); d.className = 'dsh-dyslexia-figure'; d.id = type; stages.appendChild(d);
+}
+for (const [type, code] of entries) {
+  const r = pele.mount(document.getElementById(type), code, { zoom: { controls: false }, padding: 6 });
+  if (r && r.error) document.getElementById(type).textContent = 'ERROR ' + r.error.message;
+}
+function rgb(v){const m=/rgba?\(([^)]+)\)/.exec(v||'');if(!m)return null;const p=m[1].split(/[,/]/).map(Number);return {r:p[0],g:p[1],b:p[2],a:p.length>3?p[3]:1}}
+function blend(f,b){const a=f.a===undefined?1:f.a;return {r:f.r*a+b.r*(1-a),g:f.g*a+b.g*(1-a),b:f.b*a+b.b*(1-a),a:1}}
+function lum(c){const f=v=>{const s=v/255;return s<=0.03928?s/12.92:Math.pow((s+0.055)/1.055,2.4)};return .2126*f(c.r)+.7152*f(c.g)+.0722*f(c.b)}
+function cr(x,y){const a=lum(x),b=lum(y);return +((Math.max(a,b)+.05)/(Math.min(a,b)+.05)).toFixed(2)}
+const out = {};
+for (const [type] of entries) {
+  const host = document.getElementById(type);
+  const svg = host.querySelector('svg');
+  const bg = rgb(getComputedStyle(host).backgroundColor);
+  const fills = new Set(), strokes = new Set();
+  let chromatic = 0;
+  if (svg) for (const el of svg.querySelectorAll('*')) {
+    const cs = getComputedStyle(el);
+    const f = cs.fill !== 'none' ? rgb(cs.fill) : null;
+    const s = cs.stroke !== 'none' ? rgb(cs.stroke) : null;
+    if (f) { const k = JSON.stringify(f); if (!fills.has(k)) { fills.add(k); const b = blend(f, bg); if (Math.max(b.r,b.g,b.b)-Math.min(b.r,b.g,b.b) > 12) chromatic++ } }
+    if (s) { const k = JSON.stringify(s); strokes.add(k) }
+  }
+  let minStroke = 21;
+  for (const k of strokes) { const c = JSON.parse(k); const b = blend(c, bg); minStroke = Math.min(minStroke, cr(b, bg)) }
+  out[type] = { svg: !!svg, fills: fills.size, strokes: strokes.size, chromatic, minStrokeContrast: minStroke };
+}
+document.getElementById('report').textContent = JSON.stringify(out, null, 1);
+</script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>candidate palette prototype</title>
+<style>
+  :root {
+    /* 真实宿主浅色令牌 */
+    --dsw-alias-bg-base: rgb(255,255,255);
+    --dsw-alias-bg-layer-1: rgb(255,255,255);
+    --dsw-alias-bg-layer-2: rgb(255,255,255);
+    --dsw-alias-label-primary: rgb(15,17,21);
+    --dsw-alias-label-secondary: rgb(97,102,107);
+    --dsw-alias-label-tertiary: #81858c;
+    --dsw-alias-border-l2: rgba(0,0,0,.1);
+    --dsw-alias-chart-messages: rgb(59,130,246);
+    --dsw-alias-chart-tools: rgb(139,92,246);
+    --dsw-alias-state-success-primary: rgb(34,197,94);
+    --dsw-alias-state-warn-primary: rgb(245,158,11);
+    --dsw-alias-link: rgb(79,124,255);
+    background: #fff; color: #0f1115; font: 13px system-ui; padding: 12px;
+  }
+  .dark {
+    --dsw-alias-bg-base: rgb(21,21,23);
+    --dsw-alias-bg-layer-1: rgb(35,35,36);
+    --dsw-alias-bg-layer-2: rgb(44,44,46);
+    --dsw-alias-label-primary: rgb(249,250,251);
+    --dsw-alias-label-secondary: rgb(225,229,238);
+    --dsw-alias-label-tertiary: #adb2b8;
+    --dsw-alias-border-l2: rgba(255,255,255,.12);
+    background: rgb(21,21,23); color: rgb(249,250,251);
+  }
+  .figure {
+    --pele-bg: var(--dsw-alias-bg-layer-1);
+    --pele-fg: var(--dsw-alias-label-primary);
+    --pele-muted: var(--dsw-alias-label-tertiary);
+    --pele-line: var(--dsw-alias-label-tertiary);
+    --pele-surface: var(--dsw-alias-bg-layer-2);
+    --pele-surface-alt: var(--dsw-alias-bg-base);
+    --pele-border: var(--dsw-alias-label-tertiary);
+    --pele-accent: var(--dsw-alias-chart-messages);
+    --pele-critical: rgb(236,19,19);
+    --pele-font: inherit;
+    /* 角色色：填充 = 语义色 12% 叠在画布上；描边 = 语义色本身 */
+    --dx-mix: 12%;
+    --dx-fill-process: color-mix(in srgb, var(--dsw-alias-chart-messages) var(--dx-mix), var(--pele-bg));
+    --dx-fill-decision: color-mix(in srgb, var(--dsw-alias-state-warn-primary) var(--dx-mix), var(--pele-bg));
+    --dx-fill-data: color-mix(in srgb, var(--dsw-alias-chart-tools) var(--dx-mix), var(--pele-bg));
+    --dx-fill-io: color-mix(in srgb, var(--dsw-alias-link) var(--dx-mix), var(--pele-bg));
+    --dx-fill-end: color-mix(in srgb, var(--dsw-alias-state-success-primary) var(--dx-mix), var(--pele-bg));
+    --dx-stroke-process: var(--dsw-alias-chart-messages);
+    --dx-stroke-decision: var(--dsw-alias-state-warn-primary);
+    --dx-stroke-data: var(--dsw-alias-chart-tools);
+    --dx-stroke-io: var(--dsw-alias-link);
+    --dx-stroke-end: var(--dsw-alias-state-success-primary);
+    padding: 8px; margin: 4px 0 12px; border: 1px solid var(--dx-border-card); border-radius: 8px;
+    background: var(--pele-bg);
+    --dx-border-card: var(--dsw-alias-border-l2);
+  }
+  .dark .figure { --dx-mix: 20%; }
+  .figure svg { display: block; max-width: 100%; height: auto; }
+
+  /* 按节点角色上色（pele 的形状类） */
+  .figure .pele-node.pele-shape-rect > rect,
+  .figure .pele-node.pele-shape-rounded > rect,
+  .figure .pele-node.pele-shape-fr-rect > path,
+  .figure .pele-node.pele-shape-fr-rect > rect {
+    fill: var(--dx-fill-process); stroke: var(--dx-stroke-process);
+  }
+  .figure .pele-node.pele-shape-diam > polygon,
+  .figure .pele-node.pele-shape-hex > polygon {
+    fill: var(--dx-fill-decision); stroke: var(--dx-stroke-decision);
+  }
+  .figure .pele-node.pele-shape-cyl > path,
+  .figure .pele-node.pele-shape-cyl > ellipse {
+    fill: var(--dx-fill-data); stroke: var(--dx-stroke-data);
+  }
+  .figure .pele-node.pele-shape-lean-r > polygon,
+  .figure .pele-node.pele-shape-lean-l > polygon,
+  .figure .pele-node.pele-shape-trap-b > polygon,
+  .figure .pele-node.pele-shape-trap-t > polygon,
+  .figure .pele-node.pele-shape-odd > polygon {
+    fill: var(--dx-fill-io); stroke: var(--dx-stroke-io);
+  }
+  .figure .pele-node.pele-shape-stadium > rect,
+  .figure .pele-node.pele-shape-circle > circle {
+    fill: var(--dx-fill-end); stroke: var(--dx-stroke-end);
+  }
+  h3 { margin: 14px 0 2px; font-size: 12px; color: #888 }
+</style>
+</head>
+<body>
+<div id="light"></div>
+<div id="darkwrap" class="dark" style="padding:8px;border-radius:8px"><div id="dark"></div></div>
+<script src="../../../vendor/pele/pele.global.js"></script>
+<script>
+const CODE = `flowchart TB
+  A([收到请求]) --> B{参数合法?}
+  B -->|是| C[查询数据库]
+  B -->|否| D[返回 400]
+  C --> E[(缓存层)]
+  E --> F[组装响应]
+  D --> F
+  F --> G([返回])`;
+
+function mount(el) {
+  const wrap = document.createElement('div');
+  wrap.className = 'figure';
+  el.appendChild(wrap);
+  const r = pele.mount(wrap, CODE, { zoom: { controls: false }, padding: 8 });
+  if (r && r.error) wrap.textContent = 'ERROR ' + r.error.message;
+}
+mount(document.getElementById('light'));
+mount(document.getElementById('dark'));
+</script>
+</body>
+</html>

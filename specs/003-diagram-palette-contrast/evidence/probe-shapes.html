@@ -1,0 +1,23 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script src="../../../vendor/pele/pele.global.js"></script>
+<div id="h" style="width:760px"></div>
+<script>
+const code = `flowchart TB
+  a1[矩形 rect]
+  a2(圆角 round)
+  a3([体育场 stadium])
+  a4[[子程序 subroutine]]
+  a5[(圆柱 cyl)]
+  a6((圆 circle))
+  a7>旗标 flag]
+  a8{菱形 diam}
+  a9{{六边形 hexagon}}
+  b1[/平行四边形/]
+  b2[\\平行四边形反\\]
+  b3[/梯形\\]
+  b4[\\梯形反/]
+  a1 --> a2 --> a3 --> a4 --> a5 --> a6
+  a7 --> a8 --> a9 --> b1 --> b2 --> b3 --> b4`;
+const r = pele.mount(document.getElementById('h'), code, {zoom:{controls:false}});
+if (r && r.error) document.title = 'ERR ' + r.error.message;
+</script></body></html>

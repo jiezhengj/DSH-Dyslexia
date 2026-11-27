@@ -624,21 +624,32 @@ check('the section hands the host a function, not a frozen string', () => {
 // leave alone, sentence for sentence. Reading it back makes the check compare
 // against the promise instead of against whatever `index.js` says today: a
 // changed word in the host half goes red here.
-function recordedCapabilitySentences() {
-  const lines = read('specs/001-mermaid-fence-render/contracts/host-prompt.md').split(/\r?\n/)
-  const start = lines.findIndex((line) => /^\s*const MERMAID_RENDER_PROMPT = \[\s*$/.test(line))
-  assert(start !== -1, "feature 001's contract no longer records MERMAID_RENDER_PROMPT")
+function sentencesIn(relative, signature, expected) {
+  const lines = read(relative).split(/\r?\n/)
+  const start = lines.findIndex((line) => line.trim() === `const ${signature} = [`)
+  assert(start !== -1, `${relative} no longer records ${signature}`)
   const sentences = []
   for (let index = start + 1; index < lines.length; index += 1) {
     const line = lines[index].trim()
     if (line.startsWith('].join')) break
     assert(line.length > 0, `the recorded text stops after ${sentences.length} sentences`)
     const quoted = /^'((?:[^'\\]|\\.)*)',$/.exec(line)
-    assert(quoted !== null, `feature 001's contract line ${index + 1} is not one quoted sentence: ${line}`)
+    assert(quoted !== null, `${relative} line ${index + 1} is not one quoted sentence: ${line}`)
     sentences.push(quoted[1].replace(/\\(.)/g, '$1'))
   }
-  assert(sentences.length === 4, `feature 001 recorded ${sentences.length} sentences, expected four`)
+  assert(sentences.length === expected, `${relative} recorded ${sentences.length} sentences, expected ${expected}`)
   return sentences
+}
+
+// Feature 003 added one sentence to the capability text; feature 001's four are
+// the earlier promise, so they are still read back verbatim and must survive as
+// the opening of the briefing.
+function recordedFeatureOneSentences() {
+  return sentencesIn('specs/001-mermaid-fence-render/contracts/host-prompt.md', 'MERMAID_RENDER_PROMPT', 4)
+}
+
+function recordedCapabilitySentences() {
+  return sentencesIn('specs/003-diagram-palette-contrast/contracts/host-prompt.md', 'CAPABILITY_TEXT', 5)
 }
 
 // The preference paragraph is a promise too: feature 002's contract records the
@@ -672,14 +683,29 @@ check('the capability briefing is what it was before the switch', () => {
   // text feature 001 recorded, sentence for sentence. Comparing with the
   // contract is what makes a changed word in `index.js` go red.
   const recorded = recordedCapabilitySentences()
-  recorded.forEach((sentence) => {
+  const original = recordedFeatureOneSentences()
+  // The one sentence 003 adds is the only one that may differ; taking it out
+  // leaves feature 001's four, in order, one for one.
+  const added = recorded.filter((sentence) => sentence.includes('classDef'))
+  assert(added.length === 1, `feature 003 should add exactly one sentence, found ${added.length}`)
+  const kept = recorded.filter((sentence) => sentence !== added[0])
+  assert(kept.length === original.length, `feature 003 dropped or added sentences around its own: ${kept.length}`)
+  original.forEach((sentence, index) => {
+    assert(
+      kept[index] === sentence,
+      `feature 003 moved or reworded feature 001's sentence ${index + 1}: ${kept[index]}`,
+    )
     assert(text.includes(sentence), `the off-state briefing no longer carries feature 001's sentence: ${sentence}`)
   })
   assert(
     text === recorded.join(' '),
-    `the off-state briefing is not feature 001's text any more: ${JSON.stringify(text)}`,
+    `the off-state briefing is not feature 003's text any more: ${JSON.stringify(text)}`,
   )
-  return `${words} words, all four sentences match feature 001's contract, order ${section.order}, name ${section.name}`
+  // The new sentence is the one the reader asked for: colours follow the shape,
+  // and an author's own colour wins. A briefing that dropped it would leave the
+  // model writing flat diagrams and the palette would never be used.
+  assert(/colour/i.test(added[0]), "feature 003's sentence does not mention colour")
+  return `${words} words, five sentences (001's four first), order ${section.order}, name ${section.name}`
 })
 
 check('the switch adds the preference on top of the capability, and nothing else', () => {
@@ -1450,10 +1476,23 @@ check('the host half stays silent when the host changed shape', () => {
 /* ------------------------------------------- the fixtures can fail at all */
 
 check("the contract's colour variables are the ones that are wired", () => {
-  const contract = readFileSync(
+  // 001 recorded the first nine lines; 003 owns the mapping now (it changed two
+  // of them and added the author-ink pair), so the current contract is read from
+  // 003 and 001's names are still demanded as a subset: a rename or a removed
+  // engine variable goes red on either side.
+  const legacy = readFileSync(
     join(ROOT, 'specs', '001-mermaid-fence-render', 'contracts', 'client-fence-layer.md'),
     'utf8',
   )
+  const owner = readFileSync(
+    join(ROOT, 'specs', '003-diagram-palette-contrast', 'contracts', 'palette-mapping.md'),
+    'utf8',
+  )
+  // The contract's own wiring block, not the whole document: prose around it
+  // quotes variables too, and a quoted line must not be mistaken for the map.
+  const block = /```css\n([\s\S]*?)```/.exec(owner.slice(owner.indexOf('## 5. 变量接线')))
+  assert(block !== null, "003's contract has no fenced wiring block")
+  const contract = block[1]
   const styles = readFileSync(join(ROOT, 'src', 'client', 'styles.js'), 'utf8')
   // A decoy inside a comment must not win: strip comments before reading either
   // side, so writing the right mapping into a comment cannot launder a wrong one.
@@ -1472,6 +1511,9 @@ check("the contract's colour variables are the ones that are wired", () => {
   }
   const wanted = pairOf(contract)
   const wired = pairOf(styles)
+  const earlier = pairOf(legacy)
+  const dropped = [...earlier.keys()].filter((name) => !wanted.has(name))
+  assert(dropped.length === 0, `003 dropped engine variables 001 promised: ${dropped.join(', ')}`)
   // Anchor the names to the vendored engine itself: renaming a variable on both
   // sides used to stay green while the colour silently fell back to the default.
   const vendor = readFileSync(join(ROOT, 'vendor', 'pele', 'pele.global.js'), 'utf8')
@@ -1902,9 +1944,237 @@ check('every class the row writes has a rule in the stylesheet', () => {
   return `${names.size} classes, each with a rule; ${states.length} data-state(s), each styled`
 })
 
+/* ------------------------------------------------- feature 003: colour */
+
+// The palette promise is split between a stylesheet, a fixture and a preview,
+// and each half can rot silently: a stylesheet that names a hex value still
+// looks right in one theme, a fixture that hand-types a token still passes its
+// own assertions, and a preview drawn from an invented palette still renders.
+// These checks read the three of them against the host snapshot.
+const SHAPE_CLASSES = [
+  'stadium', 'circle', 'odd', 'diam', 'hex', 'cyl',
+  'lean-r', 'lean-l', 'trap-b', 'trap-t', 'rect', 'rounded', 'fr-rect',
+]
+
+/**
+ * The stylesheet as CSS: `FIGURE_CSS` is a JS array joined with newlines, so
+ * reading the source text would compare quotes, commas and string boundaries
+ * instead of selectors and declarations. Evaluating that one literal (no other
+ * code from the file runs) gives the text the browser actually receives.
+ */
+function figureCss() {
+  const styles = stripComments(read('src/client/styles.js'))
+  const start = styles.indexOf('const FIGURE_CSS = [')
+  assert(start !== -1, 'styles.js no longer declares FIGURE_CSS')
+  const open = styles.indexOf('[', start)
+  let depth = 0
+  let end = open
+  for (; end < styles.length; end += 1) {
+    if (styles[end] === '[') depth += 1
+    else if (styles[end] === ']') {
+      depth -= 1
+      if (depth === 0) break
+    }
+  }
+  const literal = styles.slice(open, end + 1)
+  const consts = {}
+  for (const match of styles.matchAll(/^const ([A-Z_]+) = '([^']*)'/gm)) consts[match[1]] = match[2]
+  return new Function(...Object.keys(consts), `return ${literal}`)(...Object.values(consts)).join('\n')
+}
+
+function cssBlocks(text) {
+  const blocks = []
+  const pattern = /([^{}]+)\{([^{}]*)\}/g
+  let match = pattern.exec(text)
+  while (match) {
+    blocks.push({ selector: match[1].trim(), body: match[2] })
+    match = pattern.exec(text)
+  }
+  const rest = pattern.exec(text)
+  return rest === null ? blocks : blocks
+}
+
+check('the stylesheet colours nothing of its own', () => {
+  const styles = stripComments(read('src/client/styles.js'))
+  // A literal colour is a second theme: it cannot follow the host, and in one of
+  // the two themes it is wrong. The one place a literal may appear is the
+  // fallback slot of a host token — `var(--dsw-…, #1f1f1f)` — which is only ever
+  // read when the host has no tokens at all (FR-007), never in its place.
+  const fallback = [
+    /var\(\s*--[a-z0-9-]+\s*,\s*rgba?\([^)]*\)\s*\)/g,
+    /var\(\s*--[a-z0-9-]+\s*,\s*#[0-9a-fA-F]{3,8}\s*\)/g,
+  ]
+  const scrubbed = fallback.reduce((text, pattern) => text.replace(pattern, 'fallback'), styles)
+  const literals = scrubbed.match(/#[0-9a-fA-F]{3,8}\b|\brgba?\(|\bhsla?\(|\boklch?\(|\blab\(|\blch\(/g) || []
+  assert(literals.length === 0, `the stylesheet writes ${literals.length} colour(s) outside a host-token fallback: ${literals.join(', ')}`)
+  return 'every literal sits in the fallback slot of a host token'
+})
+
+check('every host token keeps the engine default behind it', () => {
+  // FR-007: a host that hands over no tokens must still get a picture. A bare
+  // `var(--dsw-…)` turns invalid at computed-value time instead of falling back,
+  // so the shape loses its fill and inherits the text ink — black boxes.
+  const styles = stripComments(read('src/client/styles.js'))
+  // Only the palette that reaches the engine: the settings row and the buttons
+  // are host chrome, and a host with no tokens has no chrome to match either.
+  const palette = styles
+    .split('\n')
+    .filter((line) => /--(pele|dx)-[a-z-]+:/.test(line))
+    .join('\n')
+  const used = [...palette.matchAll(/var\(\s*(--dsw-[a-z0-9-]+)\s*(,)?/g)]
+  const bare = used.filter((match) => !match[2]).map((match) => match[1])
+  assert(used.length >= 16, `the palette wires only ${used.length} host tokens`)
+  assert(bare.length === 0, `these host tokens have no engine default: ${[...new Set(bare)].join(', ')}`)
+  return `${used.length} host-token uses, each with a default of its own`
+})
+
+check('the stylesheet never shouts and never reaches outside the figure', () => {
+  const styles = stripComments(read('src/client/styles.js'))
+  assert(!styles.includes('!important'), '!important would beat an author classDef written inline')
+  assert(!/[\s,{]body[\s,{]/.test(styles), 'the stylesheet styles body')
+  assert(!/html[\s,{]/.test(styles), 'the stylesheet styles html')
+  assert(!/\[data-ds-dark-theme\]/.test(styles), 'the stylesheet knows the host dark attribute, which is the second theme it must not build')
+  return 'no !important, no body/html selector, no dark-theme attribute'
+})
+
+check('every shape class has a role rule of its own', () => {
+  const styles = read('src/client/styles.js')
+  const bare = SHAPE_CLASSES.filter((name) => !new RegExp(`\\.pele-shape-${name}(?![\\w-])`).test(styles))
+  assert(bare.length === 0, `no role rule for ${bare.join(', ')}`)
+  // A selector that names a class the engine never emits is a rule for nothing:
+  // anchoring the names to the engine keeps a typo from looking like coverage.
+  // The engine builds the class with a template (`pele-shape-${shape}`), so the
+  // names live in its shape table as quoted strings, not next to the prefix.
+  const engine = readFileSync(join(ROOT, 'vendor', 'pele', 'pele.global.js'), 'utf8')
+  const invented = SHAPE_CLASSES.filter((name) => !engine.includes(`"${name}"`))
+  assert(invented.length === 0, `the stylesheet styles shapes the engine never draws: ${invented.join(', ')}`)
+  return `${SHAPE_CLASSES.length} shapes, every name known to the engine`
+})
+
+check('role rules colour the shape and leave the label alone', () => {
+  const css = figureCss()
+  const coloured = cssBlocks(css).filter((block) => /(^|[\s;])(fill|stroke)\s*:/.test(block.body))
+  assert(coloured.length >= 5, `only ${coloured.length} blocks paint a colour`)
+  const onText = coloured.filter((block) => /(?:^|[\s,>])(?:text|tspan)(?:[\s,>{:]|$)/.test(block.selector))
+  assert(onText.length === 0, `a fill or stroke lands on text: ${onText.map((block) => block.selector).join(' | ')}`)
+  const textRules = cssBlocks(css).filter((block) => /(?:^|[\s,>])(?:text|tspan)(?:[\s,>{:]|$)/.test(block.selector))
+  const painted = textRules.filter((block) => /(^|[\s;])color\s*:/.test(block.body))
+  assert(painted.length === 0, 'a text rule sets color, which the engine already reads from --pele-fg')
+  return `${coloured.length} painted blocks, none of them text`
+})
+
+check('each role rule keeps a readable fallback before its mixed colour', () => {
+  const css = figureCss()
+  // Only rules that paint a shape: the variable block also mentions colour-mix,
+  // but as a token definition, not as a fill or a stroke.
+  const mixed = cssBlocks(css).filter((block) => /(^|[;\n])\s*(fill|stroke)\s*:\s*color-mix\(/.test(block.body))
+  assert(mixed.length >= 5, `only ${mixed.length} blocks use colour-mix`)
+  for (const block of mixed) {
+    const lines = block.body.split(';').map((line) => line.trim()).filter(Boolean)
+    const fill = lines.findIndex((line) => line.startsWith('fill: color-mix('))
+    const stroke = lines.findIndex((line) => line.startsWith('stroke: color-mix('))
+    assert(fill !== -1 && stroke !== -1, `a rule mixes one property only: ${block.selector}`)
+    assert(
+      lines[fill - 1] === 'fill: var(--pele-surface)',
+      `the fill has no plain fallback before it (${lines[fill - 1]})`,
+    )
+    assert(
+      lines[stroke - 1] === 'stroke: var(--pele-border)',
+      `the stroke has no plain fallback before it (${lines[stroke - 1]})`,
+    )
+  }
+  return `${mixed.length} rules, each with a plain declaration first`
+})
+
+check('the series palette is eight host hues, each mixed into the text ink', () => {
+  const styles = stripComments(read('src/client/styles.js'))
+  const tokens = []
+  for (let index = 1; index <= 8; index += 1) {
+    const hit = new RegExp(`--pele-series-${index}:\\s*([^;]+);`).exec(styles)
+    assert(hit !== null, `--pele-series-${index} is not declared`)
+    const value = hit[1].trim()
+    // The engine writes the label of a filled area in the canvas colour, so a
+    // series colour must be pushed towards the text ink to be readable as both
+    // a fill and an outline in either theme.
+    const mix = /^color-mix\(in srgb, var\((--dsw-[a-z0-9-]+), [^)]*\) 55%, var\(--pele-fg, [^)]*\)\)$/.exec(value)
+    assert(mix !== null, `--pele-series-${index} is not a host hue mixed into the ink: ${value}`)
+    tokens.push(mix[1])
+  }
+  assert(new Set(tokens).size === 8, `the eight series repeat a host hue: ${tokens.join(', ')}`)
+  return 'eight series, eight host hues, all mixed into the ink'
+})
+
+check('the colours a reader gets are written down where an author can find them', () => {
+  // FR-012 asks for the meaning to be documented, so every hue the stylesheet
+  // takes from the host is named in docs/colours.md, with the shape it colours.
+  const styles = stripComments(read('src/client/styles.js'))
+  const doc = read('docs/colours.md')
+  const tokens = new Set()
+  const pattern = /--(?:dx-hue-[a-z-]+|pele-series-[0-9]+):[^;]*?var\((--dsw-[a-z0-9-]+)/g
+  let match = pattern.exec(styles)
+  while (match) {
+    tokens.add(match[1])
+    match = pattern.exec(styles)
+  }
+  const named = [...tokens].filter((token) => !doc.includes(token))
+  assert(tokens.size >= 9, `the stylesheet takes only ${tokens.size} hue tokens`)
+  assert(named.length === 0, `docs/colours.md never names ${named.join(', ')}`)
+  const shapes = ['stadium', 'diam', 'cyl', 'lean-r', 'rect']
+  const undocumented = shapes.filter((shape) => !doc.includes(shape))
+  assert(undocumented.length === 0, `docs/colours.md never names the shape ${undocumented.join(', ')}`)
+  return `${tokens.size} host hues and five shapes written down in docs/colours.md`
+})
+
+check("the preview is drawn with the snapshot's colours, not invented ones", () => {
+  const preview = read('scripts/build-preview.mjs')
+  assert(preview.includes('host-tokens.json'), 'the preview does not read the host snapshot')
+  const literals = preview.match(/#[0-9a-fA-F]{3,8}\b/g) || []
+  assert(literals.length === 0, `the preview still writes invented colours: ${literals.join(', ')}`)
+  return 'read from verify/host-tokens.json, no hex left'
+})
+
+check("the fixture's host tokens are the snapshot's", () => {
+  const snapshot = readJson('verify/host-tokens.json')
+  const html = read('verify/harness/index.html')
+  const blockOf = (selector) => {
+    const start = html.indexOf(`${selector} {`)
+    assert(start !== -1, `the fixture has no ${selector} block`)
+    const end = html.indexOf('}', start)
+    return html.slice(start, end)
+  }
+  const light = blockOf(':root')
+  const dark = blockOf('body[data-ds-dark-theme]')
+  const missing = []
+  for (const [name, value] of Object.entries(snapshot.light)) {
+    const wanted = `${name}: ${value};`.replace(/\s+/g, ' ')
+    const found = light.replace(/\s+/g, ' ').includes(wanted)
+    if (!found) missing.push(`${name} (light ${value})`)
+  }
+  for (const [name, value] of Object.entries(snapshot.dark)) {
+    if (!name.startsWith('--dsw-alias-')) continue
+    const wanted = `${name}: ${value};`.replace(/\s+/g, ' ')
+    if (!dark.replace(/\s+/g, ' ').includes(wanted)) missing.push(`${name} (dark ${value})`)
+  }
+  assert(missing.length === 0, `the fixture disagrees with the snapshot: ${missing.join(', ')}`)
+  return `${Object.keys(snapshot.light).length} light and ${Object.keys(snapshot.dark).length} dark values match ${snapshot.version}`
+})
+
+check('the fixture can fail: its contrast helpers are exercised', () => {
+  const html = read('verify/harness/index.html')
+  assert(html.includes('assertion has teeth'), 'the fixture has no negative self-check for its contrast maths')
+  assert(/relativeLuminance|contrastOf/.test(html), 'the fixture has no contrast helper')
+  // A self-check that passes without the maths is worse than none: it must state
+  // the old border colour lands under 3:1 and require that.
+  assert(
+    /ratio\s*!==\s*null\s*&&\s*ratio\s*<\s*3/.test(html),
+    'the self-check never demands a failing ratio',
+  )
+  return 'contrast helpers present, and a check that requires the old palette to fail'
+})
+
 /* ---------------------------------------------------------------- report */
 
-const EXPECTED_CHECKS = 67
+const EXPECTED_CHECKS = 78
 if (notices.length + failures.length !== EXPECTED_CHECKS) {
   failures.push(
     `[FAIL] the suite has ${notices.length + failures.length} checks, expected ${EXPECTED_CHECKS}: a check was added or removed without updating this number`,

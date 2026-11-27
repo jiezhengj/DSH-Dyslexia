@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>mermaid colour probe</title>
+<style>
+  /* ---- real DSH light-theme alias values, read out of app.asar ---- */
+  body {
+    --dsw-alias-bg-base: rgb(255,255,255);
+    --dsw-alias-bg-layer-1: rgb(255,255,255);
+    --dsw-alias-bg-layer-2: rgb(255,255,255);
+    --dsw-alias-border-l1: rgba(0,0,0,0.04);
+    --dsw-alias-border-l2: rgba(0,0,0,0.10);
+    --dsw-alias-brand-primary: rgb(15,17,21);
+    --dsw-alias-label-primary: rgb(15,17,21);
+    --dsw-alias-label-secondary: rgb(97,102,107);
+    --dsw-alias-state-error-primary: rgb(236,19,19);
+    background: var(--dsw-alias-bg-base);
+    color: var(--dsw-alias-label-primary);
+    font-family: -apple-system, "PingFang SC", sans-serif;
+    padding: 16px;
+  }
+  .theme-dark {
+    --dsw-alias-bg-base: rgb(21,21,23);
+    --dsw-alias-bg-layer-1: rgb(35,35,36);
+    --dsw-alias-bg-layer-2: rgb(44,44,46);
+    --dsw-alias-border-l1: rgba(255,255,255,0.06);
+    --dsw-alias-border-l2: rgba(255,255,255,0.12);
+    --dsw-alias-brand-primary: rgb(249,250,251);
+    --dsw-alias-label-primary: rgb(249,250,251);
+    --dsw-alias-label-secondary: rgb(225,229,238);
+    --dsw-alias-state-error-primary: rgb(242,90,90);
+  }
+  h2 { font-size: 13px; margin: 18px 0 4px; color: #888; }
+  /* ---- the plugin's own figure CSS, copied from src/client/styles.js ---- */
+  .dsh-dyslexia-figure {
+    --pele-bg: var(--dsw-alias-bg-layer-1);
+    --pele-fg: var(--dsw-alias-label-primary);
+    --pele-muted: var(--dsw-alias-label-secondary);
+    --pele-line: var(--dsw-alias-border-l2);
+    --pele-surface: var(--dsw-alias-bg-layer-2);
+    --pele-surface-alt: var(--dsw-alias-bg-base);
+    --pele-border: var(--dsw-alias-border-l1);
+    --pele-accent: var(--dsw-alias-brand-primary);
+    --pele-critical: var(--dsw-alias-state-error-primary);
+    --pele-font: inherit;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 8px;
+    border: 1px solid var(--dsw-alias-border-l1);
+    border-radius: 8px;
+    background: var(--dsw-alias-bg-layer-1);
+    overflow: auto;
+  }
+  .dsh-dyslexia-figure svg { display: block; max-width: 100%; height: auto; }
+  .dsh-dyslexia-figure text { font-family: inherit; }
+  .plain { padding: 8px; border: 1px solid #ddd; }
+</style>
+</head>
+<body>
+<h2>A · 模型通常写的流程图 · 插件配色（真实 DSH 令牌）</h2>
+<div class="dsh-dyslexia-figure" id="a"></div>
+
+<h2>B · 同一张图 · pele 自带配色（不套插件变量）</h2>
+<div class="plain" id="b"></div>
+
+<h2>C · 同一张图 + classDef 上色 · 插件配色</h2>
+<div class="dsh-dyslexia-figure" id="c"></div>
+
+<h2>D · 模型通常写的流程图 · 插件配色 · 深色主题</h2>
+<div class="theme-dark"><div class="dsh-dyslexia-figure" id="d"></div></div></div>
+
+<pre id="report"></pre>
+
+<script src="../../../vendor/pele/pele.global.js"></script>
+<script>
+const PLAIN = `flowchart TD
+  A[收到请求] --> B{参数合法?}
+  B -->|是| C[查询数据库]
+  B -->|否| D[返回 400]
+  C --> E[组装响应]
+  D --> E
+  E --> F[写日志]`;
+
+const COLORED = PLAIN + `
+  classDef start fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+  classDef bad fill:#fee2e2,stroke:#dc2626,color:#7f1d1d
+  classDef ok fill:#dcfce7,stroke:#16a34a,color:#14532d
+  class A start
+  class D bad
+  class C ok
+  class E ok`;
+
+const nodes = { a: PLAIN, b: PLAIN, c: COLORED, d: PLAIN };
+
+function rgbOf(value) {
+  const m = /rgba?\(([^)]+)\)/.exec(value || '');
+  if (!m) return null;
+  const parts = m[1].split(/[,/]/).map((s) => parseFloat(s.trim())).filter((n) => Number.isFinite(n));
+  return { r: parts[0], g: parts[1], b: parts[2], a: parts.length > 3 ? parts[3] : 1 };
+}
+
+function lum(c) {
+  const f = (v) => { const s = v / 255; return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4); };
+  return 0.2126 * f(c.r) + 0.7152 * f(c.g) + 0.0722 * f(c.b);
+}
+
+function over(fg, bg) {
+  if (!fg) return null;
+  const a = fg.a === undefined ? 1 : fg.a;
+  return { r: fg.r * a + bg.r * (1 - a), g: fg.g * a + bg.g * (1 - a), b: fg.b * a + bg.b * (1 - a), a: 1 };
+}
+
+function contrast(x, y) {
+  const l1 = lum(x), l2 = lum(y);
+  return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+}
+
+function isChromatic(c) {
+  if (!c) return false;
+  const max = Math.max(c.r, c.g, c.b), min = Math.min(c.r, c.g, c.b);
+  return max - min > 12; // more than a rounding wobble
+}
+
+function measure(id) {
+  const host = document.getElementById(id);
+  const svg = host.querySelector('svg');
+  const bodyStyle = getComputedStyle(document.body);
+  const bg = rgbOf(getComputedStyle(host).backgroundColor) || rgbOf(bodyStyle.backgroundColor);
+  const fgText = rgbOf(bodyStyle.getPropertyValue('--dsw-alias-label-primary'));
+  const fills = new Map(), strokes = new Map();
+  for (const el of svg.querySelectorAll('*')) {
+    const cs = getComputedStyle(el);
+    const f = rgbOf(cs.fill);
+    const s = rgbOf(cs.stroke) && cs.stroke !== 'none' ? rgbOf(cs.stroke) : null;
+    if (f && cs.fill !== 'none') {
+      const k = `${Math.round(f.r)},${Math.round(f.g)},${Math.round(f.b)}/${f.a}`;
+      fills.set(k, (fills.get(k) || 0) + 1);
+    }
+    if (s) {
+      const k = `${Math.round(s.r)},${Math.round(s.g)},${Math.round(s.b)}/${s.a}`;
+      strokes.set(k, (strokes.get(k) || 0) + 1);
+    }
+  }
+  const summarize = (map, kind) => [...map.entries()].map(([k, n]) => {
+    const [c, a] = k.split('/');
+    const [r, g, b] = c.split(',').map(Number);
+    const solid = over({ r, g, b, a: Number(a) }, bg);
+    return { kind, raw: `rgba(${r},${g},${b},${a})`, count: n, chromatic: isChromatic(solid), contrastOnBg: +contrast(solid, bg).toFixed(2) };
+  });
+  const all = [...summarize(fills, 'fill'), ...summarize(strokes, 'stroke')];
+  return {
+    id,
+    bg: `rgb(${Math.round(bg.r)},${Math.round(bg.g)},${Math.round(bg.b)})`,
+    textFill: `rgb(${Math.round(fgText?.r ?? 0)},${Math.round(fgText?.g ?? 0)},${Math.round(fgText?.b ?? 0)})`,
+    distinctFills: fills.size,
+    distinctStrokes: strokes.size,
+    chromaticColors: all.filter((c) => c.chromatic).length,
+    items: all.sort((x, y) => y.count - x.count),
+  };
+}
+
+for (const [id, code] of Object.entries(nodes)) {
+  const host = document.getElementById(id);
+  const result = pele.mount(host, code, { zoom: { controls: false }, padding: 8 });
+  if (result && result.error) host.textContent = 'ERROR: ' + result.error.message;
+}
+
+const report = { checks: {} };
+for (const id of ['a', 'b', 'c', 'd']) report.checks[id] = measure(id);
+document.getElementById('report').textContent = JSON.stringify(report, null, 1);
+</script>
+</body>
+</html>

@@ -1,37 +1,42 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="640" height="300" viewBox="0 0 640 300">
-  <rect width="640" height="300" fill="#F5F6FC"/>
+  <rect width="640" height="300" fill="rgb(255, 255, 255)"/>
   <g id="source">
-    <rect x="36" y="62" width="176" height="176" rx="16" fill="#FFFFFF" stroke="#E4E8F6" stroke-width="2"/>
-    <path d="M36 78a16 16 0 0 1 16-16h144a16 16 0 0 1 16 16v18H36z" fill="#E4E8F6" fill-opacity="0.6"/>
-    <circle cx="56" cy="79" r="4" fill="#658EFF"/>
-    <circle cx="70" cy="79" r="4" fill="#B9C1D9"/>
-    <circle cx="84" cy="79" r="4" fill="#B9C1D9"/>
-    <rect x="60" y="108" width="30" height="9" rx="4.5" fill="#658EFF"/>
-    <rect x="96" y="128" width="60" height="9" rx="4.5" fill="#B9C1D9"/>
-    <rect x="60" y="148" width="40" height="9" rx="4.5" fill="#B9C1D9"/>
-    <rect x="104" y="168" width="48" height="9" rx="4.5" fill="#B9C1D9"/>
-    <rect x="84" y="188" width="64" height="9" rx="4.5" fill="#41E1AC"/>
-    <rect x="112" y="208" width="36" height="9" rx="4.5" fill="#B9C1D9"/>
+    <rect x="36" y="62" width="176" height="176" rx="16" fill="rgb(255, 255, 255)" stroke="rgba(0, 0, 0, 0.1)" stroke-width="2"/>
+    <path d="M36 78a16 16 0 0 1 16-16h144a16 16 0 0 1 16 16v18H36z" fill="rgba(0, 0, 0, 0.1)" fill-opacity="0.6"/>
+    <circle cx="56" cy="79" r="4" fill="rgb(65, 118, 230)"/>
+    <circle cx="70" cy="79" r="4" fill="rgb(97, 102, 107)"/>
+    <circle cx="84" cy="79" r="4" fill="rgb(97, 102, 107)"/>
+    <rect x="60" y="108" width="30" height="9" rx="4.5" fill="rgb(65, 118, 230)"/>
+    <rect x="96" y="128" width="60" height="9" rx="4.5" fill="rgb(97, 102, 107)"/>
+    <rect x="60" y="148" width="40" height="9" rx="4.5" fill="rgb(97, 102, 107)"/>
+    <rect x="104" y="168" width="48" height="9" rx="4.5" fill="rgb(97, 102, 107)"/>
+    <rect x="84" y="188" width="64" height="9" rx="4.5" fill="rgb(34, 197, 94)"/>
+    <rect x="112" y="208" width="36" height="9" rx="4.5" fill="rgb(97, 102, 107)"/>
   </g>
   <g id="arrow">
-    <path d="M220 150h16" stroke="#658EFF" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-    <path d="M233 143.5 244 150l-11 6.5z" fill="#658EFF"/>
+    <path d="M220 150h16" stroke="rgb(65, 118, 230)" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+    <path d="M233 143.5 244 150l-11 6.5z" fill="rgb(65, 118, 230)"/>
   </g>
   <g id="figure">
-    <rect x="260" y="52" width="344" height="196" rx="14" fill="#FFFFFF" stroke="#E4E8F6" stroke-width="2"/>
-    <g style="--pele-bg:#ffffff;--pele-fg:#1f2430;--pele-muted:#6b7387;--pele-line:#4a5a86;--pele-surface:#eef2fb;--pele-surface-alt:#e2e9f8;--pele-border:#b9cbef;--pele-accent:#658eff;--pele-font:system-ui, sans-serif;--pele-font-mono:ui-monospace, monospace" transform="translate(321.64 72.00) scale(0.8026)">
-      <svg xmlns="http://www.w3.org/2000/svg" class="pele pele-flowchart" viewBox="0 0 275 152" width="275" height="152" style="max-width:100%;height:auto;--_bg:var(--pele-bg,#fff);--_fg:var(--pele-fg,#1f1f1f);--_m:var(--pele-muted,#6e6e6e);--_l:var(--pele-line,#1f1f1f);--_s:var(--pele-surface,#f3f3f3);--_a:var(--pele-surface-alt,#e6e6e6);--_b:var(--pele-border,#8a8a8a);--_c:var(--pele-accent,#5b7bd5);color:var(--_fg);--_r:var(--pele-radius,4px);--_fm:var(--pele-font-mono,monospace);font:13px sans-serif;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;font-family:var(--pele-font,sans-serif)" fill="var(--_fg)" role="graphics-document document" aria-roledescription="flowchart"><g class="pele-edges" fill="none" stroke="var(--_l)" stroke-linecap="round"><g class="pele-edge" data-id="L_A_B_0"><path d="M113.03,68C130.53,68 130.53,34 148.03,34L154.03,34"/><path class="pele-marker" d="M161.03,34L153.03,37.36L153.03,30.64Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge" data-id="L_A_C_0"><path d="M113.03,84C130.53,84 130.53,118 148.03,118L154.03,118"/><path class="pele-marker" d="M161.03,118L153.03,121.36L153.03,114.64Z" fill="var(--_l)" stroke="none"/></g></g><g class="pele-nodes"><g class="pele-node pele-shape-rect" data-id="A" transform="translate(62.51,76)"><rect x="-50.51" y="-22" width="101.03" height="44" fill="var(--_s)" stroke="var(--_b)" style="rx:var(--_r)"/><text class="pele-label" x="0" y="4.55" text-anchor="middle">Code block</text></g><g class="pele-node pele-shape-rect" data-id="B" transform="translate(203.58,34)"><rect x="-42.56" y="-22" width="85.11" height="44" fill="var(--_s)" stroke="var(--_b)" style="rx:var(--_r)"/><text class="pele-label" x="0" y="4.55" text-anchor="middle">Diagram</text></g><g class="pele-node pele-shape-rect" data-id="C" transform="translate(211.9,118)"><rect x="-50.88" y="-22" width="101.75" height="44" fill="var(--_s)" stroke="var(--_b)" style="rx:var(--_r)"/><text class="pele-label" x="0" y="4.55" text-anchor="middle">Source text</text></g></g></svg>
+    <rect x="260" y="52" width="344" height="196" rx="14" fill="rgb(255, 255, 255)" stroke="rgba(0, 0, 0, 0.1)" stroke-width="2"/>
+    <g class="dsh-dyslexia-figure" style="--pele-bg:rgb(255, 255, 255);--pele-fg:rgb(15, 17, 21);--pele-muted:rgb(97, 102, 107);--pele-line:rgb(129, 133, 140);--pele-surface:rgb(245, 245, 246);--pele-surface-alt:rgb(255, 255, 255);--pele-border:rgb(129, 133, 140);--pele-accent:rgb(65, 118, 230);--pele-fg-on-light:rgb(15, 17, 21);--pele-fg-on-dark:rgb(249, 250, 251);--pele-font:system-ui, sans-serif" transform="translate(282.00 93.30) scale(0.5671)">
+      <style>.dsh-dyslexia-figure .pele-shape-stadium > :is(rect, polygon, circle, path, ellipse, polyline), .dsh-dyslexia-figure .pele-shape-circle > :is(rect, polygon, circle, path, ellipse, polyline), .dsh-dyslexia-figure .pele-shape-odd > :is(rect, polygon, circle, path, ellipse, polyline) { fill: rgb(215, 245, 226); stroke: rgb(26, 125, 65); }
+.dsh-dyslexia-figure .pele-shape-diam > :is(rect, polygon, circle, path, ellipse, polyline), .dsh-dyslexia-figure .pele-shape-hex > :is(rect, polygon, circle, path, ellipse, polyline) { fill: rgb(253, 238, 211); stroke: rgb(153, 102, 15); }
+.dsh-dyslexia-figure .pele-shape-cyl > :is(rect, polygon, circle, path, ellipse, polyline) { fill: rgb(239, 234, 254); stroke: rgb(106, 90, 158); }
+.dsh-dyslexia-figure .pele-shape-lean-r > :is(rect, polygon, circle, path, ellipse, polyline), .dsh-dyslexia-figure .pele-shape-lean-l > :is(rect, polygon, circle, path, ellipse, polyline), .dsh-dyslexia-figure .pele-shape-trap-b > :is(rect, polygon, circle, path, ellipse, polyline), .dsh-dyslexia-figure .pele-shape-trap-t > :is(rect, polygon, circle, path, ellipse, polyline) { fill: rgb(221, 230, 251); stroke: rgb(45, 78, 146); }
+.dsh-dyslexia-figure .pele-shape-rect > :is(rect, polygon, circle, path, ellipse, polyline), .dsh-dyslexia-figure .pele-shape-rounded > :is(rect, polygon, circle, path, ellipse, polyline), .dsh-dyslexia-figure .pele-shape-fr-rect > :is(rect, polygon, circle, path, ellipse, polyline) { fill: rgb(240, 241, 242); stroke: rgb(110, 114, 119); }</style>
+      <svg xmlns="http://www.w3.org/2000/svg" class="pele pele-flowchart" viewBox="0 0 529 140" width="529" height="140" style="max-width:100%;height:auto;--_bg:var(--pele-bg,#fff);--_fg:var(--pele-fg,#1f1f1f);--_m:var(--pele-muted,#6e6e6e);--_l:var(--pele-line,#1f1f1f);--_s:var(--pele-surface,#f3f3f3);--_a:var(--pele-surface-alt,#e6e6e6);--_b:var(--pele-border,#8a8a8a);--_c:var(--pele-accent,#5b7bd5);color:var(--_fg);--_r:var(--pele-radius,4px);--_fm:var(--pele-font-mono,monospace);font:12px sans-serif;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;font-family:var(--pele-font,sans-serif)" fill="var(--_fg)" role="graphics-document document" aria-roledescription="flowchart"><g class="pele-edges" fill="none" stroke="var(--_l)" stroke-linecap="round"><g class="pele-edge" data-id="L_A_B_0"><path d="M95.68,73L124.68,73"/><path class="pele-marker" d="M131.68,73L123.68,76.36L123.68,69.64Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge" data-id="L_B_C_0"><path d="M211.82,65C225.47,65 225.47,39 239.12,39L298.56,39"/><path class="pele-marker" d="M305.56,39L297.56,42.36L297.56,35.64Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge" data-id="L_B_D_0"><path d="M211.82,81C225.47,81 225.47,107 239.12,107L287.99,107"/><path class="pele-marker" d="M294.99,107L286.99,110.36L286.99,103.64Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge" data-id="L_C_E_0"><path d="M377.58,39L422.4,39"/><path class="pele-marker" d="M429.4,39L421.4,42.36L421.4,35.64Z" fill="var(--_l)" stroke="none"/></g></g><g class="pele-edge-labels" font-size="11"><g class="pele-edge-label" data-id="L_B_C_0"><rect x="241.12" y="30.5" width="25.12" height="17" rx="3" fill="var(--_bg)"/><text x="253.68" y="42.85" text-anchor="middle">yes</text></g><g class="pele-edge-label" data-id="L_B_D_0"><rect x="243.56" y="98.5" width="20.23" height="17" rx="3" fill="var(--_bg)"/><text x="253.68" y="110.85" text-anchor="middle">no</text></g></g><g class="pele-nodes"><g class="pele-node pele-shape-stadium" data-id="A" transform="translate(53.84,73)"><rect x="-41.84" y="-21" width="83.68" height="42" rx="21" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="4.2" text-anchor="middle">Reads</text></g><g class="pele-node pele-shape-diam" data-id="B" transform="translate(178.15,73)"><polygon points="0,-29.04 46.47,0 0,29.04 -46.47,0" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="4.2" text-anchor="middle">Clear?</text></g><g class="pele-node pele-shape-cyl" data-id="C" transform="translate(341.57,39)"><path d="M-36.01,-21A36.01,6 0 0 1 36.01,-21V21A36.01,6 0 0 1 -36.01,21Z" fill="var(--_s)" stroke="var(--_b)"/><path d="M-36.01,-21A36.01,6 0 0 0 36.01,-21" fill="none" stroke="var(--_b)"/><text class="pele-label" x="0" y="7.2" text-anchor="middle">Shows</text></g><g class="pele-node pele-shape-lean-r" data-id="D" transform="translate(341.57,107)"><polygon points="-41.33,-21 51.83,-21 41.33,21 -51.83,21" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="4.2" text-anchor="middle">Rewrites</text></g><g class="pele-node pele-shape-rect" data-id="E" transform="translate(473.08,39)"><rect x="-43.68" y="-21" width="87.36" height="42" fill="var(--_s)" stroke="var(--_b)" style="rx:var(--_r)"/><text class="pele-label" x="0" y="4.2" text-anchor="middle">Reads on</text></g></g></svg>
     </g>
-    <path d="M278 202h308" stroke="#E4E8F6" stroke-width="2" stroke-linecap="round"/>
+    <path d="M278 202h308" stroke="rgba(0, 0, 0, 0.1)" stroke-width="2" stroke-linecap="round"/>
   </g>
   <g id="buttons">
-    <rect x="278" y="214" width="32" height="26" rx="13" fill="#E4E8F6" fill-opacity="0.8"/>
-    <rect x="318" y="214" width="32" height="26" rx="13" fill="#E4E8F6" fill-opacity="0.8"/>
-    <g stroke="#1F2430" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.7">
+    <rect x="278" y="214" width="32" height="26" rx="13" fill="rgba(0, 0, 0, 0.1)" fill-opacity="0.8"/>
+    <rect x="318" y="214" width="32" height="26" rx="13" fill="rgba(0, 0, 0, 0.1)" fill-opacity="0.8"/>
+    <g stroke="rgb(15, 17, 21)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.7">
       <rect x="288" y="221" width="9" height="11" rx="2.5"/>
       <path d="M294 218.5h5.5a2.5 2.5 0 0 1 2.5 2.5v8.5"/>
     </g>
-    <g stroke="#1F2430" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.7">
+    <g stroke="rgb(15, 17, 21)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.7">
       <path d="M331 221.5 326.5 226l4.5 4.5"/>
       <path d="M337 221.5 341.5 226l-4.5 4.5"/>
     </g>

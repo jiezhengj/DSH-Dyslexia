@@ -1,4 +1,4 @@
-/*! @jiezhengj/dsh-dyslexia 0.2.24 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:e735880491501f8df7a1dc29a3ff0e2e */
+/*! @jiezhengj/dsh-dyslexia 0.3.1 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:36f6de3b72f9d76e04b7785390a5c82e */
 ;(function () {
   function reportLoadFailure(scope, error) {
     try { console.error('dsh-dyslexia: ' + scope, error) } catch (_error) {}
@@ -210,23 +210,106 @@ const FIGURE_CSS = [
   '  min-width: 0;',
   '}',
   `.${FIGURE_CLASS} {`,
-  '  --pele-bg: var(--dsw-alias-bg-layer-1);',
-  '  --pele-fg: var(--dsw-alias-label-primary);',
-  '  --pele-muted: var(--dsw-alias-label-secondary);',
-  '  --pele-line: var(--dsw-alias-border-l2);',
-  '  --pele-surface: var(--dsw-alias-bg-layer-2);',
-  '  --pele-surface-alt: var(--dsw-alias-bg-base);',
-  '  --pele-border: var(--dsw-alias-border-l1);',
-  '  --pele-accent: var(--dsw-alias-brand-primary);',
-  '  --pele-critical: var(--dsw-alias-state-error-primary);',
+  // Each host token carries the engine's own default as its var() fallback, so
+  // a host that hands over no tokens still gets a readable picture instead of
+  // a declaration that turns invalid the moment it is used (FR-007).
+  '  --pele-bg: var(--dsw-alias-bg-layer-1, #fff);',
+  '  --pele-fg: var(--dsw-alias-label-primary, #1f1f1f);',
+  '  --pele-muted: var(--dsw-alias-label-secondary, #6e6e6e);',
+  // Lines, arrows and the outline of an unstyled box. `label-tertiary` is the
+  // host's own "quiet but legible" ink (3.7:1 on white, 7.4:1 on the dark
+  // surface); `border-l2` was 1.25:1 and drew mist.
+  '  --pele-line: var(--dsw-alias-label-tertiary, #1f1f1f);',
+  '  --pele-surface: color-mix(in srgb, var(--dsw-alias-label-primary, #1f1f1f) 4%, var(--pele-bg, #fff));',
+  // Grid lines, zebra rows and excluded ranges. It cannot be the bare canvas
+  // colour: a chart draws its grid with this, and white on white is no grid.
+  '  --pele-surface-alt: color-mix(in srgb, var(--dsw-alias-label-primary, #1f1f1f) 20%, var(--pele-bg, #fff));',
+  '  --pele-border: var(--dsw-alias-label-tertiary, #8a8a8a);',
+  // The engine labels a filled area with the canvas colour (`--_bg`), so a
+  // chart bar or a pie slice must carry that colour: dark in the light theme,
+  // light in the dark one. Mixing the host accent into the text ink gives
+  // exactly that with one formula, and keeps it a derived host colour.
+  '  --pele-accent: color-mix(in srgb, var(--dsw-alias-link, #5b7bd5) 55%, var(--pele-fg, #1f1f1f));',
+  '  --pele-critical: var(--dsw-alias-state-error-primary, #e45756);',
+  // Ink the engine puts on a fill the author chose: dark on light fills, light
+  // on dark ones, whatever the theme is, because the fill is what it reads.
+  '  --pele-fg-on-light: var(--dsw-static-neutral-bluish-1000, #0f1115);',
+  '  --pele-fg-on-dark: var(--dsw-static-neutral-bluish-50, #f9fafb);',
   '  --pele-font: inherit;',
   '  max-width: 100%;',
   '  box-sizing: border-box;',
   '  padding: 8px;',
-  '  border: 1px solid var(--dsw-alias-border-l1);',
+  '  border: 1px solid var(--dsw-alias-border-l1, rgba(0, 0, 0, 0.04));',
   '  border-radius: 8px;',
-  '  background: var(--dsw-alias-bg-layer-1);',
+  '  background: var(--dsw-alias-bg-layer-1, #fff);',
   '  overflow: auto;',
+  '}',
+  // A shape in a flow chart says what the box does, so the box is coloured by
+  // its role: start and end, decision, data, input and output each take a hue
+  // from the host palette, and a plain step stays neutral so the common box
+  // does not shout. `fill` mixes the hue into the picture background and
+  // `stroke` mixes it into the text ink, so one formula holds in both themes.
+  `.${FIGURE_CLASS} {`,
+  '  --dx-hue-start-end: var(--dsw-static-green-500, #22c55e);',
+  '  --dx-hue-decision: var(--dsw-static-amber-500, #f59e0b);',
+  '  --dx-hue-data: var(--dsw-static-violet-400, #a78bfa);',
+  '  --dx-hue-io: var(--dsw-alias-link, #5b7bd5);',
+  '  --dx-hue-process: var(--dsw-static-neutral-bluish-400, #adb2b8);',
+  // Pie slices, gantt bars, timeline periods and mind-map branches take their
+  // fill straight from these, and the engine writes their labels in the canvas
+  // colour, so each series colour is mixed into the text ink as well: a deep
+  // tone in the light theme, a tint in the dark one, legible either way.
+  '  --pele-series-1: color-mix(in srgb, var(--dsw-alias-chart-messages, #4c78a8) 55%, var(--pele-fg, #1f1f1f));',
+  '  --pele-series-2: color-mix(in srgb, var(--dsw-static-green-500, #54a24b) 55%, var(--pele-fg, #1f1f1f));',
+  '  --pele-series-3: color-mix(in srgb, var(--dsw-static-blue-400, #f58518) 55%, var(--pele-fg, #1f1f1f));',
+  '  --pele-series-4: color-mix(in srgb, var(--dsw-static-amber-500, #e45756) 55%, var(--pele-fg, #1f1f1f));',
+  '  --pele-series-5: color-mix(in srgb, var(--dsw-static-deepseek-400, #72b7b2) 55%, var(--pele-fg, #1f1f1f));',
+  '  --pele-series-6: color-mix(in srgb, var(--dsw-static-red-500, #eeca3b) 55%, var(--pele-fg, #1f1f1f));',
+  '  --pele-series-7: color-mix(in srgb, var(--dsw-static-violet-400, #b279a2) 55%, var(--pele-fg, #1f1f1f));',
+  '  --pele-series-8: color-mix(in srgb, var(--dsw-static-neutral-bluish-400, #9d755d) 55%, var(--pele-fg, #1f1f1f));',
+  '}',
+  `.${FIGURE_CLASS} .pele-shape-stadium > :is(rect, polygon, circle, path, ellipse, polyline),`,
+  `.${FIGURE_CLASS} .pele-shape-circle > :is(rect, polygon, circle, path, ellipse, polyline),`,
+  `.${FIGURE_CLASS} .pele-shape-odd > :is(rect, polygon, circle, path, ellipse, polyline)`,
+  '{',
+    'fill: var(--pele-surface);',
+    'fill: color-mix(in srgb, var(--dx-hue-start-end) 18%, var(--pele-bg));',
+    'stroke: var(--pele-border);',
+    'stroke: color-mix(in srgb, var(--dx-hue-start-end) 60%, var(--pele-fg));',
+  '}',
+  `.${FIGURE_CLASS} .pele-shape-diam > :is(rect, polygon, circle, path, ellipse, polyline),`,
+  `.${FIGURE_CLASS} .pele-shape-hex > :is(rect, polygon, circle, path, ellipse, polyline)`,
+  '{',
+    'fill: var(--pele-surface);',
+    'fill: color-mix(in srgb, var(--dx-hue-decision) 18%, var(--pele-bg));',
+    'stroke: var(--pele-border);',
+    'stroke: color-mix(in srgb, var(--dx-hue-decision) 60%, var(--pele-fg));',
+  '}',
+  `.${FIGURE_CLASS} .pele-shape-cyl > :is(rect, polygon, circle, path, ellipse, polyline)`,
+  '{',
+    'fill: var(--pele-surface);',
+    'fill: color-mix(in srgb, var(--dx-hue-data) 18%, var(--pele-bg));',
+    'stroke: var(--pele-border);',
+    'stroke: color-mix(in srgb, var(--dx-hue-data) 60%, var(--pele-fg));',
+  '}',
+  `.${FIGURE_CLASS} .pele-shape-lean-r > :is(rect, polygon, circle, path, ellipse, polyline),`,
+  `.${FIGURE_CLASS} .pele-shape-lean-l > :is(rect, polygon, circle, path, ellipse, polyline),`,
+  `.${FIGURE_CLASS} .pele-shape-trap-b > :is(rect, polygon, circle, path, ellipse, polyline),`,
+  `.${FIGURE_CLASS} .pele-shape-trap-t > :is(rect, polygon, circle, path, ellipse, polyline)`,
+  '{',
+    'fill: var(--pele-surface);',
+    'fill: color-mix(in srgb, var(--dx-hue-io) 18%, var(--pele-bg));',
+    'stroke: var(--pele-border);',
+    'stroke: color-mix(in srgb, var(--dx-hue-io) 60%, var(--pele-fg));',
+  '}',
+  `.${FIGURE_CLASS} .pele-shape-rect > :is(rect, polygon, circle, path, ellipse, polyline),`,
+  `.${FIGURE_CLASS} .pele-shape-rounded > :is(rect, polygon, circle, path, ellipse, polyline),`,
+  `.${FIGURE_CLASS} .pele-shape-fr-rect > :is(rect, polygon, circle, path, ellipse, polyline)`,
+  '{',
+    'fill: var(--pele-surface);',
+    'fill: color-mix(in srgb, var(--dx-hue-process) 18%, var(--pele-bg));',
+    'stroke: var(--pele-border);',
+    'stroke: color-mix(in srgb, var(--dx-hue-process) 60%, var(--pele-fg));',
   '}',
   `.${FIGURE_CLASS} svg {`,
   '  display: block;',
