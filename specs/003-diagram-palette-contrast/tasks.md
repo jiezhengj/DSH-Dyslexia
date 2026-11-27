@@ -325,3 +325,8 @@ Task: "index.js CAPABILITY_TEXT 追加一句"      # T017
   实现：`verify/check-bundle.mjs` 的 `SHAPE_CLASSES` 改为解析 `vendor/pele/pele.global.js` 的 `var G_=[[…]]`（不再是手写 13 个）；新增 `every diagram type the engine registers is sampled or explained`，解析 `["id","keyword",/^…/]` 登记表（35 个图种），要求每个都在夹具里被采样或在 `TYPE_NOT_SAMPLED` 里有理由，反向也查（列表过期 / 夹具采样了引擎没有的图种）。静态检查 79 → 80 条。
 
 - 收口：`npm run build && npm test` = 静态 80 条 + 浏览器 540 条全绿；证据图 `evidence/all-shapes.png`（53 形状 × 浅/深 × 五角色）与 `evidence/all-types.png`（12 个额外图种）；版本 0.3.3。
+
+- 反向验证（这套守卫真的有牙齿，2026-11-27 实测）：
+  - 删掉 `styles.js` 里 `pele-shape-win-pane` 一行 → `every shape class has a role rule of its own` 红（`no role rule for win-pane`）。
+  - 往引擎登记表插一个假图种 `polygonnet` → `every diagram type the engine registers is sampled or explained` 红（`the engine draws polygonnet and nothing tests it`）。
+  - 两处都 `git checkout` 还原后 `npm test` 回到静态 80 + 浏览器 540 全绿。也就是说：以后引擎升级带来新形状/新图种，**构建**会先红，不必等聊天里出现灰方块。
