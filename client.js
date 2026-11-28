@@ -1,4 +1,4 @@
-/*! @jiezhengj/dsh-dyslexia 0.3.4 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:fed529833cf04070ad93e904fd6037df */
+/*! @jiezhengj/dsh-dyslexia 0.3.5 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:0be05a60e62838d0a6cb17bbdae704d1 */
 ;(function () {
   function reportLoadFailure(scope, error) {
     try { console.error('dsh-dyslexia: ' + scope, error) } catch (_error) {}
@@ -188,6 +188,9 @@ const NOTE_CLASS = 'dsh-dyslexia-note'
 const BAR_CLASS = 'dsh-dyslexia-bar'
 const BUTTON_CLASS = 'dsh-dyslexia-button'
 const SOURCE_CLASS = 'dsh-dyslexia-source'
+const HINT_CLASS = 'dsh-dyslexia-hint'
+const HINT_LINE_CLASS = 'dsh-dyslexia-hint-line'
+const HINT_MARK_CLASS = 'dsh-dyslexia-hint-mark'
 
 const FIGURE_CSS = [
   '.dsh-dyslexia-section { display: flex; flex-direction: column; gap: 4px; padding: 4px 0 8px; max-width: 720px; }',
@@ -416,6 +419,30 @@ const FIGURE_CSS = [
   '  background: var(--dsw-alias-bg-base);',
   '  border: 1px solid var(--dsw-alias-border-l1);',
   '}',
+  `.${HINT_CLASS} {`,
+  '  margin: 0 0 6px;',
+  '  padding: 8px;',
+  '  overflow: auto;',
+  '  font-size: 12px;',
+  '  line-height: 18px;',
+  '  border-radius: 6px;',
+  '  white-space: pre;',
+  '  font-family: var(--dsw-font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);',
+  '  background: var(--dsw-alias-bg-base);',
+  '  border: 1px solid var(--dsw-alias-border-l1);',
+  '  color: var(--dsw-alias-label-primary);',
+  '}',
+  `.${HINT_LINE_CLASS} {`,
+  '  color: var(--dsw-alias-label-secondary);',
+  '  font-size: 11px;',
+  '}',
+  `.${HINT_MARK_CLASS} {`,
+  '  border-radius: 2px;',
+  '  box-decoration-break: clone;',
+  '  background: color-mix(in srgb, var(--dsw-alias-state-error-primary) 22%, transparent);',
+  '  text-decoration: underline;',
+  '  text-decoration-color: var(--dsw-alias-state-error-primary);',
+  '}',
 ].join('\n')
 
 /**
@@ -471,6 +498,7 @@ const DICTIONARY = {
     renderFailed: 'This diagram cannot be drawn, so its source is shown.',
     resetZoom: 'Reset zoom',
     showSource: 'Show source',
+    syntaxAtLine: 'Line {{line}}:',
     syntaxError: 'The diagram syntax is not valid, so its source is shown.',
     zoomIn: 'Zoom in',
     zoomOut: 'Zoom out',
@@ -491,6 +519,7 @@ const DICTIONARY = {
     renderFailed: '这张图无法绘制，已改为显示源码。',
     resetZoom: '重置缩放',
     showSource: '查看源码',
+    syntaxAtLine: '第 {{line}} 行：',
     syntaxError: '图里的语法有误，已改为显示源码。',
     zoomIn: '放大',
     zoomOut: '缩小',
@@ -511,6 +540,7 @@ const DICTIONARY = {
     renderFailed: 'この図は描画できないため、ソースを表示しています。',
     resetZoom: '倍率をリセット',
     showSource: 'ソースを表示',
+    syntaxAtLine: '{{line}} 行目：',
     syntaxError: '図の構文が正しくないため、ソースを表示しています。',
     zoomIn: '拡大',
     zoomOut: '縮小',
@@ -531,6 +561,7 @@ const DICTIONARY = {
     renderFailed: 'No se puede dibujar este diagrama, así que se muestra su código.',
     resetZoom: 'Restablecer el zoom',
     showSource: 'Mostrar el código',
+    syntaxAtLine: 'Línea {{line}}:',
     syntaxError: 'La sintaxis del diagrama no es válida, así que se muestra su código.',
     zoomIn: 'Acercar',
     zoomOut: 'Alejar',
@@ -551,6 +582,7 @@ const DICTIONARY = {
     renderFailed: 'Impossible de dessiner ce schéma ; sa source est affichée.',
     resetZoom: 'Réinitialiser le zoom',
     showSource: 'Afficher la source',
+    syntaxAtLine: 'Ligne {{line}} :',
     syntaxError: "La syntaxe du schéma n'est pas valide ; sa source est affichée.",
     zoomIn: 'Zoomer',
     zoomOut: 'Dézoomer',
@@ -571,6 +603,7 @@ const DICTIONARY = {
     renderFailed: 'Dieses Diagramm lässt sich nicht zeichnen, daher wird seine Quelle angezeigt.',
     resetZoom: 'Zoom zurücksetzen',
     showSource: 'Quelle anzeigen',
+    syntaxAtLine: 'Zeile {{line}}:',
     syntaxError: 'Die Diagrammsyntax ist ungültig, daher wird ihre Quelle angezeigt.',
     zoomIn: 'Vergrößern',
     zoomOut: 'Verkleinern',
@@ -591,6 +624,7 @@ const DICTIONARY = {
     renderFailed: 'Эту диаграмму не удалось нарисовать, поэтому показан её код.',
     resetZoom: 'Сбросить масштаб',
     showSource: 'Показать код',
+    syntaxAtLine: 'Строка {{line}}:',
     syntaxError: 'Синтаксис диаграммы неверен, поэтому показан её код.',
     zoomIn: 'Увеличить',
     zoomOut: 'Уменьшить',
@@ -611,6 +645,7 @@ const DICTIONARY = {
     renderFailed: 'Não foi possível desenhar este diagrama, então o código é exibido.',
     resetZoom: 'Redefinir o zoom',
     showSource: 'Mostrar o código',
+    syntaxAtLine: 'Linha {{line}}:',
     syntaxError: 'A sintaxe do diagrama não é válida, então o código é exibido.',
     zoomIn: 'Ampliar',
     zoomOut: 'Reduzir',
@@ -788,6 +823,70 @@ function figureErrorKind(error) {
     void ignored
   }
   return 'other'
+}
+
+/**
+ * Where the parser stopped, as the reader can check it: the line number, the
+ * line exactly as they wrote it, and the one character the parser could not use.
+ *
+ * The engine prints its own snippet and a caret line, but both are padded and
+ * the caret counts characters while the page draws glyphs of different widths, so
+ * on a line with Chinese text it lands somewhere else. The engine's English
+ * ("Expecting 'SQE', … got 'STR'") also names grammar tokens a reader cannot act
+ * on. The spot is what a reader can act on, so the spot is what is drawn, marked
+ * on the reader's own line instead of counted into columns.
+ *
+ * The engine's caret says two different things, and the failure names which:
+ * `got 'STR'` and its like mean a character was refused (the caret sits just
+ * past it), while `got 'EOF'`/`'$end'` mean the line stopped before the parser
+ * was done (the caret is where more was wanted, so the end is the spot).
+ *
+ * Returns `{ line, before, at, after }`: `at` is the character the parser
+ * refused, or empty when the line stopped early, which the caller marks as a gap.
+ */
+function figureSyntaxHint(error, code) {
+  if (!error) return null
+  let message = ''
+  try {
+    message = typeof error === 'string' ? error : String(error.message || '')
+  } catch (ignored) {
+    void ignored
+    return null
+  }
+  const lines = message.split('\n')
+  let lineNumber = 0
+  let at = -1
+  for (let index = 0; index < lines.length; index += 1) {
+    const found = /parse error on line (\d+)/i.exec(lines[index])
+    if (found) {
+      lineNumber = Number(found[1])
+      at = index
+      break
+    }
+  }
+  if (!Number.isInteger(lineNumber) || lineNumber < 1 || at === -1) return null
+  const snippet = Array.from((lines[at + 1] || '').replace(/\s+$/, ''))
+  const caretLine = lines[at + 2] || ''
+  const found = /^[\s-]*\^/.exec(caretLine)
+  if (!found || snippet.length === 0) return null
+  // The reader's own line, not the engine's padded copy of it: tabs stay tabs
+  // and nothing the engine added is presented as something they wrote.
+  const source = typeof code === 'string' ? code.split('\n')[lineNumber - 1] : ''
+  const sourceChars = (source === undefined ? '' : source).replace(/\s+$/, '')
+  const written = Array.from(sourceChars)
+  const kept = written.length > 0 && written.length <= snippet.length ? written : snippet
+  const indent = kept === written ? snippet.length - written.length : 0
+  if (kept.length === 0) return null
+  const caret = Math.max(0, found[0].indexOf('^') - indent)
+  const stopped = /got '([^']*)'/.exec(message)
+  const ranOut = !stopped || stopped[1] === 'EOF' || stopped[1] === '$end'
+  const point = ranOut ? Math.min(caret, kept.length) : Math.max(0, caret - 1)
+  return {
+    line: lineNumber,
+    before: kept.slice(0, point).join(''),
+    at: kept.length > point ? kept[point] : '',
+    after: kept.length > point ? kept.slice(point + 1).join('') : '',
+  }
 }
 
 /**
@@ -983,6 +1082,7 @@ function MermaidFenceLayer(props) {
   translateRef.current = translate
   const [status, setStatus] = React.useState('pending')
   const [reasonKind, setReasonKind] = React.useState('other')
+  const [syntaxHint, setSyntaxHint] = React.useState(null)
   const [showSource, setShowSource] = React.useState(false)
   const [copyState, setCopyState] = React.useState('idle')
   const hostRef = React.useRef(null)
@@ -1027,6 +1127,7 @@ function MermaidFenceLayer(props) {
       host.textContent = ''
       setStatus('failed')
       setReasonKind(figureErrorKind(error))
+      setSyntaxHint(figureErrorKind(error) === 'syntax' ? figureSyntaxHint(error, code) : null)
       if (raw) {
         try {
           console.warn('dsh-dyslexia: diagram not drawn', raw)
@@ -1220,6 +1321,33 @@ function MermaidFenceLayer(props) {
         ? translate('engineUnavailable')
         : translate('renderFailed')
 
+  // A syntax error owes the reader the spot, not the grammar: their own line,
+  // with the one character the parser could not use marked. The engine's English
+  // token names never reach the picture, and nothing is counted into columns,
+  // which is what would drift on a line with Chinese text.
+  const hint =
+    failed && reasonKind === 'syntax' && syntaxHint
+      ? React.createElement(
+          'pre',
+          { className: HINT_CLASS },
+          React.createElement(
+            'span',
+            { className: HINT_LINE_CLASS },
+            translate('syntaxAtLine', { line: syntaxHint.line }),
+          ),
+          '\n',
+          syntaxHint.before,
+          React.createElement(
+            'span',
+            { className: HINT_MARK_CLASS },
+            // Nothing left to mark means the parser wanted something after the
+            // line: the marked blank says "here, at the end" in any language.
+            syntaxHint.at || ' ',
+          ),
+          syntaxHint.after,
+        )
+      : null
+
   const note = failed
     ? React.createElement('p', { className: NOTE_CLASS }, noteText)
     : null
@@ -1229,7 +1357,7 @@ function MermaidFenceLayer(props) {
   // message.
   const fallback = failed ? hostBlock(children, code) : null
 
-  return React.createElement(React.Fragment, null, note, figure, actions, source, fallback)
+  return React.createElement(React.Fragment, null, note, hint, figure, actions, source, fallback)
 }
 
 /**

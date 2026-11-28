@@ -70,6 +70,70 @@ function figureErrorKind(error) {
 }
 
 /**
+ * Where the parser stopped, as the reader can check it: the line number, the
+ * line exactly as they wrote it, and the one character the parser could not use.
+ *
+ * The engine prints its own snippet and a caret line, but both are padded and
+ * the caret counts characters while the page draws glyphs of different widths, so
+ * on a line with Chinese text it lands somewhere else. The engine's English
+ * ("Expecting 'SQE', … got 'STR'") also names grammar tokens a reader cannot act
+ * on. The spot is what a reader can act on, so the spot is what is drawn, marked
+ * on the reader's own line instead of counted into columns.
+ *
+ * The engine's caret says two different things, and the failure names which:
+ * `got 'STR'` and its like mean a character was refused (the caret sits just
+ * past it), while `got 'EOF'`/`'$end'` mean the line stopped before the parser
+ * was done (the caret is where more was wanted, so the end is the spot).
+ *
+ * Returns `{ line, before, at, after }`: `at` is the character the parser
+ * refused, or empty when the line stopped early, which the caller marks as a gap.
+ */
+function figureSyntaxHint(error, code) {
+  if (!error) return null
+  let message = ''
+  try {
+    message = typeof error === 'string' ? error : String(error.message || '')
+  } catch (ignored) {
+    void ignored
+    return null
+  }
+  const lines = message.split('\n')
+  let lineNumber = 0
+  let at = -1
+  for (let index = 0; index < lines.length; index += 1) {
+    const found = /parse error on line (\d+)/i.exec(lines[index])
+    if (found) {
+      lineNumber = Number(found[1])
+      at = index
+      break
+    }
+  }
+  if (!Number.isInteger(lineNumber) || lineNumber < 1 || at === -1) return null
+  const snippet = Array.from((lines[at + 1] || '').replace(/\s+$/, ''))
+  const caretLine = lines[at + 2] || ''
+  const found = /^[\s-]*\^/.exec(caretLine)
+  if (!found || snippet.length === 0) return null
+  // The reader's own line, not the engine's padded copy of it: tabs stay tabs
+  // and nothing the engine added is presented as something they wrote.
+  const source = typeof code === 'string' ? code.split('\n')[lineNumber - 1] : ''
+  const sourceChars = (source === undefined ? '' : source).replace(/\s+$/, '')
+  const written = Array.from(sourceChars)
+  const kept = written.length > 0 && written.length <= snippet.length ? written : snippet
+  const indent = kept === written ? snippet.length - written.length : 0
+  if (kept.length === 0) return null
+  const caret = Math.max(0, found[0].indexOf('^') - indent)
+  const stopped = /got '([^']*)'/.exec(message)
+  const ranOut = !stopped || stopped[1] === 'EOF' || stopped[1] === '$end'
+  const point = ranOut ? Math.min(caret, kept.length) : Math.max(0, caret - 1)
+  return {
+    line: lineNumber,
+    before: kept.slice(0, point).join(''),
+    at: kept.length > point ? kept[point] : '',
+    after: kept.length > point ? kept.slice(point + 1).join('') : '',
+  }
+}
+
+/**
  * The engine's own words, cut to one line. This is diagnostic material: it goes
  * to the console and to the caller's log, never into the visible sentence.
  */

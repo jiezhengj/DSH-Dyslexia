@@ -15,6 +15,9 @@ const NOTE_CLASS = 'dsh-dyslexia-note'
 const BAR_CLASS = 'dsh-dyslexia-bar'
 const BUTTON_CLASS = 'dsh-dyslexia-button'
 const SOURCE_CLASS = 'dsh-dyslexia-source'
+const HINT_CLASS = 'dsh-dyslexia-hint'
+const HINT_LINE_CLASS = 'dsh-dyslexia-hint-line'
+const HINT_MARK_CLASS = 'dsh-dyslexia-hint-mark'
 
 const FIGURE_CSS = [
   '.dsh-dyslexia-section { display: flex; flex-direction: column; gap: 4px; padding: 4px 0 8px; max-width: 720px; }',
@@ -242,6 +245,30 @@ const FIGURE_CSS = [
   '  border-radius: 6px;',
   '  background: var(--dsw-alias-bg-base);',
   '  border: 1px solid var(--dsw-alias-border-l1);',
+  '}',
+  `.${HINT_CLASS} {`,
+  '  margin: 0 0 6px;',
+  '  padding: 8px;',
+  '  overflow: auto;',
+  '  font-size: 12px;',
+  '  line-height: 18px;',
+  '  border-radius: 6px;',
+  '  white-space: pre;',
+  '  font-family: var(--dsw-font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);',
+  '  background: var(--dsw-alias-bg-base);',
+  '  border: 1px solid var(--dsw-alias-border-l1);',
+  '  color: var(--dsw-alias-label-primary);',
+  '}',
+  `.${HINT_LINE_CLASS} {`,
+  '  color: var(--dsw-alias-label-secondary);',
+  '  font-size: 11px;',
+  '}',
+  `.${HINT_MARK_CLASS} {`,
+  '  border-radius: 2px;',
+  '  box-decoration-break: clone;',
+  '  background: color-mix(in srgb, var(--dsw-alias-state-error-primary) 22%, transparent);',
+  '  text-decoration: underline;',
+  '  text-decoration-color: var(--dsw-alias-state-error-primary);',
   '}',
 ].join('\n')
 

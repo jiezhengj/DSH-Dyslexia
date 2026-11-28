@@ -1025,8 +1025,64 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           expect(brokenNote ? /源码/.test(brokenNote.textContent) : false, 'the reason is a complete sentence', brokenNote ? brokenNote.textContent : '')
           expect(brokenNote ? /Parse error/.test(brokenNote.textContent) === false : false, 'the engine English is not pasted into the sentence')
           expect(broken.stage.textContent.indexOf(BAD) !== -1, 'a broken diagram keeps the host block')
+          // The reader can see where: the line they wrote, with the character the
+          // parser could not use marked. A sentence alone leaves them hunting.
+          const brokenHint = broken.stage.querySelector('.dsh-dyslexia-hint')
+          expect(!!brokenHint, 'a broken diagram points at the line')
+          expect(
+            brokenHint ? /^第 2 行：/m.test(brokenHint.textContent) : false,
+            'the hint names the line in the reader language',
+            brokenHint ? JSON.stringify(brokenHint.textContent.slice(0, 40)) : 'no hint',
+          )
+          expect(
+            brokenHint ? brokenHint.textContent.indexOf('A-->') !== -1 : false,
+            'the hint shows the source line as written',
+            brokenHint ? JSON.stringify(brokenHint.textContent) : 'no hint',
+          )
+          const brokenMark = broken.stage.querySelector('.dsh-dyslexia-hint-mark')
+          expect(!!brokenMark, 'the hint marks the spot')
+          // `A-->` runs out (got 'EOF'), so the spot is the end of the line: a
+          // blank mark says "here, after this". The refused-character case below
+          // is the one that must mark a real character.
+          expect(
+            brokenMark ? brokenMark.textContent.length >= 1 : false,
+            'the mark is drawn, even when the spot is the end of the line',
+            brokenMark ? JSON.stringify(brokenMark.textContent) : 'no mark',
+          )
           broken.root.unmount()
           broken.stage.remove()
+
+          // A quote inside a label is the accident a reader reported: the spot has
+          // to be the quote itself, not a column counted off by one, and not a
+          // line that drifts because Chinese text draws wider than it counts.
+          const quoted = 'flowchart TD\n  A[想给 wu 加"带路径行号复制"] --> B{给谁用}'
+          const quotedView = mount(Layer, { code: quoted, streaming: false, children: hostBlock(quoted) })
+          await tick(80)
+          const quotedMark = quotedView.stage.querySelector('.dsh-dyslexia-hint-mark')
+          expect(!!quotedMark, 'a quote in a label is pointed at')
+          expect(quotedMark ? quotedMark.textContent === '"' : false, 'the marked spot is the quote itself', quotedMark ? JSON.stringify(quotedMark.textContent) : 'no mark')
+          expect(
+            quotedView.stage.textContent.indexOf('Expecting') === -1,
+            'the engine grammar names never reach the reader',
+            JSON.stringify(quotedView.stage.textContent.slice(0, 80)),
+          )
+          quotedView.root.unmount()
+          quotedView.stage.remove()
+
+          // A reader whose line is fine but which ends early gets the end marked,
+          // not a silent sentence: "here, after this" is still a spot.
+          const early = 'flowchart TD\n  A[one] -->'
+          const earlyView = mount(Layer, { code: early, streaming: false, children: hostBlock(early) })
+          await tick(80)
+          const earlyMark = earlyView.stage.querySelector('.dsh-dyslexia-hint-mark')
+          expect(!!earlyMark, 'a line that ends early gets a mark too')
+          expect(
+            earlyMark ? earlyMark.textContent === ' ' : false,
+            'the end of a line is marked as a blank',
+            earlyMark ? JSON.stringify(earlyMark.textContent) : 'no mark',
+          )
+          earlyView.root.unmount()
+          earlyView.stage.remove()
 
           const orphan = mount(Layer, { code: BAD, streaming: false })
           await tick(80)

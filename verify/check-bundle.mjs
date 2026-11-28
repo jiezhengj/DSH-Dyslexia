@@ -1015,6 +1015,7 @@ check('every language carries the same complete sentences', () => {
     'settingLabel',
     'settingSaved',
     'showSource',
+    'syntaxAtLine',
     'syntaxError',
     'zoomIn',
     'zoomOut',
@@ -1025,6 +1026,30 @@ check('every language carries the same complete sentences', () => {
   }
   assert(!source.includes('{{reason}}'), 'the engine reason is pasted into a visible sentence')
   return `${keys.length} keys x 8 languages, no engine text in labels`
+})
+
+check('a syntax error is pointed at, not parroted', () => {
+  const figure = readCode('src/client/figure.js')
+  const view = readCode('src/client/view.js')
+  const labels = readCode('src/client/i18n.js')
+  // The engine's caret counts characters, which drifts on a line with Chinese
+  // text; the spot has to be worked out from the reader's own line instead.
+  assert(/function figureSyntaxHint\(/.test(figure), 'figure.js cannot say where a parse error is')
+  assert(figure.includes('got '), 'figureSyntaxHint ignores whether a character was refused')
+  assert(view.includes('figureSyntaxHint(error, code)'), 'view.js asks for the spot without the source line')
+  assert(view.includes('HINT_MARK_CLASS'), 'view.js does not mark the spot on the line')
+  // The engine's English names grammar tokens; it belongs in the console, never
+  // on screen. `describeFigureError` is the one reader of it, and it feeds the
+  // warning only.
+  assert(
+    !/noteText[^\n]*describe|describeFigureError[^\n]*note/.test(view),
+    'the engine message is pasted into a visible sentence',
+  )
+  // One placeholder, eight languages: a hint that says "line" with no number, or
+  // a language that kept the raw `{{line}}`, is a broken sentence.
+  const withLine = (labels.match(/\n    syntaxAtLine: '[^']*\{\{line\}\}[^']*',/g) || []).length
+  assert(withLine === 8, `${withLine} of 8 languages place the line number in the hint`)
+  return 'spot worked out from the reader line, engine grammar kept in the console'
 })
 
 function sourceFingerprintWith(engine) {
@@ -2268,7 +2293,7 @@ check('the fixture can fail: its contrast helpers are exercised', () => {
 
 /* ---------------------------------------------------------------- report */
 
-const EXPECTED_CHECKS = 80
+const EXPECTED_CHECKS = 81
 if (notices.length + failures.length !== EXPECTED_CHECKS) {
   failures.push(
     `[FAIL] the suite has ${notices.length + failures.length} checks, expected ${EXPECTED_CHECKS}: a check was added or removed without updating this number`,

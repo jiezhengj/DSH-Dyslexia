@@ -170,6 +170,7 @@ function MermaidFenceLayer(props) {
   translateRef.current = translate
   const [status, setStatus] = React.useState('pending')
   const [reasonKind, setReasonKind] = React.useState('other')
+  const [syntaxHint, setSyntaxHint] = React.useState(null)
   const [showSource, setShowSource] = React.useState(false)
   const [copyState, setCopyState] = React.useState('idle')
   const hostRef = React.useRef(null)
@@ -214,6 +215,7 @@ function MermaidFenceLayer(props) {
       host.textContent = ''
       setStatus('failed')
       setReasonKind(figureErrorKind(error))
+      setSyntaxHint(figureErrorKind(error) === 'syntax' ? figureSyntaxHint(error, code) : null)
       if (raw) {
         try {
           console.warn('dsh-dyslexia: diagram not drawn', raw)
@@ -407,6 +409,33 @@ function MermaidFenceLayer(props) {
         ? translate('engineUnavailable')
         : translate('renderFailed')
 
+  // A syntax error owes the reader the spot, not the grammar: their own line,
+  // with the one character the parser could not use marked. The engine's English
+  // token names never reach the picture, and nothing is counted into columns,
+  // which is what would drift on a line with Chinese text.
+  const hint =
+    failed && reasonKind === 'syntax' && syntaxHint
+      ? React.createElement(
+          'pre',
+          { className: HINT_CLASS },
+          React.createElement(
+            'span',
+            { className: HINT_LINE_CLASS },
+            translate('syntaxAtLine', { line: syntaxHint.line }),
+          ),
+          '\n',
+          syntaxHint.before,
+          React.createElement(
+            'span',
+            { className: HINT_MARK_CLASS },
+            // Nothing left to mark means the parser wanted something after the
+            // line: the marked blank says "here, at the end" in any language.
+            syntaxHint.at || ' ',
+          ),
+          syntaxHint.after,
+        )
+      : null
+
   const note = failed
     ? React.createElement('p', { className: NOTE_CLASS }, noteText)
     : null
@@ -416,7 +445,7 @@ function MermaidFenceLayer(props) {
   // message.
   const fallback = failed ? hostBlock(children, code) : null
 
-  return React.createElement(React.Fragment, null, note, figure, actions, source, fallback)
+  return React.createElement(React.Fragment, null, note, hint, figure, actions, source, fallback)
 }
 
 /**

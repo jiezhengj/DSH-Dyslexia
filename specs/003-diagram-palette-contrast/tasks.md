@@ -338,3 +338,11 @@ Task: "index.js CAPABILITY_TEXT 追加一句"      # T017
 - [x] T046 能力说明加上"引号须包住整段标签"，预算 95 → 100 词 per FR-011
 
   实现：`index.js` 的 `CAPABILITY_TEXT` 第四句改为 `Shapes set colour: `([start])`, `{decision}`, `[(data)]`; `classDef`/`style` win; a quote must wrap the whole label.`（整段 100 词，仍是 001 的四句 + 003 的一句）；`verify/check-bundle.mjs` 的词数上限 95 → 100；`contracts/host-prompt.md` 的逐字块与说明同步，并补一条"标签里要引号怎么写"的解释（`A["他说#quot;好#quot;"]`、`A[他说「好」]` 可以，裸 `"` 不行）。检查：静态 80 条全绿，仍断言"五句、001 四句逐字在前"。
+
+## Phase 15: 语法错误指出位置（用户要求补）
+
+读者看到"图里的语法有误，已改为显示源码"之后仍要找半天：引擎的英文报错（`Expecting 'SQE', … got 'STR'`）只进控制台，屏幕上没有位置。用户要求把位置显示出来。做法不是搬运引擎英文，而是画出读者自己那一行：
+
+- [x] T047 回退提示里画出出错的行号与该行源码，并标出解析器拒绝的那个字符 per FR-002、SC-008
+
+  实现：`src/client/figure.js` 新增 `figureSyntaxHint(error, code)`——从引擎报文的 `Parse error on line N:`、缩进代码行、`^` 行与 `got '…'` 取位置；**不用引擎的字符列**（中文按单字符计数会错位），而是按 `got` 区分两种情况：拒绝某字符（`STR` 等）时标该字符本身，行不够长（`EOF`/`$end`）时标行尾空白；行文本取读者写的 `code.split('\n')[N-1]`（去掉引擎加的缩进），引擎英文不进屏幕。`src/client/view.js` 新增 `syntaxHint` 状态与 `.dsh-dyslexia-hint`（`pre`，等宽、`white-space: pre`、可横向滚动）+ `.dsh-dyslexia-hint-line`（行号，`label-secondary`）+ `.dsh-dyslexia-hint-mark`（被拒字符：`state-error-primary` 的 22% 底色 + 下划线）；`i18n.js` 八语言新增 `syntaxAtLine`（`Line {{line}}:` / `第 {{line}} 行：` / …）。检查：夹具新增 10 条（有提示、行号是本语言、显示原文行、有标记、标记是引号本身、引擎英文不上屏、行尾空白标记），浏览器检查 540 → **550**；`verify/check-bundle.mjs` 新增 `a syntax error is pointed at, not parroted`（函数存在、`got` 分支存在、view 传了源码、标记类存在、八语言都带 `{{line}}`），静态 80 → **81**。

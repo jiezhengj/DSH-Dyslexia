@@ -72,3 +72,10 @@
 
 发布记录：0.3.0 曾从本机 `npm publish`（无 provenance、无 git 提交），已被 deprecate 指向 0.3.1；0.3.1 走仓库既有流程——提交 → 打标签 `v0.3.1` → 推送 → `.github/workflows/publish.yml` 在 CI 里以 OIDC 发布（`npm view @jiezhengj/dsh-dyslexia@0.3.1 dist.attestations` 可见）。
 - `preview.png` —— `docs/preview.svg` 的渲染截图（7649 chars，drawing 529x140），用真实宿主令牌复算后的预览图赏，五类角色同色系。
+
+# 语法错误的位置提示（0.3.5）
+
+| 文件 | 说明 |
+| --- | --- |
+| `syntax-hint.png` | 语法错误的回退提示：行号 + 读者自己那一行 + 被拒字符的标记（浅/深并排） |
+| `syntax-hint.html` | 生成上面截图的页面；用 `src/client/styles.js` 的真实样式与 `verify/host-tokens.json` 的真实令牌 |
