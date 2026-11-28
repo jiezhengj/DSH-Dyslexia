@@ -1182,7 +1182,14 @@ check('every drawing the engine swaps in is named again', () => {
   assert(view.includes('MutationObserver'), 'a swapped drawing node is not watched for')
   assert(/watcher\.observe\(host, \{ childList: true \}\)/.test(view), 'the watcher does not watch the drawing subtree')
   assert(/labelFigure\(host, translateRef\.current\)/.test(view), 'a swapped drawing is not re-named')
-  assert(!/new ResizeObserver/.test(view), 'the plugin still drives its own re-layout instead of leaving it to the engine')
+  // A chart is laid out for the width it is told, and the engine only tells itself
+  // about a resize through a frame the harness' virtual clock never delivers: the
+  // width is handed over here, and a frame that changes width re-asks the engine
+  // to draw at the new size. That is a second entry into the engine's own update,
+  // not a second layout path: nothing is re-labelled or re-drawn by hand.
+  assert(view.includes('current.update(code, figureOptions(doc'), 'a width change does not ask the engine to draw at the new size')
+  assert(view.includes('new ResizeObserver('), 'the frame width is not watched, so a widened column keeps the old chart')
+  assert(/MAX_CHART_WIDTH|figureWidth\(host\)/.test(view), 'the width handed to the engine is not measured from the frame')
   assert(!/requestAnimationFrame/.test(view), 'the plugin still schedules frames for a re-layout it does not own')
   assert(view.includes('const ZOOM_BUTTONS'), 'the engine zoom controls are never renamed')
   const labels = readCode('src/client/i18n.js')

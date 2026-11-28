@@ -79,3 +79,5 @@
 | --- | --- |
 | `syntax-hint.png` | 语法错误的回退提示：行号 + 读者自己那一行 + 被拒字符的标记（浅/深并排） |
 | `syntax-hint.html` | 生成上面截图的页面；用 `src/client/styles.js` 的真实样式与 `verify/host-tokens.json` 的真实令牌 |
+| `chart-width.png` | 图表按实际宽度绘制：同一张 13 类目 `xychart` 在 700px（引擎默认，只画出 7 个交替类目）与 1200px（13 个全部画出）框架里的对比，浅/深各一，外加“框架变宽后重画”的一格 |
+| `chart-width.html` | 生成上面截图的页面；用 `src/client/styles.js` 的真实样式、`verify/host-tokens.json` 的真实令牌、引擎 1.13.0 |

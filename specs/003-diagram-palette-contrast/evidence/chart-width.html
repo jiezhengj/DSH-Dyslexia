@@ -1,0 +1,347 @@
+<!doctype html><html><head><meta charset="utf-8">
+<title>003 evidence: a chart drawn for the width it is given</title>
+<style>
+:root {
+  --dsw-alias-bg-base: rgb(255, 255, 255);
+  --dsw-alias-bg-layer-1: rgb(255, 255, 255);
+  --dsw-alias-bg-layer-2: rgb(255, 255, 255);
+  --dsw-alias-border-l1: rgba(0, 0, 0, 0.04);
+  --dsw-alias-border-l2: rgba(0, 0, 0, 0.1);
+  --dsw-alias-border-l3: rgba(0, 0, 0, 0.12);
+  --dsw-alias-brand-primary: rgb(15, 17, 21);
+  --dsw-alias-label-primary: rgb(15, 17, 21);
+  --dsw-alias-label-primary-foreground: rgb(255, 255, 255);
+  --dsw-alias-label-secondary: rgb(97, 102, 107);
+  --dsw-alias-label-tertiary: rgb(129, 133, 140);
+  --dsw-alias-link: rgb(65, 118, 230);
+  --dsw-alias-chart-messages: rgb(77, 147, 248);
+  --dsw-alias-chart-system: rgb(173, 178, 184);
+  --dsw-alias-chart-tools: rgb(167, 139, 250);
+  --dsw-alias-switch-thumb: rgb(255, 255, 255);
+  --dsw-alias-state-error-primary: rgb(236, 19, 19);
+  --dsw-static-amber-500: rgb(245, 158, 11);
+  --dsw-static-blue-400: rgb(96, 165, 250);
+  --dsw-static-blue-450: rgb(77, 147, 248);
+  --dsw-static-deepseek-400: rgb(122, 170, 255);
+  --dsw-static-deepseek-500: rgb(65, 118, 230);
+  --dsw-static-green-500: rgb(34, 197, 94);
+  --dsw-static-neutral-bluish-50: rgb(249, 250, 251);
+  --dsw-static-neutral-bluish-400: rgb(173, 178, 184);
+  --dsw-static-neutral-bluish-600: rgb(129, 133, 140);
+  --dsw-static-neutral-bluish-1000: rgb(15, 17, 21);
+  --dsw-static-red-400: rgb(242, 90, 90);
+  --dsw-static-red-500: rgb(239, 68, 68);
+  --dsw-static-violet-400: rgb(167, 139, 250);
+}
+.dark-tokens {
+  --dsw-alias-bg-base: rgb(21, 21, 23);
+  --dsw-alias-bg-layer-1: rgb(35, 35, 36);
+  --dsw-alias-bg-layer-2: rgb(44, 44, 46);
+  --dsw-alias-border-l1: rgba(255, 255, 255, 0.06);
+  --dsw-alias-border-l2: rgba(255, 255, 255, 0.12);
+  --dsw-alias-border-l3: rgba(255, 255, 255, 0.16);
+  --dsw-alias-brand-primary: rgb(249, 250, 251);
+  --dsw-alias-label-primary: rgb(249, 250, 251);
+  --dsw-alias-label-primary-foreground: rgb(15, 17, 21);
+  --dsw-alias-label-secondary: rgb(207, 211, 214);
+  --dsw-alias-label-tertiary: rgb(173, 178, 184);
+  --dsw-alias-link: rgb(122, 170, 255);
+  --dsw-alias-chart-messages: rgb(77, 147, 248);
+  --dsw-alias-chart-system: rgb(173, 178, 184);
+  --dsw-alias-chart-tools: rgb(167, 139, 250);
+  --dsw-alias-switch-thumb: rgb(173, 178, 184);
+  --dsw-alias-state-error-primary: rgb(242, 90, 90);
+  --dsw-static-amber-500: rgb(245, 158, 11);
+  --dsw-static-blue-400: rgb(96, 165, 250);
+  --dsw-static-blue-450: rgb(77, 147, 248);
+  --dsw-static-deepseek-400: rgb(122, 170, 255);
+  --dsw-static-deepseek-500: rgb(65, 118, 230);
+  --dsw-static-green-500: rgb(34, 197, 94);
+  --dsw-static-neutral-bluish-50: rgb(249, 250, 251);
+  --dsw-static-neutral-bluish-400: rgb(173, 178, 184);
+  --dsw-static-neutral-bluish-600: rgb(129, 133, 140);
+  --dsw-static-neutral-bluish-1000: rgb(15, 17, 21);
+  --dsw-static-red-400: rgb(242, 90, 90);
+  --dsw-static-red-500: rgb(239, 68, 68);
+  --dsw-static-violet-400: rgb(167, 139, 250);
+  background: var(--dsw-alias-bg-base);
+  color: var(--dsw-alias-label-primary);
+}
+body { margin: 0; padding: 16px; font: 13px/1.5 system-ui, sans-serif; color: var(--dsw-alias-label-primary); background: var(--dsw-alias-bg-base); }
+h1 { font-size: 15px; margin: 0 0 4px; }
+p.lead { margin: 0 0 14px; color: var(--dsw-alias-label-secondary); }
+section { margin: 0 0 18px; padding: 12px; border: 1px solid var(--dsw-alias-border-l2); border-radius: 8px; }
+section h2 { font-size: 13px; margin: 0 0 10px; font-weight: 600; }
+.stage { padding: 8px; border: 1px solid var(--dsw-alias-border-l1); border-radius: 8px; background: var(--dsw-alias-bg-layer-1); overflow: auto; }
+pre#report { white-space: pre-wrap; font: 11px/1.45 ui-monospace, monospace; }
+.dsh-dyslexia-section { display: flex; flex-direction: column; gap: 4px; padding: 4px 0 8px; max-width: 720px; }
+.dsh-dyslexia-section-title { margin: 0; font-size: 16px; line-height: 24px; font-weight: 600; color: var(--dsw-alias-label-primary); }
+.dsh-dyslexia-section-intro { margin: 0 0 8px; font-size: 13px; line-height: 20px; color: var(--dsw-alias-label-secondary); }
+.dsh-dyslexia-row { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 8px 12px; padding: 12px 0; }
+.dsh-dyslexia-row-text { flex: 1 1 220px; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.dsh-dyslexia-row-label { font-size: 14px; line-height: 22px; color: var(--dsw-alias-label-primary); }
+.dsh-dyslexia-row-hint { font-size: 12px; line-height: 20px; color: var(--dsw-alias-label-secondary); }
+.dsh-dyslexia-switch { position: relative; flex: 0 0 auto; box-sizing: border-box; width: 36px; height: 20px; margin: 2px 0 0 0; padding: 2px; border: 0; border-radius: 999px; background: var(--dsw-alias-border-l3); cursor: pointer; transition: background 120ms ease; }
+.dsh-dyslexia-switch[aria-checked="true"] { background: var(--dsw-alias-brand-primary); }
+.dsh-dyslexia-switch-knob { display: block; width: 16px; height: 16px; border-radius: 50%; background: var(--dsw-alias-switch-thumb); transition: transform 120ms ease; }
+.dsh-dyslexia-switch[aria-checked="false"] .dsh-dyslexia-switch-knob { background: var(--dsw-alias-switch-thumb); }
+.dsh-dyslexia-switch[aria-checked="true"] .dsh-dyslexia-switch-knob { background: var(--dsw-alias-label-primary-foreground); transform: translateX(16px); }
+.dsh-dyslexia-switch:focus-visible { outline: var(--dsw-focus-ring-width, 2px) solid var(--dsw-focus-ring-color, var(--dsw-alias-brand-primary)); outline-offset: 2px; }
+.dsh-dyslexia-row-state { flex: 1 1 100%; font-size: 12px; line-height: 20px; color: var(--dsw-alias-label-secondary); }
+.dsh-dyslexia-row-state[data-failed="true"] { color: var(--dsw-alias-state-error-primary); }
+.dsh-dyslexia-group {
+  max-width: 100%;
+  min-width: 0;
+}
+.dsh-dyslexia-figure {
+  --pele-bg: var(--dsw-alias-bg-layer-1, #fff);
+  --pele-fg: var(--dsw-alias-label-primary, #1f1f1f);
+  --pele-muted: var(--dsw-alias-label-secondary, #6e6e6e);
+  --pele-line: var(--dsw-alias-label-tertiary, #1f1f1f);
+  --pele-surface: color-mix(in srgb, var(--dsw-alias-label-primary, #1f1f1f) 4%, var(--pele-bg, #fff));
+  --pele-surface-alt: color-mix(in srgb, var(--dsw-alias-label-primary, #1f1f1f) 20%, var(--pele-bg, #fff));
+  --pele-border: var(--dsw-alias-label-tertiary, #8a8a8a);
+  --pele-accent: color-mix(in srgb, var(--dsw-alias-link, #5b7bd5) 55%, var(--pele-fg, #1f1f1f));
+  --pele-critical: var(--dsw-alias-state-error-primary, #e45756);
+  --pele-fg-on-light: var(--dsw-static-neutral-bluish-1000, #0f1115);
+  --pele-fg-on-dark: var(--dsw-static-neutral-bluish-50, #f9fafb);
+  --pele-font: inherit;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 8px;
+  border: 1px solid var(--dsw-alias-border-l1, rgba(0, 0, 0, 0.04));
+  border-radius: 8px;
+  background: var(--dsw-alias-bg-layer-1, #fff);
+  overflow: auto;
+}
+.dsh-dyslexia-figure {
+  --dx-hue-start-end: var(--dsw-static-green-500, #22c55e);
+  --dx-hue-decision: var(--dsw-static-amber-500, #f59e0b);
+  --dx-hue-data: var(--dsw-static-violet-400, #a78bfa);
+  --dx-hue-io: var(--dsw-alias-link, #5b7bd5);
+  --dx-hue-process: var(--dsw-static-neutral-bluish-400, #adb2b8);
+  --pele-series-1: color-mix(in srgb, var(--dsw-alias-chart-messages, #4c78a8) 55%, var(--pele-fg, #1f1f1f));
+  --pele-series-2: color-mix(in srgb, var(--dsw-static-green-500, #54a24b) 55%, var(--pele-fg, #1f1f1f));
+  --pele-series-3: color-mix(in srgb, var(--dsw-static-blue-400, #f58518) 55%, var(--pele-fg, #1f1f1f));
+  --pele-series-4: color-mix(in srgb, var(--dsw-static-amber-500, #e45756) 55%, var(--pele-fg, #1f1f1f));
+  --pele-series-5: color-mix(in srgb, var(--dsw-static-deepseek-400, #72b7b2) 55%, var(--pele-fg, #1f1f1f));
+  --pele-series-6: color-mix(in srgb, var(--dsw-static-red-500, #eeca3b) 55%, var(--pele-fg, #1f1f1f));
+  --pele-series-7: color-mix(in srgb, var(--dsw-static-violet-400, #b279a2) 55%, var(--pele-fg, #1f1f1f));
+  --pele-series-8: color-mix(in srgb, var(--dsw-static-neutral-bluish-400, #9d755d) 55%, var(--pele-fg, #1f1f1f));
+}
+.dsh-dyslexia-figure .pele-shape-stadium  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-circle  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-odd  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-sm-circ  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-fr-circ  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-dbl-circ  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-cross-circ  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-f-circ  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-state-start  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-state-end  :is(rect, polygon, circle, path, ellipse, polyline)
+{
+fill: var(--pele-surface);
+fill: color-mix(in srgb, var(--dx-hue-start-end) 18%, var(--pele-bg));
+stroke: var(--pele-border);
+stroke: color-mix(in srgb, var(--dx-hue-start-end) 60%, var(--pele-fg));
+}
+.dsh-dyslexia-figure .pele-shape-diam  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-hex  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-bang  :is(rect, polygon, circle, path, ellipse, polyline)
+{
+fill: var(--pele-surface);
+fill: color-mix(in srgb, var(--dx-hue-decision) 18%, var(--pele-bg));
+stroke: var(--pele-border);
+stroke: color-mix(in srgb, var(--dx-hue-decision) 60%, var(--pele-fg));
+}
+.dsh-dyslexia-figure .pele-shape-cyl  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-datastore  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-folder  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-bucket  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-doc  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-docs  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-lin-doc  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-tag-doc  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-tag-rect  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-st-rect  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-win-pane  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-state  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-class  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-entity  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-actor-participant  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-card  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-requirement  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-service  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-wardley-component  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-node.pele-task  :is(rect, polygon, circle, path, ellipse, polyline)
+{
+fill: var(--pele-surface);
+fill: color-mix(in srgb, var(--dx-hue-data) 18%, var(--pele-bg));
+stroke: var(--pele-border);
+stroke: color-mix(in srgb, var(--dx-hue-data) 60%, var(--pele-fg));
+}
+.dsh-dyslexia-figure .pele-shape-lean-r  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-lean-l  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-trap-b  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-trap-t  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-curv-trap  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-person  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-browser  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-cloud  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-c4-person  :is(rect, polygon, circle, path, ellipse, polyline)
+{
+fill: var(--pele-surface);
+fill: color-mix(in srgb, var(--dx-hue-io) 18%, var(--pele-bg));
+stroke: var(--pele-border);
+stroke: color-mix(in srgb, var(--dx-hue-io) 60%, var(--pele-fg));
+}
+.dsh-dyslexia-figure .pele-shape-rect  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-rounded  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-fr-rect  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-notch-rect  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-lin-rect  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-console  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-delay  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-div-rect  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-tri  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-flip-tri  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-sl-rect  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-bow-rect  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-brace  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-brace-r  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-braces  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-bolt  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-fork  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-hourglass  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-h-cyl  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-lin-cyl  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-notch-pent  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-flag  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-shape-text  :is(rect, polygon, circle, path, ellipse, polyline),
+.dsh-dyslexia-figure .pele-c4-system  :is(rect, polygon, circle, path, ellipse, polyline)
+{
+fill: var(--pele-surface);
+fill: color-mix(in srgb, var(--dx-hue-process) 18%, var(--pele-bg));
+stroke: var(--pele-border);
+stroke: color-mix(in srgb, var(--dx-hue-process) 60%, var(--pele-fg));
+}
+.dsh-dyslexia-figure svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+.dsh-dyslexia-figure text {
+  font-family: inherit;
+}
+.dsh-dyslexia-note {
+  margin: 0 0 6px;
+  font-size: 12px;
+  color: var(--dsw-alias-label-secondary);
+}
+.dsh-dyslexia-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+.dsh-dyslexia-button {
+  font: inherit;
+  font-size: 12px;
+  line-height: 18px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--dsw-alias-border-l2);
+  background: var(--dsw-alias-bg-layer-2);
+  color: var(--dsw-alias-label-primary);
+  cursor: pointer;
+}
+.dsh-dyslexia-button:hover { border-color: var(--dsw-alias-border-l1); }
+.dsh-dyslexia-button:focus-visible {
+  outline: 2px solid var(--dsw-alias-brand-primary);
+  outline-offset: 1px;
+}
+.dsh-dyslexia-status {
+  font: inherit;
+  font-size: 12px;
+  line-height: 20px;
+  white-space: nowrap;
+  color: var(--dsw-alias-label-secondary);
+}
+.dsh-dyslexia-source {
+  margin: 6px 0 0;
+  padding: 8px;
+  max-height: 320px;
+  overflow: auto;
+  font-size: 12px;
+  border-radius: 6px;
+  background: var(--dsw-alias-bg-base);
+  border: 1px solid var(--dsw-alias-border-l1);
+}
+.dsh-dyslexia-hint {
+  margin: 0 0 6px;
+  padding: 8px;
+  overflow: auto;
+  font-size: 12px;
+  line-height: 18px;
+  border-radius: 6px;
+  white-space: pre;
+  font-family: var(--dsw-font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  background: var(--dsw-alias-bg-base);
+  border: 1px solid var(--dsw-alias-border-l1);
+  color: var(--dsw-alias-label-primary);
+}
+.dsh-dyslexia-hint-line {
+  color: var(--dsw-alias-label-secondary);
+  font-size: 11px;
+}
+.dsh-dyslexia-hint-mark {
+  border-radius: 2px;
+  box-decoration-break: clone;
+  background: color-mix(in srgb, var(--dsw-alias-state-error-primary) 22%, transparent);
+  text-decoration: underline;
+  text-decoration-color: var(--dsw-alias-state-error-primary);
+}
+</style></head><body>
+<h1>A chart, drawn for the width it is given</h1>
+<p class="lead">The reader's own <code>xychart</code> at three column widths, light and dark, plus the re-draw the plugin performs when its frame changes width. Tokens from <code>verify/host-tokens.json</code> (0.2.2-rc.5), stylesheet from <code>src/client/styles.js</code>, engine 1.13.0.</p>
+<section class="light-tokens"><h2>Light · 700px column (the engine's own default)</h2><div class="stage" id="w700" style="width:700px"></div></section>
+<section class="light-tokens"><h2>Light · 1200px column</h2><div class="stage" id="w1200" style="width:1200px"></div></section>
+<section class="dark-tokens"><h2>Dark · 1200px column</h2><div class="stage" id="wdark" style="width:1200px"></div></section>
+<section class="light-tokens"><h2>Light · a frame that widens after the picture is drawn</h2><p class="lead" style="margin:0 0 8px">Starts at 420px, then the plugin measures the wider frame and asks the engine to draw again — the picture is not stretched by CSS.</p><div class="stage" id="wlive" style="width:420px"></div></section>
+<pre id="report"></pre>
+<script src="../../../vendor/pele/pele.global.js"></script>
+<script>
+const CODE = "xychart\n  x-axis [\"交班\",\"会员档案\",\"桌台\",\"商品\",\"会员注册\",\"充值\",\"团购\",\"助教\",\"发卡\",\"优惠券\",\"寄存\",\"计分板\",\"超会\"]\n  y-axis \"渗透率 %\" 0 --> 100\n  bar [99.9,99.4,98.7,96.6,88,85.8,85.6,71.9,36.4,15.4,7.5,3.8,1.8]"
+const out = []
+const FIGURE = 'dsh-dyslexia-figure'
+const NAMED = /交班|会员档案|会员注册|计分板|超会/
+const named = (box) => Array.prototype.slice.call(box.querySelectorAll('text')).map((t) => t.textContent.trim()).filter((t) => NAMED.test(t))
+const options = (width) => ({ fontSize: 14, padding: 8, responsive: true, config: { xyChart: { width: width }, gantt: { useWidth: width } } })
+const room = (stage) => Math.round(stage.firstChild.clientWidth - 16)
+function draw(id) {
+  const stage = document.getElementById(id)
+  const box = document.createElement('div')
+  box.className = FIGURE
+  stage.appendChild(box)
+  const width = Math.round(box.clientWidth - 16)
+  const mounted = pele.mount(box, CODE, options(width))
+  const svg = box.querySelector('svg')
+  const cats = named(box)
+  out.push(id + ': column ' + width + 'px, svg ' + (svg ? svg.getAttribute('width') : 'none') + ', ' + cats.length + ' of 13 labels (' + cats.join(' ') + ')' + (mounted.error ? ' ERROR ' + String(mounted.error.message).split('\n')[0] : ''))
+  return { stage, box, mounted }
+}
+const wide = draw('w700')
+draw('w1200')
+draw('wdark')
+const live = draw('wlive')
+live.stage.style.width = '1200px'
+// Force the new width to be laid out before measuring, the way a real resize
+// arrives as a frame after the style change.
+void live.stage.offsetWidth
+const wider = Math.round(live.box.clientWidth - 16)
+live.mounted.update(CODE, options(wider))
+const liveSvg = live.box.querySelector('svg')
+const liveCats = named(live.box)
+out.push('wlive widened: column 402px -> ' + wider + 'px, svg ' + (liveSvg ? liveSvg.getAttribute('width') : 'none') + ', ' + liveCats.length + ' of 13 labels (' + liveCats.join(' ') + ')')
+document.getElementById('report').textContent = out.join('\n')
+</script></body></html>

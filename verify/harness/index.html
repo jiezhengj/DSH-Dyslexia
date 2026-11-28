@@ -1413,6 +1413,63 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           expect(figureBox !== null && figureBox.boxSizing === 'border-box', 'the picture box counts its own padding', figureBox ? figureBox.boxSizing : 'no box')
           expect(figureBox !== null && figureBox.overflowX === 'auto', 'a wide picture scrolls inside its own box', figureBox ? figureBox.overflowX : 'no box')
 
+          /* ----------------------------------------------------- chart width */
+          // A chart is laid out for a width fixed at parse time, so a column that
+          // is wider than the engine's default would leave the chart sitting in a
+          // narrow strip, and a bar chart with many categories would drop labels
+          // that do not fit. Both are checked at the drawing's own width, not at
+          // the shrunk one CSS would give it.
+          const CHART = [
+            'xychart',
+            '  x-axis ["交班","会员档案","桌台","商品","会员注册","充值","团购","助教","发卡","优惠券","寄存","计分板","超会"]',
+            '  y-axis "ratio" 0 --> 100',
+            '  bar [99.9, 99.4, 98.7, 96.6, 88, 85.8, 85.6, 71.9, 36.4, 15.4, 7.5, 3.8, 1.8]',
+          ].join('\n')
+          const CHART_CATEGORIES = ['交班', '会员档案', '桌台', '商品', '会员注册', '充值', '团购', '助教', '发卡', '优惠券', '寄存', '计分板', '超会']
+          const chart = mount(Layer, { code: CHART, streaming: false, children: hostBlock(CHART) })
+          chart.stage.style.width = '900px'
+          await tick(200)
+          const chartBox = chart.stage.querySelector('.dsh-dyslexia-figure')
+          const chartSvg = chartBox ? chartBox.querySelector('svg') : null
+          const drawnWidth = chartSvg ? Number(chartSvg.getAttribute('width')) : 0
+          const room = chartBox ? Math.round(chartBox.clientWidth - 16) : 0
+          expect(
+            drawnWidth > 700 && Math.abs(drawnWidth - room) <= 8,
+            'a chart is drawn for the room it has, not for a fixed 700px',
+            drawnWidth + '/' + room,
+          )
+          const namedCategories = (node) => {
+            const box = node.querySelector('.dsh-dyslexia-figure')
+            if (!box) return []
+            return Array.prototype.slice
+              .call(box.querySelectorAll('text'))
+              .map((text) => text.textContent.trim())
+              .filter((text) => CHART_CATEGORIES.indexOf(text) !== -1)
+          }
+          expect(namedCategories(chart.stage).length === CHART_CATEGORIES.length, 'every category is named under its bar', String(namedCategories(chart.stage).length))
+          chart.root.unmount()
+          chart.stage.remove()
+          // The same source in a narrower column is drawn narrower and, when the
+          // labels no longer fit, the engine lets some of them go: that is the
+          // engine's own behaviour, and what matters here is that the column, not
+          // a constant, decided the width. The redraw on a live resize is exercised
+          // separately (see evidence/chart-width.png): a ResizeObserver callback is
+          // not delivered under the virtual clock this harness runs on.
+          const narrowChart = mount(Layer, { code: CHART, streaming: false, children: hostBlock(CHART) })
+          narrowChart.stage.style.width = '420px'
+          await tick(200)
+          const narrowBox = narrowChart.stage.querySelector('.dsh-dyslexia-figure')
+          const narrowSvg = narrowBox ? narrowBox.querySelector('svg') : null
+          const narrowWidth = narrowSvg ? Number(narrowSvg.getAttribute('width')) : 0
+          const narrowRoom = narrowBox ? Math.round(narrowBox.clientWidth - 16) : 0
+          expect(
+            narrowWidth > 0 && Math.abs(narrowWidth - narrowRoom) <= 8,
+            'a narrow column gets a chart drawn for that column',
+            narrowWidth + '/' + narrowRoom,
+          )
+          narrowChart.root.unmount()
+          narrowChart.stage.remove()
+
           /* --------------------------------------------------------- theme */
           const themed = mount(Layer, { code: CODE, streaming: false, children: hostBlock(CODE) })
           await tick(90)

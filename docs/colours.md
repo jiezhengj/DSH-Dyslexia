@@ -67,3 +67,11 @@ stateDiagram-v2
 ## 数字从哪来
 
 上表由 `verify/host-tokens.json`（宿主 0.2.2-rc.5）里的真实令牌算出，算法与 `src/client/styles.js` 的 `color-mix()` 相同；改主题、改宿主版本后，用 `node scripts/extract-host-tokens.mjs` 刷新快照，再用 `node scripts/build-evidence.mjs` 重新生成实测页 `specs/003-diagram-palette-contrast/evidence/shipped.html`。
+
+## 图的宽度
+
+柱状图（`xychart`）和甘特图按**栏目实际可用的宽度**绘制：宽窗口就画宽图，栏变宽变窄时会重画一次，不是把旧图拉伸。其它图种本来就按内容自适应，只会在超出栏目时被缩到栏宽以内。
+
+所以一张 13 个类目的柱状图在宽窗口里会把 13 个类目名都画在柱脚下；窗口太窄放不下时，引擎会抽掉一部分类目名，而不是让它们互相压住。
+
+作者不需要在代码里写宽度：插件会把框架的宽度交给引擎（`config.xyChart.width` / `config.gantt.useWidth`）。

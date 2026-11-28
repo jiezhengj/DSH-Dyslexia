@@ -1,4 +1,4 @@
-/*! @jiezhengj/dsh-dyslexia 0.3.5 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:0be05a60e62838d0a6cb17bbdae704d1 */
+/*! @jiezhengj/dsh-dyslexia 0.3.6 | MIT | bundles Pele 1.13.0 (MIT, see THIRD-PARTY-NOTICES.md) | sources sha256:22db825dbaf8ba5a63d5dece1e27078e */
 ;(function () {
   function reportLoadFailure(scope, error) {
     try { console.error('dsh-dyslexia: ' + scope, error) } catch (_error) {}
@@ -776,6 +776,53 @@ const FIGURE_LIMITS = {
 
 const ENGINE_UNAVAILABLE = 'engine-unavailable'
 
+/**
+ * The width the picture may draw into.
+ *
+ * The engine lays most diagram types out for their own content and lets CSS
+ * shrink the result, but a chart and a gantt are laid out for a width fixed at
+ * parse time (700 and 800 by default): on a wide window the chart sits in a
+ * narrow column, and on a bar chart with many categories the engine then drops
+ * axis labels that no longer fit. Handing the engine the room it actually has is
+ * what makes the chart use the window, and what keeps the labels a reader needs
+ * to read the bars.
+ *
+ * Measured from the host's content box: the frame carries the padding, so the
+ * padding is not room the drawing can use. A width of zero means the host is not
+ * laid out yet; the caller then passes nothing, the engine picks, and the resize
+ * watcher draws again once there is room.
+ */
+function figureWidth(host) {
+  try {
+    if (!host || typeof host.clientWidth !== 'number' || host.clientWidth <= 0) return 0
+    const doc = host.ownerDocument
+    let styles = null
+    try {
+      styles = doc ? doc.defaultView.getComputedStyle(host) : null
+    } catch (error) {
+      void error
+    }
+    const inset = styles
+      ? (parseFloat(styles.paddingLeft) || 0) + (parseFloat(styles.paddingRight) || 0)
+      : 0
+    const width = Math.round(host.clientWidth - inset)
+    return Number.isFinite(width) && width > 0 ? width : 0
+  } catch (error) {
+    void error
+  }
+  return 0
+}
+
+/**
+ * The width a chart needs to be told. A type that does not read `config` is left
+ * alone by it, so the width is offered to every draw instead of guessed from the
+ * source text: guessing would mean parsing the diagram twice.
+ */
+function figureChartConfig(width) {
+  if (!Number.isFinite(width) || width <= 0) return null
+  return { xyChart: { width: width }, gantt: { useWidth: width } }
+}
+
 function figureFontSize(doc) {
   try {
     const value = parseFloat(doc.defaultView.getComputedStyle(doc.body).fontSize)
@@ -786,7 +833,7 @@ function figureFontSize(doc) {
   return 14
 }
 
-function figureOptions(doc, labels) {
+function figureOptions(doc, labels, width) {
   const options = {
     autoDirection: true,
     directionBreakpoint: 640,
@@ -796,6 +843,8 @@ function figureOptions(doc, labels) {
     zoom: { controls: true, maxScale: 4, labels },
     ...FIGURE_LIMITS,
   }
+  const config = figureChartConfig(width)
+  if (config !== null) options.config = config
   return options
 }
 
@@ -809,7 +858,7 @@ function mountFigure(host, code, doc, labels) {
     missing.code = ENGINE_UNAVAILABLE
     throw missing
   }
-  return pele.mount(host, code, figureOptions(doc, labels))
+  return pele.mount(host, code, figureOptions(doc, labels, figureWidth(host)))
 }
 
 /** `syntax`, `unavailable` or `other`: which sentence the reader should see. */
@@ -1088,9 +1137,18 @@ function MermaidFenceLayer(props) {
   const hostRef = React.useRef(null)
   const mountedRef = React.useRef(null)
   const watcherRef = React.useRef(null)
+  const resizeRef = React.useRef(null)
   const copiedTimerRef = React.useRef(null)
 
   const teardown = React.useCallback(() => {
+    if (resizeRef.current !== null) {
+      try {
+        resizeRef.current.disconnect()
+      } catch (error) {
+        void error
+      }
+      resizeRef.current = null
+    }
     if (watcherRef.current !== null) {
       try {
         watcherRef.current.disconnect()
@@ -1136,6 +1194,54 @@ function MermaidFenceLayer(props) {
         }
       }
     }
+    /**
+     * A chart is laid out for the width it is told, so a widened window needs a
+     * new layout, not a bigger picture: the engine is asked to draw again at the
+     * room it now has. A window that is dragged narrower is the same story, and a
+     * frame that changes width without the window changing (the conversation
+     * column next to a sidebar) is exactly why this watches the frame.
+     *
+     * The threshold keeps a dragged window from re-parsing the source for every
+     * pixel: below it the difference is not visible, above it the picture is.
+     */
+    const watchWidth = () => {
+      if (typeof ResizeObserver !== 'function') return
+      const measure = () => {
+        try {
+          return figureWidth(host)
+        } catch (error) {
+          void error
+          return 0
+        }
+      }
+      let last = measure()
+      let observer = null
+      try {
+        observer = new ResizeObserver(() => {
+          const next = measure()
+          if (next <= 0 || Math.abs(next - last) < 16) return
+          last = next
+          const current = mountedRef.current
+          if (!current || typeof current.update !== 'function') return
+          const t = translateRef.current
+          try {
+            current.update(code, figureOptions(doc, {
+              reset: t('resetZoom'),
+              zoomIn: t('zoomIn'),
+              zoomOut: t('zoomOut'),
+            }, next))
+          } catch (error) {
+            void error
+          }
+        })
+        observer.observe(host)
+      } catch (error) {
+        void error
+        return
+      }
+      resizeRef.current = observer
+    }
+
     let mounted = null
     try {
       mounted = mountFigure(host, code, doc, labels)
@@ -1156,6 +1262,7 @@ function MermaidFenceLayer(props) {
       return undefined
     }
     mountedRef.current = mounted
+    watchWidth()
     setStatus('rendered')
     // The picture is the image; the box around it also holds the engine's own
     // zoom buttons, so the box is a group and only the drawing itself carries

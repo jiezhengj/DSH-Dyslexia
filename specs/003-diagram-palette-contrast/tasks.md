@@ -346,3 +346,11 @@ Task: "index.js CAPABILITY_TEXT 追加一句"      # T017
 - [x] T047 回退提示里画出出错的行号与该行源码，并标出解析器拒绝的那个字符 per FR-002、SC-008
 
   实现：`src/client/figure.js` 新增 `figureSyntaxHint(error, code)`——从引擎报文的 `Parse error on line N:`、缩进代码行、`^` 行与 `got '…'` 取位置；**不用引擎的字符列**（中文按单字符计数会错位），而是按 `got` 区分两种情况：拒绝某字符（`STR` 等）时标该字符本身，行不够长（`EOF`/`$end`）时标行尾空白；行文本取读者写的 `code.split('\n')[N-1]`（去掉引擎加的缩进），引擎英文不进屏幕。`src/client/view.js` 新增 `syntaxHint` 状态与 `.dsh-dyslexia-hint`（`pre`，等宽、`white-space: pre`、可横向滚动）+ `.dsh-dyslexia-hint-line`（行号，`label-secondary`）+ `.dsh-dyslexia-hint-mark`（被拒字符：`state-error-primary` 的 22% 底色 + 下划线）；`i18n.js` 八语言新增 `syntaxAtLine`（`Line {{line}}:` / `第 {{line}} 行：` / …）。检查：夹具新增 10 条（有提示、行号是本语言、显示原文行、有标记、标记是引号本身、引擎英文不上屏、行尾空白标记），浏览器检查 540 → **550**；`verify/check-bundle.mjs` 新增 `a syntax error is pointed at, not parroted`（函数存在、`got` 分支存在、view 传了源码、标记类存在、八语言都带 `{{line}}`），静态 80 → **81**。
+
+## Phase 16: 图没有用满窗口宽度（用户复现后补）
+
+用户贴来一张 13 个类目的 `xychart`，问"渲染出来根本没有把我的窗口宽度用足，柱状图中有一些柱下面的文字就显示不出来了"。实测根因：**引擎给图表类硬编码了绘制宽度**（xychart 700、gantt 700），与容器无关；`figureOptions()` 又从不把容器宽度交给引擎，于是宽窗口下图表仍挤在 700px 里，类目多时引擎只能每隔一个抽掉一批横轴标签。其余图种是内容自适应（宽流程图会画到 2000px 再由 CSS 缩），所以"没用足"只在图表类上看得见。
+
+- [x] T048 把框架的真实宽度交给引擎（图表类），并在框架变宽变窄时重画 per FR-014 / SC-010（本文档新增：图表类按可用宽度绘制）
+
+  实现：`src/client/figure.js` 新增 `figureWidth(host)`（读 `clientWidth` 减去左右 padding，拿不到就返回 0 让引擎自己定）与 `figureChartConfig(width)`（`{ xyChart: { width }, gantt: { useWidth: width } }`，其它图种不读它所以无条件附带），`figureOptions(doc, labels, width)` 在宽度 > 0 时挂上 `config`；`mountFigure` 传 `figureWidth(host)`。`src/client/view.js` 新增 `watchWidth()`：`ResizeObserver` 观察框架，宽度变化 ≥16px 且已挂载时调 `mounted.update(code, figureOptions(doc, labels, next))`——走引擎自己的 `update`，不自己重画、不缩放旧图；teardown 里 disconnect。`verify/check-bundle.mjs` 的 `every drawing the engine swaps in is named again` 从"禁止 ResizeObserver"改成"必须有宽度回写"，并保留"不得自己 requestAnimationFrame 重排"。

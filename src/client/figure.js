@@ -20,6 +20,53 @@ const FIGURE_LIMITS = {
 
 const ENGINE_UNAVAILABLE = 'engine-unavailable'
 
+/**
+ * The width the picture may draw into.
+ *
+ * The engine lays most diagram types out for their own content and lets CSS
+ * shrink the result, but a chart and a gantt are laid out for a width fixed at
+ * parse time (700 and 800 by default): on a wide window the chart sits in a
+ * narrow column, and on a bar chart with many categories the engine then drops
+ * axis labels that no longer fit. Handing the engine the room it actually has is
+ * what makes the chart use the window, and what keeps the labels a reader needs
+ * to read the bars.
+ *
+ * Measured from the host's content box: the frame carries the padding, so the
+ * padding is not room the drawing can use. A width of zero means the host is not
+ * laid out yet; the caller then passes nothing, the engine picks, and the resize
+ * watcher draws again once there is room.
+ */
+function figureWidth(host) {
+  try {
+    if (!host || typeof host.clientWidth !== 'number' || host.clientWidth <= 0) return 0
+    const doc = host.ownerDocument
+    let styles = null
+    try {
+      styles = doc ? doc.defaultView.getComputedStyle(host) : null
+    } catch (error) {
+      void error
+    }
+    const inset = styles
+      ? (parseFloat(styles.paddingLeft) || 0) + (parseFloat(styles.paddingRight) || 0)
+      : 0
+    const width = Math.round(host.clientWidth - inset)
+    return Number.isFinite(width) && width > 0 ? width : 0
+  } catch (error) {
+    void error
+  }
+  return 0
+}
+
+/**
+ * The width a chart needs to be told. A type that does not read `config` is left
+ * alone by it, so the width is offered to every draw instead of guessed from the
+ * source text: guessing would mean parsing the diagram twice.
+ */
+function figureChartConfig(width) {
+  if (!Number.isFinite(width) || width <= 0) return null
+  return { xyChart: { width: width }, gantt: { useWidth: width } }
+}
+
 function figureFontSize(doc) {
   try {
     const value = parseFloat(doc.defaultView.getComputedStyle(doc.body).fontSize)
@@ -30,7 +77,7 @@ function figureFontSize(doc) {
   return 14
 }
 
-function figureOptions(doc, labels) {
+function figureOptions(doc, labels, width) {
   const options = {
     autoDirection: true,
     directionBreakpoint: 640,
@@ -40,6 +87,8 @@ function figureOptions(doc, labels) {
     zoom: { controls: true, maxScale: 4, labels },
     ...FIGURE_LIMITS,
   }
+  const config = figureChartConfig(width)
+  if (config !== null) options.config = config
   return options
 }
 
@@ -53,7 +102,7 @@ function mountFigure(host, code, doc, labels) {
     missing.code = ENGINE_UNAVAILABLE
     throw missing
   }
-  return pele.mount(host, code, figureOptions(doc, labels))
+  return pele.mount(host, code, figureOptions(doc, labels, figureWidth(host)))
 }
 
 /** `syntax`, `unavailable` or `other`: which sentence the reader should see. */

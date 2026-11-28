@@ -13,8 +13,8 @@ A reply often explains a structure in words a diagram would show in a glance. Th
 The plugin now asks the assistant for a picture when a picture is easier to follow than a paragraph, and keeps the text for what the picture cannot show. Settings → General has the switch; turn it off and the plugin renders only, as before.
 当一张图比一段话更好懂时，插件现在会请助手画图，文字只留图讲不清的部分。设置 → 通用设置里有这个开关；关掉后插件就只负责渲染，和以前一样。
 
-A box is drawn by what it does: a start or end is green, a decision amber, stored data violet, input and output blue, and a plain step stays neutral; a `classDef` or `style` of your own wins. Class, state, entity, sequence and board diagrams colour their nodes violet, with green terminal markers. Charts read a series of eight host colours for their slices, bars and branches. Lines and arrows come from the theme's tertiary label colour, so they read in light and dark alike. The measured values are in [docs/colours.md](docs/colours.md).
-方框按它做的事上色：起止是绿色、判断是琥珀色、数据是紫色、输入输出是蓝色，普通步骤保持中性；你自己写的 `classDef` 或 `style` 优先。类图、状态机、实体图、时序图与看板的节点用同一支紫色，起止符是绿色；饼图、甘特、时间线、思维导图与柱状图从八个宿主系列色取色。连线与箭头取自主题的三级文字色，明暗两套主题下都看得清。完整实测值见 [docs/colours.md](docs/colours.md)。
+A box is drawn by what it does: a start or end is green, a decision amber, stored data violet, input and output blue, and a plain step stays neutral; a `classDef` or `style` of your own wins. Class, state, entity, sequence and board diagrams colour their nodes violet, with green terminal markers. Charts read a series of eight host colours for their slices, bars and branches. Lines and arrows come from the theme's tertiary label colour, so they read in light and dark alike. A chart or a gantt is drawn for the width of its column, so a wide window gets a wide chart and every category keeps its name under its bar. The measured values are in [docs/colours.md](docs/colours.md).
+方框按它做的事上色：起止是绿色、判断是琥珀色、数据是紫色、输入输出是蓝色，普通步骤保持中性；你自己写的 `classDef` 或 `style` 优先。类图、状态机、实体图、时序图与看板的节点用同一支紫色，起止符是绿色；饼图、甘特、时间线、思维导图与柱状图从八个宿主系列色取色。连线与箭头取自主题的三级文字色，明暗两套主题下都看得清。柱状图与甘特图按栏目实际宽度绘制，宽窗口就画宽图，每个类目名都留在自己的柱脚下。完整实测值见 [docs/colours.md](docs/colours.md)。
 
 ## Data and privacy / 数据与隐私
 

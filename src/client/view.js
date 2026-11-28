@@ -176,9 +176,18 @@ function MermaidFenceLayer(props) {
   const hostRef = React.useRef(null)
   const mountedRef = React.useRef(null)
   const watcherRef = React.useRef(null)
+  const resizeRef = React.useRef(null)
   const copiedTimerRef = React.useRef(null)
 
   const teardown = React.useCallback(() => {
+    if (resizeRef.current !== null) {
+      try {
+        resizeRef.current.disconnect()
+      } catch (error) {
+        void error
+      }
+      resizeRef.current = null
+    }
     if (watcherRef.current !== null) {
       try {
         watcherRef.current.disconnect()
@@ -224,6 +233,54 @@ function MermaidFenceLayer(props) {
         }
       }
     }
+    /**
+     * A chart is laid out for the width it is told, so a widened window needs a
+     * new layout, not a bigger picture: the engine is asked to draw again at the
+     * room it now has. A window that is dragged narrower is the same story, and a
+     * frame that changes width without the window changing (the conversation
+     * column next to a sidebar) is exactly why this watches the frame.
+     *
+     * The threshold keeps a dragged window from re-parsing the source for every
+     * pixel: below it the difference is not visible, above it the picture is.
+     */
+    const watchWidth = () => {
+      if (typeof ResizeObserver !== 'function') return
+      const measure = () => {
+        try {
+          return figureWidth(host)
+        } catch (error) {
+          void error
+          return 0
+        }
+      }
+      let last = measure()
+      let observer = null
+      try {
+        observer = new ResizeObserver(() => {
+          const next = measure()
+          if (next <= 0 || Math.abs(next - last) < 16) return
+          last = next
+          const current = mountedRef.current
+          if (!current || typeof current.update !== 'function') return
+          const t = translateRef.current
+          try {
+            current.update(code, figureOptions(doc, {
+              reset: t('resetZoom'),
+              zoomIn: t('zoomIn'),
+              zoomOut: t('zoomOut'),
+            }, next))
+          } catch (error) {
+            void error
+          }
+        })
+        observer.observe(host)
+      } catch (error) {
+        void error
+        return
+      }
+      resizeRef.current = observer
+    }
+
     let mounted = null
     try {
       mounted = mountFigure(host, code, doc, labels)
@@ -244,6 +301,7 @@ function MermaidFenceLayer(props) {
       return undefined
     }
     mountedRef.current = mounted
+    watchWidth()
     setStatus('rendered')
     // The picture is the image; the box around it also holds the engine's own
     // zoom buttons, so the box is a group and only the drawing itself carries
