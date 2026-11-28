@@ -354,3 +354,7 @@ Task: "index.js CAPABILITY_TEXT 追加一句"      # T017
 - [x] T048 把框架的真实宽度交给引擎（图表类），并在框架变宽变窄时重画 per FR-014 / SC-010（本文档新增：图表类按可用宽度绘制）
 
   实现：`src/client/figure.js` 新增 `figureWidth(host)`（读 `clientWidth` 减去左右 padding，拿不到就返回 0 让引擎自己定）与 `figureChartConfig(width)`（`{ xyChart: { width }, gantt: { useWidth: width } }`，其它图种不读它所以无条件附带），`figureOptions(doc, labels, width)` 在宽度 > 0 时挂上 `config`；`mountFigure` 传 `figureWidth(host)`。`src/client/view.js` 新增 `watchWidth()`：`ResizeObserver` 观察框架，宽度变化 ≥16px 且已挂载时调 `mounted.update(code, figureOptions(doc, labels, next))`——走引擎自己的 `update`，不自己重画、不缩放旧图；teardown 里 disconnect。`verify/check-bundle.mjs` 的 `every drawing the engine swaps in is named again` 从"禁止 ResizeObserver"改成"必须有宽度回写"，并保留"不得自己 requestAnimationFrame 重排"。
+
+- [x] T049 手机宽度下的回归：窄栏与旧行为一致，且没有新的横向滚动 per FR-014 / SC-007
+
+  实现：实测 320/360/390/414px 下引擎本来就把图缩到栏宽（旧行为 342 → 新行为 342），交给引擎的宽度与之相差 ≤ 8px，`scrollWidth` 不增加；`verify/harness/index.html` 新增两条断言（`a phone-width column gets a chart that fits it exactly`、`a chart in a phone column does not add a sideways scroll`），`verify/run-harness.mjs` 的 `EXPECTED_CHECKS` 553 → 555。平板/桌面上旧行为停在 700/800px 的下限被修掉（768px 栏：700 → 750；900px 栏：700 → 882），手机宽度下没有任何变化。

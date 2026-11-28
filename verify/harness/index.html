@@ -1469,6 +1469,28 @@ const NEXT_CODE = 'flowchart TD\n  X[Second] --> Y[Drawing]'
           )
           narrowChart.root.unmount()
           narrowChart.stage.remove()
+          // A phone column is narrower than any chart's own layout, so the engine
+          // already fitted itself there: the width handed over must agree with that
+          // fit, and it must not add a scroll of its own.
+          const phone = mount(Layer, { code: CHART, streaming: false, children: hostBlock(CHART) })
+          phone.stage.style.width = '360px'
+          await tick(200)
+          const phoneBox = phone.stage.querySelector('.dsh-dyslexia-figure')
+          const phoneSvg = phoneBox ? phoneBox.querySelector('svg') : null
+          const phoneWidth = phoneSvg ? Number(phoneSvg.getAttribute('width')) : 0
+          const phoneRoom = phoneBox ? Math.round(phoneBox.clientWidth - 16) : 0
+          expect(
+            phoneWidth > 0 && Math.abs(phoneWidth - phoneRoom) <= 8,
+            'a phone-width column gets a chart that fits it exactly',
+            phoneWidth + '/' + phoneRoom,
+          )
+          expect(
+            phone.stage.scrollWidth <= phone.stage.clientWidth + 1,
+            'a chart in a phone column does not add a sideways scroll',
+            phone.stage.scrollWidth + '/' + phone.stage.clientWidth,
+          )
+          phone.root.unmount()
+          phone.stage.remove()
 
           /* --------------------------------------------------------- theme */
           const themed = mount(Layer, { code: CODE, streaming: false, children: hostBlock(CODE) })

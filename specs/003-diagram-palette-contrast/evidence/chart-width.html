@@ -307,6 +307,7 @@ stroke: color-mix(in srgb, var(--dx-hue-process) 60%, var(--pele-fg));
 <section class="light-tokens"><h2>Light · 700px column (the engine's own default)</h2><div class="stage" id="w700" style="width:700px"></div></section>
 <section class="light-tokens"><h2>Light · 1200px column</h2><div class="stage" id="w1200" style="width:1200px"></div></section>
 <section class="dark-tokens"><h2>Dark · 1200px column</h2><div class="stage" id="wdark" style="width:1200px"></div></section>
+<section class="light-tokens"><h2>Light · a 360px phone column (the engine already fitted itself here)</h2><div class="stage" id="w360" style="width:360px"></div></section>
 <section class="light-tokens"><h2>Light · a frame that widens after the picture is drawn</h2><p class="lead" style="margin:0 0 8px">Starts at 420px, then the plugin measures the wider frame and asks the engine to draw again — the picture is not stretched by CSS.</p><div class="stage" id="wlive" style="width:420px"></div></section>
 <pre id="report"></pre>
 <script src="../../../vendor/pele/pele.global.js"></script>
@@ -334,6 +335,7 @@ const wide = draw('w700')
 draw('w1200')
 draw('wdark')
 const live = draw('wlive')
+draw('w360')
 live.stage.style.width = '1200px'
 // Force the new width to be laid out before measuring, the way a real resize
 // arrives as a frame after the style change.
