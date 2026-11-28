@@ -358,3 +358,6 @@ Task: "index.js CAPABILITY_TEXT 追加一句"      # T017
 - [x] T049 手机宽度下的回归：窄栏与旧行为一致，且没有新的横向滚动 per FR-014 / SC-007
 
   实现：实测 320/360/390/414px 下引擎本来就把图缩到栏宽（旧行为 342 → 新行为 342），交给引擎的宽度与之相差 ≤ 8px，`scrollWidth` 不增加；`verify/harness/index.html` 新增两条断言（`a phone-width column gets a chart that fits it exactly`、`a chart in a phone column does not add a sideways scroll`），`verify/run-harness.mjs` 的 `EXPECTED_CHECKS` 553 → 555。平板/桌面上旧行为停在 700/800px 的下限被修掉（768px 栏：700 → 750；900px 栏：700 → 882），手机宽度下没有任何变化。
+- [x] T050 手机窄栏：读者选择“不动”，作为缩略图使用（决策记录，无代码变更） per FR-014 非目标
+
+  决策：读者在 320–414px 宽度下接受“只画能装下的类目名”（360px 栏实测 2/13），不采用“图宽于框架 + 内部横向滚动”，也不做 SVG 标签旋转（后者要接管引擎渲染，违反宪法“不接管宿主 DOM/样式”的边界）。因此 FR-014 的非目标写明：手机宽度下的标签抽稀是设计如此，后续 Converge 不得把它当缺口。此前实测（320/360/390/414px）新旧行为完全一致（342/342、372/372 等），无回归；宽于 700px 的栏目才使用新增的宽度。
