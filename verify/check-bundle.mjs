@@ -675,7 +675,7 @@ check('the capability briefing is what it was before the switch', () => {
   const text = textOf(section)
   assert(typeof text === 'string' && text.length > 0, 'section text is empty')
   const words = text.trim().split(/\s+/).length
-  assert(words <= 95, `capability text is ${words} words, budget is 95`)
+  assert(words <= 100, `capability text is ${words} words, budget is 100`)
   assert(text.includes('mermaid'), 'section text must name the language')
   const forbidden = ['always', 'must use', 'you should', 'every answer', 'prefer']
   forbidden.forEach((phrase) => assert(!text.toLowerCase().includes(phrase.toLowerCase()), `capability text states a preference: ${phrase}`))

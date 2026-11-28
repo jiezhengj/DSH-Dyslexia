@@ -33,7 +33,7 @@ const CAPABILITY_TEXT = [
   'The chat UI draws a Markdown code block whose language word is `mermaid` as a diagram, in place inside the conversation.',
   'The code of that block is the diagram, so it has to carry everything the picture shows: without the renderer it is shown as source text.',
   'Syntax is Mermaid (flowchart, sequence, class, state, entity relationship, gantt, timeline, mindmap, kanban, xychart, C4 and architecture).',
-  'Shapes set colour: `([start])`, `{decision}`, `[(data)]`; `classDef`/`style` win.',
+  'Shapes set colour: `([start])`, `{decision}`, `[(data)]`; `classDef`/`style` win; a quote must wrap the whole label.',
   'An invalid or oversized diagram falls back to its source with a one-line reason, so the block must stay readable alone.',
 ].join(' ')
 

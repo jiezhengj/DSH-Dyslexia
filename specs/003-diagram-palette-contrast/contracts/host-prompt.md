@@ -15,13 +15,15 @@ const CAPABILITY_TEXT = [
   'The chat UI draws a Markdown code block whose language word is `mermaid` as a diagram, in place inside the conversation.',
   'The code of that block is the diagram, so it has to carry everything the picture shows: without the renderer it is shown as source text.',
   'Syntax is Mermaid (flowchart, sequence, class, state, entity relationship, gantt, timeline, mindmap, kanban, xychart, C4 and architecture).',
-  'Shapes set colour: `([start])`, `{decision}`, `[(data)]`; `classDef`/`style` win.',
+  'Shapes set colour: `([start])`, `{decision}`, `[(data)]`; `classDef`/`style` win; a quote must wrap the whole label.',
   'An invalid or oversized diagram falls back to its source with a one-line reason, so the block must stay readable alone.',
 ].join(' ')
 ```
 
-前四句与 001 契约（`specs/001-mermaid-fence-render/contracts/host-prompt.md`）逐字相同，新句插在"语法清单"之后、"回退说明"之前；整段仍受 95 词预算约束（003 落地后 93 词）。
+前四句与 001 契约（`specs/001-mermaid-fence-render/contracts/host-prompt.md`）逐字相同，新句插在"语法清单"之后、"回退说明"之前；整段受 100 词预算约束（原 95 词，0.3.4 加"引号须包住整段标签"这半句后为 100 词，见 tasks.md 的 Phase 14）。
 
 ## 模型侧期望
 
 写流程图时用常规形状（`([start])`、`{decision}`、`[(data)]`、`[/input/]`、`[step]`），图就会被画成"起止/判断/数据/输入输出各一色、普通步骤中性"；只有颜色本身要表达别的含义时才写 `classDef`。
+
+标签里要用引号时，把整段标签用直引号包住（`A["他说\"好\""]` 不行，`A["他说#quot;好#quot;"]` 或 `A[他说「好」]` 可以）——裸写 `"` 会被引擎当成字符串 token，整张图退回源码。

@@ -330,3 +330,11 @@ Task: "index.js CAPABILITY_TEXT 追加一句"      # T017
   - 删掉 `styles.js` 里 `pele-shape-win-pane` 一行 → `every shape class has a role rule of its own` 红（`no role rule for win-pane`）。
   - 往引擎登记表插一个假图种 `polygonnet` → `every diagram type the engine registers is sampled or explained` 红（`the engine draws polygonnet and nothing tests it`）。
   - 两处都 `git checkout` 还原后 `npm test` 回到静态 80 + 浏览器 540 全绿。也就是说：以后引擎升级带来新形状/新图种，**构建**会先红，不必等聊天里出现灰方块。
+
+## Phase 14: 标签里的直引号（用户复现后补）
+
+用户贴来一张流程图，插件判定"语法有误"退回源码，问"这个的确是语法有误吗"。复核结论：**是引擎词法规则**，不是插件问题——`A[想给 wu 加"带路径行号复制"]` 中裸写的 `"` 被当成字符串 token，报 `Expecting 'SQE', 'UNICODE_TEXT', 'TEXT', 'TAGSTART', got 'STR'`；引号只能包住整段标签（`A["…"]`），全角引号、`「」`、`#quot;` 都合法（四种写法均实测渲染正确）。用户选择"在模型侧能力说明里加一句"，于是：
+
+- [x] T046 能力说明加上"引号须包住整段标签"，预算 95 → 100 词 per FR-011
+
+  实现：`index.js` 的 `CAPABILITY_TEXT` 第四句改为 `Shapes set colour: `([start])`, `{decision}`, `[(data)]`; `classDef`/`style` win; a quote must wrap the whole label.`（整段 100 词，仍是 001 的四句 + 003 的一句）；`verify/check-bundle.mjs` 的词数上限 95 → 100；`contracts/host-prompt.md` 的逐字块与说明同步，并补一条"标签里要引号怎么写"的解释（`A["他说#quot;好#quot;"]`、`A[他说「好」]` 可以，裸 `"` 不行）。检查：静态 80 条全绿，仍断言"五句、001 四句逐字在前"。
